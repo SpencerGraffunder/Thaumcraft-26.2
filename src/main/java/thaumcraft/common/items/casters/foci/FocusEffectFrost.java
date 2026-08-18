@@ -120,7 +120,7 @@ public class FocusEffectFrost extends FocusEffect {
                         world.setBlockAndUpdate(mutablePos, Blocks.FROSTED_ICE.defaultBlockState());
                         // Schedule tick for ice to melt
                         world.scheduleTick(mutablePos, Blocks.FROSTED_ICE, 
-                            Mth.nextInt(world.random, 60, 120));
+                            Mth.nextInt(world.getRandom(), 60, 120));
                     }
                 }
             }

@@ -155,7 +155,7 @@ public class BlockTaint extends Block implements ITaintBlock {
     @Override
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
         if (!level.isClientSide && entity instanceof LivingEntity living && 
-                !living.isInvertedHealAndHarm() && level.random.nextInt(250) == 0) {
+                !living.isInvertedHealAndHarm() && level.getRandom().nextInt(250) == 0) {
             // Apply flux taint effect
             if (ModEffects.FLUX_TAINT != null) {
                 living.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), 200, 0, false, true));
@@ -170,7 +170,7 @@ public class BlockTaint extends Block implements ITaintBlock {
             if (level.isClientSide) {
                 level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(),
                         SoundEvents.CHORUS_FLOWER_DEATH, SoundSource.BLOCKS,
-                        0.1f, 0.9f + level.random.nextFloat() * 0.2f, false);
+                        0.1f, 0.9f + level.getRandom().nextFloat() * 0.2f, false);
             }
             return true;
         }

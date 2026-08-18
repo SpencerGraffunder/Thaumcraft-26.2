@@ -180,7 +180,7 @@ public class AuraChunkHandler {
      * Generate initial aura for a newly created chunk.
      */
     private static void generateChunkAura(ServerLevel level, LevelChunk chunk) {
-        RandomSource random = level.random;
+        RandomSource random = level.getRandom();
         AuraHandler.generateAura(chunk, random);
         
         // Mark as dirty so it gets saved

@@ -51,7 +51,7 @@ public class FXSonic extends ThaumcraftParticle {
         this.yd = 0;
         this.zd = 0;
         
-        this.lifetime = maxAge + this.random.nextInt(maxAge / 2);
+        this.lifetime = maxAge + this.getRandom().nextInt(maxAge / 2);
         this.quadSize = 1.0f;
         
         // Position at entity

@@ -47,7 +47,7 @@ public class TileBarrierStone extends TileThaumcraft {
      */
     public static void serverTick(Level level, BlockPos pos, BlockState state, TileBarrierStone tile) {
         if (tile.tickCount == 0) {
-            tile.tickCount = level.random.nextInt(100);
+            tile.tickCount = level.getRandom().nextInt(100);
         }
 
         // Push entities every 5 ticks when not powered

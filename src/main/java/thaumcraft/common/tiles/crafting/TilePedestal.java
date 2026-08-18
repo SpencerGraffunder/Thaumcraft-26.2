@@ -65,7 +65,7 @@ public class TilePedestal extends TileThaumcraftInventory {
             
             if (level != null) {
                 level.playSound(null, worldPosition, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
-                        0.2f, ((level.random.nextFloat() - level.random.nextFloat()) * 0.7f + 1.0f) * 1.6f);
+                        0.2f, ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7f + 1.0f) * 1.6f);
             }
             syncTile(false);
             return true;
@@ -86,7 +86,7 @@ public class TilePedestal extends TileThaumcraftInventory {
             
             if (level != null) {
                 level.playSound(null, worldPosition, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
-                        0.2f, ((level.random.nextFloat() - level.random.nextFloat()) * 0.7f + 1.0f) * 1.2f);
+                        0.2f, ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7f + 1.0f) * 1.2f);
             }
             syncTile(false);
             return taken;

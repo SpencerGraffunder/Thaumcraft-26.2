@@ -268,7 +268,7 @@ public class BlockUtils {
                     for (int zz = -3; zz <= 3; ++zz) {
                         BlockPos updatePos = lastPos.offset(xx, yy, zz);
                         BlockState updateState = level.getBlockState(updatePos);
-                        level.scheduleTick(updatePos, updateState.getBlock(), 50 + level.random.nextInt(75));
+                        level.scheduleTick(updatePos, updateState.getBlock(), 50 + level.getRandom().nextInt(75));
                     }
                 }
             }

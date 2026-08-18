@@ -126,11 +126,11 @@ public class BlockHungryChest extends Block implements EntityBlock {
             if (remaining.isEmpty()) {
                 itemEntity.discard();
                 level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.BLOCKS, 0.25f, 
-                        (level.random.nextFloat() - level.random.nextFloat()) * 0.2f + 1.0f);
+                        (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2f + 1.0f);
             } else if (remaining.getCount() < itemEntity.getItem().getCount()) {
                 itemEntity.setItem(remaining);
                 level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.BLOCKS, 0.25f, 
-                        (level.random.nextFloat() - level.random.nextFloat()) * 0.2f + 1.0f);
+                        (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2f + 1.0f);
             }
         }
     }

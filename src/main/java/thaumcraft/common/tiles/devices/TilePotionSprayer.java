@@ -129,7 +129,7 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
                 
                 // Play sound and visual effect
                 level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 
-                        0.25f, 2.6f + (level.random.nextFloat() - level.random.nextFloat()) * 0.8f);
+                        0.25f, 2.6f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.8f);
                 level.blockEvent(pos, state.getBlock(), 0, 0);
                 tile.syncTile(false);
                 tile.setChanged();
@@ -146,12 +146,12 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
         if (tile.venting > 0) {
             tile.venting--;
             for (int a = 0; a < tile.venting / 2; a++) {
-                float fx = 0.1f - level.random.nextFloat() * 0.2f;
-                float fy = 0.1f - level.random.nextFloat() * 0.2f;
-                float fz = 0.1f - level.random.nextFloat() * 0.2f;
-                float fx2 = (float)(level.random.nextGaussian() * 0.06);
-                float fy2 = (float)(level.random.nextGaussian() * 0.06);
-                float fz2 = (float)(level.random.nextGaussian() * 0.06);
+                float fx = 0.1f - level.getRandom().nextFloat() * 0.2f;
+                float fy = 0.1f - level.getRandom().nextFloat() * 0.2f;
+                float fz = 0.1f - level.getRandom().nextFloat() * 0.2f;
+                float fx2 = (float)(level.getRandom().nextGaussian() * 0.06);
+                float fy2 = (float)(level.getRandom().nextGaussian() * 0.06);
+                float fz2 = (float)(level.getRandom().nextGaussian() * 0.06);
                 
                 FXDispatcher.INSTANCE.drawVentParticles2(
                         pos.getX() + 0.5f + fx + facing.getStepX() / 2.0f,

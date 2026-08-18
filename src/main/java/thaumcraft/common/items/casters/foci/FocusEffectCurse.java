@@ -92,27 +92,27 @@ public class FocusEffectCurse extends FocusEffect {
                 // Random chance for additional effects, decreasing probability
                 float chance = 0.85f;
                 
-                if (world.random.nextFloat() < chance) {
+                if (world.getRandom().nextFloat() < chance) {
                     living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, effectLevel));
                     chance -= 0.15f;
                 }
                 
-                if (world.random.nextFloat() < chance) {
+                if (world.getRandom().nextFloat() < chance) {
                     living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, duration, effectLevel));
                     chance -= 0.15f;
                 }
                 
-                if (world.random.nextFloat() < chance) {
+                if (world.getRandom().nextFloat() < chance) {
                     living.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, duration * 2, effectLevel));
                     chance -= 0.15f;
                 }
                 
-                if (world.random.nextFloat() < chance) {
+                if (world.getRandom().nextFloat() < chance) {
                     living.addEffect(new MobEffectInstance(MobEffects.HUNGER, duration * 3, effectLevel));
                     chance -= 0.15f;
                 }
                 
-                if (world.random.nextFloat() < chance) {
+                if (world.getRandom().nextFloat() < chance) {
                     living.addEffect(new MobEffectInstance(MobEffects.UNLUCK, duration * 3, effectLevel));
                 }
             }
@@ -133,9 +133,9 @@ public class FocusEffectCurse extends FocusEffect {
                         BlockPos abovePos = surfacePos.above();
                         
                         if (!world.isEmptyBlock(surfacePos) && world.isEmptyBlock(abovePos)) {
-                            if (world.random.nextFloat() < 0.7f) {
+                            if (world.getRandom().nextFloat() < 0.7f) {
                                 world.setBlock(abovePos, ModBlocks.EFFECT_SAP.get().defaultBlockState(), 3);
-                                world.scheduleTick(abovePos, ModBlocks.EFFECT_SAP.get(), 40 + world.random.nextInt(60));
+                                world.scheduleTick(abovePos, ModBlocks.EFFECT_SAP.get(), 40 + world.getRandom().nextInt(60));
                             }
                             break;
                         }

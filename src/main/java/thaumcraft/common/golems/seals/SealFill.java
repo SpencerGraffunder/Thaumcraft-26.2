@@ -162,7 +162,7 @@ public class SealFill extends SealFiltered implements ISealConfigToggles {
                             golem.holdItem(remaining);
                         } else {
                             ((Entity) golem).playSound(SoundEvents.ITEM_PICKUP, 0.125f,
-                                ((level.random.nextFloat() - level.random.nextFloat()) * 0.7f + 1.0f) * 2.0f);
+                                ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
                             golem.swingArm();
                         }
                     }

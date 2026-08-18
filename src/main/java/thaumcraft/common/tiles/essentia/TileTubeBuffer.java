@@ -212,7 +212,7 @@ public class TileTubeBuffer extends TileTube implements IAspectContainer {
     public Aspect getEssentiaType(Direction face) {
         Aspect[] aspectArray = aspects.getAspects();
         if (aspectArray.length > 0 && level != null) {
-            return aspectArray[level.random.nextInt(aspectArray.length)];
+            return aspectArray[level.getRandom().nextInt(aspectArray.length)];
         }
         return null;
     }

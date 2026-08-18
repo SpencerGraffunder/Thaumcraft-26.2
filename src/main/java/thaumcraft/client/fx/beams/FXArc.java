@@ -87,9 +87,9 @@ public class FXArc extends ThaumcraftParticle {
 
             // Add noise for jagged appearance
             Vec3 noisyPoint = next.add(
-                    (this.random.nextDouble() - this.random.nextDouble()) * noise,
-                    (this.random.nextDouble() - this.random.nextDouble()) * noise,
-                    (this.random.nextDouble() - this.random.nextDouble()) * noise
+                    (this.getRandom().nextDouble() - this.getRandom().nextDouble()) * noise,
+                    (this.getRandom().nextDouble() - this.getRandom().nextDouble()) * noise,
+                    (this.getRandom().nextDouble() - this.getRandom().nextDouble()) * noise
             );
             points.add(noisyPoint);
 

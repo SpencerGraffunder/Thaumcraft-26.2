@@ -63,8 +63,8 @@ public class FXBolt extends ThaumcraftParticle {
         this.length = (float) (end.length() * Math.PI);
 
         // Random seed for consistent animation
-        this.seed = this.random.nextInt(1000);
-        this.distanceRandom = (float) (this.random.nextInt(50) * Math.PI);
+        this.seed = this.getRandom().nextInt(1000);
+        this.distanceRandom = (float) (this.getRandom().nextInt(50) * Math.PI);
 
         // Generate initial points
         calculatePoints(0);

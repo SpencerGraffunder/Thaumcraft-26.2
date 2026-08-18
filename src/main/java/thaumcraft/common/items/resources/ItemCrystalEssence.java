@@ -106,7 +106,7 @@ public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
         if (aspects.isEmpty()) return;
         
         Aspect[] aspectArray = aspects.toArray(new Aspect[0]);
-        Aspect randomAspect = aspectArray[level.random.nextInt(aspectArray.length)];
+        Aspect randomAspect = aspectArray[level.getRandom().nextInt(aspectArray.length)];
         setAspects(stack, new AspectList().add(randomAspect, baseAmount));
     }
     

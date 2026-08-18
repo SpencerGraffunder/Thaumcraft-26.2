@@ -78,7 +78,7 @@ public class PacketFXFocusPartImpactBurst {
         String[] partKeys = packet.parts.split("%");
         // More particles spread across parts
         int amount = Math.max(1, 20 / partKeys.length);
-        RandomSource rand = level.random;
+        RandomSource rand = level.getRandom();
         
         for (String key : partKeys) {
             IFocusElement element = FocusEngine.getElement(key);

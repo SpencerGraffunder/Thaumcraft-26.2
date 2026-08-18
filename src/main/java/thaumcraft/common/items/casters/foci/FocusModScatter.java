@@ -84,9 +84,9 @@ public class FocusModScatter extends FocusMod {
             
             for (int i = 0; i < forks; i++) {
                 // Add random deviation to the direction vector
-                double dx = getPackage().world.random.nextGaussian() * spread;
-                double dy = getPackage().world.random.nextGaussian() * spread;
-                double dz = getPackage().world.random.nextGaussian() * spread;
+                double dx = getPackage().world.getRandom().nextGaussian() * spread;
+                double dy = getPackage().world.getRandom().nextGaussian() * spread;
+                double dz = getPackage().world.getRandom().nextGaussian() * spread;
                 
                 Vec3 newDirection = direction.add(dx, dy, dz).normalize();
                 result.add(new Trajectory(source, newDirection));

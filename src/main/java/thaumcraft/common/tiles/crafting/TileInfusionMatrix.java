@@ -403,7 +403,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         boolean valid = false;
 
         // Apply stability loss based on instability
-        float ff = level.random.nextFloat() * getLossPerCycle();
+        float ff = level.getRandom().nextFloat() * getLossPerCycle();
         stability -= ff;
         stability += stabilityReplenish;
         stability = Math.max(-100, Math.min(stabilityCap, stability));
@@ -418,9 +418,9 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         }
 
         // Check for instability events
-        if (!valid || (stability < 0.0f && level.random.nextInt(1500) <= Math.abs(stability))) {
+        if (!valid || (stability < 0.0f && level.getRandom().nextInt(1500) <= Math.abs(stability))) {
             triggerInstabilityEvent();
-            stability += 5.0f + level.random.nextFloat() * 5.0f;
+            stability += 5.0f + level.getRandom().nextFloat() * 5.0f;
             grantInstabilityResearch();
             if (valid) return;
         }
@@ -482,8 +482,8 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                 }
                 // Missing ingredient - add stability penalty
                 Aspect[] ingEss = recipeEssentia.getAspects();
-                if (ingEss != null && ingEss.length > 0 && level.random.nextInt(1 + a) == 0) {
-                    Aspect as = ingEss[level.random.nextInt(ingEss.length)];
+                if (ingEss != null && ingEss.length > 0 && level.getRandom().nextInt(1 + a) == 0) {
+                    Aspect as = ingEss[level.getRandom().nextInt(ingEss.length)];
                     recipeEssentia.add(as, 1);
                     stability -= 0.25f;
                     syncTile(false);
@@ -566,7 +566,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
     // ==================== Instability Events ====================
 
     private void triggerInstabilityEvent() {
-        int event = level.random.nextInt(24);
+        int event = level.getRandom().nextInt(24);
         switch (event) {
             case 0, 1, 2, 3 -> instabilityEjectItem(0);
             case 4, 5, 6 -> instabilityWarp();
@@ -580,7 +580,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
             case 20, 21 -> instabilityEjectItem(5);
             case 22 -> instabilityHarm(true);
             case 23 -> level.explode(null, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, 
-                    worldPosition.getZ() + 0.5, 1.5f + level.random.nextFloat(), Level.ExplosionInteraction.NONE);
+                    worldPosition.getZ() + 0.5, 1.5f + level.getRandom().nextFloat(), Level.ExplosionInteraction.NONE);
         }
     }
 
@@ -590,11 +590,11 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         for (LivingEntity target : targets) {
             if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                 PacketHandler.sendToAllTrackingChunk(
-                        new PacketFXBlockArc(worldPosition, target, 0.3f - level.random.nextFloat() * 0.1f,
-                                0.0f, 0.3f - level.random.nextFloat() * 0.1f),
+                        new PacketFXBlockArc(worldPosition, target, 0.3f - level.getRandom().nextFloat() * 0.1f,
+                                0.0f, 0.3f - level.getRandom().nextFloat() * 0.1f),
                         serverLevel, worldPosition);
             }
-            target.hurt(level.damageSources().magic(), 4 + level.random.nextInt(4));
+            target.hurt(level.damageSources().magic(), 4 + level.getRandom().nextInt(4));
             if (!all) break;
         }
     }
@@ -603,7 +603,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class,
                 new AABB(worldPosition).inflate(10.0));
         for (LivingEntity target : targets) {
-            if (level.random.nextBoolean()) {
+            if (level.getRandom().nextBoolean()) {
                 // Flux taint effect
                 if (ModEffects.FLUX_TAINT != null) {
                     target.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), 120, 0, false, true));
@@ -623,18 +623,18 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         List<Player> targets = level.getEntitiesOfClass(Player.class,
                 new AABB(worldPosition).inflate(10.0));
         if (!targets.isEmpty()) {
-            Player target = targets.get(level.random.nextInt(targets.size()));
-            if (level.random.nextFloat() < 0.25f) {
+            Player target = targets.get(level.getRandom().nextInt(targets.size()));
+            if (level.getRandom().nextFloat() < 0.25f) {
                 ResearchManager.addWarpToPlayer(target, 1, IPlayerWarp.EnumWarpType.NORMAL);
             } else {
-                ResearchManager.addWarpToPlayer(target, 2 + level.random.nextInt(4), IPlayerWarp.EnumWarpType.TEMPORARY);
+                ResearchManager.addWarpToPlayer(target, 2 + level.getRandom().nextInt(4), IPlayerWarp.EnumWarpType.TEMPORARY);
             }
         }
     }
 
     private void instabilityEjectItem(int type) {
         for (int retries = 0; retries < 25 && !pedestals.isEmpty(); retries++) {
-            BlockPos cc = pedestals.get(level.random.nextInt(pedestals.size()));
+            BlockPos cc = pedestals.get(level.getRandom().nextInt(pedestals.size()));
             BlockEntity te = level.getBlockEntity(cc);
             if (te instanceof TilePedestal ped && !ped.getItem(0).isEmpty()) {
                 // TODO: Check for stabilizer mitigation
@@ -655,7 +655,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                     level.playSound(null, cc, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 0.3f, 1.0f);
                 } else if (type == 2 || type == 4) {
                     // Add flux to aura
-                    AuraHelper.polluteAura(level, cc, 5 + level.random.nextInt(5), true);
+                    AuraHelper.polluteAura(level, cc, 5 + level.getRandom().nextInt(5), true);
                 } else if (type == 5) {
                     level.explode(null, cc.getX() + 0.5f, cc.getY() + 0.5f, cc.getZ() + 0.5f, 
                             1.0f, Level.ExplosionInteraction.NONE);
@@ -663,8 +663,8 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                 
                 if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                     PacketHandler.sendToAllTrackingChunk(
-                            new PacketFXBlockArc(worldPosition, cc.above(), 0.3f - level.random.nextFloat() * 0.1f,
-                                    0.0f, 0.3f - level.random.nextFloat() * 0.1f),
+                            new PacketFXBlockArc(worldPosition, cc.above(), 0.3f - level.getRandom().nextFloat() * 0.1f,
+                                    0.0f, 0.3f - level.getRandom().nextFloat() * 0.1f),
                             serverLevel, worldPosition);
                 }
                 return;

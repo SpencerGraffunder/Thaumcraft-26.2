@@ -63,7 +63,7 @@ public class CrystalClusterFeature extends Feature<NoneFeatureConfiguration> {
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
         BlockPos origin = context.origin();
-        RandomSource random = context.random();
+        RandomSource random = context.getRandom()();
         
         placeCallCount++;
         boolean shouldLog = (placeCallCount % LOG_INTERVAL == 1);

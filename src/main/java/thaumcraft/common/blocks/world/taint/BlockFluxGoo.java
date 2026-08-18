@@ -90,7 +90,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
         
         // Thaumic Slimes feed on flux goo
         if (entity instanceof EntityThaumicSlime slime) {
-            if (slime.getSize() < gooLevel && level.random.nextBoolean()) {
+            if (slime.getSize() < gooLevel && level.getRandom().nextBoolean()) {
                 slime.setSize(slime.getSize() + 1, true);
                 if (gooLevel > 1) {
                     level.setBlock(pos, state.setValue(LEVEL, gooLevel - 1), 2);

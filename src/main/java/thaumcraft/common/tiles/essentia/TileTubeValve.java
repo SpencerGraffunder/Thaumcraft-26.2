@@ -58,7 +58,7 @@ public class TileTubeValve extends TileTube {
             if (!tile.wasPoweredLastTick && gettingPower && tile.allowFlow) {
                 tile.allowFlow = false;
                 level.playSound(null, pos, SoundEvents.WOODEN_TRAPDOOR_CLOSE, SoundSource.BLOCKS,
-                        0.7f, 0.9f + level.random.nextFloat() * 0.2f);
+                        0.7f, 0.9f + level.getRandom().nextFloat() * 0.2f);
                 tile.markDirtyAndSync();
             }
             
@@ -66,7 +66,7 @@ public class TileTubeValve extends TileTube {
             if (tile.wasPoweredLastTick && !gettingPower && !tile.allowFlow) {
                 tile.allowFlow = true;
                 level.playSound(null, pos, SoundEvents.WOODEN_TRAPDOOR_OPEN, SoundSource.BLOCKS,
-                        0.7f, 0.9f + level.random.nextFloat() * 0.2f);
+                        0.7f, 0.9f + level.getRandom().nextFloat() * 0.2f);
                 tile.markDirtyAndSync();
             }
             

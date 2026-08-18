@@ -218,7 +218,7 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
             tickCounter = -150; // Reset spill timer
 
             level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP,
-                    SoundSource.BLOCKS, 0.2f, 1.0f + level.random.nextFloat() * 0.4f);
+                    SoundSource.BLOCKS, 0.2f, 1.0f + level.getRandom().nextFloat() * 0.4f);
         }
 
         if (itemChanged) {
@@ -249,7 +249,7 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
 
         Aspect[] aspectArray = aspects.getAspects();
         if (aspectArray.length > 0) {
-            Aspect toSpill = aspectArray[level.random.nextInt(aspectArray.length)];
+            Aspect toSpill = aspectArray[level.getRandom().nextInt(aspectArray.length)];
             aspects.remove(toSpill, 1);
             
             // Flux pollutes more than regular aspects

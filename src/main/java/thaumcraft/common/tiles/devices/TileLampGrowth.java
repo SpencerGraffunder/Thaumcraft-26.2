@@ -121,7 +121,7 @@ public class TileLampGrowth extends TileThaumcraft implements IEssentiaTransport
             }
             // Shuffle using level random
             for (int i = checklist.size() - 1; i > 0; i--) {
-                int j = level.random.nextInt(i + 1);
+                int j = level.getRandom().nextInt(i + 1);
                 BlockPos temp = checklist.get(i);
                 checklist.set(i, checklist.get(j));
                 checklist.set(j, temp);
@@ -148,8 +148,8 @@ public class TileLampGrowth extends TileThaumcraft implements IEssentiaTransport
             if (block instanceof BonemealableBlock growable) {
                 // 1.20.1 API: isValidBonemealTarget(LevelReader, BlockPos, BlockState, boolean isClient)
                 if (growable.isValidBonemealTarget(level, checkPos, blockState, false)) {
-                    if (growable.isBonemealSuccess(level, level.random, checkPos, blockState)) {
-                        growable.performBonemeal(serverLevel, level.random, checkPos, blockState);
+                    if (growable.isBonemealSuccess(level, level.getRandom(), checkPos, blockState)) {
+                        growable.performBonemeal(serverLevel, level.getRandom(), checkPos, blockState);
                         charges--;
                         lastX = x;
                         lastY = y;

@@ -158,9 +158,9 @@ public class FXGeneric extends ThaumcraftParticle {
 
         // Apply random movement
         if (randomX != 0 || randomY != 0 || randomZ != 0) {
-            this.xd += this.random.nextGaussian() * randomX;
-            this.yd += this.random.nextGaussian() * randomY;
-            this.zd += this.random.nextGaussian() * randomZ;
+            this.xd += this.getRandom().nextGaussian() * randomX;
+            this.yd += this.getRandom().nextGaussian() * randomY;
+            this.zd += this.getRandom().nextGaussian() * randomZ;
         }
 
         // Apply wind
@@ -361,7 +361,7 @@ public class FXGeneric extends ThaumcraftParticle {
     public void setWindStrength(double windStrength) {
         // Simple wind calculation based on moon phase
         int m = (int) ((this.level.getDayTime() / 24000L) % 8);
-        double angle = m * (40 + this.random.nextInt(10)) / 180.0f * Math.PI;
+        double angle = m * (40 + this.getRandom().nextInt(10)) / 180.0f * Math.PI;
         this.windX = Math.cos(angle) * windStrength;
         this.windZ = Math.sin(angle) * windStrength;
     }

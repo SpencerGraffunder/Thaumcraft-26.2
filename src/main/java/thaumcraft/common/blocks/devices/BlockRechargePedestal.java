@@ -78,7 +78,7 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
                 heldItem.shrink(1);
                 player.getInventory().setChanged();
                 level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
-                        0.2f, ((level.random.nextFloat() - level.random.nextFloat()) * 0.7f + 1.0f) * 1.6f);
+                        0.2f, ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7f + 1.0f) * 1.6f);
                 return InteractionResult.SUCCESS;
             }
             
@@ -89,7 +89,7 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
                 }
                 pedestal.setItem(0, ItemStack.EMPTY);
                 level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
-                        0.2f, ((level.random.nextFloat() - level.random.nextFloat()) * 0.7f + 1.0f) * 1.5f);
+                        0.2f, ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7f + 1.0f) * 1.5f);
                 return InteractionResult.SUCCESS;
             }
         }

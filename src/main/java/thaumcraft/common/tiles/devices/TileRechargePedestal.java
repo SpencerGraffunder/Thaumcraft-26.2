@@ -53,7 +53,7 @@ public class TileRechargePedestal extends TileThaumcraftInventory implements IAs
                     
                     // Send sparkle effect
                     ArrayList<Aspect> primals = Aspect.getPrimalAspects();
-                    int color = primals.get(level.random.nextInt(primals.size())).getColor();
+                    int color = primals.get(level.getRandom().nextInt(primals.size())).getColor();
                     level.blockEvent(pos, state.getBlock(), 5, color);
                 }
             }
@@ -158,9 +158,9 @@ public class TileRechargePedestal extends TileThaumcraftInventory implements IAs
             if (level != null && level.isClientSide) {
                 // Sparkle effect - draw vis sparkles from nearby to the pedestal
                 FXDispatcher.INSTANCE.visSparkle(
-                        worldPosition.getX() + level.random.nextInt(3) - level.random.nextInt(3),
-                        worldPosition.above().getY() + level.random.nextInt(3),
-                        worldPosition.getZ() + level.random.nextInt(3) - level.random.nextInt(3),
+                        worldPosition.getX() + level.getRandom().nextInt(3) - level.getRandom().nextInt(3),
+                        worldPosition.above().getY() + level.getRandom().nextInt(3),
+                        worldPosition.getZ() + level.getRandom().nextInt(3) - level.getRandom().nextInt(3),
                         worldPosition.getX(),
                         worldPosition.above().getY(),
                         worldPosition.getZ(),

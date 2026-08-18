@@ -28,8 +28,8 @@ public class PotionThaumarhia extends MobEffect {
         BlockPos pos = target.blockPosition();
         
         // 1 in 15 chance to spawn flux goo at entity position
-        if (level.random.nextInt(15) == 0 && level.isEmptyBlock(pos)) {
-            level.setBlockAndUpdate(pos, BlockFluxGoo.withLevel(ModBlocks.FLUX_GOO.get(), 2 + level.random.nextInt(3)));
+        if (level.getRandom().nextInt(15) == 0 && level.isEmptyBlock(pos)) {
+            level.setBlockAndUpdate(pos, BlockFluxGoo.withLevel(ModBlocks.FLUX_GOO.get(), 2 + level.getRandom().nextInt(3)));
         }
     }
     

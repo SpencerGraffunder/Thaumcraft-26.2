@@ -465,7 +465,7 @@ public class EntityFluxRift extends Entity {
         if (level.isClientSide) return;
         
         // Randomize position slightly
-        pos = pos.offset(level.random.nextInt(16), 0, level.random.nextInt(16));
+        pos = pos.offset(level.getRandom().nextInt(16), 0, level.getRandom().nextInt(16));
         BlockPos spawnPos = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, pos);
         
         if (spawnPos.getY() >= level.getMaxBuildHeight() - 4) return;
@@ -481,9 +481,9 @@ public class EntityFluxRift extends Entity {
         
         if (size > 5) {
             EntityFluxRift rift = new EntityFluxRift(level);
-            rift.setRiftSeed(level.random.nextInt());
+            rift.setRiftSeed(level.getRandom().nextInt());
             rift.moveTo(spawnPos.getX() + 0.5, spawnPos.getY() + 0.5, spawnPos.getZ() + 0.5, 
-                    level.random.nextFloat() * 360.0f, 0.0f);
+                    level.getRandom().nextFloat() * 360.0f, 0.0f);
             rift.setRiftSize(size);
             
             if (level.addFreshEntity(rift)) {

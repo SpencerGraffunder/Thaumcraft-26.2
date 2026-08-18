@@ -59,7 +59,7 @@ public class ItemPechWand extends Item {
         // Play sound
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS,
-                0.5f, 0.4f / (level.random.nextFloat() * 0.4f + 0.8f));
+                0.5f, 0.4f / (level.getRandom().nextFloat() * 0.4f + 0.8f));
 
         if (!level.isClientSide()) {
             // Unlock Pech Focus research if not known

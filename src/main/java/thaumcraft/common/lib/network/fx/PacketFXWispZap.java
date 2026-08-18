@@ -113,9 +113,9 @@ public class PacketFXWispZap {
         
         for (int i = 0; i <= particles; i++) {
             double t = (double) i / particles;
-            double x = sx + dx * t + (level.random.nextDouble() - 0.5) * 0.2;
-            double y = sy + dy * t + (level.random.nextDouble() - 0.5) * 0.2;
-            double z = sz + dz * t + (level.random.nextDouble() - 0.5) * 0.2;
+            double x = sx + dx * t + (level.getRandom().nextDouble() - 0.5) * 0.2;
+            double y = sy + dy * t + (level.getRandom().nextDouble() - 0.5) * 0.2;
+            double z = sz + dz * t + (level.getRandom().nextDouble() - 0.5) * 0.2;
             
             // Use electric spark particle
             level.addParticle(

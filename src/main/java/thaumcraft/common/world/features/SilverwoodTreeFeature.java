@@ -37,7 +37,7 @@ public class SilverwoodTreeFeature extends Feature<NoneFeatureConfiguration> {
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
         BlockPos pos = context.origin();
-        RandomSource random = context.random();
+        RandomSource random = context.getRandom()();
         
         return generateTree(level, random, pos, true);
     }

@@ -83,8 +83,8 @@ public class AuraHelper {
             
             // Play pollution sound
             level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 
-                    0.2f + level.random.nextFloat() * 0.1f, 
-                    0.9f + level.random.nextFloat() * 0.2f);
+                    0.2f + level.getRandom().nextFloat() * 0.1f, 
+                    0.9f + level.getRandom().nextFloat() * 0.2f);
         }
     }
 

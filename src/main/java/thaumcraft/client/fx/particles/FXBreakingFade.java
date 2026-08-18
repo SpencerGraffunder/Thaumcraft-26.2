@@ -49,9 +49,9 @@ public class FXBreakingFade extends ThaumcraftParticle {
         this.alpha = 1.0f;
         
         // Random initial velocity
-        this.xd = vx + (this.random.nextFloat() - 0.5f) * 0.2f;
-        this.yd = vy + this.random.nextFloat() * 0.2f;
-        this.zd = vz + (this.random.nextFloat() - 0.5f) * 0.2f;
+        this.xd = vx + (this.getRandom().nextFloat() - 0.5f) * 0.2f;
+        this.yd = vy + this.getRandom().nextFloat() * 0.2f;
+        this.zd = vz + (this.getRandom().nextFloat() - 0.5f) * 0.2f;
     }
     
     public FXBreakingFade setParticleMaxAge(int age) {
@@ -72,7 +72,7 @@ public class FXBreakingFade extends ThaumcraftParticle {
     }
     
     public void boom() {
-        float f = (float)(Math.random() + Math.random() + 1.0) * 0.15f;
+        float f = (float)(Math.getRandom()() + Math.getRandom()() + 1.0) * 0.15f;
         float len = Mth.sqrt((float)(this.xd * this.xd + this.yd * this.yd + this.zd * this.zd));
         this.xd = this.xd / len * f * 0.964f;
         this.yd = this.yd / len * f * 0.964f + 0.1f;

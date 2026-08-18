@@ -98,7 +98,7 @@ public class TileCondenser extends TileThaumcraft implements IEssentiaTransport 
                 tile.flux++;
                 
                 // Small chance to dirty a lattice block
-                if (level.random.nextInt(50) == 0) {
+                if (level.getRandom().nextInt(50) == 0) {
                     tile.makeLatticeDirty();
                 }
                 
@@ -164,9 +164,9 @@ public class TileCondenser extends TileThaumcraft implements IEssentiaTransport 
         // TODO: When condenser lattice blocks are implemented,
         // pick a random unclogged lattice and change it to dirty state
         if (!uncloggedList.isEmpty() && level != null) {
-            int index = level.random.nextInt(uncloggedList.size());
+            int index = level.getRandom().nextInt(uncloggedList.size());
             if (index == 0 && uncloggedList.size() > 1) {
-                index = level.random.nextInt(uncloggedList.size());
+                index = level.getRandom().nextInt(uncloggedList.size());
             }
             // BlockPos p = BlockPos.of(uncloggedList.get(index));
             // Change block to dirty lattice

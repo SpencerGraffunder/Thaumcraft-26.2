@@ -64,7 +64,7 @@ public class TileVoidSiphon extends TileThaumcraftInventory implements WorldlyCo
                     rift.setRiftStability(rift.getRiftStability() - (float)(d / 15.0));
                     
                     // Occasionally shrink the rift
-                    if (level.random.nextInt(33) == 0) {
+                    if (level.getRandom().nextInt(33) == 0) {
                         rift.setRiftSize(rift.getRiftSize() - 1);
                     }
                     

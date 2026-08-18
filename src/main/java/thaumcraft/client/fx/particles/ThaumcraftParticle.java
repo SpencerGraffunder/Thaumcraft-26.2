@@ -92,7 +92,7 @@ public class ThaumcraftParticle extends SingleQuadParticle {
     }
 
     protected void pickSprite(SpriteSet sprites) {
-        this.setSprite(sprites.get(this.random));
+        this.setSprite(sprites.get(this.getRandom()));
     }
 
     @Override

@@ -517,9 +517,9 @@ public class InventoryUtils {
             if (item.isEmpty()) continue;
             
             float spread = 0.5f;
-            double x = pos.getX() + level.random.nextFloat() * spread + (1.0f - spread) * 0.5;
-            double y = pos.getY() + level.random.nextFloat() * spread + (1.0f - spread) * 0.5;
-            double z = pos.getZ() + level.random.nextFloat() * spread + (1.0f - spread) * 0.5;
+            double x = pos.getX() + level.getRandom().nextFloat() * spread + (1.0f - spread) * 0.5;
+            double y = pos.getY() + level.getRandom().nextFloat() * spread + (1.0f - spread) * 0.5;
+            double z = pos.getZ() + level.getRandom().nextFloat() * spread + (1.0f - spread) * 0.5;
             
             ItemEntity entityItem;
             if (followItem && target != null) {

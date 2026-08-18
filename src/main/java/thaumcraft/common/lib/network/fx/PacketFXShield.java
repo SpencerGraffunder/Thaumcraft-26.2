@@ -119,9 +119,9 @@ public class PacketFXShield {
         double offsetZ = Mth.cos(yawRad) * Mth.cos(pitchRad) * 0.5;
         
         for (int i = 0; i < 8; i++) {
-            double px = x + offsetX + (level.random.nextDouble() - 0.5) * 0.5;
-            double py = y + offsetY + (level.random.nextDouble() - 0.5) * 0.5;
-            double pz = z + offsetZ + (level.random.nextDouble() - 0.5) * 0.5;
+            double px = x + offsetX + (level.getRandom().nextDouble() - 0.5) * 0.5;
+            double py = y + offsetY + (level.getRandom().nextDouble() - 0.5) * 0.5;
+            double pz = z + offsetZ + (level.getRandom().nextDouble() - 0.5) * 0.5;
             
             // Spawn enchantment glyph particles as placeholder
             level.addParticle(

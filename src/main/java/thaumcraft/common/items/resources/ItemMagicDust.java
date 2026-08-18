@@ -72,7 +72,7 @@ public class ItemMagicDust extends ItemTCBase {
     private void doSparkles(Player player, Level level, BlockPos pos, Vec3 hitVec, InteractionHand hand, IDustTrigger trigger, IDustTrigger.Placement place) {
         // Play sound
         if (ModSounds.DUST.get() != null) {
-            level.playSound(player, pos, ModSounds.DUST.get(), SoundSource.PLAYERS, 0.33f, 1.0f + (float)level.random.nextGaussian() * 0.05f);
+            level.playSound(player, pos, ModSounds.DUST.get(), SoundSource.PLAYERS, 0.33f, 1.0f + (float)level.getRandom().nextGaussian() * 0.05f);
         }
 
         // Calculate positions for sparkles

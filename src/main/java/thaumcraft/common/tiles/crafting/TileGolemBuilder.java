@@ -100,7 +100,7 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
             if (tile.pressAnimation >= 60) {
                 level.playLocalSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 0.66f, 
-                        1.0f + level.random.nextFloat() * 0.1f, false);
+                        1.0f + level.getRandom().nextFloat() * 0.1f, false);
             }
         }
         

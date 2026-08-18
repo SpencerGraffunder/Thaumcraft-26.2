@@ -122,9 +122,9 @@ public class TileFluxScrubber extends TileThaumcraft implements IEssentiaTranspo
                 storedFlux += (int) Math.ceil(drained);
                 
                 // Play scrubbing sound occasionally
-                if (level.random.nextInt(5) == 0) {
+                if (level.getRandom().nextInt(5) == 0) {
                     level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP,
-                            SoundSource.BLOCKS, 0.3f, 0.5f + level.random.nextFloat() * 0.3f);
+                            SoundSource.BLOCKS, 0.3f, 0.5f + level.getRandom().nextFloat() * 0.3f);
                 }
                 
                 markDirtyAndSync();

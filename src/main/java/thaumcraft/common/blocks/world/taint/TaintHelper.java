@@ -116,7 +116,7 @@ public class TaintHelper {
         
         // Rate limiting based on flux saturation
         float mod = 0.001f + AuraHandler.getFluxSaturation(level, pos) * 2.0f;
-        if (!ignore && level.random.nextFloat() > ModConfig.taintSpreadRate / 100.0f * mod) {
+        if (!ignore && level.getRandom().nextFloat() > ModConfig.taintSpreadRate / 100.0f * mod) {
             return;
         }
         
@@ -125,9 +125,9 @@ public class TaintHelper {
         }
         
         // Pick a random adjacent block
-        int xx = pos.getX() + level.random.nextInt(3) - 1;
-        int yy = pos.getY() + level.random.nextInt(3) - 1;
-        int zz = pos.getZ() + level.random.nextInt(3) - 1;
+        int xx = pos.getX() + level.getRandom().nextInt(3) - 1;
+        int yy = pos.getY() + level.getRandom().nextInt(3) - 1;
+        int zz = pos.getZ() + level.getRandom().nextInt(3) - 1;
         BlockPos target = new BlockPos(xx, yy, zz);
         
         if (target.equals(pos)) {
@@ -170,7 +170,7 @@ public class TaintHelper {
             if (face == null && ModBlocks.TAINT_LOG != null) {
                 face = BlockUtils.getFaceBlockTouching(level, target, ModBlocks.TAINT_LOG.get());
             }
-            if (level.random.nextFloat() < 0.6 && face != null && ModBlocks.TAINT_FEATURE != null) {
+            if (level.getRandom().nextFloat() < 0.6 && face != null && ModBlocks.TAINT_FEATURE != null) {
                 // Convert to taint feature with facing
                 level.setBlockAndUpdate(target, ModBlocks.TAINT_FEATURE.get().defaultBlockState()
                         .setValue(BlockTaintFeature.FACING, face));

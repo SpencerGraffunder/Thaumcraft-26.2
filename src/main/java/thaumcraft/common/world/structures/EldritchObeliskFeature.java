@@ -32,7 +32,7 @@ public class EldritchObeliskFeature extends Feature<NoneFeatureConfiguration> {
     @Override
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
-        RandomSource random = context.random();
+        RandomSource random = context.getRandom()();
         BlockPos origin = context.origin();
         
         // Find solid ground

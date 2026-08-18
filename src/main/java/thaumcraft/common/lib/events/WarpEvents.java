@@ -43,7 +43,7 @@ import java.util.List;
  * API changes:
  * - EntityPlayer -> Player
  * - EntityPlayerMP -> ServerPlayer
- * - world.rand -> level.random
+ * - world.rand -> level.getRandom()
  * - world.spawnEntity -> level.addFreshEntity
  * - player.sendStatusMessage -> player.displayClientMessage
  * - I18n.translateToLocal -> Component.translatable
@@ -132,11 +132,11 @@ public class WarpEvents {
                     SoundSource.AMBIENT, 1.0f, 0.5f);
         } else if (eff <= 8) {
             // Random explosion sound nearby
-            double rx = player.getX() + (level.random.nextFloat() - level.random.nextFloat()) * 10.0f;
-            double ry = player.getY() + (level.random.nextFloat() - level.random.nextFloat()) * 10.0f;
-            double rz = player.getZ() + (level.random.nextFloat() - level.random.nextFloat()) * 10.0f;
+            double rx = player.getX() + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 10.0f;
+            double ry = player.getY() + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 10.0f;
+            double rz = player.getZ() + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 10.0f;
             level.playSound(null, rx, ry, rz, SoundEvents.GENERIC_EXPLODE, 
-                    SoundSource.AMBIENT, 4.0f, (1.0f + (level.random.nextFloat() - level.random.nextFloat()) * 0.2f) * 0.7f);
+                    SoundSource.AMBIENT, 4.0f, (1.0f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2f) * 0.7f);
         } else if (eff <= 12) {
             // Creepy message
             player.displayClientMessage(Component.literal("§5§o" + getWarpText(11)), true);
@@ -270,9 +270,9 @@ public class WarpEvents {
         int k = Mth.floor(player.getZ());
         
         for (int l = 0; l < 50; ++l) {
-            int i2 = i + Mth.nextInt(level.random, 7, 24) * Mth.nextInt(level.random, -1, 1);
-            int j2 = j + Mth.nextInt(level.random, 7, 24) * Mth.nextInt(level.random, -1, 1);
-            int k2 = k + Mth.nextInt(level.random, 7, 24) * Mth.nextInt(level.random, -1, 1);
+            int i2 = i + Mth.nextInt(level.getRandom(), 7, 24) * Mth.nextInt(level.getRandom(), -1, 1);
+            int j2 = j + Mth.nextInt(level.getRandom(), 7, 24) * Mth.nextInt(level.getRandom(), -1, 1);
+            int k2 = k + Mth.nextInt(level.getRandom(), 7, 24) * Mth.nextInt(level.getRandom(), -1, 1);
             
             BlockPos pos = new BlockPos(i2, j2, k2);
             portal.setPos(i2 + 0.5, j2 + 1.0, k2 + 0.5);
@@ -304,9 +304,9 @@ public class WarpEvents {
         int k = Mth.floor(player.getZ());
         
         for (int l = 0; l < 50; ++l) {
-            int i2 = i + Mth.nextInt(level.random, 7, 24) * Mth.nextInt(level.random, -1, 1);
-            int j2 = j + Mth.nextInt(level.random, 7, 24) * Mth.nextInt(level.random, -1, 1);
-            int k2 = k + Mth.nextInt(level.random, 7, 24) * Mth.nextInt(level.random, -1, 1);
+            int i2 = i + Mth.nextInt(level.getRandom(), 7, 24) * Mth.nextInt(level.getRandom(), -1, 1);
+            int j2 = j + Mth.nextInt(level.getRandom(), 7, 24) * Mth.nextInt(level.getRandom(), -1, 1);
+            int k2 = k + Mth.nextInt(level.getRandom(), 7, 24) * Mth.nextInt(level.getRandom(), -1, 1);
             
             BlockPos pos = new BlockPos(i2, j2, k2);
             
@@ -340,9 +340,9 @@ public class WarpEvents {
             boolean success = false;
             
             for (int l = 0; l < 50; ++l) {
-                int i2 = i + Mth.nextInt(level.random, 7, 24) * Mth.nextInt(level.random, -1, 1);
-                int j2 = j + Mth.nextInt(level.random, 7, 24) * Mth.nextInt(level.random, -1, 1);
-                int k2 = k + Mth.nextInt(level.random, 7, 24) * Mth.nextInt(level.random, -1, 1);
+                int i2 = i + Mth.nextInt(level.getRandom(), 7, 24) * Mth.nextInt(level.getRandom(), -1, 1);
+                int j2 = j + Mth.nextInt(level.getRandom(), 7, 24) * Mth.nextInt(level.getRandom(), -1, 1);
+                int k2 = k + Mth.nextInt(level.getRandom(), 7, 24) * Mth.nextInt(level.getRandom(), -1, 1);
                 
                 BlockPos pos = new BlockPos(i2, j2, k2);
                 

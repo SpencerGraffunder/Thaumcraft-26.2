@@ -47,13 +47,13 @@ public class FXSwarmRunes extends ThaumcraftParticle {
         this.endG = g;
         this.endB = b;
         
-        this.quadSize = this.random.nextFloat() * 0.5f + 1.0f;
+        this.quadSize = this.getRandom().nextFloat() * 0.5f + 1.0f;
         this.target = target;
         
         float f3 = 0.2f;
-        this.xd = (this.random.nextFloat() - this.random.nextFloat()) * f3;
-        this.yd = (this.random.nextFloat() - this.random.nextFloat()) * f3;
-        this.zd = (this.random.nextFloat() - this.random.nextFloat()) * f3;
+        this.xd = (this.getRandom().nextFloat() - this.getRandom().nextFloat()) * f3;
+        this.yd = (this.getRandom().nextFloat() - this.getRandom().nextFloat()) * f3;
+        this.zd = (this.getRandom().nextFloat() - this.getRandom().nextFloat()) * f3;
         
         this.gravity = 0.1f;
         this.lifetime = 250;
@@ -67,7 +67,7 @@ public class FXSwarmRunes extends ThaumcraftParticle {
         this.speed = sp;
         this.turnSpeed = ts;
         this.gravity = pg;
-        this.particle = this.random.nextInt(16);
+        this.particle = this.getRandom().nextInt(16);
     }
     
     @Override
@@ -116,14 +116,14 @@ public class FXSwarmRunes extends ThaumcraftParticle {
             double targetWidth = target.getBbWidth();
             
             if (distSq > targetWidth * targetWidth && !hurt) {
-                faceEntity(target, turnSpeed / 2.0f + this.random.nextInt((int)(turnSpeed / 2.0f)), 
-                          turnSpeed / 2.0f + this.random.nextInt((int)(turnSpeed / 2.0f)));
+                faceEntity(target, turnSpeed / 2.0f + this.getRandom().nextInt((int)(turnSpeed / 2.0f)), 
+                          turnSpeed / 2.0f + this.getRandom().nextInt((int)(turnSpeed / 2.0f)));
             } else {
                 if (hurt && distSq < targetWidth * targetWidth) {
                     this.age += 100;
                 }
-                faceEntity(target, -(turnSpeed / 2.0f + this.random.nextInt((int)(turnSpeed / 2.0f))), 
-                          -(turnSpeed / 2.0f + this.random.nextInt((int)(turnSpeed / 2.0f))));
+                faceEntity(target, -(turnSpeed / 2.0f + this.getRandom().nextInt((int)(turnSpeed / 2.0f))), 
+                          -(turnSpeed / 2.0f + this.getRandom().nextInt((int)(turnSpeed / 2.0f))));
             }
             
             this.xd = -Mth.sin(rotationYaw / 180.0f * (float)Math.PI) * Mth.cos(rotationPitch / 180.0f * (float)Math.PI);
@@ -156,9 +156,9 @@ public class FXSwarmRunes extends ThaumcraftParticle {
         vx /= len;
         vy /= len;
         vz /= len;
-        vx += this.random.nextGaussian() * (this.random.nextBoolean() ? -1 : 1) * 0.0075 * spread;
-        vy += this.random.nextGaussian() * (this.random.nextBoolean() ? -1 : 1) * 0.0075 * spread;
-        vz += this.random.nextGaussian() * (this.random.nextBoolean() ? -1 : 1) * 0.0075 * spread;
+        vx += this.getRandom().nextGaussian() * (this.getRandom().nextBoolean() ? -1 : 1) * 0.0075 * spread;
+        vy += this.getRandom().nextGaussian() * (this.getRandom().nextBoolean() ? -1 : 1) * 0.0075 * spread;
+        vz += this.getRandom().nextGaussian() * (this.getRandom().nextBoolean() ? -1 : 1) * 0.0075 * spread;
         this.xd = vx * speed;
         this.yd = vy * speed;
         this.zd = vz * speed;

@@ -95,9 +95,9 @@ public class PacketFXFocusEffect {
             if (element instanceof FocusEffect effect) {
                 for (int i = 0; i < amount; i++) {
                     // Add some randomness to the motion
-                    double mx = packet.motionX + level.random.nextGaussian() / 20.0;
-                    double my = packet.motionY + level.random.nextGaussian() / 20.0;
-                    double mz = packet.motionZ + level.random.nextGaussian() / 20.0;
+                    double mx = packet.motionX + level.getRandom().nextGaussian() / 20.0;
+                    double my = packet.motionY + level.getRandom().nextGaussian() / 20.0;
+                    double mz = packet.motionZ + level.getRandom().nextGaussian() / 20.0;
                     
                     effect.renderParticleFX(level, packet.x, packet.y, packet.z, mx, my, mz);
                 }

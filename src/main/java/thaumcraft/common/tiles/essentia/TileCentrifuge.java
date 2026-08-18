@@ -173,7 +173,7 @@ public class TileCentrifuge extends TileThaumcraft implements IAspectContainer, 
 
             // Play sound
             level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS,
-                    0.2f, 1.0f + (level.random.nextFloat() - level.random.nextFloat()) * 0.2f);
+                    0.2f, 1.0f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2f);
 
             markDirtyAndSync();
         }

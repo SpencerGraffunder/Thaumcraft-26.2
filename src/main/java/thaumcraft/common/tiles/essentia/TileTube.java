@@ -112,7 +112,7 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
         }
 
         if (tile.count == 0) {
-            tile.count = level.random.nextInt(10);
+            tile.count = level.getRandom().nextInt(10);
         }
 
         if (tile.venting <= 0) {
@@ -257,7 +257,7 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
                     int added = addEssentia(toPull, taken, dir);
                     if (added > 0) {
                         // Play creak sound occasionally
-                        if (level.random.nextInt(100) == 0) {
+                        if (level.getRandom().nextInt(100) == 0) {
                             level.blockEvent(worldPosition, getBlockState().getBlock(), 0, 0);
                         }
                         return;
@@ -352,7 +352,7 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
                 level.playLocalSound(
                         worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
                         SoundEvents.WOOD_STEP, SoundSource.BLOCKS,
-                        1.0f, 1.3f + level.random.nextFloat() * 0.2f, false
+                        1.0f, 1.3f + level.getRandom().nextFloat() * 0.2f, false
                 );
             }
             return true;
@@ -364,7 +364,7 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
                     level.playLocalSound(
                             worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
                             SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS,
-                            0.1f, 1.0f + level.random.nextFloat() * 0.1f, false
+                            0.1f, 1.0f + level.getRandom().nextFloat() * 0.1f, false
                     );
                 }
                 venting = 50;

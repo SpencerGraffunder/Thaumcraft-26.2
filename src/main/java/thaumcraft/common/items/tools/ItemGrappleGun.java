@@ -77,7 +77,7 @@ public class ItemGrappleGun extends Item implements IRechargable {
         ItemStack stack = player.getItemInHand(hand);
 
         // Play sound
-        player.playSound(SoundEvents.GLASS_BREAK, 3.0f, 0.8f + level.random.nextFloat() * 0.1f);
+        player.playSound(SoundEvents.GLASS_BREAK, 3.0f, 0.8f + level.getRandom().nextFloat() * 0.1f);
 
         if (!level.isClientSide() && RechargeHelper.getCharge(stack) > 0) {
             // TODO: Spawn EntityGrapple projectile

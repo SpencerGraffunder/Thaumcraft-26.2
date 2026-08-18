@@ -34,7 +34,7 @@ public class ItemAlumentum extends Item {
         // Play throw sound
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.EGG_THROW, SoundSource.PLAYERS,
-                0.3f, 0.4f / (level.random.nextFloat() * 0.4f + 0.8f));
+                0.3f, 0.4f / (level.getRandom().nextFloat() * 0.4f + 0.8f));
         
         // Spawn projectile on server
         if (!level.isClientSide) {

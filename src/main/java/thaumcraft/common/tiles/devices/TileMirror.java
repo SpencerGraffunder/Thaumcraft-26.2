@@ -319,7 +319,7 @@ public class TileMirror extends TileThaumcraft implements Container {
     private void ejectItems() {
         if (outputStacks.isEmpty() || count <= 20) return;
         
-        int index = level.random.nextInt(outputStacks.size());
+        int index = level.getRandom().nextInt(outputStacks.size());
         ItemStack stack = outputStacks.get(index);
         
         if (stack.isEmpty()) {

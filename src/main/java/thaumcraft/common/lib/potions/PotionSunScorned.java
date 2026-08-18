@@ -33,12 +33,12 @@ public class PotionSunScorned extends MobEffect {
         
         // In bright light with sky visibility - burn
         if (brightness > 0.5f 
-                && level.random.nextFloat() * 30.0f < (brightness - 0.4f) * 2.0f 
+                && level.getRandom().nextFloat() * 30.0f < (brightness - 0.4f) * 2.0f 
                 && level.canSeeSky(pos)) {
             target.setSecondsOnFire(4);
         }
         // In darkness - heal
-        else if (brightness < 0.25f && level.random.nextFloat() > brightness * 2.0f) {
+        else if (brightness < 0.25f && level.getRandom().nextFloat() > brightness * 2.0f) {
             target.heal(1.0f);
         }
     }

@@ -134,7 +134,7 @@ public class TileJarBrain extends TileThaumcraft {
                 // Play collection sound
                 level.playSound(null, worldPosition, SoundEvents.EXPERIENCE_ORB_PICKUP,
                         SoundSource.BLOCKS, 0.1f, 
-                        0.5f * ((level.random.nextFloat() - level.random.nextFloat()) * 0.7f + 1.8f));
+                        0.5f * ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7f + 1.8f));
 
                 // Only collect one orb per tick cycle
                 break;

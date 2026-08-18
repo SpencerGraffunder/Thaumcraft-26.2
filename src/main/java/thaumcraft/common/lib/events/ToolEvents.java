@@ -467,11 +467,11 @@ public class ToolEvents {
                 int enchantLevel = EnumInfusionEnchantment.getInfusionEnchantmentLevel(heldItem, EnumInfusionEnchantment.ESSENCE);
                 
                 // Chance to start dropping crystals
-                int b = (level.random.nextInt(5) < enchantLevel) ? 0 : 99;
+                int b = (level.getRandom().nextInt(5) < enchantLevel) ? 0 : 99;
                 
                 Aspect[] aspectArray = workingAspects.getAspects();
                 while (b < enchantLevel && aspectArray != null && aspectArray.length > 0) {
-                    Aspect aspect = aspectArray[level.random.nextInt(aspectArray.length)];
+                    Aspect aspect = aspectArray[level.getRandom().nextInt(aspectArray.length)];
                     
                     if (workingAspects.getAmount(aspect) > 0) {
                         workingAspects.remove(aspect, 1);
@@ -504,11 +504,11 @@ public class ToolEvents {
                     aspectArray = workingAspects.getAspects();
                     
                     // Random chance to stop early
-                    if (level.random.nextInt(enchantLevel) == 0) {
+                    if (level.getRandom().nextInt(enchantLevel) == 0) {
                         break;
                     }
                     
-                    b += 1 + level.random.nextInt(2);
+                    b += 1 + level.getRandom().nextInt(2);
                 }
             }
         }

@@ -113,7 +113,7 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
                     golem.setFollowingOwner(!golem.isFollowingOwner());
                 }
                 level.playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_BELL.get(), 
-                        SoundSource.BLOCKS, 0.6f, 1.0f + level.random.nextFloat() * 0.1f);
+                        SoundSource.BLOCKS, 0.6f, 1.0f + level.getRandom().nextFloat() * 0.1f);
                 return InteractionResult.SUCCESS;
             }
             
@@ -123,7 +123,7 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
             }
         } else {
             // Client side - play bell sound
-            player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.6f, 1.0f + level.random.nextFloat() * 0.1f);
+            player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.6f, 1.0f + level.getRandom().nextFloat() * 0.1f);
         }
         
         return super.use(level, player, hand);

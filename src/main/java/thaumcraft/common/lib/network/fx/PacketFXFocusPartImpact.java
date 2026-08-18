@@ -76,7 +76,7 @@ public class PacketFXFocusPartImpact {
         
         String[] partKeys = packet.parts.split("%");
         int amount = Math.max(1, 15 / partKeys.length);
-        RandomSource rand = level.random;
+        RandomSource rand = level.getRandom();
         
         for (String key : partKeys) {
             IFocusElement element = FocusEngine.getElement(key);

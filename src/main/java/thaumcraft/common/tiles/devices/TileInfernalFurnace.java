@@ -100,7 +100,7 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
                         level.blockEvent(pos, state.getBlock(), 3, 0);
                         
                         // Chance to pollute aura
-                        if (level.random.nextInt(20) == 0) {
+                        if (level.getRandom().nextInt(20) == 0) {
                             Direction facing = tile.getFacing(state);
                             if (facing != null) {
                                 AuraHelper.polluteAura(level, pos.relative(facing.getOpposite()), 1.0f, true);
@@ -223,7 +223,7 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
         if (level == null) return;
         level.playSound(null, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
                 SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 0.3f, 
-                2.6f + (level.random.nextFloat() - level.random.nextFloat()) * 0.8f);
+                2.6f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.8f);
     }
     
     public void ejectItem(ItemStack items, ItemStack inputStack) {
@@ -282,7 +282,7 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
             count = 0;
         } else if (xpf < 1.0f) {
             int xpAmount = Mth.floor(count * xpf);
-            if (xpAmount < Mth.ceil(count * xpf) && level.random.nextFloat() < count * xpf - xpAmount) {
+            if (xpAmount < Mth.ceil(count * xpf) && level.getRandom().nextFloat() < count * xpf - xpAmount) {
                 xpAmount++;
             }
             count = xpAmount;
@@ -300,10 +300,10 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
             
             ExperienceOrb xp = new ExperienceOrb(level, lx, worldPosition.getY() + 0.4, lz, xpValue);
             float mx = facing.getOpposite().getStepX() == 0 ? 
-                    (level.random.nextFloat() - level.random.nextFloat()) * 0.025f : 
+                    (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.025f : 
                     facing.getOpposite().getStepX() * 0.13f;
             float mz = facing.getOpposite().getStepZ() == 0 ? 
-                    (level.random.nextFloat() - level.random.nextFloat()) * 0.025f : 
+                    (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.025f : 
                     facing.getOpposite().getStepZ() * 0.13f;
             xp.setDeltaMovement(mx, 0, mz);
             level.addFreshEntity(xp);
@@ -348,8 +348,8 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
                 // FXDispatcher.INSTANCE.furnaceLavaFx(...)
                 level.playLocalSound(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
                         SoundEvents.LAVA_POP, SoundSource.BLOCKS,
-                        0.1f + level.random.nextFloat() * 0.1f,
-                        0.9f + level.random.nextFloat() * 0.15f, false);
+                        0.1f + level.getRandom().nextFloat() * 0.1f,
+                        0.9f + level.getRandom().nextFloat() * 0.15f, false);
             }
             return true;
         }

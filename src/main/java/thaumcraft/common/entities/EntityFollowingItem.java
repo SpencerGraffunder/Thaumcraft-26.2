@@ -41,7 +41,7 @@ public class EntityFollowingItem extends EntitySpecialItem implements IEntityAdd
         this(ModEntities.FOLLOWING_ITEM.get(), level);
         this.setPos(x, y, z);
         this.setItem(stack);
-        this.setYRot((float)(Math.random() * 360.0));
+        this.setYRot((float)(Math.getRandom()() * 360.0));
     }
     
     /**

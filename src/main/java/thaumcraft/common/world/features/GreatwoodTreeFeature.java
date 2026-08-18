@@ -57,7 +57,7 @@ public class GreatwoodTreeFeature extends Feature<NoneFeatureConfiguration> {
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
         BlockPos pos = context.origin();
-        RandomSource random = context.random();
+        RandomSource random = context.getRandom()();
         
         // 1 in 8 chance for spider variant
         boolean spiders = random.nextInt(8) == 0;

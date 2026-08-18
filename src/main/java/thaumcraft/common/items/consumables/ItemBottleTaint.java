@@ -29,7 +29,7 @@ public class ItemBottleTaint extends Item {
 
         // Play throw sound
         player.playSound(SoundEvents.EGG_THROW, 0.5f,
-                0.4f / (level.random.nextFloat() * 0.4f + 0.8f));
+                0.4f / (level.getRandom().nextFloat() * 0.4f + 0.8f));
 
         if (!level.isClientSide()) {
             // TODO: Spawn EntityBottleTaint projectile

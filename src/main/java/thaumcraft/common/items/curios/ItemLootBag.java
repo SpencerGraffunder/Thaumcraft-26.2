@@ -70,7 +70,7 @@ public class ItemLootBag extends Item {
 
         if (!level.isClientSide()) {
             // Generate random loot based on tier
-            int itemCount = 8 + level.random.nextInt(5);
+            int itemCount = 8 + level.getRandom().nextInt(5);
             
             for (int i = 0; i < itemCount; i++) {
                 ItemStack loot = generateLoot(level, tier);

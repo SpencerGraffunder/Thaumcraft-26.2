@@ -95,9 +95,9 @@ public class FocusEffectFire extends FocusEffect {
             if (getSettingValue("duration") > 0) {
                 BlockPos pos = blockHit.getBlockPos().relative(blockHit.getDirection());
                 
-                if (world.isEmptyBlock(pos) && world.random.nextFloat() < finalPower) {
+                if (world.isEmptyBlock(pos) && world.getRandom().nextFloat() < finalPower) {
                     world.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 
-                            1.0f, world.random.nextFloat() * 0.4f + 0.8f);
+                            1.0f, world.getRandom().nextFloat() * 0.4f + 0.8f);
                     world.setBlock(pos, Blocks.FIRE.defaultBlockState(), 11);
                     return true;
                 }

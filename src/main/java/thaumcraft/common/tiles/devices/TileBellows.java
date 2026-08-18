@@ -42,7 +42,7 @@ public class TileBellows extends TileThaumcraft {
         if (!isEnabled(state)) return;
 
         if (tile.firstRun) {
-            tile.inflation = 0.35f + level.random.nextFloat() * 0.55f;
+            tile.inflation = 0.35f + level.getRandom().nextFloat() * 0.55f;
             tile.firstRun = false;
         }
 
@@ -63,7 +63,7 @@ public class TileBellows extends TileThaumcraft {
             level.playLocalSound(
                     pos.getX(), pos.getY(), pos.getZ(),
                     SoundEvents.GHAST_SHOOT, SoundSource.BLOCKS,
-                    0.01f, 0.5f + (level.random.nextFloat() - level.random.nextFloat()) * 0.2f,
+                    0.01f, 0.5f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2f,
                     false
             );
         }

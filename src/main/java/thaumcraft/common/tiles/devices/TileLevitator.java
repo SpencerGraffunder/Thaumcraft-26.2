@@ -174,10 +174,10 @@ public class TileLevitator extends TileThaumcraft {
     }
     
     private void drawFX(Direction facing, double chance) {
-        if (level.isClientSide && level.random.nextFloat() < chance) {
-            float x = worldPosition.getX() + 0.25f + level.random.nextFloat() * 0.5f;
-            float y = worldPosition.getY() + 0.25f + level.random.nextFloat() * 0.5f;
-            float z = worldPosition.getZ() + 0.25f + level.random.nextFloat() * 0.5f;
+        if (level.isClientSide && level.getRandom().nextFloat() < chance) {
+            float x = worldPosition.getX() + 0.25f + level.getRandom().nextFloat() * 0.5f;
+            float y = worldPosition.getY() + 0.25f + level.getRandom().nextFloat() * 0.5f;
+            float z = worldPosition.getZ() + 0.25f + level.getRandom().nextFloat() * 0.5f;
             FXDispatcher.INSTANCE.drawLevitatorParticles(x, y, z,
                     facing.getStepX() / 50.0,
                     facing.getStepY() / 50.0,
@@ -186,14 +186,14 @@ public class TileLevitator extends TileThaumcraft {
     }
     
     private void drawFXAt(Entity entity) {
-        if (level.isClientSide && level.random.nextFloat() < 0.1f) {
-            float x = (float)(entity.getX() + (level.random.nextFloat() - level.random.nextFloat()) * entity.getBbWidth());
-            float y = (float)(entity.getY() + level.random.nextFloat() * entity.getBbHeight());
-            float z = (float)(entity.getZ() + (level.random.nextFloat() - level.random.nextFloat()) * entity.getBbWidth());
+        if (level.isClientSide && level.getRandom().nextFloat() < 0.1f) {
+            float x = (float)(entity.getX() + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * entity.getBbWidth());
+            float y = (float)(entity.getY() + level.getRandom().nextFloat() * entity.getBbHeight());
+            float z = (float)(entity.getZ() + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * entity.getBbWidth());
             FXDispatcher.INSTANCE.drawLevitatorParticles(x, y, z,
-                    (level.random.nextFloat() - level.random.nextFloat()) * 0.01,
-                    (level.random.nextFloat() - level.random.nextFloat()) * 0.01,
-                    (level.random.nextFloat() - level.random.nextFloat()) * 0.01);
+                    (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.01,
+                    (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.01,
+                    (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.01);
         }
     }
     

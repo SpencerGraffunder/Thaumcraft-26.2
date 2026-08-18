@@ -165,7 +165,7 @@ public class TileHungryChest extends TileThaumcraft implements Container {
     private void playPickupSound() {
         if (level != null) {
             level.playSound(null, worldPosition, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.2f, 
-                    0.8f + level.random.nextFloat() * 0.4f);
+                    0.8f + level.getRandom().nextFloat() * 0.4f);
         }
     }
 

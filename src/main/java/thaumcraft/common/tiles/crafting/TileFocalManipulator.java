@@ -181,7 +181,7 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
         tile.ticks++;
         
         // Visual effects during crafting
-        if (tile.vis > 0.0f && level.random.nextFloat() < 0.5f) {
+        if (tile.vis > 0.0f && level.getRandom().nextFloat() < 0.5f) {
             // TODO: Add particle effects when FX system is ported
             // FXDispatcher.INSTANCE.drawGenericParticles(...)
         }

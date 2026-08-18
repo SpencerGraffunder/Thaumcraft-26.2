@@ -34,9 +34,9 @@ public class TileLampArcane extends TileThaumcraft {
         if (tile.gettingPower()) return;
 
         // Pick a random position in range
-        int x = level.random.nextInt(RANGE * 2 + 1) - RANGE;
-        int y = level.random.nextInt(RANGE * 2 + 1) - RANGE;
-        int z = level.random.nextInt(RANGE * 2 + 1) - RANGE;
+        int x = level.getRandom().nextInt(RANGE * 2 + 1) - RANGE;
+        int y = level.getRandom().nextInt(RANGE * 2 + 1) - RANGE;
+        int z = level.getRandom().nextInt(RANGE * 2 + 1) - RANGE;
 
         BlockPos targetPos = pos.offset(x, y, z);
 

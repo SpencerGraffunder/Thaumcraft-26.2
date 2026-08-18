@@ -87,7 +87,7 @@ public class BlockWaterJug extends Block implements EntityBlock {
             tile.setChanged();
             tile.syncTile(false);
             level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 
-                    0.33f, 1.0f + (level.random.nextFloat() - level.random.nextFloat()) * 0.3f);
+                    0.33f, 1.0f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.3f);
             return InteractionResult.CONSUME;
         }
 
@@ -109,7 +109,7 @@ public class BlockWaterJug extends Block implements EntityBlock {
             tile.setChanged();
             tile.syncTile(false);
             level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 
-                    0.33f, 1.0f + (level.random.nextFloat() - level.random.nextFloat()) * 0.3f);
+                    0.33f, 1.0f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.3f);
             return InteractionResult.CONSUME;
         }
 

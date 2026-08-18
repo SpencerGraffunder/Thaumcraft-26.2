@@ -233,7 +233,7 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
             for (int i = 0; i < amount; i++) {
                 // Flux has worse efficiency
                 float effectiveEfficiency = (aspect == Aspect.FLUX) ? efficiency * 0.66f : efficiency;
-                if (level.random.nextFloat() > effectiveEfficiency) {
+                if (level.getRandom().nextFloat() > effectiveEfficiency) {
                     flux++;
                 } else {
                     aspects.add(aspect, 1);

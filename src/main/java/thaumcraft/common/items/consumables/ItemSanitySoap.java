@@ -54,10 +54,10 @@ public class ItemSanitySoap extends Item {
 
         // Play scrubbing sounds and particles on client
         if (level.isClientSide()) {
-            if (level.random.nextFloat() < 0.2f) {
+            if (level.getRandom().nextFloat() < 0.2f) {
                 level.playLocalSound(entity.getX(), entity.getY(), entity.getZ(),
                         SoundEvents.CHORUS_FLOWER_DEATH, SoundSource.PLAYERS,
-                        0.1f, 1.5f + level.random.nextFloat() * 0.2f, false);
+                        0.1f, 1.5f + level.getRandom().nextFloat() * 0.2f, false);
             }
             // TODO: Add bubble particles (FXDispatcher.crucibleBubble)
         }

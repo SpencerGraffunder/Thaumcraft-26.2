@@ -129,7 +129,7 @@ public class ItemElementalShovel extends ShovelItem {
                         // Play sound
                         SoundType soundType = clickedBlock.getSoundType(clickedState, level, targetPos, player);
                         level.playSound(player, targetPos, soundType.getPlaceSound(), SoundSource.BLOCKS, 
-                                0.6f, 0.9f + level.random.nextFloat() * 0.2f);
+                                0.6f, 0.9f + level.getRandom().nextFloat() * 0.2f);
                         
                         // Place the block
                         level.setBlock(targetPos, clickedState, Block.UPDATE_ALL);
@@ -148,7 +148,7 @@ public class ItemElementalShovel extends ShovelItem {
                         if (player.isCreative() || consumeBlock(player, Blocks.DIRT, Blocks.DIRT.defaultBlockState())) {
                             SoundType soundType = Blocks.DIRT.getSoundType(Blocks.DIRT.defaultBlockState(), level, targetPos, player);
                             level.playSound(player, targetPos, soundType.getPlaceSound(), SoundSource.BLOCKS,
-                                    0.6f, 0.9f + level.random.nextFloat() * 0.2f);
+                                    0.6f, 0.9f + level.getRandom().nextFloat() * 0.2f);
                             level.setBlock(targetPos, Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
                             stack.hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(context.getHand()));
                             placedCount++;

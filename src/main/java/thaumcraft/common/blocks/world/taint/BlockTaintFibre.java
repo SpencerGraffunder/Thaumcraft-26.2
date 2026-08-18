@@ -178,7 +178,7 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
         // Apply flux taint to non-tainted living entities
         if (!level.isClientSide && entity instanceof LivingEntity living) {
             if (!(living instanceof ITaintedMob) && !living.isInvertedHealAndHarm()) {
-                if (level.random.nextInt(750) == 0) {
+                if (level.getRandom().nextInt(750) == 0) {
                     living.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), 200, 0, false, true));
                 }
             }
@@ -221,7 +221,7 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
     @Override
     public void die(Level level, BlockPos pos, BlockState state) {
         level.playSound(null, pos, SoundEvents.CHORUS_FLOWER_DEATH, SoundSource.BLOCKS, 
-                0.1f, 0.9f + level.random.nextFloat() * 0.2f);
+                0.1f, 0.9f + level.getRandom().nextFloat() * 0.2f);
         level.removeBlock(pos, false);
     }
     
@@ -233,7 +233,7 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
         if (state.getValue(HAS_CRYSTAL)) {
             int fortune = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
                     net.minecraft.world.item.enchantment.Enchantments.BLOCK_FORTUNE, tool);
-            if (level.random.nextInt(5) <= fortune) {
+            if (level.getRandom().nextInt(5) <= fortune) {
                 popResource(level, pos, new ItemStack(ModItems.FLUX_CRYSTAL.get()));
             }
             // Pollute aura when broken

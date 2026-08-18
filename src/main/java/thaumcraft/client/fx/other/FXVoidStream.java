@@ -71,7 +71,7 @@ public class FXVoidStream extends ThaumcraftParticle {
         this.zd = Mth.sin(seed / 2.0f) * 0.025;
         
         this.gravity = 0.2f;
-        this.quadSize = (float)(scale * (1.0 + this.random.nextGaussian() * 0.15));
+        this.quadSize = (float)(scale * (1.0 + this.getRandom().nextGaussian() * 0.15));
         
         // Initialize points
         this.points.add(new StreamPoint(0, 0, 0, 0.001f));
@@ -122,9 +122,9 @@ public class FXVoidStream extends ThaumcraftParticle {
         dz /= dist;
         
         double d13 = 0.01;
-        this.xd += dx * (d13 / Math.min(1.0, dist)) + this.random.nextGaussian() * 0.015;
-        this.yd += dy * (d13 / Math.min(1.0, dist)) + this.random.nextGaussian() * 0.015;
-        this.zd += dz * (d13 / Math.min(1.0, dist)) + this.random.nextGaussian() * 0.015;
+        this.xd += dx * (d13 / Math.min(1.0, dist)) + this.getRandom().nextGaussian() * 0.015;
+        this.yd += dy * (d13 / Math.min(1.0, dist)) + this.getRandom().nextGaussian() * 0.015;
+        this.zd += dz * (d13 / Math.min(1.0, dist)) + this.getRandom().nextGaussian() * 0.015;
         
         // Calculate scale with wave
         float scale = this.quadSize * (0.75f + Mth.sin((seed + this.age) / 2.0f) * 0.25f);

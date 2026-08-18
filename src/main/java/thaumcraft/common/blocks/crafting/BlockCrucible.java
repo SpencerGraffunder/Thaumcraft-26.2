@@ -105,7 +105,7 @@ public class BlockCrucible extends BlockTCDevice {
                         if (crucible.isHeated() && crucible.getTank().getFluidAmount() > 0) {
                             living.hurt(level.damageSources().inFire(), 1.0f);
                             level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 
-                                    0.4f, 2.0f + level.random.nextFloat() * 0.4f);
+                                    0.4f, 2.0f + level.getRandom().nextFloat() * 0.4f);
                         }
                     }
                 }

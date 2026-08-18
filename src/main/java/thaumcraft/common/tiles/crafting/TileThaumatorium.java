@@ -278,7 +278,7 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
 
         // Play completion sound
         level.playSound(null, worldPosition, SoundEvents.EXPERIENCE_ORB_PICKUP,
-                SoundSource.BLOCKS, 0.5f, 1.0f + level.random.nextFloat() * 0.2f);
+                SoundSource.BLOCKS, 0.5f, 1.0f + level.getRandom().nextFloat() * 0.2f);
     }
 
     /**

@@ -80,7 +80,7 @@ public class BlockEffect extends Block {
                 living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0, true, true));
             }
             // Small chance to disappear
-            if (level.random.nextInt(100) == 0) {
+            if (level.getRandom().nextInt(100) == 0) {
                 level.removeBlock(pos, false);
             }
         } else if (effectType == EffectType.SAP) {

@@ -45,7 +45,7 @@ public class FXBoreStream extends ThaumcraftParticle {
         this.quadSize = scale;
         this.lifetime = 10;
         this.gravity = 0;
-        this.rotationAngle = this.random.nextFloat() * 360.0f;
+        this.rotationAngle = this.getRandom().nextFloat() * 360.0f;
         this.noClip = true;
     }
     
