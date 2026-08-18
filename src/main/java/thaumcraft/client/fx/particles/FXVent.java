@@ -1,11 +1,8 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -21,7 +18,7 @@ import java.awt.Color;
  * Grows in size then fades out, with slight upward drift.
  */
 @OnlyIn(Dist.CLIENT)
-public class FXVent extends TextureSheetParticle {
+public class FXVent extends ThaumcraftParticle {
 
     protected float targetScale;
     protected static final int GRID_SIZE = 64;
@@ -142,7 +139,7 @@ public class FXVent extends TextureSheetParticle {
         // Alpha fades as it grows
         float displayAlpha = this.alpha * ((this.targetScale - this.quadSize) / this.targetScale);
 
-        int light = this.getLightColor(partialTicks);
+        int light = this.getLightCoords(partialTicks);
 
         Quaternionf quaternion = camera.rotation();
 

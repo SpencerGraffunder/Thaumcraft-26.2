@@ -5,8 +5,6 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -29,7 +27,7 @@ import org.joml.Matrix4f;
  * Ported from 1.12.2
  */
 @OnlyIn(Dist.CLIENT)
-public class FXPlane extends TextureSheetParticle {
+public class FXPlane extends ThaumcraftParticle {
     
     private static final Identifier PARTICLE_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/particles.png");
     

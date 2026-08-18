@@ -65,7 +65,7 @@ public class ModEntities {
     
     // ==================== Focus Projectile Entities ====================
     
-    public static final DeferredHolder<EntityType<EntityFocusProjectile>> FOCUS_PROJECTILE = 
+    public static final DeferredHolder<EntityType<EntityFocusProjectile>, EntityType<EntityFocusProjectile>> FOCUS_PROJECTILE = 
             ENTITY_TYPES.register("focus_projectile", () -> 
                 EntityType.Builder.<EntityFocusProjectile>of(EntityFocusProjectile::new, MobCategory.MISC)
                     .sized(0.15f, 0.15f)
@@ -73,7 +73,7 @@ public class ModEntities {
                     .updateInterval(10)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "focus_projectile").toString()));
     
-    public static final DeferredHolder<EntityType<EntityFocusCloud>> FOCUS_CLOUD = 
+    public static final DeferredHolder<EntityType<EntityFocusCloud>, EntityType<EntityFocusCloud>> FOCUS_CLOUD = 
             ENTITY_TYPES.register("focus_cloud", () -> 
                 EntityType.Builder.<EntityFocusCloud>of(EntityFocusCloud::new, MobCategory.MISC)
                     .sized(1.0f, 0.5f)
@@ -82,7 +82,7 @@ public class ModEntities {
                     .fireImmune()
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "focus_cloud").toString()));
     
-    public static final DeferredHolder<EntityType<EntityFocusMine>> FOCUS_MINE = 
+    public static final DeferredHolder<EntityType<EntityFocusMine>, EntityType<EntityFocusMine>> FOCUS_MINE = 
             ENTITY_TYPES.register("focus_mine", () -> 
                 EntityType.Builder.<EntityFocusMine>of(EntityFocusMine::new, MobCategory.MISC)
                     .sized(0.15f, 0.15f)
@@ -92,7 +92,7 @@ public class ModEntities {
     
     // ==================== Other Projectile Entities ====================
     
-    public static final DeferredHolder<EntityType<EntityAlumentum>> ALUMENTUM = 
+    public static final DeferredHolder<EntityType<EntityAlumentum>, EntityType<EntityAlumentum>> ALUMENTUM = 
             ENTITY_TYPES.register("alumentum", () -> 
                 EntityType.Builder.<EntityAlumentum>of(EntityAlumentum::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
@@ -100,7 +100,7 @@ public class ModEntities {
                     .updateInterval(10)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "alumentum").toString()));
     
-    public static final DeferredHolder<EntityType<EntityGrapple>> GRAPPLE = 
+    public static final DeferredHolder<EntityType<EntityGrapple>, EntityType<EntityGrapple>> GRAPPLE = 
             ENTITY_TYPES.register("grapple", () -> 
                 EntityType.Builder.<EntityGrapple>of(EntityGrapple::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f)
@@ -108,7 +108,7 @@ public class ModEntities {
                     .updateInterval(5)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "grapple").toString()));
     
-    public static final DeferredHolder<EntityType<EntityBottleTaint>> BOTTLE_TAINT = 
+    public static final DeferredHolder<EntityType<EntityBottleTaint>, EntityType<EntityBottleTaint>> BOTTLE_TAINT = 
             ENTITY_TYPES.register("bottle_taint", () -> 
                 EntityType.Builder.<EntityBottleTaint>of(EntityBottleTaint::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
@@ -116,7 +116,7 @@ public class ModEntities {
                     .updateInterval(10)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "bottle_taint").toString()));
     
-    public static final DeferredHolder<EntityType<EntityHomingShard>> HOMING_SHARD = 
+    public static final DeferredHolder<EntityType<EntityHomingShard>, EntityType<EntityHomingShard>> HOMING_SHARD = 
             ENTITY_TYPES.register("homing_shard", () -> 
                 EntityType.Builder.<EntityHomingShard>of(EntityHomingShard::new, MobCategory.MISC)
                     .sized(0.15f, 0.15f)
@@ -124,7 +124,7 @@ public class ModEntities {
                     .updateInterval(5)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "homing_shard").toString()));
     
-    public static final DeferredHolder<EntityType<EntityGolemDart>> GOLEM_DART = 
+    public static final DeferredHolder<EntityType<EntityGolemDart>, EntityType<EntityGolemDart>> GOLEM_DART = 
             ENTITY_TYPES.register("golem_dart", () -> 
                 EntityType.Builder.<EntityGolemDart>of(EntityGolemDart::new, MobCategory.MISC)
                     .sized(0.2f, 0.2f)
@@ -132,7 +132,7 @@ public class ModEntities {
                     .updateInterval(20)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "golem_dart").toString()));
     
-    public static final DeferredHolder<EntityType<EntityGolemOrb>> GOLEM_ORB = 
+    public static final DeferredHolder<EntityType<EntityGolemOrb>, EntityType<EntityGolemOrb>> GOLEM_ORB = 
             ENTITY_TYPES.register("golem_orb", () -> 
                 EntityType.Builder.<EntityGolemOrb>of(EntityGolemOrb::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
@@ -140,7 +140,7 @@ public class ModEntities {
                     .updateInterval(5)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "golem_orb").toString()));
     
-    public static final DeferredHolder<EntityType<EntityEldritchOrb>> ELDRITCH_ORB = 
+    public static final DeferredHolder<EntityType<EntityEldritchOrb>, EntityType<EntityEldritchOrb>> ELDRITCH_ORB = 
             ENTITY_TYPES.register("eldritch_orb", () -> 
                 EntityType.Builder.<EntityEldritchOrb>of(EntityEldritchOrb::new, MobCategory.MISC)
                     .sized(0.5f, 0.5f)
@@ -148,7 +148,7 @@ public class ModEntities {
                     .updateInterval(5)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_orb").toString()));
     
-    public static final DeferredHolder<EntityType<EntityCausalityCollapser>> CAUSALITY_COLLAPSER = 
+    public static final DeferredHolder<EntityType<EntityCausalityCollapser>, EntityType<EntityCausalityCollapser>> CAUSALITY_COLLAPSER = 
             ENTITY_TYPES.register("causality_collapser", () -> 
                 EntityType.Builder.<EntityCausalityCollapser>of(EntityCausalityCollapser::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
@@ -156,7 +156,7 @@ public class ModEntities {
                     .updateInterval(10)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "causality_collapser").toString()));
     
-    public static final DeferredHolder<EntityType<EntityRiftBlast>> RIFT_BLAST = 
+    public static final DeferredHolder<EntityType<EntityRiftBlast>, EntityType<EntityRiftBlast>> RIFT_BLAST = 
             ENTITY_TYPES.register("rift_blast", () -> 
                 EntityType.Builder.<EntityRiftBlast>of(EntityRiftBlast::new, MobCategory.MISC)
                     .sized(0.3f, 0.3f)
@@ -166,7 +166,7 @@ public class ModEntities {
     
     // ==================== Monster Entities ====================
     
-    public static final DeferredHolder<EntityType<EntityWisp>> WISP = 
+    public static final DeferredHolder<EntityType<EntityWisp>, EntityType<EntityWisp>> WISP = 
             ENTITY_TYPES.register("wisp", () -> 
                 EntityType.Builder.<EntityWisp>of(EntityWisp::new, MobCategory.MONSTER)
                     .sized(0.9f, 0.9f)
@@ -174,7 +174,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "wisp").toString()));
     
-    public static final DeferredHolder<EntityType<EntityFireBat>> FIRE_BAT = 
+    public static final DeferredHolder<EntityType<EntityFireBat>, EntityType<EntityFireBat>> FIRE_BAT = 
             ENTITY_TYPES.register("fire_bat", () -> 
                 EntityType.Builder.<EntityFireBat>of(EntityFireBat::new, MobCategory.MONSTER)
                     .sized(0.5f, 0.9f)
@@ -183,7 +183,7 @@ public class ModEntities {
                     .fireImmune()
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "fire_bat").toString()));
     
-    public static final DeferredHolder<EntityType<EntityBrainyZombie>> BRAINY_ZOMBIE = 
+    public static final DeferredHolder<EntityType<EntityBrainyZombie>, EntityType<EntityBrainyZombie>> BRAINY_ZOMBIE = 
             ENTITY_TYPES.register("brainy_zombie", () -> 
                 EntityType.Builder.<EntityBrainyZombie>of(EntityBrainyZombie::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.95f)
@@ -191,7 +191,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "brainy_zombie").toString()));
     
-    public static final DeferredHolder<EntityType<EntityMindSpider>> MIND_SPIDER = 
+    public static final DeferredHolder<EntityType<EntityMindSpider>, EntityType<EntityMindSpider>> MIND_SPIDER = 
             ENTITY_TYPES.register("mind_spider", () -> 
                 EntityType.Builder.<EntityMindSpider>of(EntityMindSpider::new, MobCategory.MONSTER)
                     .sized(0.7f, 0.5f)
@@ -199,7 +199,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "mind_spider").toString()));
     
-    public static final DeferredHolder<EntityType<EntityThaumicSlime>> THAUMIC_SLIME = 
+    public static final DeferredHolder<EntityType<EntityThaumicSlime>, EntityType<EntityThaumicSlime>> THAUMIC_SLIME = 
             ENTITY_TYPES.register("thaumic_slime", () -> 
                 EntityType.Builder.<EntityThaumicSlime>of(EntityThaumicSlime::new, MobCategory.MONSTER)
                     .sized(2.04f, 2.04f)
@@ -207,7 +207,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "thaumic_slime").toString()));
     
-    public static final DeferredHolder<EntityType<EntityGiantBrainyZombie>> GIANT_BRAINY_ZOMBIE = 
+    public static final DeferredHolder<EntityType<EntityGiantBrainyZombie>, EntityType<EntityGiantBrainyZombie>> GIANT_BRAINY_ZOMBIE = 
             ENTITY_TYPES.register("giant_brainy_zombie", () -> 
                 EntityType.Builder.<EntityGiantBrainyZombie>of(EntityGiantBrainyZombie::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.95f)
@@ -215,7 +215,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "giant_brainy_zombie").toString()));
     
-    public static final DeferredHolder<EntityType<EntityInhabitedZombie>> INHABITED_ZOMBIE = 
+    public static final DeferredHolder<EntityType<EntityInhabitedZombie>, EntityType<EntityInhabitedZombie>> INHABITED_ZOMBIE = 
             ENTITY_TYPES.register("inhabited_zombie", () -> 
                 EntityType.Builder.<EntityInhabitedZombie>of(EntityInhabitedZombie::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.95f)
@@ -223,7 +223,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "inhabited_zombie").toString()));
     
-    public static final DeferredHolder<EntityType<EntityEldritchCrab>> ELDRITCH_CRAB = 
+    public static final DeferredHolder<EntityType<EntityEldritchCrab>, EntityType<EntityEldritchCrab>> ELDRITCH_CRAB = 
             ENTITY_TYPES.register("eldritch_crab", () -> 
                 EntityType.Builder.<EntityEldritchCrab>of(EntityEldritchCrab::new, MobCategory.MONSTER)
                     .sized(0.8f, 0.6f)
@@ -231,7 +231,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_crab").toString()));
     
-    public static final DeferredHolder<EntityType<EntitySpellBat>> SPELL_BAT = 
+    public static final DeferredHolder<EntityType<EntitySpellBat>, EntityType<EntitySpellBat>> SPELL_BAT = 
             ENTITY_TYPES.register("spell_bat", () -> 
                 EntityType.Builder.<EntitySpellBat>of(EntitySpellBat::new, MobCategory.MONSTER)
                     .sized(0.5f, 0.9f)
@@ -239,7 +239,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "spell_bat").toString()));
     
-    public static final DeferredHolder<EntityType<EntityEldritchGuardian>> ELDRITCH_GUARDIAN = 
+    public static final DeferredHolder<EntityType<EntityEldritchGuardian>, EntityType<EntityEldritchGuardian>> ELDRITCH_GUARDIAN = 
             ENTITY_TYPES.register("eldritch_guardian", () -> 
                 EntityType.Builder.<EntityEldritchGuardian>of(EntityEldritchGuardian::new, MobCategory.MONSTER)
                     .sized(0.8f, 2.25f)
@@ -249,7 +249,7 @@ public class ModEntities {
     
     // ==================== Cult Entities ====================
     
-    public static final DeferredHolder<EntityType<EntityCultist>> CULTIST = 
+    public static final DeferredHolder<EntityType<EntityCultist>, EntityType<EntityCultist>> CULTIST = 
             ENTITY_TYPES.register("cultist", () -> 
                 EntityType.Builder.<EntityCultist>of(EntityCultist::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.8f)
@@ -257,7 +257,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist").toString()));
     
-    public static final DeferredHolder<EntityType<EntityCultistKnight>> CULTIST_KNIGHT = 
+    public static final DeferredHolder<EntityType<EntityCultistKnight>, EntityType<EntityCultistKnight>> CULTIST_KNIGHT = 
             ENTITY_TYPES.register("cultist_knight", () -> 
                 EntityType.Builder.<EntityCultistKnight>of(EntityCultistKnight::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.8f)
@@ -265,7 +265,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_knight").toString()));
     
-    public static final DeferredHolder<EntityType<EntityCultistCleric>> CULTIST_CLERIC = 
+    public static final DeferredHolder<EntityType<EntityCultistCleric>, EntityType<EntityCultistCleric>> CULTIST_CLERIC = 
             ENTITY_TYPES.register("cultist_cleric", () -> 
                 EntityType.Builder.<EntityCultistCleric>of(EntityCultistCleric::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.8f)
@@ -273,7 +273,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_cleric").toString()));
     
-    public static final DeferredHolder<EntityType<EntityCultistPortalLesser>> CULTIST_PORTAL_LESSER = 
+    public static final DeferredHolder<EntityType<EntityCultistPortalLesser>, EntityType<EntityCultistPortalLesser>> CULTIST_PORTAL_LESSER = 
             ENTITY_TYPES.register("cultist_portal_lesser", () -> 
                 EntityType.Builder.<EntityCultistPortalLesser>of(EntityCultistPortalLesser::new, MobCategory.MONSTER)
                     .sized(1.5f, 3.0f)
@@ -282,7 +282,7 @@ public class ModEntities {
                     .fireImmune()
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_portal_lesser").toString()));
     
-    public static final DeferredHolder<EntityType<EntityPech>> PECH = 
+    public static final DeferredHolder<EntityType<EntityPech>, EntityType<EntityPech>> PECH = 
             ENTITY_TYPES.register("pech", () -> 
                 EntityType.Builder.<EntityPech>of(EntityPech::new, MobCategory.CREATURE)
                     .sized(0.6f, 1.2f)
@@ -292,7 +292,7 @@ public class ModEntities {
     
     // ==================== Tainted Entities ====================
     
-    public static final DeferredHolder<EntityType<EntityTaintCrawler>> TAINT_CRAWLER = 
+    public static final DeferredHolder<EntityType<EntityTaintCrawler>, EntityType<EntityTaintCrawler>> TAINT_CRAWLER = 
             ENTITY_TYPES.register("taint_crawler", () -> 
                 EntityType.Builder.<EntityTaintCrawler>of(EntityTaintCrawler::new, MobCategory.MONSTER)
                     .sized(0.5f, 0.4f)
@@ -300,7 +300,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_crawler").toString()));
     
-    public static final DeferredHolder<EntityType<EntityTaintSwarm>> TAINT_SWARM = 
+    public static final DeferredHolder<EntityType<EntityTaintSwarm>, EntityType<EntityTaintSwarm>> TAINT_SWARM = 
             ENTITY_TYPES.register("taint_swarm", () -> 
                 EntityType.Builder.<EntityTaintSwarm>of(EntityTaintSwarm::new, MobCategory.MONSTER)
                     .sized(2.0f, 2.0f)
@@ -308,7 +308,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_swarm").toString()));
     
-    public static final DeferredHolder<EntityType<EntityTaintacle>> TAINTACLE = 
+    public static final DeferredHolder<EntityType<EntityTaintacle>, EntityType<EntityTaintacle>> TAINTACLE = 
             ENTITY_TYPES.register("taintacle", () -> 
                 EntityType.Builder.<EntityTaintacle>of(EntityTaintacle::new, MobCategory.MONSTER)
                     .sized(0.8f, 3.0f)
@@ -316,7 +316,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle").toString()));
     
-    public static final DeferredHolder<EntityType<EntityTaintacleSmall>> TAINTACLE_SMALL = 
+    public static final DeferredHolder<EntityType<EntityTaintacleSmall>, EntityType<EntityTaintacleSmall>> TAINTACLE_SMALL = 
             ENTITY_TYPES.register("taintacle_small", () -> 
                 EntityType.Builder.<EntityTaintacleSmall>of(EntityTaintacleSmall::new, MobCategory.MONSTER)
                     .sized(0.22f, 1.0f)
@@ -324,7 +324,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle_small").toString()));
     
-    public static final DeferredHolder<EntityType<EntityTaintSeed>> TAINT_SEED = 
+    public static final DeferredHolder<EntityType<EntityTaintSeed>, EntityType<EntityTaintSeed>> TAINT_SEED = 
             ENTITY_TYPES.register("taint_seed", () -> 
                 EntityType.Builder.<EntityTaintSeed>of(EntityTaintSeed::new, MobCategory.MONSTER)
                     .sized(1.5f, 1.25f)
@@ -332,7 +332,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_seed").toString()));
     
-    public static final DeferredHolder<EntityType<EntityTaintSeedPrime>> TAINT_SEED_PRIME = 
+    public static final DeferredHolder<EntityType<EntityTaintSeedPrime>, EntityType<EntityTaintSeedPrime>> TAINT_SEED_PRIME = 
             ENTITY_TYPES.register("taint_seed_prime", () -> 
                 EntityType.Builder.<EntityTaintSeedPrime>of(EntityTaintSeedPrime::new, MobCategory.MONSTER)
                     .sized(2.0f, 2.0f)
@@ -342,7 +342,7 @@ public class ModEntities {
     
     // ==================== Boss Entities ====================
     
-    public static final DeferredHolder<EntityType<EntityCultistLeader>> CULTIST_LEADER = 
+    public static final DeferredHolder<EntityType<EntityCultistLeader>, EntityType<EntityCultistLeader>> CULTIST_LEADER = 
             ENTITY_TYPES.register("cultist_leader", () -> 
                 EntityType.Builder.<EntityCultistLeader>of(EntityCultistLeader::new, MobCategory.MONSTER)
                     .sized(0.75f, 2.25f)
@@ -350,7 +350,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_leader").toString()));
     
-    public static final DeferredHolder<EntityType<EntityTaintacleGiant>> TAINTACLE_GIANT = 
+    public static final DeferredHolder<EntityType<EntityTaintacleGiant>, EntityType<EntityTaintacleGiant>> TAINTACLE_GIANT = 
             ENTITY_TYPES.register("taintacle_giant", () -> 
                 EntityType.Builder.<EntityTaintacleGiant>of(EntityTaintacleGiant::new, MobCategory.MONSTER)
                     .sized(1.1f, 6.0f)
@@ -358,7 +358,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle_giant").toString()));
     
-    public static final DeferredHolder<EntityType<EntityCultistPortalGreater>> CULTIST_PORTAL_GREATER = 
+    public static final DeferredHolder<EntityType<EntityCultistPortalGreater>, EntityType<EntityCultistPortalGreater>> CULTIST_PORTAL_GREATER = 
             ENTITY_TYPES.register("cultist_portal_greater", () -> 
                 EntityType.Builder.<EntityCultistPortalGreater>of(EntityCultistPortalGreater::new, MobCategory.MONSTER)
                     .sized(1.5f, 3.0f)
@@ -367,7 +367,7 @@ public class ModEntities {
                     .fireImmune()
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_portal_greater").toString()));
     
-    public static final DeferredHolder<EntityType<EntityEldritchGolem>> ELDRITCH_GOLEM = 
+    public static final DeferredHolder<EntityType<EntityEldritchGolem>, EntityType<EntityEldritchGolem>> ELDRITCH_GOLEM = 
             ENTITY_TYPES.register("eldritch_golem", () -> 
                 EntityType.Builder.<EntityEldritchGolem>of(EntityEldritchGolem::new, MobCategory.MONSTER)
                     .sized(1.75f, 3.5f)
@@ -376,7 +376,7 @@ public class ModEntities {
                     .fireImmune()
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_golem").toString()));
     
-    public static final DeferredHolder<EntityType<EntityEldritchWarden>> ELDRITCH_WARDEN = 
+    public static final DeferredHolder<EntityType<EntityEldritchWarden>, EntityType<EntityEldritchWarden>> ELDRITCH_WARDEN = 
             ENTITY_TYPES.register("eldritch_warden", () -> 
                 EntityType.Builder.<EntityEldritchWarden>of(EntityEldritchWarden::new, MobCategory.MONSTER)
                     .sized(1.5f, 3.5f)
@@ -386,7 +386,7 @@ public class ModEntities {
     
     // ==================== Construct Entities ====================
     
-    public static final DeferredHolder<EntityType<EntityTurretCrossbow>> TURRET_CROSSBOW = 
+    public static final DeferredHolder<EntityType<EntityTurretCrossbow>, EntityType<EntityTurretCrossbow>> TURRET_CROSSBOW = 
             ENTITY_TYPES.register("turret_crossbow", () -> 
                 EntityType.Builder.<EntityTurretCrossbow>of(EntityTurretCrossbow::new, MobCategory.MISC)
                     .sized(0.95f, 1.25f)
@@ -394,7 +394,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "turret_crossbow").toString()));
     
-    public static final DeferredHolder<EntityType<EntityTurretCrossbowAdvanced>> TURRET_CROSSBOW_ADVANCED = 
+    public static final DeferredHolder<EntityType<EntityTurretCrossbowAdvanced>, EntityType<EntityTurretCrossbowAdvanced>> TURRET_CROSSBOW_ADVANCED = 
             ENTITY_TYPES.register("turret_crossbow_advanced", () -> 
                 EntityType.Builder.<EntityTurretCrossbowAdvanced>of(EntityTurretCrossbowAdvanced::new, MobCategory.MISC)
                     .sized(0.95f, 1.5f)
@@ -402,7 +402,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "turret_crossbow_advanced").toString()));
     
-    public static final DeferredHolder<EntityType<EntityThaumcraftGolem>> THAUMCRAFT_GOLEM = 
+    public static final DeferredHolder<EntityType<EntityThaumcraftGolem>, EntityType<EntityThaumcraftGolem>> THAUMCRAFT_GOLEM = 
             ENTITY_TYPES.register("thaumcraft_golem", () -> 
                 EntityType.Builder.<EntityThaumcraftGolem>of(EntityThaumcraftGolem::new, MobCategory.MISC)
                     .sized(0.7f, 1.0f)
@@ -410,7 +410,7 @@ public class ModEntities {
                     .updateInterval(3)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "thaumcraft_golem").toString()));
     
-    public static final DeferredHolder<EntityType<EntityArcaneBore>> ARCANE_BORE = 
+    public static final DeferredHolder<EntityType<EntityArcaneBore>, EntityType<EntityArcaneBore>> ARCANE_BORE = 
             ENTITY_TYPES.register("arcane_bore", () -> 
                 EntityType.Builder.<EntityArcaneBore>of(EntityArcaneBore::new, MobCategory.MISC)
                     .sized(0.9f, 0.9f)
@@ -420,7 +420,7 @@ public class ModEntities {
     
     // ==================== Misc Entities ====================
     
-    public static final DeferredHolder<EntityType<EntitySpecialItem>> SPECIAL_ITEM = 
+    public static final DeferredHolder<EntityType<EntitySpecialItem>, EntityType<EntitySpecialItem>> SPECIAL_ITEM = 
             ENTITY_TYPES.register("special_item", () -> 
                 EntityType.Builder.<EntitySpecialItem>of(EntitySpecialItem::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
@@ -428,7 +428,7 @@ public class ModEntities {
                     .updateInterval(20)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "special_item").toString()));
     
-    public static final DeferredHolder<EntityType<EntityFollowingItem>> FOLLOWING_ITEM = 
+    public static final DeferredHolder<EntityType<EntityFollowingItem>, EntityType<EntityFollowingItem>> FOLLOWING_ITEM = 
             ENTITY_TYPES.register("following_item", () -> 
                 EntityType.Builder.<EntityFollowingItem>of(EntityFollowingItem::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
@@ -436,7 +436,7 @@ public class ModEntities {
                     .updateInterval(20)
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "following_item").toString()));
     
-    public static final DeferredHolder<EntityType<EntityFluxRift>> FLUX_RIFT = 
+    public static final DeferredHolder<EntityType<EntityFluxRift>, EntityType<EntityFluxRift>> FLUX_RIFT = 
             ENTITY_TYPES.register("flux_rift", () -> 
                 EntityType.Builder.<EntityFluxRift>of(EntityFluxRift::new, MobCategory.MISC)
                     .sized(2.0f, 2.0f)
@@ -445,7 +445,7 @@ public class ModEntities {
                     .fireImmune()
                     .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "flux_rift").toString()));
     
-    public static final DeferredHolder<EntityType<EntityFallingTaint>> FALLING_TAINT = 
+    public static final DeferredHolder<EntityType<EntityFallingTaint>, EntityType<EntityFallingTaint>> FALLING_TAINT = 
             ENTITY_TYPES.register("falling_taint", () -> 
                 EntityType.Builder.<EntityFallingTaint>of(EntityFallingTaint::new, MobCategory.MISC)
                     .sized(0.98f, 0.98f)

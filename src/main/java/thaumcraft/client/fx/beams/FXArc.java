@@ -4,13 +4,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
@@ -29,7 +26,7 @@ import java.util.List;
  * Used for shock focus, lightning effects, and electrical discharges.
  */
 @OnlyIn(Dist.CLIENT)
-public class FXArc extends TextureSheetParticle {
+public class FXArc extends ThaumcraftParticle {
 
     protected static final Identifier BEAM_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/beamh.png");
 
@@ -215,7 +212,7 @@ public class FXArc extends TextureSheetParticle {
     }
 
     @Override
-    public int getLightColor(float partialTick) {
+    public int getLightCoords(float partialTick) {
         return 0xF000F0; // Full brightness for lightning
     }
 

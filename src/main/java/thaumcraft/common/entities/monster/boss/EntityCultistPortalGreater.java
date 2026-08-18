@@ -263,7 +263,7 @@ public class EntityCultistPortalGreater extends Monster {
         cultist.finalizeSpawn(
                 (net.minecraft.world.level.ServerLevelAccessor) level(),
                 level().getCurrentDifficultyAt(new BlockPos((int) cultist.getX(), (int) cultist.getY(), (int) cultist.getZ())),
-                net.minecraft.world.entity.MobSpawnType.SPAWNER,
+                net.minecraft.world.entity.EntitySpawnReason.SPAWNER,
                 null, null);
         
         cultist.setHomePos(blockPosition(), 32);
@@ -292,7 +292,7 @@ public class EntityCultistPortalGreater extends Monster {
         leader.finalizeSpawn(
                 (net.minecraft.world.level.ServerLevelAccessor) level(),
                 level().getCurrentDifficultyAt(new BlockPos((int) leader.getX(), (int) leader.getY(), (int) leader.getZ())),
-                net.minecraft.world.entity.MobSpawnType.SPAWNER,
+                net.minecraft.world.entity.EntitySpawnReason.SPAWNER,
                 null, null);
         
         leader.setHomePos(blockPosition(), 32);

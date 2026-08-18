@@ -1,11 +1,8 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -21,7 +18,7 @@ import org.joml.Vector3f;
  * Ported from 1.12.2
  */
 @OnlyIn(Dist.CLIENT)
-public class FXBoreSparkle extends TextureSheetParticle {
+public class FXBoreSparkle extends ThaumcraftParticle {
     
     private Entity target;
     private double targetX;

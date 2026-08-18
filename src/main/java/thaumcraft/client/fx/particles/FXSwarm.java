@@ -1,10 +1,7 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -32,7 +29,7 @@ import java.util.ArrayList;
  * Ported from 1.12.2
  */
 @OnlyIn(Dist.CLIENT)
-public class FXSwarm extends TextureSheetParticle {
+public class FXSwarm extends ThaumcraftParticle {
     
     // Sound limiting to avoid too many buzz sounds
     private static final ArrayList<Long> buzzCount = new ArrayList<>();

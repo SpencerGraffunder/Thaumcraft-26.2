@@ -1,10 +1,7 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -32,7 +29,7 @@ import java.util.List;
  * Ported/reimplemented from 1.12.2
  */
 @OnlyIn(Dist.CLIENT)
-public class FXEssentiaTrail extends TextureSheetParticle {
+public class FXEssentiaTrail extends ThaumcraftParticle {
     
     // Trail segment storage
     private final List<Vec3> trailPoints = new ArrayList<>();

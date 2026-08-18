@@ -5,7 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,12 +34,12 @@ public class ItemPechWand extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
 
         if (knowledge == null) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
 
         // Check if player knows basic auromancy
@@ -48,7 +48,7 @@ public class ItemPechWand extends Item {
                 player.sendSystemMessage(Component.translatable("not.pechwand")
                         .withStyle(ChatFormatting.RED));
             }
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         }
 
         // Consume the item
@@ -79,7 +79,7 @@ public class ItemPechWand extends Item {
                     .withStyle(ChatFormatting.LIGHT_PURPLE));
         }
 
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        return InteractionResult.SUCCESS;
     }
 
     @Override

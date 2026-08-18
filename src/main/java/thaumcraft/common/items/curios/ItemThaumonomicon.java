@@ -3,7 +3,7 @@ package thaumcraft.common.items.curios;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -30,17 +30,17 @@ public class ItemThaumonomicon extends ItemTC {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         if (level.isClientSide()) {
             // Client: Open the Thaumonomicon GUI
             openThaumonomiconGui();
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
 
         // Server: Could sync research data here if needed
-        return InteractionResultHolder.consume(stack);
+        return InteractionResult.CONSUME;
     }
 
     /**

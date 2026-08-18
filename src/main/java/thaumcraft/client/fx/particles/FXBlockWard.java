@@ -6,8 +6,6 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
@@ -25,7 +23,7 @@ import org.joml.Matrix4f;
  * Ported from 1.12.2
  */
 @OnlyIn(Dist.CLIENT)
-public class FXBlockWard extends TextureSheetParticle {
+public class FXBlockWard extends ThaumcraftParticle {
     
     private static final Identifier[] TEXTURES = new Identifier[15];
     

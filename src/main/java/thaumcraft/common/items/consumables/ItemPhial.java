@@ -7,7 +7,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -172,8 +172,8 @@ public class ItemPhial extends ItemEssentiaContainer {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        return InteractionResultHolder.pass(player.getItemInHand(hand));
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        return InteractionResult.PASS;
     }
 
     public boolean isFilled() {

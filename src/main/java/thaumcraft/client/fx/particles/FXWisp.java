@@ -1,11 +1,8 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -19,7 +16,7 @@ import org.joml.Vector3f;
  * Used for eldritch guardian effects and other ghostly visuals.
  */
 @OnlyIn(Dist.CLIENT)
-public class FXWisp extends TextureSheetParticle {
+public class FXWisp extends ThaumcraftParticle {
 
     protected Entity target;
     protected int blendMode = 1;
@@ -155,7 +152,7 @@ public class FXWisp extends TextureSheetParticle {
     }
 
     @Override
-    public int getLightColor(float partialTick) {
+    public int getLightCoords(float partialTick) {
         return 0xF000F0; // Full brightness
     }
 

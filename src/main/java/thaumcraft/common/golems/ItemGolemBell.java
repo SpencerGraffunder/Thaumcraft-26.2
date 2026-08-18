@@ -7,7 +7,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -83,7 +83,7 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         player.swing(hand);
         
         if (!level.isClientSide()) {
@@ -99,7 +99,7 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
                     // TODO: Open seal GUI
                     level.playSound(null, sealEntity.getSealPos().pos, SoundEvents.NOTE_BLOCK_BELL.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
                 }
-                return InteractionResultHolder.success(player.getItemInHand(hand));
+                return InteractionResult.SUCCESS;
             }
             
             // Try to toggle golem follow mode for nearby golems
@@ -114,12 +114,12 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
                 }
                 level.playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_BELL.get(), 
                         SoundSource.BLOCKS, 0.6f, 1.0f + level.random.nextFloat() * 0.1f);
-                return InteractionResultHolder.success(player.getItemInHand(hand));
+                return InteractionResult.SUCCESS;
             }
             
             if (player.isShiftKeyDown()) {
                 // TODO: Open logistics GUI
-                return InteractionResultHolder.success(player.getItemInHand(hand));
+                return InteractionResult.SUCCESS;
             }
         } else {
             // Client side - play bell sound

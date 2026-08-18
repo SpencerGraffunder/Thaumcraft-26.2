@@ -6,8 +6,6 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
@@ -35,7 +33,7 @@ import org.joml.Quaternionf;
  * Ported from 1.12.2
  */
 @OnlyIn(Dist.CLIENT)
-public class FXBeamWand extends TextureSheetParticle {
+public class FXBeamWand extends ThaumcraftParticle {
     
     private static final Identifier BEAM_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/beam.png");
     private static final Identifier BEAM1_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/beam1.png");

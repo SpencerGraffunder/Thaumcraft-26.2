@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  */
 public class BlockBellows extends Block implements EntityBlock {
 
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
 
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 10.0, 15.0);

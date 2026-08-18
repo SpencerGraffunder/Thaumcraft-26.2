@@ -7,7 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -266,16 +266,16 @@ public class ItemCaster extends Item implements ICaster {
     }
     
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         ItemStack focusStack = getFocusStack(stack);
         
         if (focusStack == null || focusStack.isEmpty()) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
         
         if (!(focusStack.getItem() instanceof ItemFocus focus)) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
         
         // Calculate vis cost
@@ -284,7 +284,7 @@ public class ItemCaster extends Item implements ICaster {
         // Try to consume vis
         if (!consumeVis(stack, player, visCost, false, false)) {
             // Not enough vis
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         }
         
         // Cast the spell!
@@ -301,7 +301,7 @@ public class ItemCaster extends Item implements ICaster {
         int cooldown = focus.getActivationTime(focusStack);
         player.getCooldowns().addCooldown(this, cooldown);
         
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
     
     @Override

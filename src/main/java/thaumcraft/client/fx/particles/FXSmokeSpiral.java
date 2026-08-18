@@ -1,10 +1,7 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -17,7 +14,7 @@ import org.joml.Vector3f;
  * Used for smoke effects from crucibles, cauldrons, and other magical devices.
  */
 @OnlyIn(Dist.CLIENT)
-public class FXSmokeSpiral extends TextureSheetParticle {
+public class FXSmokeSpiral extends ThaumcraftParticle {
 
     protected float radius;
     protected int startAngle;
@@ -89,7 +86,7 @@ public class FXSmokeSpiral extends TextureSheetParticle {
         float size = 0.15f * this.quadSize;
         float displayAlpha = 0.66f * this.alpha;
 
-        int light = this.getLightColor(partialTicks);
+        int light = this.getLightCoords(partialTicks);
 
         Quaternionf quaternion = camera.rotation();
 

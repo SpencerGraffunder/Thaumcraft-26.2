@@ -1,54 +1,57 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.RandomSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * Base class for custom Thaumcraft particles.
+ * Ported to MC 26.2 (SingleQuadParticle + render-state model).
  * Supports color interpolation, scale animation, rotation, and custom rendering.
  */
 @OnlyIn(Dist.CLIENT)
-public class ThaumcraftParticle extends TextureSheetParticle {
+public class ThaumcraftParticle extends SingleQuadParticle {
 
     // Color interpolation
     protected float startR, startG, startB;
     protected float endR, endG, endB;
-    
+
     // Scale animation
     protected float startScale;
     protected float endScale;
-    
+
     // Rotation
     protected float rotationSpeed;
-    protected float rotation;
-    
+
     // Physics
     protected double slowDown = 0.98;
     protected float windX, windZ;
     protected boolean noClip = false;
-    
+
     // Sprite animation
     protected int spriteStart = 0;
     protected int spriteCount = 1;
     protected int spriteIncrement = 1;
     protected boolean spriteLoop = false;
     protected int gridSize = 64;
-    
-    // Render layer (0 = normal, 1 = additive)
+
+    // Render layer (0 = normal, 1 = additive) -> maps to TRANSLUCENT/OPAQUE
     protected int layer = 0;
 
+    // Random source (Particle base no longer exposes one)
+    protected final RandomSource random = RandomSource.create();
+
     public ThaumcraftParticle(ClientLevel level, double x, double y, double z) {
-        super(level, x, y, z);
+        super(level, x, y, z, defaultSprite());
         this.startR = this.rCol;
         this.startG = this.gCol;
         this.startB = this.bCol;
@@ -60,7 +63,7 @@ public class ThaumcraftParticle extends TextureSheetParticle {
     }
 
     public ThaumcraftParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz) {
-        super(level, x, y, z, vx, vy, vz);
+        super(level, x, y, z, vx, vy, vz, defaultSprite());
         this.xd = vx;
         this.yd = vy;
         this.zd = vz;
@@ -72,6 +75,29 @@ public class ThaumcraftParticle extends TextureSheetParticle {
         this.endB = this.bCol;
         this.startScale = this.quadSize;
         this.endScale = this.quadSize;
+    }
+
+    /** Fetch a default particle sprite from the particle atlas (safe before atlas load). */
+    protected static TextureAtlasSprite defaultSprite() {
+        try {
+            return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.PARTICLES).missingSprite();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    protected void setSpriteFromIdentifier(Identifier id) {
+        TextureAtlasSprite spr = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.PARTICLES).getSprite(id);
+        if (spr != null) this.setSprite(spr);
+    }
+
+    protected void pickSprite(SpriteSet sprites) {
+        this.setSprite(sprites.get(this.random));
+    }
+
+    @Override
+    public Layer getLayer() {
+        return layer == 0 ? Layer.TRANSLUCENT : Layer.OPAQUE;
     }
 
     @Override
@@ -126,62 +152,6 @@ public class ThaumcraftParticle extends TextureSheetParticle {
         this.quadSize = Mth.lerp(progress, this.startScale, this.endScale);
     }
 
-    @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 cameraPos = camera.getPosition();
-        float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
-        float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
-        float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
-
-        Quaternionf quaternion;
-        if (this.roll == 0.0F) {
-            quaternion = camera.rotation();
-        } else {
-            quaternion = new Quaternionf(camera.rotation());
-            float rollAngle = Mth.lerp(partialTicks, this.oRoll, this.roll);
-            quaternion.rotateZ(rollAngle);
-        }
-
-        Vector3f[] vertices = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-        float size = this.getQuadSize(partialTicks);
-
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-
-        float u0 = this.getU0();
-        float u1 = this.getU1();
-        float v0 = this.getV0();
-        float v1 = this.getV1();
-        int light = this.getLightColor(partialTicks);
-
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-                .uv2(light).endVertex();
-    }
-
-    @Override
-    public ParticleRenderType getRenderType() {
-        return layer == 0 ? ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT : ParticleRenderType.PARTICLE_SHEET_LIT;
-    }
-
     // ==================== Configuration Methods ====================
 
     public ThaumcraftParticle setTCColor(float r, float g, float b) {
@@ -217,7 +187,6 @@ public class ThaumcraftParticle extends TextureSheetParticle {
 
     public ThaumcraftParticle setTCAlphaRange(float startAlpha, float endAlpha) {
         this.alpha = startAlpha;
-        // Note: For proper alpha interpolation, override tick() or use custom logic
         return this;
     }
 

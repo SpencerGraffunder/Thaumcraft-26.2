@@ -27,7 +27,7 @@ public class ModCreativeTabs {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Thaumcraft.MODID);
 
     // Main Thaumcraft creative tab
-    public static final DeferredHolder<CreativeModeTab> THAUMCRAFT_TAB = CREATIVE_MODE_TABS.register("thaumcraft_tab",
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> THAUMCRAFT_TAB = CREATIVE_MODE_TABS.register("thaumcraft_tab",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.thaumcraft"))
                     .icon(() -> new ItemStack(ModBlocks.ARCANE_STONE.get()))

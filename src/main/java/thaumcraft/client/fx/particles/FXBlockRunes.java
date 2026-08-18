@@ -1,10 +1,7 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -17,7 +14,7 @@ import org.joml.Vector3f;
  * Used for ward effects, magical barriers, and enchantment visuals.
  */
 @OnlyIn(Dist.CLIENT)
-public class FXBlockRunes extends TextureSheetParticle {
+public class FXBlockRunes extends ThaumcraftParticle {
 
     protected double offsetX;
     protected double offsetY;
@@ -146,7 +143,7 @@ public class FXBlockRunes extends TextureSheetParticle {
     }
 
     @Override
-    public int getLightColor(float partialTick) {
+    public int getLightCoords(float partialTick) {
         return 0xF000F0; // Full brightness
     }
 

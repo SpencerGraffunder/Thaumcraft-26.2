@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -29,7 +29,7 @@ import thaumcraft.init.ModBlocks;
  */
 public class BlockBrainBox extends Block {
     
-    public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
+    public static final EnumProperty FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
     
     // Smaller bounding box (centered, slightly smaller than full block)
     private static final VoxelShape SHAPE = Block.box(3, 3, 3, 13, 13, 13);

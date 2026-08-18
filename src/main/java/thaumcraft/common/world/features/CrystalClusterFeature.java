@@ -35,7 +35,7 @@ public class CrystalClusterFeature extends Feature<NoneFeatureConfiguration> {
         
         private final java.util.function.Supplier<Block> blockSupplier;
         
-        CrystalType(net.minecraftforge.registries.DeferredHolder<Block> block) {
+        CrystalType(net.minecraftforge.registries.DeferredHolder<Block, Block> block) {
             this.blockSupplier = block::get;
         }
         

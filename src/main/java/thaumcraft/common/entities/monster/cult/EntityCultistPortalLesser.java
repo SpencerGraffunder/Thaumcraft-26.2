@@ -224,7 +224,7 @@ public class EntityCultistPortalLesser extends Monster {
         cultist.finalizeSpawn(
                 (net.minecraft.world.level.ServerLevelAccessor) level(),
                 level().getCurrentDifficultyAt(new BlockPos((int) cultist.getX(), (int) cultist.getY(), (int) cultist.getZ())),
-                net.minecraft.world.entity.MobSpawnType.SPAWNER,
+                net.minecraft.world.entity.EntitySpawnReason.SPAWNER,
                 null, null);
         
         level().addFreshEntity(cultist);

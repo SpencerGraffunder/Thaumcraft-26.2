@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 import javax.annotation.Nullable;
 
@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
  */
 public abstract class BlockTCDevice extends Block implements EntityBlock {
 
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
 
     public BlockTCDevice(Properties properties) {

@@ -283,7 +283,7 @@ public class WarpEvents {
                 portal.finalizeSpawn(
                         (net.minecraft.server.level.ServerLevel) level,
                         level.getCurrentDifficultyAt(pos),
-                        net.minecraft.world.entity.MobSpawnType.MOB_SUMMONED,
+                        net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED,
                         null, null);
                 level.addFreshEntity(portal);
                 player.displayClientMessage(Component.literal("§5§o" + getWarpText(16)), true);

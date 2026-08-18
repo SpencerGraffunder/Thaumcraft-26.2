@@ -1,10 +1,7 @@
 package thaumcraft.client.fx.beams;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -23,7 +20,7 @@ import java.util.Random;
  * Used for flux effects, lightning, and magical beam attacks.
  */
 @OnlyIn(Dist.CLIENT)
-public class FXBolt extends TextureSheetParticle {
+public class FXBolt extends ThaumcraftParticle {
 
     protected static final Identifier BEAM_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/essentia.png");
 
@@ -204,7 +201,7 @@ public class FXBolt extends TextureSheetParticle {
     }
 
     @Override
-    public int getLightColor(float partialTick) {
+    public int getLightCoords(float partialTick) {
         return 0xF000F0; // Full brightness for lightning
     }
 

@@ -1,10 +1,7 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -25,7 +22,7 @@ import org.joml.Vector3f;
  * Ported from 1.12.2
  */
 @OnlyIn(Dist.CLIENT)
-public class FXSlimyBubble extends TextureSheetParticle {
+public class FXSlimyBubble extends ThaumcraftParticle {
     
     private int particle = 144;
     
@@ -126,7 +123,7 @@ public class FXSlimyBubble extends TextureSheetParticle {
         float v0 = (particle / 64) / 64.0f;
         float v1 = v0 + 0.015625f;
         
-        int light = getLightColor(partialTicks);
+        int light = getLightCoords(partialTicks);
         
         buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
                 .uv(u1, v1).color(rCol, gCol, bCol, alpha).uv2(light).endVertex();

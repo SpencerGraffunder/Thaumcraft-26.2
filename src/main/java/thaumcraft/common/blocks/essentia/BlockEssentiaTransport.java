@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  */
 public class BlockEssentiaTransport extends Block implements EntityBlock {
     
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty FACING = BlockStateProperties.FACING;
     
     // Bounding boxes for each facing direction (pipe extending from center)
     private static final VoxelShape SHAPE_DOWN = Block.box(4.0, 8.0, 4.0, 12.0, 16.0, 12.0);

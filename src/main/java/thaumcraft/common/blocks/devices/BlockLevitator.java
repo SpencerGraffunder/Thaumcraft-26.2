@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
  */
 public class BlockLevitator extends Block implements EntityBlock {
     
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty FACING = BlockStateProperties.FACING;
     
     // Shapes for each facing direction (slightly indented on the back)
     // The block is 7/8 (0.875) of full size in the facing direction

@@ -6,7 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -102,7 +102,7 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
             
             // Finalize spawn
             golem.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(spawnPos), 
-                    MobSpawnType.SPAWN_EGG, null, null);
+                    EntitySpawnReason.SPAWN_EGG, null, null);
             
             // Add to world
             if (serverLevel.addFreshEntity(golem)) {

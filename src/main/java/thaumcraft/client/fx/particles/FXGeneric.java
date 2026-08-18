@@ -1,17 +1,10 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * FXGeneric - The most commonly used particle type in Thaumcraft.
@@ -19,7 +12,7 @@ import org.joml.Vector3f;
  * rotation, wind effects, and custom physics.
  */
 @OnlyIn(Dist.CLIENT)
-public class FXGeneric extends TextureSheetParticle {
+public class FXGeneric extends ThaumcraftParticle {
 
     // Animation state
     protected boolean doneFrames = false;
@@ -253,86 +246,7 @@ public class FXGeneric extends TextureSheetParticle {
         return ((float) spriteIndexY + 1.0f) / (float) gridSize;
     }
 
-    @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 cameraPos = camera.getPosition();
-        float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
-        float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
-        float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
 
-        float size = this.getQuadSize(partialTicks);
-
-        // Get UV coordinates
-        float u0 = this.getU0();
-        float u1 = this.getU1();
-        float v0 = this.getV0();
-        float v1 = this.getV1();
-
-        // Handle flipped textures
-        if (flipped) {
-            float temp = u0;
-            u0 = u1;
-            u1 = temp;
-        }
-
-        // Calculate interpolated color
-        float progress = Mth.clamp((this.age + partialTicks) / this.lifetime, 0.0f, 1.0f);
-        float pr = Mth.lerp(progress, startR, endR);
-        float pg = Mth.lerp(progress, startG, endG);
-        float pb = Mth.lerp(progress, startB, endB);
-
-        int light = this.getLightColor(partialTicks);
-
-        Quaternionf quaternion;
-        if (this.roll == 0.0F && !angled) {
-            quaternion = camera.rotation();
-        } else if (angled) {
-            // Custom angle mode for directional particles
-            quaternion = new Quaternionf();
-            quaternion.rotateY((float) Math.toRadians(-angleYaw + 90.0f));
-            quaternion.rotateX((float) Math.toRadians(anglePitch + 90.0f));
-            if (this.roll != 0.0f) {
-                float rollAngle = Mth.lerp(partialTicks, this.oRoll, this.roll);
-                quaternion.rotateZ(rollAngle);
-            }
-        } else {
-            quaternion = new Quaternionf(camera.rotation());
-            float rollAngle = Mth.lerp(partialTicks, this.oRoll, this.roll);
-            quaternion.rotateZ(rollAngle);
-        }
-
-        Vector3f[] vertices = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(pr, pg, pb, this.alpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(pr, pg, pb, this.alpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(pr, pg, pb, this.alpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(pr, pg, pb, this.alpha)
-                .uv2(light).endVertex();
-    }
-
-    @Override
-    public ParticleRenderType getRenderType() {
-        return layer == 0 ? ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT : ParticleRenderType.PARTICLE_SHEET_LIT;
-    }
 
     // ==================== Configuration Methods ====================
     // Note: Using void returns to avoid conflicts with parent class methods

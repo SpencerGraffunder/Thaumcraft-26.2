@@ -1,10 +1,7 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -17,7 +14,7 @@ import org.joml.Vector3f;
  * Used for vis effects and magical sparkles moving toward nodes/targets.
  */
 @OnlyIn(Dist.CLIENT)
-public class FXVisSparkle extends TextureSheetParticle {
+public class FXVisSparkle extends ThaumcraftParticle {
 
     protected double targetX;
     protected double targetY;
@@ -200,7 +197,7 @@ public class FXVisSparkle extends TextureSheetParticle {
     }
 
     @Override
-    public int getLightColor(float partialTick) {
+    public int getLightCoords(float partialTick) {
         return 0xF000F0; // Full brightness
     }
 

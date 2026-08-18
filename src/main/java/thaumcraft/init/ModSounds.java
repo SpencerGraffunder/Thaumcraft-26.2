@@ -22,91 +22,91 @@ public class ModSounds {
             DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Thaumcraft.MODID);
     
     // ==================== Player Sounds ====================
-    public static final DeferredHolder<SoundEvent> HEARTBEAT = registerSound("heartbeat");
-    public static final DeferredHolder<SoundEvent> RUNIC_SHIELD_EFFECT = registerSound("runicshieldeffect");
-    public static final DeferredHolder<SoundEvent> RUNIC_SHIELD_CHARGE = registerSound("runicshieldecharge");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HEARTBEAT = registerSound("heartbeat");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNIC_SHIELD_EFFECT = registerSound("runicshieldeffect");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNIC_SHIELD_CHARGE = registerSound("runicshieldecharge");
     
     // ==================== Block Sounds ====================
-    public static final DeferredHolder<SoundEvent> SPILL = registerSound("spill");
-    public static final DeferredHolder<SoundEvent> DUST = registerSound("dust");
-    public static final DeferredHolder<SoundEvent> BUBBLE = registerSound("bubble");
-    public static final DeferredHolder<SoundEvent> CREAK = registerSound("creak");
-    public static final DeferredHolder<SoundEvent> SQUEEK = registerSound("squeek");
-    public static final DeferredHolder<SoundEvent> JAR = registerSound("jar");
-    public static final DeferredHolder<SoundEvent> PUMP = registerSound("pump");
-    public static final DeferredHolder<SoundEvent> CRYSTAL = registerSound("crystal");
-    public static final DeferredHolder<SoundEvent> GORE = registerSound("gore");
-    public static final DeferredHolder<SoundEvent> INFUSER = registerSound("infuser");
-    public static final DeferredHolder<SoundEvent> INFUSER_START = registerSound("infuserstart");
-    public static final DeferredHolder<SoundEvent> URN_BREAK = registerSound("urnbreak");
-    public static final DeferredHolder<SoundEvent> EVIL_PORTAL = registerSound("evilportal");
-    public static final DeferredHolder<SoundEvent> GRIND = registerSound("grind");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SPILL = registerSound("spill");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DUST = registerSound("dust");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BUBBLE = registerSound("bubble");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CREAK = registerSound("creak");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SQUEEK = registerSound("squeek");
+    public static final DeferredHolder<SoundEvent, SoundEvent> JAR = registerSound("jar");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PUMP = registerSound("pump");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRYSTAL = registerSound("crystal");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GORE = registerSound("gore");
+    public static final DeferredHolder<SoundEvent, SoundEvent> INFUSER = registerSound("infuser");
+    public static final DeferredHolder<SoundEvent, SoundEvent> INFUSER_START = registerSound("infuserstart");
+    public static final DeferredHolder<SoundEvent, SoundEvent> URN_BREAK = registerSound("urnbreak");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EVIL_PORTAL = registerSound("evilportal");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GRIND = registerSound("grind");
     
     // ==================== Ambient Sounds ====================
-    public static final DeferredHolder<SoundEvent> FLY = registerSound("fly");
-    public static final DeferredHolder<SoundEvent> KEY = registerSound("key");
-    public static final DeferredHolder<SoundEvent> TICKS = registerSound("ticks");
-    public static final DeferredHolder<SoundEvent> CLACK = registerSound("clack");  // Golem ambient/hurt
-    public static final DeferredHolder<SoundEvent> POOF = registerSound("poof");
-    public static final DeferredHolder<SoundEvent> BRAIN = registerSound("brain");
-    public static final DeferredHolder<SoundEvent> RUMBLE = registerSound("rumble");
-    public static final DeferredHolder<SoundEvent> JACOBS = registerSound("jacobs");
-    public static final DeferredHolder<SoundEvent> WIND = registerSound("wind");
-    public static final DeferredHolder<SoundEvent> WHISPERS = registerSound("whispers");
-    public static final DeferredHolder<SoundEvent> MONOLITH = registerSound("monolith");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FLY = registerSound("fly");
+    public static final DeferredHolder<SoundEvent, SoundEvent> KEY = registerSound("key");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TICKS = registerSound("ticks");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CLACK = registerSound("clack");  // Golem ambient/hurt
+    public static final DeferredHolder<SoundEvent, SoundEvent> POOF = registerSound("poof");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BRAIN = registerSound("brain");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUMBLE = registerSound("rumble");
+    public static final DeferredHolder<SoundEvent, SoundEvent> JACOBS = registerSound("jacobs");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WIND = registerSound("wind");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WHISPERS = registerSound("whispers");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MONOLITH = registerSound("monolith");
     
     // ==================== Master/UI Sounds ====================
-    public static final DeferredHolder<SoundEvent> PAGE = registerSound("page");
-    public static final DeferredHolder<SoundEvent> PAGE_TURN = registerSound("pageturn");
-    public static final DeferredHolder<SoundEvent> LEARN = registerSound("learn");
-    public static final DeferredHolder<SoundEvent> WRITE = registerSound("write");
-    public static final DeferredHolder<SoundEvent> ERASE = registerSound("erase");
-    public static final DeferredHolder<SoundEvent> WAND = registerSound("wand");
-    public static final DeferredHolder<SoundEvent> WAND_FAIL = registerSound("wandfail");
-    public static final DeferredHolder<SoundEvent> ICE = registerSound("ice");
-    public static final DeferredHolder<SoundEvent> HH_OFF = registerSound("hhoff");
-    public static final DeferredHolder<SoundEvent> HH_ON = registerSound("hhon");
-    public static final DeferredHolder<SoundEvent> SHOCK = registerSound("shock");
-    public static final DeferredHolder<SoundEvent> ZAP = registerSound("zap");  // Golem interaction
-    public static final DeferredHolder<SoundEvent> CRAFT_FAIL = registerSound("craftfail");
-    public static final DeferredHolder<SoundEvent> SCAN = registerSound("scan");  // Golem mode toggle
-    public static final DeferredHolder<SoundEvent> CRAFT_START = registerSound("craftstart");
-    public static final DeferredHolder<SoundEvent> TOOL = registerSound("tool");  // Golem death
-    public static final DeferredHolder<SoundEvent> UPGRADE = registerSound("upgrade");
-    public static final DeferredHolder<SoundEvent> COINS = registerSound("coins");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PAGE = registerSound("page");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PAGE_TURN = registerSound("pageturn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> LEARN = registerSound("learn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WRITE = registerSound("write");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ERASE = registerSound("erase");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WAND = registerSound("wand");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WAND_FAIL = registerSound("wandfail");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ICE = registerSound("ice");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HH_OFF = registerSound("hhoff");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HH_ON = registerSound("hhon");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHOCK = registerSound("shock");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZAP = registerSound("zap");  // Golem interaction
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRAFT_FAIL = registerSound("craftfail");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCAN = registerSound("scan");  // Golem mode toggle
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRAFT_START = registerSound("craftstart");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TOOL = registerSound("tool");  // Golem death
+    public static final DeferredHolder<SoundEvent, SoundEvent> UPGRADE = registerSound("upgrade");
+    public static final DeferredHolder<SoundEvent, SoundEvent> COINS = registerSound("coins");
     
     // ==================== Hostile/Entity Sounds ====================
-    public static final DeferredHolder<SoundEvent> SWARM = registerSound("swarm");
-    public static final DeferredHolder<SoundEvent> SWARM_ATTACK = registerSound("swarmattack");
-    public static final DeferredHolder<SoundEvent> WISP_DEAD = registerSound("wispdead");
-    public static final DeferredHolder<SoundEvent> WISP_LIVE = registerSound("wisplive");
-    public static final DeferredHolder<SoundEvent> TENTACLE = registerSound("tentacle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SWARM = registerSound("swarm");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SWARM_ATTACK = registerSound("swarmattack");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WISP_DEAD = registerSound("wispdead");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WISP_LIVE = registerSound("wisplive");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TENTACLE = registerSound("tentacle");
     
     // Pech Sounds
-    public static final DeferredHolder<SoundEvent> PECH_IDLE = registerSound("pech_idle");
-    public static final DeferredHolder<SoundEvent> PECH_TRADE = registerSound("pech_trade");
-    public static final DeferredHolder<SoundEvent> PECH_DICE = registerSound("pech_dice");
-    public static final DeferredHolder<SoundEvent> PECH_HIT = registerSound("pech_hit");
-    public static final DeferredHolder<SoundEvent> PECH_DEATH = registerSound("pech_death");
-    public static final DeferredHolder<SoundEvent> PECH_CHARGE = registerSound("pech_charge");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PECH_IDLE = registerSound("pech_idle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PECH_TRADE = registerSound("pech_trade");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PECH_DICE = registerSound("pech_dice");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PECH_HIT = registerSound("pech_hit");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PECH_DEATH = registerSound("pech_death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PECH_CHARGE = registerSound("pech_charge");
     
     // Eldritch Guardian Sounds
-    public static final DeferredHolder<SoundEvent> EG_IDLE = registerSound("egidle");
-    public static final DeferredHolder<SoundEvent> EG_ATTACK = registerSound("egattack");
-    public static final DeferredHolder<SoundEvent> EG_DEATH = registerSound("egdeath");
-    public static final DeferredHolder<SoundEvent> EG_SCREECH = registerSound("egscreech");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EG_IDLE = registerSound("egidle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EG_ATTACK = registerSound("egattack");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EG_DEATH = registerSound("egdeath");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EG_SCREECH = registerSound("egscreech");
     
     // Taint Crab Sounds
-    public static final DeferredHolder<SoundEvent> CRAB_CLAW = registerSound("crabclaw");
-    public static final DeferredHolder<SoundEvent> CRAB_DEATH = registerSound("crabdeath");
-    public static final DeferredHolder<SoundEvent> CRAB_TALK = registerSound("crabtalk");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRAB_CLAW = registerSound("crabclaw");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRAB_DEATH = registerSound("crabdeath");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CRAB_TALK = registerSound("crabtalk");
     
     // Cultist Sounds
-    public static final DeferredHolder<SoundEvent> CHANT = registerSound("chant");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHANT = registerSound("chant");
     
     // ==================== Helper Method ====================
     
-    private static DeferredHolder<SoundEvent> registerSound(String name) {
+    private static DeferredHolder<SoundEvent, SoundEvent> registerSound(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(
                 Identifier.fromNamespaceAndPath(Thaumcraft.MODID, name)));
     }

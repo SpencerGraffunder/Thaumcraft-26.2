@@ -10,7 +10,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -90,7 +90,7 @@ public class ItemHandMirror extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         if (!level.isClientSide() && stack.hasTag()) {
@@ -113,7 +113,7 @@ public class ItemHandMirror extends Item {
                 }
 
                 if (targetLevel == null) {
-                    return InteractionResultHolder.pass(stack);
+                    return InteractionResult.PASS;
                 }
 
                 BlockPos targetPos = new BlockPos(lx, ly, lz);
@@ -125,7 +125,7 @@ public class ItemHandMirror extends Item {
                     stack.setTag(null);
                     player.playSound(ModSounds.ZAP.get(), 1.0f, 1.0f);
                     player.sendSystemMessage(Component.translatable("tc.handmirrorerror"));
-                    return InteractionResultHolder.fail(stack);
+                    return InteractionResult.FAIL;
                 }
 
                 // Open mirror GUI
@@ -144,12 +144,12 @@ public class ItemHandMirror extends Item {
                     }, (FriendlyByteBuf buf) -> {
                         buf.writeEnum(usedHand);
                     });
-                    return InteractionResultHolder.success(stack);
+                    return InteractionResult.SUCCESS;
                 }
             }
         }
 
-        return InteractionResultHolder.pass(stack);
+        return InteractionResult.PASS;
     }
 
     /**

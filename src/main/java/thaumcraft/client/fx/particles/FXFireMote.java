@@ -1,10 +1,7 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -17,7 +14,7 @@ import org.joml.Vector3f;
  * Features scale fade-out and rotation animation.
  */
 @OnlyIn(Dist.CLIENT)
-public class FXFireMote extends TextureSheetParticle {
+public class FXFireMote extends ThaumcraftParticle {
 
     protected float baseScale;
     protected float baseAlpha;
@@ -143,7 +140,7 @@ public class FXFireMote extends TextureSheetParticle {
         float v0 = this.getV0();
         float v1 = this.getV1();
 
-        int light = this.getLightColor(partialTicks);
+        int light = this.getLightCoords(partialTicks);
 
         // Calculate rotation
         Quaternionf quaternion;
@@ -186,7 +183,7 @@ public class FXFireMote extends TextureSheetParticle {
     }
 
     @Override
-    public int getLightColor(float partialTick) {
+    public int getLightCoords(float partialTick) {
         // Fire motes are self-illuminating
         return 0xF000F0; // Full brightness
     }

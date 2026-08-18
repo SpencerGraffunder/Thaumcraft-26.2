@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -49,7 +49,7 @@ import java.util.List;
  */
 public class BlockInfernalFurnace extends Block implements EntityBlock {
 
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty FACING = HorizontalDirectionalBlock.FACING;
 
     // The furnace is larger than a single block visually
     private static final VoxelShape SHAPE = Shapes.box(0, 0, 0, 1, 1.5, 1);

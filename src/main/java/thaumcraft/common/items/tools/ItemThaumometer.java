@@ -3,7 +3,7 @@ package thaumcraft.common.items.tools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +34,7 @@ public class ItemThaumometer extends ItemTC {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         // Play scan sound (works on both sides, but server broadcasts to nearby players)
@@ -44,12 +44,12 @@ public class ItemThaumometer extends ItemTC {
         if (level.isClientSide()) {
             // Client-side: spawn particles
             // TODO: FXDispatcher effects - scanning beam, highlight effects
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
 
         // Server-side: perform the scan
         doScan(level, player);
-        return InteractionResultHolder.consume(stack);
+        return InteractionResult.CONSUME;
     }
 
     @Override
