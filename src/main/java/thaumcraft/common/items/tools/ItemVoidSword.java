@@ -8,7 +8,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.ThaumcraftMaterials;
 import thaumcraft.api.items.IWarpingGear;
@@ -17,11 +16,10 @@ import thaumcraft.init.ModItems;
 /**
  * Void Metal Sword - Powerful but warping sword that applies weakness and self-repairs.
  */
-public class ItemVoidSword extends SwordItem implements IWarpingGear {
+public class ItemVoidSword extends Item implements IWarpingGear {
     
     public ItemVoidSword() {
-        super(ThaumcraftMaterials.TOOLMAT_VOID, 3, -2.4F, 
-                new Item.Properties().rarity(Rarity.RARE));
+        super((new Item.Properties().rarity(Rarity.RARE)).sword(ThaumcraftMaterials.TOOLMAT_VOID, 3, -2.4F));
     }
     
     @Override

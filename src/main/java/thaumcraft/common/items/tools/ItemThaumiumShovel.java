@@ -12,8 +12,7 @@ import thaumcraft.init.ModItems;
 public class ItemThaumiumShovel extends ShovelItem {
     
     public ItemThaumiumShovel() {
-        super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1.5F, -3.0F, 
-                new Item.Properties());
+        super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1.5F, -3.0F, new Item.Properties());
     }
     
     @Override

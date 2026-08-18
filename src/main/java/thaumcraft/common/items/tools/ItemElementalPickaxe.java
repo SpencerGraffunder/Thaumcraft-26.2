@@ -6,7 +6,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -23,14 +22,12 @@ import java.util.List;
  * Sets entities on fire when hit.
  * Has built-in Refining and Sounding infusion enchantments.
  */
-public class ItemElementalPickaxe extends PickaxeItem {
+public class ItemElementalPickaxe extends Item {
 
     public ItemElementalPickaxe() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL,
-                1,  // attack damage bonus
-                -2.8f,  // attack speed
+        super((// attack speed
                 new Item.Properties()
-                        .rarity(Rarity.RARE));
+                        .rarity(Rarity.RARE)).pickaxe(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
     }
 
     @Override

@@ -7,7 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.ThaumcraftMaterials;
@@ -17,11 +16,10 @@ import thaumcraft.init.ModItems;
 /**
  * Void Metal Pickaxe - Powerful but warping pickaxe that applies weakness and self-repairs.
  */
-public class ItemVoidPickaxe extends PickaxeItem implements IWarpingGear {
+public class ItemVoidPickaxe extends Item implements IWarpingGear {
     
     public ItemVoidPickaxe() {
-        super(ThaumcraftMaterials.TOOLMAT_VOID, 1, -2.8F, 
-                new Item.Properties().rarity(Rarity.RARE));
+        super((new Item.Properties().rarity(Rarity.RARE)).pickaxe(ThaumcraftMaterials.TOOLMAT_VOID, 1, -2.8F));
     }
     
     @Override

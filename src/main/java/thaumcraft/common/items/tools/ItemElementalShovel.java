@@ -35,10 +35,7 @@ import java.util.List;
 public class ItemElementalShovel extends ShovelItem {
 
     public ItemElementalShovel() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL,
-                1.5f,  // attack damage bonus
-                -3.0f,  // attack speed
-                new Item.Properties()
+        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 1.5f, -3.0f, new Item.Properties()
                         .rarity(Rarity.RARE));
     }
 

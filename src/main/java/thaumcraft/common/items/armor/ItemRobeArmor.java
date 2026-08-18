@@ -6,10 +6,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.context.UseOnContext;
@@ -27,35 +27,33 @@ import javax.annotation.Nullable;
  * Thaumaturge's Robe Armor - Cloth armor that provides vis discounts.
  * Can be dyed like leather armor.
  */
-public class ItemRobeArmor extends ArmorItem implements IVisDiscountGear, DyeableLeatherItem {
+public class ItemRobeArmor extends Item implements IVisDiscountGear, DyeableLeatherItem {
     
     // Default robe color (brown-ish purple)
     private static final int DEFAULT_COLOR = 0x6A4C00;
     
-    public ItemRobeArmor(Type type) {
-        super(ThaumcraftMaterials.ARMORMAT_SPECIAL, type, 
-                new Item.Properties()
-                        .stacksTo(1)
-                        .rarity(Rarity.UNCOMMON));
+    public ItemRobeArmor(ArmorType type) {
+        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_SPECIAL, type));
+    
     }
     
     // Factory methods for different armor pieces
     public static ItemRobeArmor createChest() {
-        return new ItemRobeArmor(Type.CHESTPLATE);
+        return new ItemRobeArmor(ArmorType.CHESTPLATE);
     }
     
     public static ItemRobeArmor createLegs() {
-        return new ItemRobeArmor(Type.LEGGINGS);
+        return new ItemRobeArmor(ArmorType.LEGGINGS);
     }
     
     public static ItemRobeArmor createBoots() {
-        return new ItemRobeArmor(Type.BOOTS);
+        return new ItemRobeArmor(ArmorType.BOOTS);
     }
     
     @Override
     public int getVisDiscount(ItemStack stack, Player player) {
         // Boots give 2%, other pieces give 3%
-        return this.getType() == Type.BOOTS ? 2 : 3;
+        return this.getType() == ArmorType.BOOTS ? 2 : 3;
     }
     
     @Override

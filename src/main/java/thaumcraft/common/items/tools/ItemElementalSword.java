@@ -11,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
@@ -30,14 +29,12 @@ import java.util.List;
  * When used, allows the player to float and pushes nearby entities away.
  * Has built-in Arcing infusion enchantment.
  */
-public class ItemElementalSword extends SwordItem {
+public class ItemElementalSword extends Item {
 
     public ItemElementalSword() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL,
-                3,  // attack damage bonus
-                -2.4f,  // attack speed
+        super((// attack speed
                 new Item.Properties()
-                        .rarity(Rarity.RARE));
+                        .rarity(Rarity.RARE)).sword(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
     }
 
     @Override

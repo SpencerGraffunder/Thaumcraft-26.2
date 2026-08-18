@@ -7,9 +7,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.context.UseOnContext;
@@ -31,30 +31,28 @@ import javax.annotation.Nullable;
  * with robe aesthetics. Self-repairs, provides vis discount, and goggles functionality
  * on the helmet. Causes warp when worn.
  */
-public class ItemVoidRobeArmor extends ArmorItem 
+public class ItemVoidRobeArmor extends Item 
         implements IVisDiscountGear, IGoggles, IRevealer, IWarpingGear, DyeableLeatherItem {
     
     // Default color (dark purple)
     private static final int DEFAULT_COLOR = 0x6A4C00;
     
-    public ItemVoidRobeArmor(Type type) {
-        super(ThaumcraftMaterials.ARMORMAT_VOIDROBE, type, 
-                new Item.Properties()
-                        .stacksTo(1)
-                        .rarity(Rarity.EPIC));
+    public ItemVoidRobeArmor(ArmorType type) {
+        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_VOIDROBE, type));
+    
     }
     
     // Factory methods
     public static ItemVoidRobeArmor createHelmet() {
-        return new ItemVoidRobeArmor(Type.HELMET);
+        return new ItemVoidRobeArmor(ArmorType.HELMET);
     }
     
     public static ItemVoidRobeArmor createChestplate() {
-        return new ItemVoidRobeArmor(Type.CHESTPLATE);
+        return new ItemVoidRobeArmor(ArmorType.CHESTPLATE);
     }
     
     public static ItemVoidRobeArmor createLeggings() {
-        return new ItemVoidRobeArmor(Type.LEGGINGS);
+        return new ItemVoidRobeArmor(ArmorType.LEGGINGS);
     }
     
     @Override
@@ -98,12 +96,12 @@ public class ItemVoidRobeArmor extends ArmorItem
     
     @Override
     public boolean showNodes(ItemStack itemstack, LivingEntity player) {
-        return this.getType() == Type.HELMET;
+        return this.getType() == ArmorType.HELMET;
     }
     
     @Override
     public boolean showIngamePopups(ItemStack itemstack, LivingEntity player) {
-        return this.getType() == Type.HELMET;
+        return this.getType() == ArmorType.HELMET;
     }
     
     // ==================== IWarpingGear ====================

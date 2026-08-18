@@ -4,8 +4,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
@@ -18,28 +18,28 @@ import javax.annotation.Nullable;
 /**
  * Void Metal Armor - High protection, self-repairing, but warping.
  */
-public class ItemVoidArmor extends ArmorItem implements IWarpingGear {
+public class ItemVoidArmor extends Item implements IWarpingGear {
     
-    public ItemVoidArmor(Type type) {
-        super(ThaumcraftMaterials.ARMORMAT_VOID, type, 
-                new Item.Properties().rarity(Rarity.RARE));
+    public ItemVoidArmor(ArmorType type) {
+        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_VOID, type));
+    
     }
     
     // Factory methods for different armor pieces
     public static ItemVoidArmor createHelmet() {
-        return new ItemVoidArmor(Type.HELMET);
+        return new ItemVoidArmor(ArmorType.HELMET);
     }
     
     public static ItemVoidArmor createChestplate() {
-        return new ItemVoidArmor(Type.CHESTPLATE);
+        return new ItemVoidArmor(ArmorType.CHESTPLATE);
     }
     
     public static ItemVoidArmor createLeggings() {
-        return new ItemVoidArmor(Type.LEGGINGS);
+        return new ItemVoidArmor(ArmorType.LEGGINGS);
     }
     
     public static ItemVoidArmor createBoots() {
-        return new ItemVoidArmor(Type.BOOTS);
+        return new ItemVoidArmor(ArmorType.BOOTS);
     }
     
     @Override

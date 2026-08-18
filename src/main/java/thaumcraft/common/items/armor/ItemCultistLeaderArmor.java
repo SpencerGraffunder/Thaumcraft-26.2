@@ -5,8 +5,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
@@ -26,27 +26,24 @@ import java.util.function.Consumer;
  * Provides excellent protection with toughness bonus.
  * Also inflicts warp on the wearer due to its eldritch nature.
  */
-public class ItemCultistLeaderArmor extends ArmorItem implements IWarpingGear {
+public class ItemCultistLeaderArmor extends Item implements IWarpingGear {
     
-    public ItemCultistLeaderArmor(Type type) {
-        super(ThaumcraftMaterials.ARMORMAT_CULTIST_LEADER, type, 
-                new Item.Properties()
-                        .stacksTo(1)
-                        .rarity(Rarity.RARE)
-                        .fireResistant());
+    public ItemCultistLeaderArmor(ArmorType type) {
+        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_CULTIST_LEADER, type));
+    
     }
     
     // Factory methods for each armor piece
     public static ItemCultistLeaderArmor createHelmet() {
-        return new ItemCultistLeaderArmor(Type.HELMET);
+        return new ItemCultistLeaderArmor(ArmorType.HELMET);
     }
     
     public static ItemCultistLeaderArmor createChestplate() {
-        return new ItemCultistLeaderArmor(Type.CHESTPLATE);
+        return new ItemCultistLeaderArmor(ArmorType.CHESTPLATE);
     }
     
     public static ItemCultistLeaderArmor createLeggings() {
-        return new ItemCultistLeaderArmor(Type.LEGGINGS);
+        return new ItemCultistLeaderArmor(ArmorType.LEGGINGS);
     }
     
     @Override

@@ -22,10 +22,7 @@ import java.util.List;
 public class ItemElementalHoe extends HoeItem {
 
     public ItemElementalHoe() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL,
-                -2,  // attack damage bonus (hoes have low damage)
-                -1.0f,  // attack speed
-                new Item.Properties()
+        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, -2, -1.0f, new Item.Properties()
                         .rarity(Rarity.RARE));
     }
 

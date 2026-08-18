@@ -5,18 +5,15 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.TierSortingEvent;
 import thaumcraft.api.items.IWarpingGear;
 import thaumcraft.init.ModItems;
 
@@ -27,67 +24,40 @@ import java.util.List;
  * Primal Crusher - A multi-tool that works as both pickaxe and shovel.
  * Made from void metal, it self-repairs and causes warp.
  * Has built-in Destructive and Refining infusion enchantments.
+ * Ported to MC 26.2: pickaxe property + tool component based.
  */
-public class ItemPrimalCrusher extends DiggerItem implements IWarpingGear {
+public class ItemPrimalCrusher extends Item implements IWarpingGear {
 
     /**
      * Custom tier for the Primal Crusher - based on void metal but enhanced.
+     * Durability: 500, Speed: 8, Damage: 4, Enchantability: 20
      */
-    public static final ToolMaterial PRIMAL_VOID_TIER = new ToolMaterial() {
-        @Override
-        public int getUses() {
-            return 500;
-        }
+    public static final ToolMaterial PRIMAL_VOID_TIER = new ToolMaterial(
+            BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 500, 8.0f, 4.0f, 20,
+            ThaumcraftItemTag("void_metal_ingot"));
 
-        @Override
-        public float getSpeed() {
-            return 8.0f;
-        }
-
-        @Override
-        public float getAttackDamageBonus() {
-            return 4.0f;
-        }
-
-        @Override
-        public int getLevel() {
-            return 5; // Higher than netherite (4)
-        }
-
-        @Override
-        public int getEnchantmentValue() {
-            return 20;
-        }
-
-        @Override
-        public Ingredient getRepairIngredient() {
-            return Ingredient.of(ModItems.VOID_METAL_INGOT.get());
-        }
-    };
+    private static net.minecraft.tags.TagKey<net.minecraft.world.item.Item> ThaumcraftItemTag(String name) {
+        return net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("thaumcraft", name));
+    }
 
     public ItemPrimalCrusher() {
-        super(3.5f,  // attack damage
-                -2.8f,  // attack speed
-                PRIMAL_VOID_TIER,
-                BlockTags.MINEABLE_WITH_PICKAXE,  // Primary tag, but we override getDestroySpeed
-                new Item.Properties()
-                        .rarity(Rarity.EPIC));
+        super(new Item.Properties()
+                .rarity(Rarity.EPIC)
+                .pickaxe(PRIMAL_VOID_TIER, 3.5f, -2.8f));
     }
 
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
         // Works on both pickaxe and shovel blocks
-        if (state.is(BlockTags.MINEABLE_WITH_PICKAXE) || state.is(BlockTags.MINEABLE_WITH_SHOVEL)) {
-            return TierSortingRegistry.isCorrectTierForDrops(PRIMAL_VOID_TIER, state);
-        }
-        return false;
+        return state.is(BlockTags.MINEABLE_WITH_PICKAXE) || state.is(BlockTags.MINEABLE_WITH_SHOVEL);
     }
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
         // Fast on all pickaxe and shovel blocks
         if (state.is(BlockTags.MINEABLE_WITH_PICKAXE) || state.is(BlockTags.MINEABLE_WITH_SHOVEL)) {
-            return PRIMAL_VOID_TIER.getSpeed();
+            return 8.0f;
         }
         return super.getDestroySpeed(stack, state);
     }
@@ -103,7 +73,7 @@ public class ItemPrimalCrusher extends DiggerItem implements IWarpingGear {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         super.inventoryTick(stack, level, entity, slotId, isSelected);
-        
+
         if (stack.isDamaged() && entity != null && entity.tickCount % 20 == 0 && entity instanceof LivingEntity living) {
             stack.setDamageValue(stack.getDamageValue() - 1);
         }

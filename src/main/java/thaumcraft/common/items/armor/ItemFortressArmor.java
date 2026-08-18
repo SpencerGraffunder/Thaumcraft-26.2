@@ -7,8 +7,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
@@ -26,26 +26,24 @@ import java.util.List;
  * The helmet can have goggles attached and different mask variants.
  * Provides bonus armor when wearing multiple pieces.
  */
-public class ItemFortressArmor extends ArmorItem implements IGoggles, IRevealer {
+public class ItemFortressArmor extends Item implements IGoggles, IRevealer {
     
-    public ItemFortressArmor(Type type) {
-        super(ThaumcraftMaterials.ARMORMAT_FORTRESS, type, 
-                new Item.Properties()
-                        .stacksTo(1)
-                        .rarity(Rarity.RARE));
+    public ItemFortressArmor(ArmorType type) {
+        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_FORTRESS, type));
+    
     }
     
     // Factory methods
     public static ItemFortressArmor createHelmet() {
-        return new ItemFortressArmor(Type.HELMET);
+        return new ItemFortressArmor(ArmorType.HELMET);
     }
     
     public static ItemFortressArmor createChestplate() {
-        return new ItemFortressArmor(Type.CHESTPLATE);
+        return new ItemFortressArmor(ArmorType.CHESTPLATE);
     }
     
     public static ItemFortressArmor createLeggings() {
-        return new ItemFortressArmor(Type.LEGGINGS);
+        return new ItemFortressArmor(ArmorType.LEGGINGS);
     }
     
     @Override
@@ -129,12 +127,12 @@ public class ItemFortressArmor extends ArmorItem implements IGoggles, IRevealer 
     
     @Override
     public boolean showNodes(ItemStack itemstack, LivingEntity player) {
-        return hasGoggles(itemstack) && this.getType() == Type.HELMET;
+        return hasGoggles(itemstack) && this.getType() == ArmorType.HELMET;
     }
     
     @Override
     public boolean showIngamePopups(ItemStack itemstack, LivingEntity player) {
-        return hasGoggles(itemstack) && this.getType() == Type.HELMET;
+        return hasGoggles(itemstack) && this.getType() == ArmorType.HELMET;
     }
     
     // ==================== Set Bonus Calculation ====================

@@ -4,8 +4,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import thaumcraft.api.ThaumcraftMaterials;
@@ -22,14 +22,13 @@ import javax.annotation.Nullable;
  * 
  * Can be worn as helmet armor or potentially as a Curios bauble.
  */
-public class ItemGoggles extends ArmorItem implements IVisDiscountGear, IRevealer, IGoggles {
+public class ItemGoggles extends Item implements IVisDiscountGear, IRevealer, IGoggles {
     
     public ItemGoggles() {
-        super(ThaumcraftMaterials.ARMORMAT_SPECIAL, Type.HELMET, 
-                new Item.Properties()
+        super((new Item.Properties()
                         .stacksTo(1)
                         .durability(350)
-                        .rarity(Rarity.RARE));
+                        .rarity(Rarity.RARE)).humanoidArmor(ThaumcraftMaterials.ARMORMAT_SPECIAL, ArmorType.HELMET));
     }
     
     @Override

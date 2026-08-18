@@ -9,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -27,7 +26,7 @@ import java.util.List;
  * Applies weakness and hunger to targets.
  * Self-repairs and causes warp when equipped.
  */
-public class ItemCrimsonBlade extends SwordItem implements IWarpingGear {
+public class ItemCrimsonBlade extends Item implements IWarpingGear {
 
     /**
      * Custom tier for the Crimson Blade.
@@ -65,11 +64,9 @@ public class ItemCrimsonBlade extends SwordItem implements IWarpingGear {
     };
 
     public ItemCrimsonBlade() {
-        super(CRIMSON_VOID_TIER,
-                3,  // attack damage bonus
-                -2.4f,  // attack speed
+        super((// attack speed
                 new Item.Properties()
-                        .rarity(Rarity.EPIC));
+                        .rarity(Rarity.EPIC)).sword(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
     }
 
     @Override

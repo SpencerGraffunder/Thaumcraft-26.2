@@ -2,18 +2,16 @@ package thaumcraft.common.items.tools;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import thaumcraft.api.ThaumcraftMaterials;
 import thaumcraft.init.ModItems;
 
 /**
  * Thaumium Sword - Magic-infused iron sword with better stats.
  */
-public class ItemThaumiumSword extends SwordItem {
+public class ItemThaumiumSword extends Item {
     
     public ItemThaumiumSword() {
-        super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 3, -2.4F, 
-                new Item.Properties());
+        super((new Item.Properties()).sword(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 3, -2.4F));
     }
     
     @Override

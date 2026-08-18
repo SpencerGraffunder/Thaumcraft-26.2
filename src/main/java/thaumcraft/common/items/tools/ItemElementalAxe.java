@@ -32,10 +32,7 @@ import java.util.List;
 public class ItemElementalAxe extends AxeItem {
 
     public ItemElementalAxe() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL,
-                8.0f,  // attack damage bonus
-                -3.0f,  // attack speed
-                new Item.Properties()
+        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 8.0f, -3.0f, new Item.Properties()
                         .rarity(Rarity.RARE));
     }
 

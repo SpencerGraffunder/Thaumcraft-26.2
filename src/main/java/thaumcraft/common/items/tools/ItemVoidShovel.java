@@ -20,8 +20,7 @@ import thaumcraft.init.ModItems;
 public class ItemVoidShovel extends ShovelItem implements IWarpingGear {
     
     public ItemVoidShovel() {
-        super(ThaumcraftMaterials.TOOLMAT_VOID, 1.5F, -3.0F, 
-                new Item.Properties().rarity(Rarity.RARE));
+        super(ThaumcraftMaterials.TOOLMAT_VOID, 1.5F, -3.0F, new Item.Properties().rarity(Rarity.RARE));
     }
     
     @Override

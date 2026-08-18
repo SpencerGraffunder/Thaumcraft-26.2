@@ -2,18 +2,16 @@ package thaumcraft.common.items.tools;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
 import thaumcraft.api.ThaumcraftMaterials;
 import thaumcraft.init.ModItems;
 
 /**
  * Thaumium Pickaxe - Magic-infused iron pickaxe with better stats.
  */
-public class ItemThaumiumPickaxe extends PickaxeItem {
+public class ItemThaumiumPickaxe extends Item {
     
     public ItemThaumiumPickaxe() {
-        super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F, 
-                new Item.Properties());
+        super((new Item.Properties()).pickaxe(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
     }
     
     @Override
