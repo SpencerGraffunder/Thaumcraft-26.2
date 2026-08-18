@@ -15,7 +15,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import thaumcraft.Thaumcraft;
@@ -36,10 +36,10 @@ import thaumcraft.init.ModBlocks;
  */
 public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
 
-    public static final ResourceLocation UID = new ResourceLocation(Thaumcraft.MODID, "arcane_workbench");
+    public static final Identifier UID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "arcane_workbench");
     
     // GUI texture - using vanilla crafting table as base for now
-    private static final ResourceLocation TEXTURE = new ResourceLocation("jei", "textures/jei/gui/gui_vanilla.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/jei/gui/gui_vanilla.png");
 
     private final IDrawable background;
     private final IDrawable icon;

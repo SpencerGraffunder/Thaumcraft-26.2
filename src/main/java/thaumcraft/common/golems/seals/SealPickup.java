@@ -2,7 +2,7 @@ package thaumcraft.common.golems.seals;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -40,12 +40,12 @@ public class SealPickup extends SealFiltered implements ISealConfigArea, ISealCo
     
     private int delay;
     private HashMap<Integer, Integer> itemEntities = new HashMap<>();
-    private ResourceLocation icon;
+    private Identifier icon;
     protected SealToggle[] props;
     
     public SealPickup() {
         delay = new Random(System.nanoTime()).nextInt(100);
-        icon = new ResourceLocation(Thaumcraft.MODID, "items/seals/seal_pickup");
+        icon = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "items/seals/seal_pickup");
         props = new SealToggle[] {
             new SealToggle(true, "pmeta", "golem.prop.meta"),
             new SealToggle(true, "pnbt", "golem.prop.nbt"),
@@ -210,7 +210,7 @@ public class SealPickup extends SealFiltered implements ISealConfigArea, ISealCo
     }
     
     @Override
-    public ResourceLocation getSealIcon() {
+    public Identifier getSealIcon() {
         return icon;
     }
     

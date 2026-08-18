@@ -3,7 +3,7 @@ package thaumcraft.api.aspects;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -19,13 +19,13 @@ public class AspectHelper {
     
     /**
      * Registry of aspects for items/blocks
-     * Key is the ResourceLocation string (e.g., "minecraft:stone")
+     * Key is the Identifier string (e.g., "minecraft:stone")
      */
     private static Map<String, AspectList> objectTags = new HashMap<>();
     
     /**
      * Registry of aspects for entities
-     * Key is the entity type ResourceLocation string
+     * Key is the entity type Identifier string
      */
     private static Map<String, AspectList> entityTags = new HashMap<>();
     
@@ -39,7 +39,7 @@ public class AspectHelper {
             return null;
         }
         
-        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
         if (itemId == null) {
             return null;
         }
@@ -61,18 +61,18 @@ public class AspectHelper {
             return;
         }
         
-        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
         if (itemId != null) {
             objectTags.put(itemId.toString(), aspects);
         }
     }
     
     /**
-     * Register aspects for an item by ResourceLocation
+     * Register aspects for an item by Identifier
      * @param itemId the item's resource location
      * @param aspects the aspects to associate
      */
-    public static void registerObjectTag(ResourceLocation itemId, AspectList aspects) {
+    public static void registerObjectTag(Identifier itemId, AspectList aspects) {
         if (itemId != null && aspects != null) {
             objectTags.put(itemId.toString(), aspects);
         }
@@ -83,7 +83,7 @@ public class AspectHelper {
      * @param entityId the entity type's resource location
      * @param aspects the aspects to associate
      */
-    public static void registerEntityTag(ResourceLocation entityId, AspectList aspects) {
+    public static void registerEntityTag(Identifier entityId, AspectList aspects) {
         if (entityId != null && aspects != null) {
             entityTags.put(entityId.toString(), aspects);
         }
@@ -94,7 +94,7 @@ public class AspectHelper {
      * @param entityId the entity type resource location
      * @return the aspects for this entity, or null if none
      */
-    public static AspectList getEntityAspects(ResourceLocation entityId) {
+    public static AspectList getEntityAspects(Identifier entityId) {
         if (entityId == null) {
             return null;
         }
@@ -110,7 +110,7 @@ public class AspectHelper {
         if (entity == null) {
             return null;
         }
-        ResourceLocation entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        Identifier entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         return getEntityAspects(entityId);
     }
     

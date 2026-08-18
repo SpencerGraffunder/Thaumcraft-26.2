@@ -8,11 +8,11 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.common.entities.EntityFallingTaint;
 
 /**
@@ -28,7 +28,7 @@ public class FallingTaintRenderer extends EntityRenderer<EntityFallingTaint> {
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityFallingTaint entity) {
+    public Identifier getTextureLocation(EntityFallingTaint entity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
     

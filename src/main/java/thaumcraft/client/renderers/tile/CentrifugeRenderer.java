@@ -4,13 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.block.CentrifugeModel;
 import thaumcraft.common.tiles.essentia.TileCentrifuge;
@@ -22,8 +22,8 @@ import thaumcraft.common.tiles.essentia.TileCentrifuge;
 @OnlyIn(Dist.CLIENT)
 public class CentrifugeRenderer implements BlockEntityRenderer<TileCentrifuge> {
 
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/models/centrifuge.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/centrifuge.png");
 
     private final CentrifugeModel model;
 

@@ -10,11 +10,11 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 
 /**
@@ -27,11 +27,11 @@ import org.joml.Matrix4f;
 @OnlyIn(Dist.CLIENT)
 public class FXBlockWard extends TextureSheetParticle {
     
-    private static final ResourceLocation[] TEXTURES = new ResourceLocation[15];
+    private static final Identifier[] TEXTURES = new Identifier[15];
     
     static {
         for (int i = 0; i < 15; i++) {
-            TEXTURES[i] = new ResourceLocation("thaumcraft", "textures/models/hemis" + (i + 1) + ".png");
+            TEXTURES[i] = Identifier.fromNamespaceAndPath("thaumcraft", "textures/models/hemis" + (i + 1) + ".png");
         }
     }
     

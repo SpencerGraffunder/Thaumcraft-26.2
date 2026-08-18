@@ -8,11 +8,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 
 /**
@@ -31,7 +31,7 @@ import org.joml.Matrix4f;
 @OnlyIn(Dist.CLIENT)
 public class FXPlane extends TextureSheetParticle {
     
-    private static final ResourceLocation PARTICLE_TEXTURE = new ResourceLocation("thaumcraft", "textures/misc/particles.png");
+    private static final Identifier PARTICLE_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/particles.png");
     
     private float angle;      // Random roll rotation
     private float angleYaw;   // Yaw to face target

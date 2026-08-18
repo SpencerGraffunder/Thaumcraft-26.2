@@ -2,15 +2,15 @@ package thaumcraft.api;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.crafting.StrictNBTItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
@@ -123,7 +123,7 @@ public class ThaumcraftApiHelper {
         
         // Get the crystal essence item from the registry
         Item crystalItem = ForgeRegistries.ITEMS.getValue(
-                new ResourceLocation("thaumcraft", "crystal_essence"));
+                Identifier.fromNamespaceAndPath("thaumcraft", "crystal_essence"));
         
         if (crystalItem == null) return ItemStack.EMPTY;
         

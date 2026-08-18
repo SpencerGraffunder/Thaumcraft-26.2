@@ -1,6 +1,6 @@
 package thaumcraft.api.aspects;
 
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * This event is called when Thaumcraft is ready to accept the registration of aspects associated with items or entities.

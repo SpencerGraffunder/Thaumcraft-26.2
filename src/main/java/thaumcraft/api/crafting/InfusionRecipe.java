@@ -1,12 +1,12 @@
 package thaumcraft.api.crafting;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.RecipeMatcher;
+import net.minecraft.world.item.ItemStackHelper;
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
@@ -150,7 +150,7 @@ public class InfusionRecipe implements IThaumcraftRecipe {
         return group;
     }
 
-    public InfusionRecipe setGroup(ResourceLocation location) {
+    public InfusionRecipe setGroup(Identifier location) {
         this.group = location.toString();
         return this;
     }

@@ -5,14 +5,14 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.tiles.devices.TileDioptra;
@@ -26,10 +26,10 @@ import java.awt.Color;
 @OnlyIn(Dist.CLIENT)
 public class DioptraRenderer implements BlockEntityRenderer<TileDioptra> {
 
-    private static final ResourceLocation GRID_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/misc/gridblock.png");
-    private static final ResourceLocation SIDE_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/models/dioptra_side.png");
+    private static final Identifier GRID_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/gridblock.png");
+    private static final Identifier SIDE_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/dioptra_side.png");
 
     public DioptraRenderer(BlockEntityRendererProvider.Context context) {
     }

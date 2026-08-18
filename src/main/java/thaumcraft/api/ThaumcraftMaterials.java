@@ -2,9 +2,9 @@ package thaumcraft.api;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import thaumcraft.Thaumcraft;
 import thaumcraft.init.ModItems;
 
@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 /**
  * Custom materials for Thaumcraft armor and tools.
- * Updated for 1.20.1 using the new Tier and ArmorMaterial systems.
+ * Updated for 1.20.1 using the new ToolMaterial and ArmorMaterial systems.
  */
 public class ThaumcraftMaterials {
 
@@ -22,7 +22,7 @@ public class ThaumcraftMaterials {
      * Thaumium - Better than iron, magic-infused metal
      * Harvest Level: 3 (diamond), Durability: 500, Speed: 7, Damage: 2.5, Enchantability: 22
      */
-    public static final Tier TOOLMAT_THAUMIUM = new Tier() {
+    public static final ToolMaterial TOOLMAT_THAUMIUM = new ToolMaterial() {
         @Override public int getUses() { return 500; }
         @Override public float getSpeed() { return 7.0F; }
         @Override public float getAttackDamageBonus() { return 2.5F; }
@@ -37,7 +37,7 @@ public class ThaumcraftMaterials {
      * Void Metal - Brittle but extremely powerful
      * Harvest Level: 4 (netherite), Durability: 150, Speed: 8, Damage: 3, Enchantability: 10
      */
-    public static final Tier TOOLMAT_VOID = new Tier() {
+    public static final ToolMaterial TOOLMAT_VOID = new ToolMaterial() {
         @Override public int getUses() { return 150; }
         @Override public float getSpeed() { return 8.0F; }
         @Override public float getAttackDamageBonus() { return 3.0F; }
@@ -52,7 +52,7 @@ public class ThaumcraftMaterials {
      * Elemental Thaumium - Enhanced thaumium with elemental power
      * Harvest Level: 3, Durability: 1500, Speed: 9, Damage: 3, Enchantability: 18
      */
-    public static final Tier TOOLMAT_ELEMENTAL = new Tier() {
+    public static final ToolMaterial TOOLMAT_ELEMENTAL = new ToolMaterial() {
         @Override public int getUses() { return 1500; }
         @Override public float getSpeed() { return 9.0F; }
         @Override public float getAttackDamageBonus() { return 3.0F; }

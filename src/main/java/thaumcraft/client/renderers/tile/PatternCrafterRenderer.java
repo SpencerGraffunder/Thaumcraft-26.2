@@ -4,15 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.tiles.crafting.TilePatternCrafter;
@@ -24,10 +24,10 @@ import thaumcraft.common.tiles.crafting.TilePatternCrafter;
 @OnlyIn(Dist.CLIENT)
 public class PatternCrafterRenderer implements BlockEntityRenderer<TilePatternCrafter> {
 
-    private static final ResourceLocation MODES_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/blocks/pattern_crafter_modes.png");
-    private static final ResourceLocation GEAR_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/misc/gear_brass.png");
+    private static final Identifier MODES_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/pattern_crafter_modes.png");
+    private static final Identifier GEAR_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/gear_brass.png");
 
     public PatternCrafterRenderer(BlockEntityRendererProvider.Context context) {
     }

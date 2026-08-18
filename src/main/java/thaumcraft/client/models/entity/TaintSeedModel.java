@@ -11,10 +11,10 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.entities.monster.tainted.EntityTaintSeed;
 
@@ -34,7 +34,7 @@ import thaumcraft.common.entities.monster.tainted.EntityTaintSeed;
 public class TaintSeedModel<T extends EntityTaintSeed> extends EntityModel<T> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
-            new ModelLayerLocation(new ResourceLocation(Thaumcraft.MODID, "taint_seed"), "main");
+            new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_seed"), "main");
     
     // Number of tentacles radiating from the center
     private static final int NUM_TENTACLES = 6;

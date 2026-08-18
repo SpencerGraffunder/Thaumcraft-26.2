@@ -3,7 +3,7 @@ package thaumcraft.common.lib.compat;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import thaumcraft.api.items.IVisDiscountGear;
 
 import java.util.ArrayList;

@@ -30,7 +30,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import thaumcraft.common.tiles.crafting.TileThaumatorium;
 import thaumcraft.init.ModBlockEntities;
 import thaumcraft.init.ModBlocks;

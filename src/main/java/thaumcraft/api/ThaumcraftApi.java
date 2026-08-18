@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -47,7 +47,7 @@ public class ThaumcraftApi {
      * For example: "thaumcraft:research/basics"
      * @param loc the resourcelocation of the json file
      */
-    public static void registerResearchLocation(ResourceLocation loc) {
+    public static void registerResearchLocation(Identifier loc) {
         if (!CommonInternals.jsonLocs.containsKey(loc.toString())) {
             CommonInternals.jsonLocs.put(loc.toString(), loc);
         }
@@ -88,11 +88,11 @@ public class ThaumcraftApi {
         }
     }
     
-    public static Map<ResourceLocation, IThaumcraftRecipe> getCraftingRecipes() {
+    public static Map<Identifier, IThaumcraftRecipe> getCraftingRecipes() {
         return CommonInternals.craftingRecipeCatalog;
     }
     
-    public static Map<ResourceLocation, Object> getCraftingRecipesFake() {
+    public static Map<Identifier, Object> getCraftingRecipesFake() {
         return CommonInternals.craftingRecipeCatalogFake;
     }
     
@@ -102,7 +102,7 @@ public class ThaumcraftApi {
      * @param registry the recipe ID
      * @param recipe the recipe object
      */
-    public static void addFakeCraftingRecipe(ResourceLocation registry, Object recipe) {
+    public static void addFakeCraftingRecipe(Identifier registry, Object recipe) {
         getCraftingRecipesFake().put(registry, recipe);
     }
     
@@ -112,7 +112,7 @@ public class ThaumcraftApi {
      * @param registry unique identifier for this recipe
      * @param recipe the blueprint recipe
      */
-    public static void addMultiblockRecipeToCatalog(ResourceLocation registry, BluePrint recipe) {
+    public static void addMultiblockRecipeToCatalog(Identifier registry, BluePrint recipe) {
         getCraftingRecipes().put(registry, recipe);
     }
     
@@ -171,7 +171,7 @@ public class ThaumcraftApi {
             return group;
         }
         
-        public BluePrint setGroup(ResourceLocation loc) {
+        public BluePrint setGroup(Identifier loc) {
             group = loc.toString();
             return this;
         }
@@ -185,7 +185,7 @@ public class ThaumcraftApi {
      * @param registry unique identifier for this recipe
      * @param recipe the arcane recipe
      */
-    public static void addArcaneCraftingRecipe(ResourceLocation registry, IArcaneRecipe recipe) {
+    public static void addArcaneCraftingRecipe(Identifier registry, IArcaneRecipe recipe) {
         getCraftingRecipes().put(registry, recipe);
     }
     
@@ -194,7 +194,7 @@ public class ThaumcraftApi {
      * @param registry unique identifier for this recipe
      * @param recipe the infusion recipe
      */
-    public static void addInfusionCraftingRecipe(ResourceLocation registry, InfusionRecipe recipe) {
+    public static void addInfusionCraftingRecipe(Identifier registry, InfusionRecipe recipe) {
         getCraftingRecipes().put(registry, recipe);
     }
     
@@ -221,7 +221,7 @@ public class ThaumcraftApi {
      * @param registry unique identifier for this recipe
      * @param recipe the crucible recipe
      */
-    public static void addCrucibleRecipe(ResourceLocation registry, CrucibleRecipe recipe) {
+    public static void addCrucibleRecipe(Identifier registry, CrucibleRecipe recipe) {
         getCraftingRecipes().put(registry, recipe);
     }
     
@@ -288,7 +288,7 @@ public class ThaumcraftApi {
      */
     public static void registerObjectTag(String tagName, AspectList aspects) {
         try {
-            ResourceLocation tagLoc = new ResourceLocation(tagName);
+            Identifier tagLoc = Identifier.withDefaultNamespace(tagName);
             net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.ItemTags.create(tagLoc);
             var tag = net.minecraftforge.registries.ForgeRegistries.ITEMS.tags().getTag(tagKey);
             if (tag.isBound()) {
@@ -331,7 +331,7 @@ public class ThaumcraftApi {
 
     public static void registerComplexObjectTag(String tagName, AspectList aspects) {
         try {
-            ResourceLocation tagLoc = new ResourceLocation(tagName);
+            Identifier tagLoc = Identifier.withDefaultNamespace(tagName);
             net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.ItemTags.create(tagLoc);
             var tag = net.minecraftforge.registries.ForgeRegistries.ITEMS.tags().getTag(tagKey);
             if (tag.isBound()) {
@@ -382,7 +382,7 @@ public class ThaumcraftApi {
         CommonInternals.scanEntities.add(new EntityTags(entityName, aspects, nbt));
         if (nbt == null || nbt.length == 0) {
             try {
-                AspectHelper.registerEntityTag(new ResourceLocation(entityName), aspects);
+                AspectHelper.registerEntityTag(Identifier.withDefaultNamespace(entityName), aspects);
             } catch (Exception e) {}
         }
     }

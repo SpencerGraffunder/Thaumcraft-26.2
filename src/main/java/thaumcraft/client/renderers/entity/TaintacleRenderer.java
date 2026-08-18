@@ -5,9 +5,9 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.entity.TaintacleModel;
 import thaumcraft.common.entities.monster.tainted.EntityTaintacle;
@@ -18,15 +18,15 @@ import thaumcraft.common.entities.monster.tainted.EntityTaintacle;
 @OnlyIn(Dist.CLIENT)
 public class TaintacleRenderer extends MobRenderer<EntityTaintacle, TaintacleModel<EntityTaintacle>> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/taintacle.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/taintacle.png");
     
     public TaintacleRenderer(EntityRendererProvider.Context context) {
         super(context, new TaintacleModel<>(context.bakeLayer(TaintacleModel.LAYER_LOCATION)), 0.3F);
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityTaintacle entity) {
+    public Identifier getTextureLocation(EntityTaintacle entity) {
         return TEXTURE;
     }
     

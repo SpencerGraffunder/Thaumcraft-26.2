@@ -5,10 +5,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.menu.PechMenu;
 
@@ -20,8 +20,8 @@ import thaumcraft.common.menu.PechMenu;
 @OnlyIn(Dist.CLIENT)
 public class PechScreen extends AbstractContainerScreen<PechMenu> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_pech.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_pech.png");
     
     public PechScreen(PechMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);

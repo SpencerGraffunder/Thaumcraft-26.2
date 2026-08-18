@@ -1,7 +1,7 @@
 package thaumcraft.common.config;
 
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -118,7 +118,7 @@ public class ConfigMultiblocks {
         
         // Add to catalog for thaumonomicon display
         ThaumcraftApi.addMultiblockRecipeToCatalog(
-                new ResourceLocation(Thaumcraft.MODID, "infernalfurnace"),
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "infernalfurnace"),
                 new ThaumcraftApi.BluePrint("INFERNALFURNACE", blueprint,
                         new ItemStack(Blocks.NETHER_BRICKS, 12),
                         new ItemStack(Blocks.OBSIDIAN, 12),
@@ -178,7 +178,7 @@ public class ConfigMultiblocks {
         
         IDustTrigger.registerDustTrigger(new DustTriggerMultiblock("INFUSION", normalBlueprint));
         ThaumcraftApi.addMultiblockRecipeToCatalog(
-                new ResourceLocation(Thaumcraft.MODID, "infusionaltar"),
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "infusionaltar"),
                 new ThaumcraftApi.BluePrint("INFUSION", normalBlueprint,
                         new ItemStack(ModBlocks.ARCANE_STONE.get(), 8),
                         new ItemStack(ModBlocks.PEDESTAL_ARCANE.get()),
@@ -202,7 +202,7 @@ public class ConfigMultiblocks {
         
         IDustTrigger.registerDustTrigger(new DustTriggerMultiblock("INFUSIONANCIENT", ancientBlueprint));
         ThaumcraftApi.addMultiblockRecipeToCatalog(
-                new ResourceLocation(Thaumcraft.MODID, "infusionaltarancient"),
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "infusionaltarancient"),
                 new ThaumcraftApi.BluePrint("INFUSIONANCIENT", ancientBlueprint,
                         new ItemStack(ModBlocks.ANCIENT_STONE.get(), 8),
                         new ItemStack(ModBlocks.PEDESTAL_ANCIENT.get()),
@@ -226,7 +226,7 @@ public class ConfigMultiblocks {
         
         IDustTrigger.registerDustTrigger(new DustTriggerMultiblock("INFUSIONELDRITCH", eldritchBlueprint));
         ThaumcraftApi.addMultiblockRecipeToCatalog(
-                new ResourceLocation(Thaumcraft.MODID, "infusionaltareldritch"),
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "infusionaltareldritch"),
                 new ThaumcraftApi.BluePrint("INFUSIONELDRITCH", eldritchBlueprint,
                         new ItemStack(ModBlocks.ELDRITCH_STONE_TILE.get(), 8),
                         new ItemStack(ModBlocks.PEDESTAL_ELDRITCH.get()),
@@ -257,7 +257,7 @@ public class ConfigMultiblocks {
         
         IDustTrigger.registerDustTrigger(new DustTriggerMultiblock("THAUMATORIUM", blueprint));
         ThaumcraftApi.addMultiblockRecipeToCatalog(
-                new ResourceLocation(Thaumcraft.MODID, "thaumatorium"),
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "thaumatorium"),
                 new ThaumcraftApi.BluePrint("THAUMATORIUM", blueprint,
                         new ItemStack(ModBlocks.ALCHEMICAL_BRASS_BLOCK.get(), 2),
                         new ItemStack(ModBlocks.CRUCIBLE.get())
@@ -299,7 +299,7 @@ public class ConfigMultiblocks {
         
         IDustTrigger.registerDustTrigger(new DustTriggerMultiblock("MINDCLOCKWORK", blueprint));
         ThaumcraftApi.addMultiblockRecipeToCatalog(
-                new ResourceLocation(Thaumcraft.MODID, "golempress"),
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "golempress"),
                 new ThaumcraftApi.BluePrint("MINDCLOCKWORK", 
                         new ItemStack(ModBlocks.GOLEM_BUILDER.get()), // Display item
                         blueprint,

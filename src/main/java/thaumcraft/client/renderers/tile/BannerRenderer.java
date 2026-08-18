@@ -5,14 +5,14 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import org.joml.Matrix4f;
@@ -32,10 +32,10 @@ import java.awt.Color;
 @OnlyIn(Dist.CLIENT)
 public class BannerRenderer implements BlockEntityRenderer<TileBanner> {
     
-    private static final ResourceLocation TEX_CULT = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/models/banner_cultist.png");
-    private static final ResourceLocation TEX_BLANK = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/models/banner_blank.png");
+    private static final Identifier TEX_CULT = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/banner_cultist.png");
+    private static final Identifier TEX_BLANK = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/banner_blank.png");
     
     private final BannerModel model;
     
@@ -50,7 +50,7 @@ public class BannerRenderer implements BlockEntityRenderer<TileBanner> {
                        MultiBufferSource buffer, int packedLight, int packedOverlay) {
         
         // Choose texture based on banner type
-        ResourceLocation texture;
+        Identifier texture;
         if (banner.getAspect() == null && banner.getColor() == -1) {
             texture = TEX_CULT;
         } else {
@@ -140,7 +140,7 @@ public class BannerRenderer implements BlockEntityRenderer<TileBanner> {
                                   int x, int y, int packedLight, int packedOverlay, float alpha) {
         if (aspect == null) return;
         
-        ResourceLocation texture = aspect.getImage();
+        Identifier texture = aspect.getImage();
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
         
         // Get aspect color

@@ -6,15 +6,15 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.event.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -77,7 +77,7 @@ public class PacketBiomeChange {
         BlockPos pos = new BlockPos(packet.x, packet.y, packet.z);
         
         // Get the biome from registry
-        ResourceLocation biomeRL = new ResourceLocation(packet.biomeId);
+        Identifier biomeRL = Identifier.withDefaultNamespace(packet.biomeId);
         var biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
         Holder<Biome> biomeHolder = biomeRegistry.getHolder(ResourceKey.create(Registries.BIOME, biomeRL)).orElse(null);
         

@@ -1,7 +1,7 @@
 package thaumcraft.api.research;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Represents additional content that can be unlocked after completing research.
@@ -13,7 +13,7 @@ public class ResearchAddendum {
     private String text;
 
     /** Recipes unlocked by this addendum */
-    private ResourceLocation[] recipes;
+    private Identifier[] recipes;
 
     /** Research keys that must be completed for this addendum */
     private String[] research;
@@ -32,11 +32,11 @@ public class ResearchAddendum {
         this.text = text;
     }
 
-    public ResourceLocation[] getRecipes() {
+    public Identifier[] getRecipes() {
         return recipes;
     }
 
-    public void setRecipes(ResourceLocation[] recipes) {
+    public void setRecipes(Identifier[] recipes) {
         this.recipes = recipes;
     }
 

@@ -5,16 +5,16 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
@@ -29,8 +29,8 @@ import java.util.Random;
 @OnlyIn(Dist.CLIENT)
 public class SpecialItemRenderer extends EntityRenderer<EntitySpecialItem> {
     
-    private static final ResourceLocation BLANK = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/misc/blank.png");
+    private static final Identifier BLANK = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/blank.png");
     
     private final ItemRenderer itemRenderer;
     private final Random random = new Random(187L);
@@ -43,7 +43,7 @@ public class SpecialItemRenderer extends EntityRenderer<EntitySpecialItem> {
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntitySpecialItem entity) {
+    public Identifier getTextureLocation(EntitySpecialItem entity) {
         return BLANK;
     }
     

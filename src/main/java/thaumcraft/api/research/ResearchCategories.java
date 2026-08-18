@@ -1,7 +1,7 @@
 package thaumcraft.api.research;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import thaumcraft.api.aspects.AspectList;
 
 import java.util.Collection;
@@ -62,7 +62,7 @@ public class ResearchCategories {
      * @return the registered category, or null if a category with that key already exists
      */
     public static ResearchCategory registerCategory(String key, String researchKey, AspectList formula,
-                                                    ResourceLocation icon, ResourceLocation background) {
+                                                    Identifier icon, Identifier background) {
         if (getResearchCategory(key) == null) {
             ResearchCategory category = new ResearchCategory(key, researchKey, formula, icon, background);
             researchCategories.put(key, category);
@@ -84,8 +84,8 @@ public class ResearchCategories {
      * @return the registered category, or null if a category with that key already exists
      */
     public static ResearchCategory registerCategory(String key, String researchKey, AspectList formula,
-                                                    ResourceLocation icon, ResourceLocation background,
-                                                    ResourceLocation background2) {
+                                                    Identifier icon, Identifier background,
+                                                    Identifier background2) {
         if (getResearchCategory(key) == null) {
             ResearchCategory category = new ResearchCategory(key, researchKey, formula, icon, background, background2);
             researchCategories.put(key, category);

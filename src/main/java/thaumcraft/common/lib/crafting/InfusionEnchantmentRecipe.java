@@ -6,7 +6,7 @@ import java.util.Random;
 import com.google.common.collect.Multimap;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -19,7 +19,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.RecipeMatcher;
+import net.minecraft.world.item.ItemStackHelper;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
@@ -32,7 +32,7 @@ public class InfusionEnchantmentRecipe extends InfusionRecipeType {
     
     public final EnumInfusionEnchantment enchantment;
     
-    public InfusionEnchantmentRecipe(ResourceLocation id, EnumInfusionEnchantment ench, AspectList as, NonNullList<Ingredient> components) {
+    public InfusionEnchantmentRecipe(Identifier id, EnumInfusionEnchantment ench, AspectList as, NonNullList<Ingredient> components) {
         super(id, "", Ingredient.EMPTY, components, as, ItemStack.EMPTY, ench.research, 4);
         this.enchantment = ench;
     }

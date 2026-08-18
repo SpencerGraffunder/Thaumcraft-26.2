@@ -4,14 +4,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
@@ -24,8 +24,8 @@ import thaumcraft.common.entities.monster.boss.EntityCultistPortalGreater;
 @OnlyIn(Dist.CLIENT)
 public class CultistPortalGreaterRenderer extends EntityRenderer<EntityCultistPortalGreater> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/misc/cultist_portal.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/cultist_portal.png");
     
     public CultistPortalGreaterRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -33,7 +33,7 @@ public class CultistPortalGreaterRenderer extends EntityRenderer<EntityCultistPo
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityCultistPortalGreater entity) {
+    public Identifier getTextureLocation(EntityCultistPortalGreater entity) {
         return TEXTURE;
     }
     

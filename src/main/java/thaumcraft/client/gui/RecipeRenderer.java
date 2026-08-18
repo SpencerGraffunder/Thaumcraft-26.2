@@ -5,12 +5,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -39,8 +39,8 @@ import java.util.Optional;
 @OnlyIn(Dist.CLIENT)
 public class RecipeRenderer {
     
-    private static final ResourceLocation OVERLAY_TEXTURE = new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_researchbook_overlay.png");
-    private static final ResourceLocation BOOK_TEXTURE = new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_researchbook.png");
+    private static final Identifier OVERLAY_TEXTURE = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_researchbook_overlay.png");
+    private static final Identifier BOOK_TEXTURE = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_researchbook.png");
     
     private static final int SLOT_SIZE = 18;
     private static final int ITEM_SIZE = 16;
@@ -62,7 +62,7 @@ public class RecipeRenderer {
      * @return list of tooltip components if hovering over an item, null otherwise
      */
     public static List<net.minecraft.network.chat.Component> renderRecipe(
-            GuiGraphics graphics, ResourceLocation recipeId, int x, int y, 
+            GuiGraphics graphics, Identifier recipeId, int x, int y, 
             int mouseX, int mouseY, Font font) {
         
         // Update cycle for animated ingredients
@@ -101,7 +101,7 @@ public class RecipeRenderer {
     /**
      * Find a recipe by its resource location.
      */
-    private static Object findRecipe(ResourceLocation id) {
+    private static Object findRecipe(Identifier id) {
         // First check Thaumcraft's catalog
         IThaumcraftRecipe tcRecipe = CommonInternals.getCatalogRecipe(id);
         if (tcRecipe != null) {

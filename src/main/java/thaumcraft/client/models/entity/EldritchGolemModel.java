@@ -11,10 +11,10 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.entities.monster.boss.EntityEldritchGolem;
 
@@ -32,7 +32,7 @@ import thaumcraft.common.entities.monster.boss.EntityEldritchGolem;
 public class EldritchGolemModel extends EntityModel<EntityEldritchGolem> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
-            new ModelLayerLocation(new ResourceLocation(Thaumcraft.MODID, "eldritch_golem"), "main");
+            new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_golem"), "main");
     
     private final ModelPart head;
     private final ModelPart headStump; // Shown when headless

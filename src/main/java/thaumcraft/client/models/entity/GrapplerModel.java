@@ -11,10 +11,10 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 
 /**
@@ -25,7 +25,7 @@ import thaumcraft.Thaumcraft;
 public class GrapplerModel extends Model {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
-            new ModelLayerLocation(new ResourceLocation(Thaumcraft.MODID, "grappler"), "main");
+            new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "grappler"), "main");
     
     private final ModelPart core;
     private final ModelPart prong1;

@@ -12,11 +12,11 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.entities.monster.EntityPech;
 
@@ -30,7 +30,7 @@ import thaumcraft.common.entities.monster.EntityPech;
 public class PechModel extends EntityModel<EntityPech> implements ArmedModel {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
-            new ModelLayerLocation(new ResourceLocation(Thaumcraft.MODID, "pech"), "main");
+            new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "pech"), "main");
     
     // Main parts
     private final ModelPart head;

@@ -23,7 +23,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -485,7 +485,7 @@ public class BlockUtils {
                 }
             } else {
                 // Tag-based match
-                var tag = BlockTags.create(new net.minecraft.resources.ResourceLocation(parts[0]));
+                var tag = BlockTags.create(new net.minecraft.resources.Identifier(parts[0]));
                 if (state.is(tag)) {
                     return true;
                 }

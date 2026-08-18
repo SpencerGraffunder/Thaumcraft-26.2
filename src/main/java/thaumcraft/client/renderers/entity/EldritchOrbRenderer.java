@@ -4,14 +4,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
@@ -24,8 +24,8 @@ import thaumcraft.common.entities.projectile.EntityEldritchOrb;
 @OnlyIn(Dist.CLIENT)
 public class EldritchOrbRenderer extends EntityRenderer<EntityEldritchOrb> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/misc/particles.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/particles.png");
     
     private final RandomSource random = RandomSource.create();
     
@@ -35,7 +35,7 @@ public class EldritchOrbRenderer extends EntityRenderer<EntityEldritchOrb> {
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityEldritchOrb entity) {
+    public Identifier getTextureLocation(EntityEldritchOrb entity) {
         return TEXTURE;
     }
     

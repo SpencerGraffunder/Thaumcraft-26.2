@@ -13,11 +13,11 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class FXArc extends TextureSheetParticle {
 
-    protected static final ResourceLocation BEAM_TEXTURE = new ResourceLocation("thaumcraft", "textures/misc/beamh.png");
+    protected static final Identifier BEAM_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/beamh.png");
 
     protected List<Vec3> points = new ArrayList<>();
     protected double targetX;

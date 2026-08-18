@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +16,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.RecipeMatcher;
+import net.minecraft.world.item.ItemStackHelper;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class InfusionRecipeType implements Recipe<Container>, IThaumcraftRecipe {
     
-    private final ResourceLocation id;
+    private final Identifier id;
     private final String group;
     private final Ingredient centralItem;
     private final NonNullList<Ingredient> components;
@@ -50,7 +50,7 @@ public class InfusionRecipeType implements Recipe<Container>, IThaumcraftRecipe 
     private final String research;
     private final int instability;
     
-    public InfusionRecipeType(ResourceLocation id, String group, Ingredient centralItem,
+    public InfusionRecipeType(Identifier id, String group, Ingredient centralItem,
                               NonNullList<Ingredient> components, AspectList aspects,
                               ItemStack result, String research, int instability) {
         this.id = id;
@@ -120,7 +120,7 @@ public class InfusionRecipeType implements Recipe<Container>, IThaumcraftRecipe 
     }
     
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
     
@@ -198,10 +198,10 @@ public class InfusionRecipeType implements Recipe<Container>, IThaumcraftRecipe 
     public static class Serializer implements RecipeSerializer<InfusionRecipeType> {
         
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation(Thaumcraft.MODID, "infusion");
+        public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "infusion");
         
         @Override
-        public InfusionRecipeType fromJson(ResourceLocation recipeId, JsonObject json) {
+        public InfusionRecipeType fromJson(Identifier recipeId, JsonObject json) {
             String group = GsonHelper.getAsString(json, "group", "");
             String research = GsonHelper.getAsString(json, "research", "");
             int instability = GsonHelper.getAsInt(json, "instability", 0);
@@ -242,7 +242,7 @@ public class InfusionRecipeType implements Recipe<Container>, IThaumcraftRecipe 
         }
         
         @Override
-        public @Nullable InfusionRecipeType fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public @Nullable InfusionRecipeType fromNetwork(Identifier recipeId, FriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             String research = buffer.readUtf();
             int instability = buffer.readVarInt();

@@ -13,7 +13,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
@@ -32,10 +32,10 @@ import thaumcraft.init.ModBlocks;
  */
 public class CrucibleCategory implements IRecipeCategory<CrucibleRecipeType> {
 
-    public static final ResourceLocation UID = new ResourceLocation(Thaumcraft.MODID, "crucible");
+    public static final Identifier UID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "crucible");
     
     // Simple background texture
-    private static final ResourceLocation TEXTURE = new ResourceLocation("jei", "textures/jei/gui/gui_vanilla.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/jei/gui/gui_vanilla.png");
 
     private final IDrawable background;
     private final IDrawable icon;

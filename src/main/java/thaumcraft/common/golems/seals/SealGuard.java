@@ -3,7 +3,7 @@ package thaumcraft.common.golems.seals;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -13,9 +13,9 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.GolemHelper;
@@ -44,7 +44,7 @@ public class SealGuard implements ISeal, ISealConfigArea, ISealConfigToggles {
     
     private int delay;
     protected SealToggle[] props;
-    private ResourceLocation icon;
+    private Identifier icon;
     
     public SealGuard() {
         delay = new Random(System.nanoTime()).nextInt(22);
@@ -53,7 +53,7 @@ public class SealGuard implements ISeal, ISealConfigArea, ISealConfigToggles {
             new SealToggle(false, "panimal", "golem.prop.animal"),
             new SealToggle(false, "pplayer", "golem.prop.player")
         };
-        icon = new ResourceLocation(Thaumcraft.MODID, "items/seals/seal_guard");
+        icon = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "items/seals/seal_guard");
     }
     
     @Override
@@ -137,7 +137,7 @@ public class SealGuard implements ISeal, ISealConfigArea, ISealConfigToggles {
     }
     
     @Override
-    public ResourceLocation getSealIcon() {
+    public Identifier getSealIcon() {
         return icon;
     }
     

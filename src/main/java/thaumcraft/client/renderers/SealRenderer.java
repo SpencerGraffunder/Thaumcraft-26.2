@@ -12,11 +12,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.seals.ISealEntity;
@@ -41,8 +41,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SealRenderer {
     
     // Default seal texture for seals without custom icons
-    private static final ResourceLocation DEFAULT_SEAL_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/items/seals/seal_blank.png");
+    private static final Identifier DEFAULT_SEAL_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/items/seals/seal_blank.png");
     
     // Maximum render distance squared (16 blocks)
     private static final double MAX_RENDER_DIST_SQ = 256.0;
@@ -156,9 +156,9 @@ public class SealRenderer {
     /**
      * Render a textured quad for the seal icon.
      */
-    private static void renderSealQuad(PoseStack poseStack, ResourceLocation texture, 
+    private static void renderSealQuad(PoseStack poseStack, Identifier texture, 
                                        float r, float g, float b, float a) {
-        ResourceLocation actualTexture;
+        Identifier actualTexture;
         if (texture == null) {
             actualTexture = DEFAULT_SEAL_TEXTURE;
         } else {
@@ -170,7 +170,7 @@ public class SealRenderer {
             if (!path.endsWith(".png")) {
                 path = path + ".png";
             }
-            actualTexture = new ResourceLocation(texture.getNamespace(), path);
+            actualTexture = Identifier.withDefaultNamespace(texture.getNamespace(), path);
         }
         
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);

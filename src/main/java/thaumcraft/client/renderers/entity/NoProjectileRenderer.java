@@ -4,10 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 
 /**
@@ -18,8 +18,8 @@ import thaumcraft.Thaumcraft;
 @OnlyIn(Dist.CLIENT)
 public class NoProjectileRenderer<T extends Entity> extends EntityRenderer<T> {
     
-    private static final ResourceLocation BLANK = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/misc/blank.png");
+    private static final Identifier BLANK = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/blank.png");
     
     public NoProjectileRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -27,7 +27,7 @@ public class NoProjectileRenderer<T extends Entity> extends EntityRenderer<T> {
     }
     
     @Override
-    public ResourceLocation getTextureLocation(T entity) {
+    public Identifier getTextureLocation(T entity) {
         return BLANK;
     }
     

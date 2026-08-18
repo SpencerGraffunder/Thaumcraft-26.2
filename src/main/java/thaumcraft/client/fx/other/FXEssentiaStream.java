@@ -8,10 +8,10 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.client.fx.particles.ThaumcraftParticle;
@@ -29,7 +29,7 @@ import java.util.Map;
 @OnlyIn(Dist.CLIENT)
 public class FXEssentiaStream extends ThaumcraftParticle {
     
-    private static final ResourceLocation ESSENTIA_TEX = new ResourceLocation(Thaumcraft.MODID, "textures/misc/essentia.png");
+    private static final Identifier ESSENTIA_TEX = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/essentia.png");
     private static final Map<String, FXEssentiaStream> activeStreams = new HashMap<>();
     
     private final double targetX, targetY, targetZ;

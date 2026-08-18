@@ -17,7 +17,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import thaumcraft.common.blocks.BlockTCDevice;
 import thaumcraft.common.tiles.crafting.TileArcaneWorkbench;
 import thaumcraft.init.ModBlockEntities;

@@ -9,11 +9,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -36,12 +36,12 @@ import org.joml.Quaternionf;
 @OnlyIn(Dist.CLIENT)
 public class FXBeamBore extends TextureSheetParticle {
     
-    private static final ResourceLocation BEAM_TEXTURE = new ResourceLocation("thaumcraft", "textures/misc/beam.png");
-    private static final ResourceLocation BEAM1_TEXTURE = new ResourceLocation("thaumcraft", "textures/misc/beam1.png");
-    private static final ResourceLocation BEAM2_TEXTURE = new ResourceLocation("thaumcraft", "textures/misc/beam2.png");
-    private static final ResourceLocation BEAM3_TEXTURE = new ResourceLocation("thaumcraft", "textures/misc/beam3.png");
-    private static final ResourceLocation PARTICLE_TEXTURE = new ResourceLocation("thaumcraft", "textures/misc/particles.png");
-    private static final ResourceLocation NODE_TEXTURE = new ResourceLocation("thaumcraft", "textures/misc/auranodes.png");
+    private static final Identifier BEAM_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/beam.png");
+    private static final Identifier BEAM1_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/beam1.png");
+    private static final Identifier BEAM2_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/beam2.png");
+    private static final Identifier BEAM3_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/beam3.png");
+    private static final Identifier PARTICLE_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/particles.png");
+    private static final Identifier NODE_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/auranodes.png");
     
     // Target position
     protected double targetX;
@@ -208,7 +208,7 @@ public class FXBeamBore extends TextureSheetParticle {
         
         // Bind beam texture
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        ResourceLocation texture = switch (beamType) {
+        Identifier texture = switch (beamType) {
             case 1 -> BEAM1_TEXTURE;
             case 2 -> BEAM2_TEXTURE;
             case 3 -> BEAM3_TEXTURE;

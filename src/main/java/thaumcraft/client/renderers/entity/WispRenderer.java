@@ -5,14 +5,14 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
@@ -32,8 +32,8 @@ import thaumcraft.common.entities.monster.EntityWisp;
 public class WispRenderer extends EntityRenderer<EntityWisp> {
     
     // Texture atlas with wisp particles
-    private static final ResourceLocation WISP_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/misc/wisp.png");
+    private static final Identifier WISP_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/wisp.png");
     
     public WispRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -42,7 +42,7 @@ public class WispRenderer extends EntityRenderer<EntityWisp> {
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityWisp entity) {
+    public Identifier getTextureLocation(EntityWisp entity) {
         return WISP_TEXTURE;
     }
     

@@ -1,6 +1,6 @@
 package thaumcraft.common.golems.seals;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.seals.ISealConfigToggles;
@@ -19,11 +19,11 @@ import thaumcraft.api.golems.seals.ISealConfigToggles;
  */
 public class SealPickupAdvanced extends SealPickup implements ISealConfigToggles {
     
-    private ResourceLocation iconAdvanced;
+    private Identifier iconAdvanced;
     
     public SealPickupAdvanced() {
         super();
-        iconAdvanced = new ResourceLocation(Thaumcraft.MODID, "items/seals/seal_pickup_advanced");
+        iconAdvanced = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "items/seals/seal_pickup_advanced");
     }
     
     @Override
@@ -37,7 +37,7 @@ public class SealPickupAdvanced extends SealPickup implements ISealConfigToggles
     }
     
     @Override
-    public ResourceLocation getSealIcon() {
+    public Identifier getSealIcon() {
         return iconAdvanced;
     }
     

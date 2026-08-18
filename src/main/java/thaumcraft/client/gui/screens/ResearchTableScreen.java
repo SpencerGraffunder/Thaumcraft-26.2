@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -41,16 +41,16 @@ import java.util.*;
 public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMenu> {
     
     // Textures
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_research_table.png");
-    private static final ResourceLocation TX_BASE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_base.png");
-    private static final ResourceLocation TX_PAPER = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/paper.png");
-    private static final ResourceLocation TX_PAPER_GILDED = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/papergilded.png");
-    private static final ResourceLocation TX_QUESTION = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/aspects/_unknown.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_research_table.png");
+    private static final Identifier TX_BASE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_base.png");
+    private static final Identifier TX_PAPER = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/paper.png");
+    private static final Identifier TX_PAPER_GILDED = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/papergilded.png");
+    private static final Identifier TX_QUESTION = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/aspects/_unknown.png");
     
     // Buttons
     private Button buttonCreate;
@@ -382,7 +382,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         
         pose.pushPose();
         // Select paper texture
-        ResourceLocation paperTex = (cardChoice != null && cardChoice.fromAid) ? TX_PAPER_GILDED : TX_PAPER;
+        Identifier paperTex = (cardChoice != null && cardChoice.fromAid) ? TX_PAPER_GILDED : TX_PAPER;
         
         // Random flip
         if (r.nextBoolean()) {

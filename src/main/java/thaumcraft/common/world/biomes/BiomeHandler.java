@@ -4,13 +4,13 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thaumcraft.Thaumcraft;
@@ -40,29 +40,29 @@ public class BiomeHandler {
     
     /** Eerie biome - spooky magical biome with dark atmosphere */
     public static final ResourceKey<Biome> EERIE = ResourceKey.create(
-        Registries.BIOME, new ResourceLocation(Thaumcraft.MODID, "eerie"));
+        Registries.BIOME, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eerie"));
     
     /** Magical Forest biome - peaceful magical biome with greatwood/silverwood trees */
     public static final ResourceKey<Biome> MAGICAL_FOREST = ResourceKey.create(
-        Registries.BIOME, new ResourceLocation(Thaumcraft.MODID, "magical_forest"));
+        Registries.BIOME, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "magical_forest"));
     
     /** Eldritch biome - otherworldly biome found in the Outer Lands */
     public static final ResourceKey<Biome> ELDRITCH = ResourceKey.create(
-        Registries.BIOME, new ResourceLocation(Thaumcraft.MODID, "eldritch"));
+        Registries.BIOME, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch"));
 
     // ==================== Biome Tags ====================
     
     /** Tag for all Thaumcraft biomes */
     public static final TagKey<Biome> IS_THAUMCRAFT = TagKey.create(
-        Registries.BIOME, new ResourceLocation(Thaumcraft.MODID, "is_thaumcraft"));
+        Registries.BIOME, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "is_thaumcraft"));
     
     /** Tag for magical biomes (high aura) */
     public static final TagKey<Biome> IS_MAGICAL = TagKey.create(
-        Registries.BIOME, new ResourceLocation(Thaumcraft.MODID, "is_magical"));
+        Registries.BIOME, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "is_magical"));
     
     /** Tag for tainted biomes */
     public static final TagKey<Biome> IS_TAINTED = TagKey.create(
-        Registries.BIOME, new ResourceLocation(Thaumcraft.MODID, "is_tainted"));
+        Registries.BIOME, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "is_tainted"));
 
     // ==================== Biome Info Storage ====================
     

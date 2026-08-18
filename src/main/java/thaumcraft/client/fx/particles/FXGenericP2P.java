@@ -2,8 +2,8 @@ package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * FXGenericP2P - Point-to-point particle that travels toward a target location.

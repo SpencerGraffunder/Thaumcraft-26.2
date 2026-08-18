@@ -5,9 +5,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.common.entities.projectile.EntityFocusCloud;
 
 /**
@@ -23,7 +23,7 @@ public class FocusCloudRenderer extends EntityRenderer<EntityFocusCloud> {
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityFocusCloud entity) {
+    public Identifier getTextureLocation(EntityFocusCloud entity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
     

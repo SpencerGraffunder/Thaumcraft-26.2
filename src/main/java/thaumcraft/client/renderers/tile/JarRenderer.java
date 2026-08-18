@@ -4,13 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
@@ -26,10 +26,10 @@ import java.awt.Color;
 @OnlyIn(Dist.CLIENT)
 public class JarRenderer implements BlockEntityRenderer<TileJar> {
 
-    private static final ResourceLocation LIQUID_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/blocks/animatedglow.png");
-    private static final ResourceLocation LABEL_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/models/label.png");
+    private static final Identifier LIQUID_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/animatedglow.png");
+    private static final Identifier LABEL_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/label.png");
 
     public JarRenderer(BlockEntityRendererProvider.Context context) {
     }

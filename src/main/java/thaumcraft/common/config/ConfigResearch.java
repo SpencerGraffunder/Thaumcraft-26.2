@@ -1,7 +1,7 @@
 package thaumcraft.common.config;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.Parrot;
@@ -58,7 +58,7 @@ public class ConfigResearch {
         "BASICS", "ALCHEMY", "AUROMANCY", "ARTIFICE", "INFUSION", "GOLEMANCY", "ELDRITCH"
     };
     
-    private static final ResourceLocation BACK_OVER = new ResourceLocation("thaumcraft", "textures/gui/gui_research_back_over.png");
+    private static final Identifier BACK_OVER = Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/gui_research_back_over.png");
     
     /**
      * Initialize all research-related systems.
@@ -74,9 +74,9 @@ public class ConfigResearch {
         
         // Register research JSON locations
         for (String cat : TC_CATEGORIES) {
-            ThaumcraftApi.registerResearchLocation(new ResourceLocation("thaumcraft", "research/" + cat.toLowerCase()));
+            ThaumcraftApi.registerResearchLocation(Identifier.fromNamespaceAndPath("thaumcraft", "research/" + cat.toLowerCase()));
         }
-        ThaumcraftApi.registerResearchLocation(new ResourceLocation("thaumcraft", "research/scans"));
+        ThaumcraftApi.registerResearchLocation(Identifier.fromNamespaceAndPath("thaumcraft", "research/scans"));
         
         Thaumcraft.LOGGER.info("Research categories and JSON locations registered");
     }
@@ -101,8 +101,8 @@ public class ConfigResearch {
                 new AspectList()
                         .add(Aspect.PLANT, 5).add(Aspect.ORDER, 5).add(Aspect.ENTROPY, 5)
                         .add(Aspect.AIR, 5).add(Aspect.FIRE, 5).add(Aspect.EARTH, 3).add(Aspect.WATER, 5),
-                new ResourceLocation("thaumcraft", "textures/items/thaumonomicon_cheat.png"),
-                new ResourceLocation("thaumcraft", "textures/gui/gui_research_back_1.jpg"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/items/thaumonomicon_cheat.png"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/gui_research_back_1.jpg"),
                 BACK_OVER);
         
         // AUROMANCY - requires UNLOCKAUROMANCY
@@ -110,8 +110,8 @@ public class ConfigResearch {
                 new AspectList()
                         .add(Aspect.AURA, 20).add(Aspect.MAGIC, 20).add(Aspect.FLUX, 15)
                         .add(Aspect.CRYSTAL, 5).add(Aspect.COLD, 5).add(Aspect.AIR, 5),
-                new ResourceLocation("thaumcraft", "textures/research/cat_auromancy.png"),
-                new ResourceLocation("thaumcraft", "textures/gui/gui_research_back_2.jpg"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/research/cat_auromancy.png"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/gui_research_back_2.jpg"),
                 BACK_OVER);
         
         // ALCHEMY - requires UNLOCKALCHEMY
@@ -119,8 +119,8 @@ public class ConfigResearch {
                 new AspectList()
                         .add(Aspect.ALCHEMY, 30).add(Aspect.FLUX, 10).add(Aspect.MAGIC, 10)
                         .add(Aspect.LIFE, 5).add(Aspect.AVERSION, 5).add(Aspect.DESIRE, 5).add(Aspect.WATER, 5),
-                new ResourceLocation("thaumcraft", "textures/research/cat_alchemy.png"),
-                new ResourceLocation("thaumcraft", "textures/gui/gui_research_back_3.jpg"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/research/cat_alchemy.png"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/gui_research_back_3.jpg"),
                 BACK_OVER);
         
         // ARTIFICE - requires UNLOCKARTIFICE
@@ -129,8 +129,8 @@ public class ConfigResearch {
                         .add(Aspect.MECHANISM, 10).add(Aspect.CRAFT, 10).add(Aspect.METAL, 10)
                         .add(Aspect.TOOL, 10).add(Aspect.ENERGY, 10).add(Aspect.LIGHT, 5)
                         .add(Aspect.FLIGHT, 5).add(Aspect.TRAP, 5).add(Aspect.FIRE, 5),
-                new ResourceLocation("thaumcraft", "textures/research/cat_artifice.png"),
-                new ResourceLocation("thaumcraft", "textures/gui/gui_research_back_4.jpg"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/research/cat_artifice.png"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/gui_research_back_4.jpg"),
                 BACK_OVER);
         
         // INFUSION - requires UNLOCKINFUSION
@@ -138,8 +138,8 @@ public class ConfigResearch {
                 new AspectList()
                         .add(Aspect.MAGIC, 30).add(Aspect.PROTECT, 10).add(Aspect.TOOL, 10)
                         .add(Aspect.FLUX, 5).add(Aspect.CRAFT, 5).add(Aspect.SOUL, 5).add(Aspect.EARTH, 3),
-                new ResourceLocation("thaumcraft", "textures/research/cat_infusion.png"),
-                new ResourceLocation("thaumcraft", "textures/gui/gui_research_back_7.jpg"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/research/cat_infusion.png"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/gui_research_back_7.jpg"),
                 BACK_OVER);
         
         // GOLEMANCY - requires UNLOCKGOLEMANCY
@@ -148,8 +148,8 @@ public class ConfigResearch {
                         .add(Aspect.MAN, 20).add(Aspect.MOTION, 10).add(Aspect.MIND, 10)
                         .add(Aspect.MECHANISM, 10).add(Aspect.EXCHANGE, 5).add(Aspect.SENSES, 5)
                         .add(Aspect.BEAST, 5).add(Aspect.ORDER, 5),
-                new ResourceLocation("thaumcraft", "textures/research/cat_golemancy.png"),
-                new ResourceLocation("thaumcraft", "textures/gui/gui_research_back_5.jpg"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/research/cat_golemancy.png"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/gui_research_back_5.jpg"),
                 BACK_OVER);
         
         // ELDRITCH - requires UNLOCKELDRITCH
@@ -158,8 +158,8 @@ public class ConfigResearch {
                         .add(Aspect.ELDRITCH, 20).add(Aspect.DARKNESS, 10).add(Aspect.MAGIC, 5)
                         .add(Aspect.MIND, 5).add(Aspect.VOID, 5).add(Aspect.DEATH, 5)
                         .add(Aspect.UNDEAD, 5).add(Aspect.ENTROPY, 5),
-                new ResourceLocation("thaumcraft", "textures/research/cat_eldritch.png"),
-                new ResourceLocation("thaumcraft", "textures/gui/gui_research_back_6.jpg"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/research/cat_eldritch.png"),
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/gui_research_back_6.jpg"),
                 BACK_OVER);
         
         Thaumcraft.LOGGER.info("Registered {} research categories", TC_CATEGORIES.length);
@@ -314,7 +314,7 @@ public class ConfigResearch {
         if (knowledge == null) return;
         
         // Check for dimension-based research
-        ResourceLocation dimKey = player.level().dimension().location();
+        Identifier dimKey = player.level().dimension().location();
         
         // Nether discovery
         if (!knowledge.isResearchKnown("m_hellandback") && dimKey.getPath().contains("nether")) {

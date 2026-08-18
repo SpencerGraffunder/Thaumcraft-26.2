@@ -2,12 +2,12 @@ package thaumcraft.common.golems.seals;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.GolemHelper;
@@ -43,12 +43,12 @@ public class SealUse extends SealFiltered implements ISealConfigToggles {
     
     private int delay;
     private int watchedTask = Integer.MIN_VALUE;
-    private ResourceLocation icon;
+    private Identifier icon;
     protected SealToggle[] props;
     
     public SealUse() {
         delay = new Random(System.nanoTime()).nextInt(49);
-        icon = new ResourceLocation(Thaumcraft.MODID, "items/seals/seal_use");
+        icon = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "items/seals/seal_use");
         props = new SealToggle[] {
             new SealToggle(true, "pmeta", "golem.prop.meta"),
             new SealToggle(true, "pnbt", "golem.prop.nbt"),
@@ -217,7 +217,7 @@ public class SealUse extends SealFiltered implements ISealConfigToggles {
     }
     
     @Override
-    public ResourceLocation getSealIcon() {
+    public Identifier getSealIcon() {
         return icon;
     }
     

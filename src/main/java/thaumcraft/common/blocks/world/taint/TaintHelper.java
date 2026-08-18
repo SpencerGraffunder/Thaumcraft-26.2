@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.common.IPlantable;
+import net.neoforged.neoforge.common.IPlantable;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.config.ModConfig;
 import thaumcraft.common.lib.utils.BlockUtils;

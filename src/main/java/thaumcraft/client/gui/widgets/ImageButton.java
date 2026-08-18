@@ -7,9 +7,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 @OnlyIn(Dist.CLIENT)
 public class ImageButton extends AbstractWidget {
     
-    private final ResourceLocation texture;
+    private final Identifier texture;
     private final int texX;
     private final int texY;
     private final int texWidth;
@@ -35,13 +35,13 @@ public class ImageButton extends AbstractWidget {
     private boolean buttonActive = true;
     
     public ImageButton(int x, int y, int width, int height, String text, String description,
-                      ResourceLocation texture, int texX, int texY, int texWidth, int texHeight,
+                      Identifier texture, int texX, int texY, int texWidth, int texHeight,
                       Consumer<ImageButton> onPress) {
         this(x, y, width, height, text, description, texture, texX, texY, texWidth, texHeight, 0xFFFFFF, onPress);
     }
     
     public ImageButton(int x, int y, int width, int height, String text, String description,
-                      ResourceLocation texture, int texX, int texY, int texWidth, int texHeight,
+                      Identifier texture, int texX, int texY, int texWidth, int texHeight,
                       int color, Consumer<ImageButton> onPress) {
         super(x, y, width, height, text != null ? Component.translatable(text) : Component.empty());
         this.texture = texture;

@@ -7,10 +7,10 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 
 /**
@@ -21,7 +21,7 @@ import thaumcraft.Thaumcraft;
 public class CentrifugeModel extends Model {
 
     public static final ModelLayerLocation LAYER_LOCATION = 
-            new ModelLayerLocation(new ResourceLocation(Thaumcraft.MODID, "centrifuge"), "main");
+            new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "centrifuge"), "main");
 
     private final ModelPart top;
     private final ModelPart bottom;

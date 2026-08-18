@@ -7,11 +7,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
@@ -49,18 +49,18 @@ import java.util.*;
 @OnlyIn(Dist.CLIENT)
 public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipulatorMenu> {
     
-    private static final ResourceLocation TEX_MAIN = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_wandtable.png");
-    private static final ResourceLocation TEX_BG = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_wandtable2.png");
-    private static final ResourceLocation TEX_SIDE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_wandtable3.png");
-    private static final ResourceLocation TEX_BASE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_base.png");
-    private static final ResourceLocation TEX_MEDIUM = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/foci/_medium.png");
-    private static final ResourceLocation TEX_EFFECT = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/foci/_effect.png");
+    private static final Identifier TEX_MAIN = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_wandtable.png");
+    private static final Identifier TEX_BG = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_wandtable2.png");
+    private static final Identifier TEX_SIDE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_wandtable3.png");
+    private static final Identifier TEX_BASE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_base.png");
+    private static final Identifier TEX_MEDIUM = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/foci/_medium.png");
+    private static final Identifier TEX_EFFECT = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/foci/_effect.png");
     
     // GUI state
     private EditBox nameField;
@@ -516,7 +516,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 1);
         graphics.pose().scale(iconScale, iconScale, 1.0f);
-        ResourceLocation icon = FocusEngine.getElementIcon(node.getKey());
+        Identifier icon = FocusEngine.getElementIcon(node.getKey());
         graphics.blit(icon, -8, -8, 0, 0, 16, 16, 16, 16);
         graphics.pose().popPose();
         

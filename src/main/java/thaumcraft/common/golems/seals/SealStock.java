@@ -2,15 +2,15 @@ package thaumcraft.common.golems.seals;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.GolemHelper;
@@ -38,12 +38,12 @@ import java.util.Random;
 public class SealStock extends SealFiltered implements ISealConfigToggles {
     
     private int delay;
-    private ResourceLocation icon;
+    private Identifier icon;
     protected SealToggle[] props;
     
     public SealStock() {
         delay = new Random(System.nanoTime()).nextInt(50);
-        icon = new ResourceLocation(Thaumcraft.MODID, "items/seals/seal_stock");
+        icon = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "items/seals/seal_stock");
         props = new SealToggle[] {
             new SealToggle(true, "pmeta", "golem.prop.meta"),
             new SealToggle(true, "pnbt", "golem.prop.nbt"),
@@ -186,7 +186,7 @@ public class SealStock extends SealFiltered implements ISealConfigToggles {
     }
     
     @Override
-    public ResourceLocation getSealIcon() {
+    public Identifier getSealIcon() {
         return icon;
     }
     

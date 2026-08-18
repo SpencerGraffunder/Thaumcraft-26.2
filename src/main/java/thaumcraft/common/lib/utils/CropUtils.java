@@ -1,7 +1,7 @@
 package thaumcraft.common.lib.utils;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -231,7 +231,7 @@ public class CropUtils {
      * Get the block's registry ID as a string.
      */
     private static String getBlockId(Block block) {
-        ResourceLocation key = ForgeRegistries.BLOCKS.getKey(block);
+        Identifier key = ForgeRegistries.BLOCKS.getKey(block);
         return key != null ? key.toString() : null;
     }
     

@@ -4,15 +4,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.GolemHelper;
@@ -43,12 +43,12 @@ public class SealHarvest implements ISeal, ISealConfigArea, ISealConfigToggles {
     private int delay;
     private int count = 0;
     private HashMap<Long, ReplantInfo> replantTasks = new HashMap<>();
-    private ResourceLocation icon;
+    private Identifier icon;
     protected SealToggle[] props;
     
     public SealHarvest() {
         delay = new Random(System.nanoTime()).nextInt(33);
-        icon = new ResourceLocation(Thaumcraft.MODID, "items/seals/seal_harvest");
+        icon = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "items/seals/seal_harvest");
         props = new SealToggle[] {
             new SealToggle(true, "prep", "golem.prop.replant"),
             new SealToggle(false, "ppro", "golem.prop.provision")
@@ -168,7 +168,7 @@ public class SealHarvest implements ISeal, ISealConfigArea, ISealConfigToggles {
     }
     
     @Override
-    public ResourceLocation getSealIcon() {
+    public Identifier getSealIcon() {
         return icon;
     }
     

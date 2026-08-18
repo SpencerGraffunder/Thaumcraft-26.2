@@ -5,11 +5,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
@@ -35,8 +35,8 @@ import java.util.List;
 public class ResearchPageScreen extends Screen {
     
     // Textures
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_researchbook.png");
-    private static final ResourceLocation OVERLAY = new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_researchbook_overlay.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_researchbook.png");
+    private static final Identifier OVERLAY = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_researchbook_overlay.png");
     
     // Pane dimensions
     private static final int PANE_WIDTH = 256;
@@ -46,7 +46,7 @@ public class ResearchPageScreen extends Screen {
     
     // Research data
     private final ResearchEntry research;
-    private final ResourceLocation highlightRecipe;
+    private final Identifier highlightRecipe;
     private final double returnX;
     private final double returnY;
     
@@ -70,7 +70,7 @@ public class ResearchPageScreen extends Screen {
     private boolean[] hasResearch;
     private boolean[] hasKnow;
     
-    public ResearchPageScreen(ResearchEntry research, ResourceLocation highlightRecipe, double returnX, double returnY) {
+    public ResearchPageScreen(ResearchEntry research, Identifier highlightRecipe, double returnX, double returnY) {
         super(Component.translatable(research.getName()));
         this.research = research;
         this.highlightRecipe = highlightRecipe;
@@ -137,7 +137,7 @@ public class ResearchPageScreen extends Screen {
             
             // Add recipe pages if any
             if (stage.getRecipes() != null && stage.getRecipes().length > 0) {
-                for (ResourceLocation recipe : stage.getRecipes()) {
+                for (Identifier recipe : stage.getRecipes()) {
                     Page recipePage = new Page();
                     recipePage.isRecipePage = true;
                     recipePage.recipeId = recipe;
@@ -174,7 +174,7 @@ public class ResearchPageScreen extends Screen {
                     
                     // Add addendum recipes
                     if (addendum.getRecipes() != null) {
-                        for (ResourceLocation recipe : addendum.getRecipes()) {
+                        for (Identifier recipe : addendum.getRecipes()) {
                             Page recipePage = new Page();
                             recipePage.isRecipePage = true;
                             recipePage.isAddendum = true;
@@ -416,7 +416,7 @@ public class ResearchPageScreen extends Screen {
     /**
      * Draw recipe using the RecipeRenderer.
      */
-    private List<net.minecraft.network.chat.Component> drawRecipe(GuiGraphics graphics, int x, int y, ResourceLocation recipeId, int mouseX, int mouseY) {
+    private List<net.minecraft.network.chat.Component> drawRecipe(GuiGraphics graphics, int x, int y, Identifier recipeId, int mouseX, int mouseY) {
         if (recipeId == null) {
             graphics.drawString(font, "No recipe", x + 40, y + 40, 0x808080, false);
             return null;
@@ -579,6 +579,6 @@ public class ResearchPageScreen extends Screen {
         ArrayList<Object> contents = new ArrayList<>();
         boolean isRecipePage = false;
         boolean isAddendum = false;
-        ResourceLocation recipeId = null;
+        Identifier recipeId = null;
     }
 }

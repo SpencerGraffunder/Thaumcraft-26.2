@@ -7,10 +7,10 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.SlimeOuterLayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.entities.monster.EntityThaumicSlime;
 
@@ -21,8 +21,8 @@ import thaumcraft.common.entities.monster.EntityThaumicSlime;
 @OnlyIn(Dist.CLIENT)
 public class ThaumicSlimeRenderer extends MobRenderer<EntityThaumicSlime, SlimeModel<EntityThaumicSlime>> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/thaumic_slime.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/thaumic_slime.png");
     
     public ThaumicSlimeRenderer(EntityRendererProvider.Context context) {
         super(context, new SlimeModel<>(context.bakeLayer(ModelLayers.SLIME)), 0.25F);
@@ -30,7 +30,7 @@ public class ThaumicSlimeRenderer extends MobRenderer<EntityThaumicSlime, SlimeM
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityThaumicSlime entity) {
+    public Identifier getTextureLocation(EntityThaumicSlime entity) {
         return TEXTURE;
     }
     

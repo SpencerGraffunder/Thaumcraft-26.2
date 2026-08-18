@@ -4,10 +4,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.menu.HungryChestMenu;
 
@@ -19,8 +19,8 @@ import thaumcraft.common.menu.HungryChestMenu;
 public class HungryChestScreen extends AbstractContainerScreen<HungryChestMenu> {
     
     // Use vanilla chest texture for now, or create custom one
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation("textures/gui/container/generic_54.png");
+    private static final Identifier TEXTURE = 
+            Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
     
     // Hungry chest has 3 rows (same as small chest)
     private static final int ROWS = 3;

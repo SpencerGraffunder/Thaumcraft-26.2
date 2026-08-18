@@ -2,9 +2,9 @@ package thaumcraft.init;
 
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.world.features.BigMagicTreeFeature;
 import thaumcraft.common.world.features.CrystalClusterFeature;
@@ -41,7 +41,7 @@ public class ModFeatures {
      * Spawns in forests, plains, and similar biomes.
      * Has a rare spider nest variant.
      */
-    public static final RegistryObject<GreatwoodTreeFeature> GREATWOOD_TREE = 
+    public static final DeferredHolder<GreatwoodTreeFeature> GREATWOOD_TREE = 
             FEATURES.register("greatwood_tree", 
                     () -> new GreatwoodTreeFeature(NoneFeatureConfiguration.CODEC));
     
@@ -50,7 +50,7 @@ public class ModFeatures {
      * Rarer than greatwood, spawns in magical biomes and forests.
      * Spawns shimmerleaf flowers around it.
      */
-    public static final RegistryObject<SilverwoodTreeFeature> SILVERWOOD_TREE = 
+    public static final DeferredHolder<SilverwoodTreeFeature> SILVERWOOD_TREE = 
             FEATURES.register("silverwood_tree", 
                     () -> new SilverwoodTreeFeature(NoneFeatureConfiguration.CODEC));
     
@@ -59,7 +59,7 @@ public class ModFeatures {
      * This is the "fancy" tree variant for magical forest biomes.
      * Taller than regular greatwood/silverwood with more complex branch structure.
      */
-    public static final RegistryObject<BigMagicTreeFeature> BIG_MAGIC_TREE = 
+    public static final DeferredHolder<BigMagicTreeFeature> BIG_MAGIC_TREE = 
             FEATURES.register("big_magic_tree", 
                     () -> new BigMagicTreeFeature(NoneFeatureConfiguration.CODEC));
     
@@ -67,7 +67,7 @@ public class ModFeatures {
      * Big Silverwood Tree - Large silverwood variant for magical biomes.
      * Uses silverwood logs and leaves instead of greatwood.
      */
-    public static final RegistryObject<BigMagicTreeFeature> BIG_SILVERWOOD_TREE = 
+    public static final DeferredHolder<BigMagicTreeFeature> BIG_SILVERWOOD_TREE = 
             FEATURES.register("big_silverwood_tree", 
                     () -> new BigMagicTreeFeature(NoneFeatureConfiguration.CODEC, 
                             BigMagicTreeFeature.TreeType.SILVERWOOD));
@@ -78,7 +78,7 @@ public class ModFeatures {
      * Cinderpearl plant cluster - desert fire plants.
      * Spawns in desert biomes on sand.
      */
-    public static final RegistryObject<Feature<NoneFeatureConfiguration>> CINDERPEARL_PATCH = 
+    public static final DeferredHolder<Feature<NoneFeatureConfiguration>> CINDERPEARL_PATCH = 
             FEATURES.register("cinderpearl_patch", 
                     () -> new ThaumcraftPlantFeature(NoneFeatureConfiguration.CODEC, 
                             ThaumcraftPlantFeature.PlantType.CINDERPEARL));
@@ -87,7 +87,7 @@ public class ModFeatures {
      * Shimmerleaf plant cluster - glowing magical flowers.
      * Primarily spawns around silverwood trees, but can appear in magical biomes.
      */
-    public static final RegistryObject<Feature<NoneFeatureConfiguration>> SHIMMERLEAF_PATCH = 
+    public static final DeferredHolder<Feature<NoneFeatureConfiguration>> SHIMMERLEAF_PATCH = 
             FEATURES.register("shimmerleaf_patch", 
                     () -> new ThaumcraftPlantFeature(NoneFeatureConfiguration.CODEC, 
                             ThaumcraftPlantFeature.PlantType.SHIMMERLEAF));
@@ -96,7 +96,7 @@ public class ModFeatures {
      * Vishroom mushroom cluster - magical cave mushrooms.
      * Spawns underground in caves.
      */
-    public static final RegistryObject<Feature<NoneFeatureConfiguration>> VISHROOM_PATCH = 
+    public static final DeferredHolder<Feature<NoneFeatureConfiguration>> VISHROOM_PATCH = 
             FEATURES.register("vishroom_patch", 
                     () -> new ThaumcraftPlantFeature(NoneFeatureConfiguration.CODEC, 
                             ThaumcraftPlantFeature.PlantType.VISHROOM));
@@ -107,7 +107,7 @@ public class ModFeatures {
      * Air crystal cluster - spawns on cave walls.
      * More common at high altitudes.
      */
-    public static final RegistryObject<CrystalClusterFeature> CRYSTAL_CLUSTER_AIR = 
+    public static final DeferredHolder<CrystalClusterFeature> CRYSTAL_CLUSTER_AIR = 
             FEATURES.register("crystal_cluster_air", 
                     () -> new CrystalClusterFeature(NoneFeatureConfiguration.CODEC, 
                             CrystalClusterFeature.CrystalType.AIR));
@@ -116,7 +116,7 @@ public class ModFeatures {
      * Fire crystal cluster - spawns on cave walls.
      * More common near lava and in warm biomes.
      */
-    public static final RegistryObject<CrystalClusterFeature> CRYSTAL_CLUSTER_FIRE = 
+    public static final DeferredHolder<CrystalClusterFeature> CRYSTAL_CLUSTER_FIRE = 
             FEATURES.register("crystal_cluster_fire", 
                     () -> new CrystalClusterFeature(NoneFeatureConfiguration.CODEC, 
                             CrystalClusterFeature.CrystalType.FIRE));
@@ -125,7 +125,7 @@ public class ModFeatures {
      * Water crystal cluster - spawns on cave walls.
      * More common near water and in ocean caves.
      */
-    public static final RegistryObject<CrystalClusterFeature> CRYSTAL_CLUSTER_WATER = 
+    public static final DeferredHolder<CrystalClusterFeature> CRYSTAL_CLUSTER_WATER = 
             FEATURES.register("crystal_cluster_water", 
                     () -> new CrystalClusterFeature(NoneFeatureConfiguration.CODEC, 
                             CrystalClusterFeature.CrystalType.WATER));
@@ -134,7 +134,7 @@ public class ModFeatures {
      * Earth crystal cluster - spawns on cave walls.
      * More common at low altitudes (deep caves).
      */
-    public static final RegistryObject<CrystalClusterFeature> CRYSTAL_CLUSTER_EARTH = 
+    public static final DeferredHolder<CrystalClusterFeature> CRYSTAL_CLUSTER_EARTH = 
             FEATURES.register("crystal_cluster_earth", 
                     () -> new CrystalClusterFeature(NoneFeatureConfiguration.CODEC, 
                             CrystalClusterFeature.CrystalType.EARTH));
@@ -143,7 +143,7 @@ public class ModFeatures {
      * Order crystal cluster - spawns on cave walls.
      * Rarest primal crystal type.
      */
-    public static final RegistryObject<CrystalClusterFeature> CRYSTAL_CLUSTER_ORDER = 
+    public static final DeferredHolder<CrystalClusterFeature> CRYSTAL_CLUSTER_ORDER = 
             FEATURES.register("crystal_cluster_order", 
                     () -> new CrystalClusterFeature(NoneFeatureConfiguration.CODEC, 
                             CrystalClusterFeature.CrystalType.ORDER));
@@ -152,7 +152,7 @@ public class ModFeatures {
      * Entropy crystal cluster - spawns on cave walls.
      * Rarest primal crystal type.
      */
-    public static final RegistryObject<CrystalClusterFeature> CRYSTAL_CLUSTER_ENTROPY = 
+    public static final DeferredHolder<CrystalClusterFeature> CRYSTAL_CLUSTER_ENTROPY = 
             FEATURES.register("crystal_cluster_entropy", 
                     () -> new CrystalClusterFeature(NoneFeatureConfiguration.CODEC, 
                             CrystalClusterFeature.CrystalType.ENTROPY));
@@ -169,7 +169,7 @@ public class ModFeatures {
      * Underground stone chamber with grass-covered mound entrance.
      * Contains chest, Thaumcraft loot crates/urns, and monster spawners.
      */
-    public static final RegistryObject<BarrowFeature> BARROW = 
+    public static final DeferredHolder<BarrowFeature> BARROW = 
             FEATURES.register("barrow", 
                     () -> new BarrowFeature(NoneFeatureConfiguration.CODEC));
     
@@ -180,7 +180,7 @@ public class ModFeatures {
      * - Large circle (8-12 stones with central altar)
      * - Single obelisk with glyphed stones
      */
-    public static final RegistryObject<AncientStoneCircleFeature> ANCIENT_STONE_CIRCLE = 
+    public static final DeferredHolder<AncientStoneCircleFeature> ANCIENT_STONE_CIRCLE = 
             FEATURES.register("ancient_stone_circle", 
                     () -> new AncientStoneCircleFeature(NoneFeatureConfiguration.CODEC));
     
@@ -193,7 +193,7 @@ public class ModFeatures {
      * - Scattered debris around the perimeter
      * Hints at eldritch knowledge and may spawn eldritch mobs.
      */
-    public static final RegistryObject<EldritchObeliskFeature> ELDRITCH_OBELISK = 
+    public static final DeferredHolder<EldritchObeliskFeature> ELDRITCH_OBELISK = 
             FEATURES.register("eldritch_obelisk", 
                     () -> new EldritchObeliskFeature(NoneFeatureConfiguration.CODEC));
     
@@ -207,7 +207,7 @@ public class ModFeatures {
      * - Vegetation growing through the ruins
      * Contains research materials and Thaumcraft loot.
      */
-    public static final RegistryObject<RuinedTowerFeature> RUINED_TOWER = 
+    public static final DeferredHolder<RuinedTowerFeature> RUINED_TOWER = 
             FEATURES.register("ruined_tower", 
                     () -> new RuinedTowerFeature(NoneFeatureConfiguration.CODEC));
 }

@@ -1,6 +1,6 @@
 package thaumcraft.api.crafting;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import thaumcraft.api.ThaumcraftApiHelper;
@@ -135,7 +135,7 @@ public class CrucibleRecipe implements IThaumcraftRecipe {
         return group;
     }
 
-    public CrucibleRecipe setGroup(ResourceLocation location) {
+    public CrucibleRecipe setGroup(Identifier location) {
         this.group = location.toString();
         return this;
     }

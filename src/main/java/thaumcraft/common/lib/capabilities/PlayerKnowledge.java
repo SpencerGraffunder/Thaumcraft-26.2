@@ -11,11 +11,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.minecraftforge.common.util.LazyOptional;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
@@ -29,7 +29,7 @@ import thaumcraft.api.capabilities.IPlayerKnowledge;
  */
 public class PlayerKnowledge {
     
-    public static final ResourceLocation ID = new ResourceLocation(Thaumcraft.MODID, "knowledge");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "knowledge");
     
     /**
      * Default implementation of IPlayerKnowledge

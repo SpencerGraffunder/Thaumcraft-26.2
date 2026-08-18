@@ -5,13 +5,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.NeoForge;
+import net.minecraft.core.registries.BuiltInRegistries;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
@@ -335,7 +335,7 @@ public class ResearchManager {
     public static void parseAllResearch() {
         int totalEntries = 0;
         
-        for (ResourceLocation loc : CommonInternals.jsonLocs.values()) {
+        for (Identifier loc : CommonInternals.jsonLocs.values()) {
             String path = "/assets/" + loc.getNamespace() + "/" + loc.getPath();
             if (!path.endsWith(".json")) {
                 path += ".json";
@@ -395,7 +395,7 @@ public class ResearchManager {
                     } else if (iconStrings[i].startsWith("focus")) {
                         icons[i] = iconStrings[i];
                     } else {
-                        icons[i] = new ResourceLocation(iconStrings[i]);
+                        icons[i] = Identifier.withDefaultNamespace(iconStrings[i]);
                     }
                 }
                 entry.setIcons(icons);
@@ -637,13 +637,13 @@ public class ResearchManager {
         return list.toArray(new Integer[0]);
     }
     
-    private static ResourceLocation[] arrayJsonToResourceLocations(JsonArray array) {
+    private static Identifier[] arrayJsonToResourceLocations(JsonArray array) {
         if (array == null || array.isEmpty()) return null;
-        List<ResourceLocation> list = new ArrayList<>();
+        List<Identifier> list = new ArrayList<>();
         for (JsonElement e : array) {
-            list.add(new ResourceLocation(e.getAsString()));
+            list.add(Identifier.withDefaultNamespace(e.getAsString()));
         }
-        return list.toArray(new ResourceLocation[0]);
+        return list.toArray(new Identifier[0]);
     }
     
     private static ItemStack[] parseJsonItemList(String[] strings) {
@@ -724,14 +724,14 @@ public class ResearchManager {
         name = name.toLowerCase();
         
         try {
-            ResourceLocation itemId = new ResourceLocation(name);
+            Identifier itemId = Identifier.withDefaultNamespace(name);
             Item item = ForgeRegistries.ITEMS.getValue(itemId);
             
             if (item == null || item == net.minecraft.world.item.Items.AIR) {
                 // Item not found - try fallback mappings for common old names
                 String mappedName = LEGACY_ITEM_MAPPINGS.get(name);
                 if (mappedName != null) {
-                    itemId = new ResourceLocation(mappedName);
+                    itemId = Identifier.withDefaultNamespace(mappedName);
                     item = ForgeRegistries.ITEMS.getValue(itemId);
                 }
             }

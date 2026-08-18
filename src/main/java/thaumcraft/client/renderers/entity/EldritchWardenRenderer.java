@@ -6,9 +6,9 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.entities.monster.boss.EntityEldritchWarden;
 
@@ -19,8 +19,8 @@ import thaumcraft.common.entities.monster.boss.EntityEldritchWarden;
 @OnlyIn(Dist.CLIENT)
 public class EldritchWardenRenderer extends HumanoidMobRenderer<EntityEldritchWarden, HumanoidModel<EntityEldritchWarden>> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/eldritch_guardian.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/eldritch_guardian.png");
     
     public EldritchWardenRenderer(EntityRendererProvider.Context context) {
         super(context, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER)), 0.6F);
@@ -28,7 +28,7 @@ public class EldritchWardenRenderer extends HumanoidMobRenderer<EntityEldritchWa
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityEldritchWarden entity) {
+    public Identifier getTextureLocation(EntityEldritchWarden entity) {
         return TEXTURE;
     }
     

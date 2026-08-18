@@ -9,7 +9,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 import thaumcraft.Thaumcraft;
@@ -34,7 +34,7 @@ import java.util.List;
 @JeiPlugin
 public class ThaumcraftJEIPlugin implements IModPlugin {
 
-    public static final ResourceLocation PLUGIN_ID = new ResourceLocation(Thaumcraft.MODID, "jei_plugin");
+    public static final Identifier PLUGIN_ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "jei_plugin");
 
     // Recipe types for JEI
     public static final RecipeType<IArcaneRecipe> ARCANE_TYPE =
@@ -47,7 +47,7 @@ public class ThaumcraftJEIPlugin implements IModPlugin {
             RecipeType.create(Thaumcraft.MODID, "infusion", InfusionRecipeType.class);
 
     @Override
-    public ResourceLocation getPluginUid() {
+    public Identifier getPluginUid() {
         return PLUGIN_ID;
     }
 

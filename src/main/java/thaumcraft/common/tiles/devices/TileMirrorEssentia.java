@@ -5,7 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -72,7 +72,7 @@ public class TileMirrorEssentia extends TileThaumcraft implements IAspectSource 
         linkZ = tag.getInt("LinkZ");
         if (tag.contains("LinkDim")) {
             linkDimension = ResourceKey.create(Registries.DIMENSION,
-                new ResourceLocation(tag.getString("LinkDim")));
+                Identifier.withDefaultNamespace(tag.getString("LinkDim")));
         }
         instability = tag.getInt("Instability");
     }

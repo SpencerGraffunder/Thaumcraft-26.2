@@ -4,15 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
@@ -25,13 +25,13 @@ import thaumcraft.Thaumcraft;
 @OnlyIn(Dist.CLIENT)
 public class ThaumcraftProjectileRenderer<T extends Entity> extends EntityRenderer<T> {
     
-    private final ResourceLocation texture;
+    private final Identifier texture;
     private final float size;
     private final int color;
     private final boolean emissive;
     
     public ThaumcraftProjectileRenderer(EntityRendererProvider.Context context, 
-                                        ResourceLocation texture, float size, int color, boolean emissive) {
+                                        Identifier texture, float size, int color, boolean emissive) {
         super(context);
         this.texture = texture;
         this.size = size;
@@ -41,7 +41,7 @@ public class ThaumcraftProjectileRenderer<T extends Entity> extends EntityRender
     }
     
     @Override
-    public ResourceLocation getTextureLocation(T entity) {
+    public Identifier getTextureLocation(T entity) {
         return texture;
     }
     
@@ -118,10 +118,10 @@ public class ThaumcraftProjectileRenderer<T extends Entity> extends EntityRender
      * Factory for creating common projectile renderers.
      */
     public static class Factory {
-        private static final ResourceLocation ORB_TEXTURE = 
-                new ResourceLocation(Thaumcraft.MODID, "textures/entity/orb.png");
-        private static final ResourceLocation DART_TEXTURE = 
-                new ResourceLocation(Thaumcraft.MODID, "textures/entity/dart.png");
+        private static final Identifier ORB_TEXTURE = 
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/orb.png");
+        private static final Identifier DART_TEXTURE = 
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/dart.png");
         
         public static <T extends Entity> ThaumcraftProjectileRenderer<T> orb(
                 EntityRendererProvider.Context context, int color) {

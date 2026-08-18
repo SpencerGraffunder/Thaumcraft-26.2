@@ -2,13 +2,13 @@ package thaumcraft.common.golems.seals;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.entity.player.Player;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
@@ -39,12 +39,12 @@ public class SealBreaker extends SealFiltered implements ISealConfigArea, ISealC
     
     private int delay;
     private HashMap<Integer, Long> cache = new HashMap<>();
-    private ResourceLocation icon;
+    private Identifier icon;
     protected SealToggle[] props;
     
     public SealBreaker() {
         delay = new Random(System.nanoTime()).nextInt(42);
-        icon = new ResourceLocation(Thaumcraft.MODID, "items/seals/seal_breaker");
+        icon = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "items/seals/seal_breaker");
         props = new SealToggle[] {
             new SealToggle(true, "pmeta", "golem.prop.meta")
         };
@@ -186,7 +186,7 @@ public class SealBreaker extends SealFiltered implements ISealConfigArea, ISealC
     }
     
     @Override
-    public ResourceLocation getSealIcon() {
+    public Identifier getSealIcon() {
         return icon;
     }
     

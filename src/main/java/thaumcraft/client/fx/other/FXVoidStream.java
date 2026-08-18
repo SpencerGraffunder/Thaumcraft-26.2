@@ -7,10 +7,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.client.fx.particles.ThaumcraftParticle;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class FXVoidStream extends ThaumcraftParticle {
     
-    private static final ResourceLocation VOID_TEX = new ResourceLocation("textures/entity/end_portal.png");
+    private static final Identifier VOID_TEX = Identifier.withDefaultNamespace("textures/entity/end_portal.png");
     
     private final double targetX, targetY, targetZ;
     private final double startX, startY, startZ;

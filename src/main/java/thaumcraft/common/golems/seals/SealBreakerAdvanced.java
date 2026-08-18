@@ -1,6 +1,6 @@
 package thaumcraft.common.golems.seals;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.seals.ISealConfigToggles;
@@ -17,12 +17,12 @@ import thaumcraft.api.golems.seals.ISealConfigToggles;
  */
 public class SealBreakerAdvanced extends SealBreaker {
     
-    private ResourceLocation iconAdvanced;
+    private Identifier iconAdvanced;
     protected SealToggle[] propsAdvanced;
     
     public SealBreakerAdvanced() {
         super();
-        iconAdvanced = new ResourceLocation(Thaumcraft.MODID, "items/seals/seal_breaker_advanced");
+        iconAdvanced = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "items/seals/seal_breaker_advanced");
         propsAdvanced = new SealToggle[] {
             new SealToggle(true, "pmeta", "golem.prop.meta"),
             new SealToggle(false, "psilk", "golem.prop.silk")  // Silk touch mode
@@ -40,7 +40,7 @@ public class SealBreakerAdvanced extends SealBreaker {
     }
     
     @Override
-    public ResourceLocation getSealIcon() {
+    public Identifier getSealIcon() {
         return iconAdvanced;
     }
     

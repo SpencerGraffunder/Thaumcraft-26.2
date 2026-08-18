@@ -1,6 +1,6 @@
 package thaumcraft.api.research;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -27,13 +27,13 @@ public class ResearchCategory {
     public int maxDisplayRow;
 
     /** Icon displayed on the category tab */
-    public ResourceLocation icon;
+    public Identifier icon;
 
     /** Background texture for the category page */
-    public ResourceLocation background;
+    public Identifier background;
 
     /** Optional foreground texture (between background and icons) */
-    public ResourceLocation background2;
+    public Identifier background2;
 
     /** Research key that must be completed for this category to be visible (null = always visible) */
     public String researchKey;
@@ -48,7 +48,7 @@ public class ResearchCategory {
     public Map<String, ResearchEntry> research = new HashMap<>();
 
     public ResearchCategory(String key, String researchKey, AspectList formula, 
-                           ResourceLocation icon, ResourceLocation background) {
+                           Identifier icon, Identifier background) {
         this.key = key;
         this.researchKey = researchKey;
         this.icon = icon;
@@ -58,8 +58,8 @@ public class ResearchCategory {
     }
 
     public ResearchCategory(String key, String researchKey, AspectList formula,
-                           ResourceLocation icon, ResourceLocation background, 
-                           ResourceLocation background2) {
+                           Identifier icon, Identifier background, 
+                           Identifier background2) {
         this.key = key;
         this.researchKey = researchKey;
         this.icon = icon;

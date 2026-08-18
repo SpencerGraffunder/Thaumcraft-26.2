@@ -1,6 +1,6 @@
 package thaumcraft.api.casters;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import thaumcraft.api.aspects.Aspect;
 
 import javax.annotation.Nullable;
@@ -208,18 +208,18 @@ public class FocusEngine {
     /**
      * Get the icon texture for a focus element.
      * @param key The focus element key
-     * @return ResourceLocation for the icon texture
+     * @return Identifier for the icon texture
      */
-    public static ResourceLocation getElementIcon(String key) {
+    public static Identifier getElementIcon(String key) {
         // Icons are stored in textures/foci/ directory
         // Key format: "thaumcraft.FIRE" -> texture: "thaumcraft:textures/foci/fire.png"
         String[] parts = key.split("\\.");
         if (parts.length >= 2) {
             String modid = parts[0].toLowerCase();
             String name = parts[1].toLowerCase();
-            return new ResourceLocation(modid, "textures/foci/" + name + ".png");
+            return Identifier.fromNamespaceAndPath(modid, "textures/foci/" + name + ".png");
         }
-        return new ResourceLocation("thaumcraft", "textures/foci/unknown.png");
+        return Identifier.fromNamespaceAndPath("thaumcraft", "textures/foci/unknown.png");
     }
     
     /**

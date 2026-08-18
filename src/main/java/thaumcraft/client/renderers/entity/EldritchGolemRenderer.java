@@ -3,13 +3,13 @@ package thaumcraft.client.renderers.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.entity.EldritchGolemModel;
 import thaumcraft.common.entities.monster.boss.EntityEldritchGolem;
@@ -21,15 +21,15 @@ import thaumcraft.common.entities.monster.boss.EntityEldritchGolem;
 @OnlyIn(Dist.CLIENT)
 public class EldritchGolemRenderer extends MobRenderer<EntityEldritchGolem, EldritchGolemModel> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/eldritch_golem.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/eldritch_golem.png");
     
     public EldritchGolemRenderer(EntityRendererProvider.Context context) {
         super(context, new EldritchGolemModel(context.bakeLayer(EldritchGolemModel.LAYER_LOCATION)), 0.7F);
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityEldritchGolem entity) {
+    public Identifier getTextureLocation(EntityEldritchGolem entity) {
         return TEXTURE;
     }
     

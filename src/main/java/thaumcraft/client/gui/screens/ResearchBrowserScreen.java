@@ -9,12 +9,12 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
@@ -46,7 +46,7 @@ import java.util.*;
 public class ResearchBrowserScreen extends Screen {
     
     // Textures
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_research_browser.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_research_browser.png");
     
     // Map bounds (calculated from visible research)
     private static int guiBoundsLeft;
@@ -848,9 +848,9 @@ public class ResearchBrowserScreen extends Screen {
         int idx = (int) (System.currentTimeMillis() / 1000L % research.getIcons().length);
         Object icon = research.getIcons()[idx];
         
-        if (icon instanceof ResourceLocation) {
-            RenderSystem.setShaderTexture(0, (ResourceLocation) icon);
-            graphics.blit((ResourceLocation) icon, x, y, 0, 0, 16, 16, 16, 16);
+        if (icon instanceof Identifier) {
+            RenderSystem.setShaderTexture(0, (Identifier) icon);
+            graphics.blit((Identifier) icon, x, y, 0, 0, 16, 16, 16, 16);
         } else if (icon instanceof ItemStack) {
             graphics.renderItem((ItemStack) icon, x, y);
         }
@@ -1035,10 +1035,10 @@ public class ResearchBrowserScreen extends Screen {
      */
     private static class SearchResult {
         String key;
-        ResourceLocation recipe;
+        Identifier recipe;
         boolean cat;
         
-        SearchResult(String key, ResourceLocation recipe, boolean cat) {
+        SearchResult(String key, Identifier recipe, boolean cat) {
             this.key = key;
             this.recipe = recipe;
             this.cat = cat;

@@ -1,7 +1,7 @@
 package thaumcraft.api.golems.parts;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import thaumcraft.api.golems.EnumGolemTrait;
 
@@ -17,7 +17,7 @@ public class GolemMaterial {
     public byte id;
     public String key;
     public String[] research;
-    public ResourceLocation texture;
+    public Identifier texture;
     public int itemColor;
     public int healthMod;
     public int armor;
@@ -26,7 +26,7 @@ public class GolemMaterial {
     public ItemStack componentMechanism;
     public EnumGolemTrait[] traits;
 
-    public GolemMaterial(String key, String[] research, ResourceLocation texture, int itemColor,
+    public GolemMaterial(String key, String[] research, Identifier texture, int itemColor,
                          int hp, int armor, int damage, ItemStack compBase, ItemStack compMech,
                          EnumGolemTrait[] traits) {
         this.key = key;

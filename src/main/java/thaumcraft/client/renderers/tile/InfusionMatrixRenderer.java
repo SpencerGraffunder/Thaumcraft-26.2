@@ -5,14 +5,14 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.tiles.crafting.TileInfusionMatrix;
@@ -27,12 +27,12 @@ import java.util.Random;
 @OnlyIn(Dist.CLIENT)
 public class InfusionMatrixRenderer implements BlockEntityRenderer<TileInfusionMatrix> {
 
-    private static final ResourceLocation TEXTURE_NORMAL = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/blocks/infuser_normal.png");
-    private static final ResourceLocation TEXTURE_ANCIENT = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/blocks/infuser_ancient.png");
-    private static final ResourceLocation TEXTURE_ELDRITCH = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/blocks/infuser_eldritch.png");
+    private static final Identifier TEXTURE_NORMAL = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/infuser_normal.png");
+    private static final Identifier TEXTURE_ANCIENT = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/infuser_ancient.png");
+    private static final Identifier TEXTURE_ELDRITCH = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/infuser_eldritch.png");
 
     public InfusionMatrixRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -61,7 +61,7 @@ public class InfusionMatrixRenderer implements BlockEntityRenderer<TileInfusionM
                 (Math.min(tile.craftCount, 50) / 50.0f));
         
         // Choose texture based on pillar type (simplified - always use normal for now)
-        ResourceLocation texture = TEXTURE_NORMAL;
+        Identifier texture = TEXTURE_NORMAL;
         
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
         

@@ -3,9 +3,9 @@ package thaumcraft.client.renderers.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.entity.TaintSeedModel;
 import thaumcraft.common.entities.monster.tainted.EntityTaintSeed;
@@ -16,15 +16,15 @@ import thaumcraft.common.entities.monster.tainted.EntityTaintSeed;
 @OnlyIn(Dist.CLIENT)
 public class TaintSeedRenderer extends MobRenderer<EntityTaintSeed, TaintSeedModel<EntityTaintSeed>> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/taint_seed.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/taint_seed.png");
     
     public TaintSeedRenderer(EntityRendererProvider.Context context) {
         super(context, new TaintSeedModel<>(context.bakeLayer(TaintSeedModel.LAYER_LOCATION)), 0.5F);
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityTaintSeed entity) {
+    public Identifier getTextureLocation(EntityTaintSeed entity) {
         return TEXTURE;
     }
     

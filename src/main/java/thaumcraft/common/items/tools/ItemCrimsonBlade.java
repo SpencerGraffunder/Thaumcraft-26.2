@@ -10,12 +10,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.api.items.IWarpingGear;
 import thaumcraft.init.ModItems;
 
@@ -32,7 +32,7 @@ public class ItemCrimsonBlade extends SwordItem implements IWarpingGear {
     /**
      * Custom tier for the Crimson Blade.
      */
-    public static final Tier CRIMSON_VOID_TIER = new Tier() {
+    public static final ToolMaterial CRIMSON_VOID_TIER = new ToolMaterial() {
         @Override
         public int getUses() {
             return 200;

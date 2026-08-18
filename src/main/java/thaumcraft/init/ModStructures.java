@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.world.structures.BarrowStructure;
 
@@ -42,7 +42,7 @@ public class ModStructures {
      * - Thaumcraft loot crates and urns
      * - Iron bar entrance
      */
-    public static final RegistryObject<StructureType<BarrowStructure>> BARROW = 
+    public static final DeferredHolder<StructureType<BarrowStructure>> BARROW = 
             STRUCTURE_TYPES.register("barrow", () -> explicitCodec(BarrowStructure.CODEC));
     
     // ==================== Helper Methods ====================

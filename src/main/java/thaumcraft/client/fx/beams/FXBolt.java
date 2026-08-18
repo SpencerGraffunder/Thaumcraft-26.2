@@ -5,11 +5,11 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -25,7 +25,7 @@ import java.util.Random;
 @OnlyIn(Dist.CLIENT)
 public class FXBolt extends TextureSheetParticle {
 
-    protected static final ResourceLocation BEAM_TEXTURE = new ResourceLocation("thaumcraft", "textures/misc/essentia.png");
+    protected static final Identifier BEAM_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/essentia.png");
 
     protected float beamWidth;
     protected List<Vec3> points = new ArrayList<>();

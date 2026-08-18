@@ -5,9 +5,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.parts.GolemMaterial;
 import thaumcraft.client.models.entity.GolemModel;
@@ -28,8 +28,8 @@ import thaumcraft.common.golems.EntityThaumcraftGolem;
 public class GolemRenderer extends MobRenderer<EntityThaumcraftGolem, GolemModel> {
     
     // Default texture for golems without material
-    private static final ResourceLocation DEFAULT_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/golems/mat_wood.png");
+    private static final Identifier DEFAULT_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/golems/mat_wood.png");
     
     public GolemRenderer(EntityRendererProvider.Context context) {
         super(context, new GolemModel(context.bakeLayer(GolemModel.LAYER_LOCATION)), 0.3F);
@@ -39,7 +39,7 @@ public class GolemRenderer extends MobRenderer<EntityThaumcraftGolem, GolemModel
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityThaumcraftGolem entity) {
+    public Identifier getTextureLocation(EntityThaumcraftGolem entity) {
         // Get texture based on material
         if (entity.getProperties() != null && entity.getProperties().getMaterial() != null) {
             GolemMaterial material = entity.getProperties().getMaterial();

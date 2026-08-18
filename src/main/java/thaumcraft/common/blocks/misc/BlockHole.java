@@ -122,7 +122,7 @@ public class BlockHole extends BaseEntityBlock {
         // Place the hole block
         // We need to get the block from the registry since ModBlocks.HOLE might cause circular reference
         Block holeBlock = net.minecraftforge.registries.ForgeRegistries.BLOCKS.getValue(
-            new net.minecraft.resources.ResourceLocation("thaumcraft", "hole"));
+            new net.minecraft.resources.Identifier("thaumcraft", "hole"));
         
         if (holeBlock == null) return false;
         

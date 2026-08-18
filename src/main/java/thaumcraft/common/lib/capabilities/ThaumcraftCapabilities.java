@@ -1,17 +1,17 @@
 package thaumcraft.common.lib.capabilities;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.capabilities.IPlayerWarp;
@@ -31,8 +31,8 @@ public class ThaumcraftCapabilities {
     public static final Capability<IPlayerWarp> WARP = CapabilityManager.get(new CapabilityToken<>() {});
     
     // Resource locations for capability attachment
-    public static final ResourceLocation KNOWLEDGE_ID = new ResourceLocation(Thaumcraft.MODID, "knowledge");
-    public static final ResourceLocation WARP_ID = new ResourceLocation(Thaumcraft.MODID, "warp");
+    public static final Identifier KNOWLEDGE_ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "knowledge");
+    public static final Identifier WARP_ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "warp");
     
     /**
      * Get the knowledge capability from a player

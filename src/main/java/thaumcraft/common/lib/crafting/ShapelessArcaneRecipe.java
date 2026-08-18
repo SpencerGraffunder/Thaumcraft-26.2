@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.RecipeMatcher;
+import net.minecraft.world.item.ItemStackHelper;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class ShapelessArcaneRecipe implements IArcaneRecipe {
     
-    private final ResourceLocation id;
+    private final Identifier id;
     private final String group;
     private final NonNullList<Ingredient> ingredients;
     private final ItemStack result;
@@ -45,7 +45,7 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
     private final AspectList crystals;
     private final String research;
     
-    public ShapelessArcaneRecipe(ResourceLocation id, String group,
+    public ShapelessArcaneRecipe(Identifier id, String group,
                                  NonNullList<Ingredient> ingredients, ItemStack result,
                                  int visCost, AspectList crystals, String research) {
         this.id = id;
@@ -89,7 +89,7 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
     }
     
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
     
@@ -137,10 +137,10 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
     public static class Serializer implements RecipeSerializer<ShapelessArcaneRecipe> {
         
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation(Thaumcraft.MODID, "arcane_workbench_shapeless");
+        public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "arcane_workbench_shapeless");
         
         @Override
-        public ShapelessArcaneRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+        public ShapelessArcaneRecipe fromJson(Identifier recipeId, JsonObject json) {
             String group = GsonHelper.getAsString(json, "group", "");
             String research = GsonHelper.getAsString(json, "research", "");
             int visCost = GsonHelper.getAsInt(json, "vis", 0);
@@ -184,7 +184,7 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
         }
         
         @Override
-        public @Nullable ShapelessArcaneRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public @Nullable ShapelessArcaneRecipe fromNetwork(Identifier recipeId, FriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             String research = buffer.readUtf();
             int visCost = buffer.readVarInt();

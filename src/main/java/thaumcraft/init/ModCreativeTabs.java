@@ -5,8 +5,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.IGolemProperties;
 import thaumcraft.api.golems.parts.GolemAddon;
@@ -27,7 +27,7 @@ public class ModCreativeTabs {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Thaumcraft.MODID);
 
     // Main Thaumcraft creative tab
-    public static final RegistryObject<CreativeModeTab> THAUMCRAFT_TAB = CREATIVE_MODE_TABS.register("thaumcraft_tab",
+    public static final DeferredHolder<CreativeModeTab> THAUMCRAFT_TAB = CREATIVE_MODE_TABS.register("thaumcraft_tab",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.thaumcraft"))
                     .icon(() -> new ItemStack(ModBlocks.ARCANE_STONE.get()))

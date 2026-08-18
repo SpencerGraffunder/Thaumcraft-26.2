@@ -33,7 +33,7 @@ public class ResearchEntry {
     /** The vertical position of the research icon */
     private int displayRow;
 
-    /** The icon(s) to be used for this research (can be ItemStack, ResourceLocation, or Aspect) */
+    /** The icon(s) to be used for this research (can be ItemStack, Identifier, or Aspect) */
     private Object[] icons;
 
     /** Special meta-data tags that indicate how this research must be handled */

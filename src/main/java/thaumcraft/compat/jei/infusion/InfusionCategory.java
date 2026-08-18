@@ -14,7 +14,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import thaumcraft.Thaumcraft;
@@ -36,7 +36,7 @@ import thaumcraft.init.ModBlocks;
  */
 public class InfusionCategory implements IRecipeCategory<InfusionRecipeType> {
 
-    public static final ResourceLocation UID = new ResourceLocation(Thaumcraft.MODID, "infusion");
+    public static final Identifier UID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "infusion");
 
     private final IDrawable background;
     private final IDrawable icon;

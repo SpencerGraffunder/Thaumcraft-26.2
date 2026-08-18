@@ -3,13 +3,13 @@ package thaumcraft.common.lib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.capabilities.IPlayerKnowledge.EnumKnowledgeType;
 import thaumcraft.api.capabilities.IPlayerWarp;
@@ -253,7 +253,7 @@ public class InternalMethodHandler implements IInternalMethodHandler {
         }
         
         try {
-            ResourceLocation loc = new ResourceLocation(dimension);
+            Identifier loc = Identifier.withDefaultNamespace(dimension);
             return ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, loc);
         } catch (Exception e) {
             return null;

@@ -4,16 +4,16 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
@@ -28,10 +28,10 @@ import java.awt.Color;
 @OnlyIn(Dist.CLIENT)
 public class ResearchTableRenderer implements BlockEntityRenderer<TileResearchTable> {
 
-    private static final ResourceLocation SCROLL_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/models/scroll.png");
-    private static final ResourceLocation INKWELL_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/models/inkwell.png");
+    private static final Identifier SCROLL_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/scroll.png");
+    private static final Identifier INKWELL_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/inkwell.png");
 
     public ResearchTableRenderer(BlockEntityRendererProvider.Context context) {
     }

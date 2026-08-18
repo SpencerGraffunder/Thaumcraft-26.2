@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -18,10 +18,10 @@ import javax.annotation.Nullable;
 public class InfusionEnchantmentRecipeSerializer implements RecipeSerializer<InfusionEnchantmentRecipe> {
     
     public static final InfusionEnchantmentRecipeSerializer INSTANCE = new InfusionEnchantmentRecipeSerializer();
-    public static final ResourceLocation ID = new ResourceLocation(Thaumcraft.MODID, "infusion_enchantment");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "infusion_enchantment");
     
     @Override
-    public InfusionEnchantmentRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+    public InfusionEnchantmentRecipe fromJson(Identifier recipeId, JsonObject json) {
         String enchantmentName = GsonHelper.getAsString(json, "enchantment");
         EnumInfusionEnchantment enchantment = EnumInfusionEnchantment.valueOf(enchantmentName.toUpperCase());
         
@@ -53,7 +53,7 @@ public class InfusionEnchantmentRecipeSerializer implements RecipeSerializer<Inf
     }
     
     @Override
-    public @Nullable InfusionEnchantmentRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+    public @Nullable InfusionEnchantmentRecipe fromNetwork(Identifier recipeId, FriendlyByteBuf buffer) {
         int enchantmentOrdinal = buffer.readVarInt();
         EnumInfusionEnchantment enchantment = EnumInfusionEnchantment.values()[enchantmentOrdinal];
         

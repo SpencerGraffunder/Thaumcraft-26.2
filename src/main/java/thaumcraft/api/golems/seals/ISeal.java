@@ -3,11 +3,11 @@ package thaumcraft.api.golems.seals;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.IGolemAPI;
 import thaumcraft.api.golems.tasks.Task;
@@ -71,7 +71,7 @@ public interface ISeal {
      * @return Icon used to render the seal in world.
      * Usually the same as your seal placer item icon.
      */
-    ResourceLocation getSealIcon();
+    Identifier getSealIcon();
 
     /**
      * Called when the seal is removed from the world

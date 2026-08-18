@@ -1,7 +1,7 @@
 package thaumcraft.api.golems.parts;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import thaumcraft.api.golems.EnumGolemTrait;
 
 /**
@@ -16,13 +16,13 @@ public class GolemLeg {
     public byte id;
     public String key;
     public String[] research;
-    public ResourceLocation icon;
+    public Identifier icon;
     public Object[] components;
     public EnumGolemTrait[] traits;
     public ILegFunction function;
     public PartModel model;
 
-    public GolemLeg(String key, String[] research, ResourceLocation icon, PartModel model,
+    public GolemLeg(String key, String[] research, Identifier icon, PartModel model,
                     Object[] components, EnumGolemTrait[] traits) {
         this.key = key;
         this.research = research;
@@ -33,7 +33,7 @@ public class GolemLeg {
         this.function = null;
     }
 
-    public GolemLeg(String key, String[] research, ResourceLocation icon, PartModel model,
+    public GolemLeg(String key, String[] research, Identifier icon, PartModel model,
                     Object[] components, ILegFunction function, EnumGolemTrait[] traits) {
         this(key, research, icon, model, components, traits);
         this.function = function;

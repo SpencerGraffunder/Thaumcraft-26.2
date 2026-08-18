@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.crafting.CraftingHelper;
+import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class ShapedArcaneRecipe implements IArcaneRecipe {
     
-    private final ResourceLocation id;
+    private final Identifier id;
     private final String group;
     private final int width;
     private final int height;
@@ -46,7 +46,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
     private final AspectList crystals;
     private final String research;
     
-    public ShapedArcaneRecipe(ResourceLocation id, String group, int width, int height,
+    public ShapedArcaneRecipe(Identifier id, String group, int width, int height,
                               NonNullList<Ingredient> ingredients, ItemStack result,
                               int visCost, AspectList crystals, String research) {
         this.id = id;
@@ -116,7 +116,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
     }
     
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
     
@@ -172,10 +172,10 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
     public static class Serializer implements RecipeSerializer<ShapedArcaneRecipe> {
         
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation(Thaumcraft.MODID, "arcane_workbench_shaped");
+        public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "arcane_workbench_shaped");
         
         @Override
-        public ShapedArcaneRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+        public ShapedArcaneRecipe fromJson(Identifier recipeId, JsonObject json) {
             String group = GsonHelper.getAsString(json, "group", "");
             String research = GsonHelper.getAsString(json, "research", "");
             int visCost = GsonHelper.getAsInt(json, "vis", 0);
@@ -206,7 +206,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
         }
         
         @Override
-        public @Nullable ShapedArcaneRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public @Nullable ShapedArcaneRecipe fromNetwork(Identifier recipeId, FriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             String research = buffer.readUtf();
             int visCost = buffer.readVarInt();

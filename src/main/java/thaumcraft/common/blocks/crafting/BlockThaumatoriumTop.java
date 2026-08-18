@@ -24,7 +24,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import thaumcraft.common.tiles.crafting.TileThaumatorium;
 import thaumcraft.common.tiles.crafting.TileThaumatoriumTop;
 import thaumcraft.init.ModBlockEntities;

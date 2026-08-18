@@ -9,14 +9,14 @@ import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.TierSortingRegistry;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.TierSortingEvent;
 import thaumcraft.api.items.IWarpingGear;
 import thaumcraft.init.ModItems;
 
@@ -33,7 +33,7 @@ public class ItemPrimalCrusher extends DiggerItem implements IWarpingGear {
     /**
      * Custom tier for the Primal Crusher - based on void metal but enhanced.
      */
-    public static final Tier PRIMAL_VOID_TIER = new Tier() {
+    public static final ToolMaterial PRIMAL_VOID_TIER = new ToolMaterial() {
         @Override
         public int getUses() {
             return 500;

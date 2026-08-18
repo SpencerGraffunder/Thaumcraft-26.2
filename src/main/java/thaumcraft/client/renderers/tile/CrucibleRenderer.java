@@ -4,17 +4,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.fluids.client.IClientFluidTypeExtensions;
 import org.joml.Matrix4f;
 import thaumcraft.common.tiles.crafting.TileCrucible;
 
@@ -65,7 +65,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<TileCrucible> {
 
         // Get water texture from the fluid type
         IClientFluidTypeExtensions fluidExtensions = IClientFluidTypeExtensions.of(Fluids.WATER);
-        ResourceLocation stillTexture = fluidExtensions.getStillTexture();
+        Identifier stillTexture = fluidExtensions.getStillTexture();
         
         @SuppressWarnings("deprecation")
         TextureAtlasSprite sprite = Minecraft.getInstance()

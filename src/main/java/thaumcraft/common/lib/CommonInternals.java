@@ -1,6 +1,6 @@
 package thaumcraft.common.lib;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import thaumcraft.api.aspects.Aspect;
@@ -24,7 +24,7 @@ public class CommonInternals {
 
     /**
      * Smelting bonus map - items that give bonus drops when smelted in infernal furnace.
-     * Key: Input item ResourceLocation
+     * Key: Input item Identifier
      * Value: Array of possible bonus ItemStacks with weights
      */
     public static Map<String, ItemStack[]> smeltingBonus = new HashMap<>();
@@ -283,16 +283,16 @@ public class CommonInternals {
      * Helper method to register aspects for an item by string ID.
      */
     private static void registerAspects(String itemId, AspectList aspects) {
-        AspectHelper.registerObjectTag(new ResourceLocation(itemId), aspects);
+        AspectHelper.registerObjectTag(Identifier.withDefaultNamespace(itemId), aspects);
     }
 
     /**
      * Register smelting bonus for an item.
      * 
-     * @param input ResourceLocation of the input item
+     * @param input Identifier of the input item
      * @param bonuses Array of possible bonus items
      */
-    public static void registerSmeltingBonus(ResourceLocation input, ItemStack... bonuses) {
+    public static void registerSmeltingBonus(Identifier input, ItemStack... bonuses) {
         if (input != null && bonuses != null && bonuses.length > 0) {
             smeltingBonus.put(input.toString(), bonuses);
         }
@@ -308,7 +308,7 @@ public class CommonInternals {
         if (input == null || input.isEmpty()) {
             return null;
         }
-        ResourceLocation itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(input.getItem());
+        Identifier itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(input.getItem());
         if (itemId == null) {
             return null;
         }
@@ -320,19 +320,19 @@ public class CommonInternals {
      */
     public static void initSmeltingBonuses() {
         // Iron ore gives nuggets as bonus
-        registerSmeltingBonus(new ResourceLocation("minecraft:raw_iron"),
+        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:raw_iron"),
                 new ItemStack(Items.IRON_NUGGET, 1));
-        registerSmeltingBonus(new ResourceLocation("minecraft:iron_ore"),
+        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:iron_ore"),
                 new ItemStack(Items.IRON_NUGGET, 1));
         
         // Gold ore gives nuggets as bonus
-        registerSmeltingBonus(new ResourceLocation("minecraft:raw_gold"),
+        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:raw_gold"),
                 new ItemStack(Items.GOLD_NUGGET, 1));
-        registerSmeltingBonus(new ResourceLocation("minecraft:gold_ore"),
+        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:gold_ore"),
                 new ItemStack(Items.GOLD_NUGGET, 1));
         
         // Copper ore gives extra copper
-        registerSmeltingBonus(new ResourceLocation("minecraft:raw_copper"),
+        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:raw_copper"),
                 new ItemStack(Items.COPPER_INGOT, 1));
         
         // Wood gives charcoal and ash (when ash item is added)

@@ -6,9 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -85,7 +85,7 @@ public class AspectRenderer {
         }
         
         // Render the aspect icon
-        ResourceLocation texture = aspect.getImage();
+        Identifier texture = aspect.getImage();
         renderColoredTexture(graphics, texture, x, y, ICON_SIZE, ICON_SIZE, r, g, b, alpha);
         
         // Render amount text
@@ -112,7 +112,7 @@ public class AspectRenderer {
     /**
      * Render a texture with color tinting using the new rendering system.
      */
-    private static void renderColoredTexture(GuiGraphics graphics, ResourceLocation texture,
+    private static void renderColoredTexture(GuiGraphics graphics, Identifier texture,
             int x, int y, int width, int height, float r, float g, float b, float a) {
         
         RenderSystem.setShaderTexture(0, texture);
@@ -191,7 +191,7 @@ public class AspectRenderer {
         float g = ((color >> 8) & 0xFF) / 255.0f;
         float b = (color & 0xFF) / 255.0f;
         
-        ResourceLocation texture = aspect.getImage();
+        Identifier texture = aspect.getImage();
         renderColoredTexture(graphics, texture, x, y, 8, 8, r, g, b, 1.0f);
     }
     

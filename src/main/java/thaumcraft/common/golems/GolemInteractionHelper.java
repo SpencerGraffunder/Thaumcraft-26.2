@@ -11,8 +11,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.server.level.FakePlayer;
+import net.neoforged.neoforge.server.level.FakePlayer;
 import thaumcraft.api.golems.IGolemAPI;
 import thaumcraft.common.lib.utils.InventoryUtils;
 

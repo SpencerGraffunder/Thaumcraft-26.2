@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.text.WordUtils;
 import thaumcraft.Thaumcraft;
@@ -24,7 +24,7 @@ public class Aspect {
     private Aspect[] components;
     private int color;
     private String chatcolor;
-    private ResourceLocation image;
+    private Identifier image;
     private int blend;
     
     /**
@@ -42,10 +42,10 @@ public class Aspect {
      * @param tag the key that will be used to reference this aspect, as well as its latin display name
      * @param color color to display the tag in
      * @param components the aspects this one is formed from
-     * @param image ResourceLocation pointing to a 32x32 icon of the aspect
+     * @param image Identifier pointing to a 32x32 icon of the aspect
      * @param blend GL11 blendmode (1 or 771). Used for rendering nodes. Default is 1
      */
-    public Aspect(String tag, int color, Aspect[] components, ResourceLocation image, int blend) {
+    public Aspect(String tag, int color, Aspect[] components, Identifier image, int blend) {
         if (aspects.containsKey(tag)) {
             throw new IllegalArgumentException(tag + " already registered!");
         }
@@ -70,7 +70,7 @@ public class Aspect {
      */
     public Aspect(String tag, int color, Aspect[] components) {
         this(tag, color, components, 
-            new ResourceLocation(Thaumcraft.MODID, "textures/aspects/" + tag.toLowerCase() + ".png"), 1);
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/aspects/" + tag.toLowerCase() + ".png"), 1);
     }
     
     /**
@@ -78,7 +78,7 @@ public class Aspect {
      */
     public Aspect(String tag, int color, Aspect[] components, int blend) {
         this(tag, color, components, 
-            new ResourceLocation(Thaumcraft.MODID, "textures/aspects/" + tag.toLowerCase() + ".png"), blend);
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/aspects/" + tag.toLowerCase() + ".png"), blend);
     }
 
     /**
@@ -117,7 +117,7 @@ public class Aspect {
         this.components = components;
     }
     
-    public ResourceLocation getImage() {
+    public Identifier getImage() {
         return image;
     }
     

@@ -1,7 +1,7 @@
 package thaumcraft.api.research;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import thaumcraft.api.capabilities.IPlayerKnowledge.EnumKnowledgeType;
 
 /**
@@ -14,7 +14,7 @@ public class ResearchStage {
     private String text;
 
     /** Recipes unlocked at this stage */
-    private ResourceLocation[] recipes;
+    private Identifier[] recipes;
 
     /** Items that must be obtained to complete this stage */
     private Object[] obtain;
@@ -51,11 +51,11 @@ public class ResearchStage {
         this.text = text;
     }
 
-    public ResourceLocation[] getRecipes() {
+    public Identifier[] getRecipes() {
         return recipes;
     }
 
-    public void setRecipes(ResourceLocation[] recipes) {
+    public void setRecipes(Identifier[] recipes) {
         this.recipes = recipes;
     }
 

@@ -2,7 +2,7 @@ package thaumcraft.common.lib.network.playerdata;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
 

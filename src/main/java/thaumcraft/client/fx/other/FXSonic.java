@@ -7,11 +7,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.fx.particles.ThaumcraftParticle;
 
@@ -24,11 +24,11 @@ import thaumcraft.client.fx.particles.ThaumcraftParticle;
 @OnlyIn(Dist.CLIENT)
 public class FXSonic extends ThaumcraftParticle {
     
-    private static final ResourceLocation[] RIPPLE_TEXTURES = new ResourceLocation[16];
+    private static final Identifier[] RIPPLE_TEXTURES = new Identifier[16];
     
     static {
         for (int i = 0; i < 16; i++) {
-            RIPPLE_TEXTURES[i] = new ResourceLocation(Thaumcraft.MODID, "textures/models/ripple" + (i + 1) + ".png");
+            RIPPLE_TEXTURES[i] = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/ripple" + (i + 1) + ".png");
         }
     }
     

@@ -4,15 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import thaumcraft.common.tiles.misc.TileHole;
 import thaumcraft.init.ModBlocks;
@@ -24,8 +24,8 @@ import thaumcraft.init.ModBlocks;
 @OnlyIn(Dist.CLIENT)
 public class HoleRenderer implements BlockEntityRenderer<TileHole> {
 
-    private static final ResourceLocation END_PORTAL_TEXTURE = 
-            new ResourceLocation("textures/entity/end_portal.png");
+    private static final Identifier END_PORTAL_TEXTURE = 
+            Identifier.withDefaultNamespace("textures/entity/end_portal.png");
 
     public HoleRenderer(BlockEntityRendererProvider.Context context) {
     }

@@ -5,16 +5,16 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.tiles.devices.TileMirror;
@@ -27,12 +27,12 @@ import thaumcraft.common.tiles.devices.TileMirror;
 @OnlyIn(Dist.CLIENT)
 public class MirrorRenderer implements BlockEntityRenderer<TileMirror> {
 
-    private static final ResourceLocation PORTAL_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/misc/tunnel.png");
-    private static final ResourceLocation INACTIVE_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/blocks/mirrorpane.png");
-    private static final ResourceLocation ACTIVE_TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/blocks/mirrorpanetrans.png");
+    private static final Identifier PORTAL_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/tunnel.png");
+    private static final Identifier INACTIVE_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/mirrorpane.png");
+    private static final Identifier ACTIVE_TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/mirrorpanetrans.png");
 
     public MirrorRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -127,7 +127,7 @@ public class MirrorRenderer implements BlockEntityRenderer<TileMirror> {
      * Render a texture overlay on the mirror surface.
      */
     private void renderOverlay(PoseStack poseStack, MultiBufferSource buffer,
-                               ResourceLocation texture, int packedLight) {
+                               Identifier texture, int packedLight) {
         poseStack.pushPose();
         poseStack.translate(0, 0, -0.43);
         

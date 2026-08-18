@@ -5,10 +5,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.entities.construct.EntityTurretCrossbowAdvanced;
 import thaumcraft.common.menu.TurretMenu;
@@ -22,10 +22,10 @@ import thaumcraft.common.menu.TurretMenu;
 @OnlyIn(Dist.CLIENT)
 public class TurretScreen extends AbstractContainerScreen<TurretMenu> {
     
-    private static final ResourceLocation TEXTURE_BASIC = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_turret.png");
-    private static final ResourceLocation TEXTURE_ADVANCED = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_turret_advanced.png");
+    private static final Identifier TEXTURE_BASIC = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_turret.png");
+    private static final Identifier TEXTURE_ADVANCED = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_turret_advanced.png");
     
     private final boolean isAdvanced;
     
@@ -107,7 +107,7 @@ public class TurretScreen extends AbstractContainerScreen<TurretMenu> {
         int y = this.topPos;
         
         // Draw main background
-        ResourceLocation texture = isAdvanced ? TEXTURE_ADVANCED : TEXTURE_BASIC;
+        Identifier texture = isAdvanced ? TEXTURE_ADVANCED : TEXTURE_BASIC;
         graphics.blit(texture, x, y, 0, 0, this.imageWidth, this.imageHeight);
     }
     

@@ -1,10 +1,10 @@
 package thaumcraft.init;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.common.lib.crafting.CrucibleRecipeType;
@@ -27,11 +27,11 @@ public class ModRecipeTypes {
      * Arcane Workbench recipe type.
      * Used for crafting items that require vis from the aura and primal crystals.
      */
-    public static final RegistryObject<RecipeType<IArcaneRecipe>> ARCANE_WORKBENCH = 
+    public static final DeferredHolder<RecipeType<IArcaneRecipe>> ARCANE_WORKBENCH = 
             RECIPE_TYPES.register("arcane_workbench", () -> new RecipeType<IArcaneRecipe>() {
                 @Override
                 public String toString() {
-                    return new ResourceLocation(Thaumcraft.MODID, "arcane_workbench").toString();
+                    return Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "arcane_workbench").toString();
                 }
             });
     
@@ -39,11 +39,11 @@ public class ModRecipeTypes {
      * Crucible recipe type.
      * Used for alchemy transmutation by throwing items into a crucible with aspects.
      */
-    public static final RegistryObject<RecipeType<CrucibleRecipeType>> CRUCIBLE = 
+    public static final DeferredHolder<RecipeType<CrucibleRecipeType>> CRUCIBLE = 
             RECIPE_TYPES.register("crucible", () -> new RecipeType<CrucibleRecipeType>() {
                 @Override
                 public String toString() {
-                    return new ResourceLocation(Thaumcraft.MODID, "crucible").toString();
+                    return Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "crucible").toString();
                 }
             });
     
@@ -51,11 +51,11 @@ public class ModRecipeTypes {
      * Infusion altar recipe type.
      * Used for creating powerful items via the infusion altar with pedestals and essentia.
      */
-    public static final RegistryObject<RecipeType<InfusionRecipeType>> INFUSION = 
+    public static final DeferredHolder<RecipeType<InfusionRecipeType>> INFUSION = 
             RECIPE_TYPES.register("infusion", () -> new RecipeType<InfusionRecipeType>() {
                 @Override
                 public String toString() {
-                    return new ResourceLocation(Thaumcraft.MODID, "infusion").toString();
+                    return Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "infusion").toString();
                 }
             });
 }

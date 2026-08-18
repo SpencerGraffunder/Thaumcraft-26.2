@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -36,14 +36,14 @@ import javax.annotation.Nullable;
  */
 public class CrucibleRecipeType implements Recipe<Container>, IThaumcraftRecipe {
     
-    private final ResourceLocation id;
+    private final Identifier id;
     private final String group;
     private final Ingredient catalyst;
     private final AspectList aspects;
     private final ItemStack result;
     private final String research;
     
-    public CrucibleRecipeType(ResourceLocation id, String group, Ingredient catalyst,
+    public CrucibleRecipeType(Identifier id, String group, Ingredient catalyst,
                               AspectList aspects, ItemStack result, String research) {
         this.id = id;
         this.group = group;
@@ -121,7 +121,7 @@ public class CrucibleRecipeType implements Recipe<Container>, IThaumcraftRecipe 
     }
     
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
     
@@ -164,10 +164,10 @@ public class CrucibleRecipeType implements Recipe<Container>, IThaumcraftRecipe 
     public static class Serializer implements RecipeSerializer<CrucibleRecipeType> {
         
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation(Thaumcraft.MODID, "crucible");
+        public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "crucible");
         
         @Override
-        public CrucibleRecipeType fromJson(ResourceLocation recipeId, JsonObject json) {
+        public CrucibleRecipeType fromJson(Identifier recipeId, JsonObject json) {
             String group = GsonHelper.getAsString(json, "group", "");
             String research = GsonHelper.getAsString(json, "research", "");
             
@@ -194,7 +194,7 @@ public class CrucibleRecipeType implements Recipe<Container>, IThaumcraftRecipe 
         }
         
         @Override
-        public @Nullable CrucibleRecipeType fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public @Nullable CrucibleRecipeType fromNetwork(Identifier recipeId, FriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             String research = buffer.readUtf();
             

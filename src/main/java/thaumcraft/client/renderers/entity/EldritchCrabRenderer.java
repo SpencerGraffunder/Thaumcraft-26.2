@@ -6,9 +6,9 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.SpiderEyesLayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.entities.monster.EntityEldritchCrab;
 
@@ -19,8 +19,8 @@ import thaumcraft.common.entities.monster.EntityEldritchCrab;
 @OnlyIn(Dist.CLIENT)
 public class EldritchCrabRenderer extends MobRenderer<EntityEldritchCrab, SpiderModel<EntityEldritchCrab>> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/eldritch_crab.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/eldritch_crab.png");
     
     public EldritchCrabRenderer(EntityRendererProvider.Context context) {
         super(context, new SpiderModel<>(context.bakeLayer(ModelLayers.SPIDER)), 0.4F);
@@ -28,7 +28,7 @@ public class EldritchCrabRenderer extends MobRenderer<EntityEldritchCrab, Spider
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityEldritchCrab entity) {
+    public Identifier getTextureLocation(EntityEldritchCrab entity) {
         return TEXTURE;
     }
     

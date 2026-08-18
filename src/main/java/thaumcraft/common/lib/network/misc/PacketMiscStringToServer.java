@@ -2,7 +2,7 @@ package thaumcraft.common.lib.network.misc;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.common.menu.LogisticsMenu;
 
 import java.util.function.Supplier;

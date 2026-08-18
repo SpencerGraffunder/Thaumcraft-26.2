@@ -5,9 +5,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.entity.PechModel;
 import thaumcraft.common.entities.monster.EntityPech;
@@ -24,12 +24,12 @@ import thaumcraft.common.entities.monster.EntityPech;
 public class PechRenderer extends MobRenderer<EntityPech, PechModel> {
     
     // Textures for different pech types
-    private static final ResourceLocation TEXTURE_FORAGER = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/pech_forage.png");
-    private static final ResourceLocation TEXTURE_MAGE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/pech_thaum.png");
-    private static final ResourceLocation TEXTURE_STALKER = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/pech_stalker.png");
+    private static final Identifier TEXTURE_FORAGER = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/pech_forage.png");
+    private static final Identifier TEXTURE_MAGE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/pech_thaum.png");
+    private static final Identifier TEXTURE_STALKER = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/pech_stalker.png");
     
     public PechRenderer(EntityRendererProvider.Context context) {
         super(context, new PechModel(context.bakeLayer(PechModel.LAYER_LOCATION)), 0.4F);
@@ -39,7 +39,7 @@ public class PechRenderer extends MobRenderer<EntityPech, PechModel> {
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityPech entity) {
+    public Identifier getTextureLocation(EntityPech entity) {
         return switch (entity.getPechType()) {
             case EntityPech.TYPE_MAGE -> TEXTURE_MAGE;
             case EntityPech.TYPE_FORAGER -> TEXTURE_STALKER;

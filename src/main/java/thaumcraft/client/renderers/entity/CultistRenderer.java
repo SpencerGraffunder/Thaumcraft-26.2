@@ -8,10 +8,10 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.entities.monster.cult.EntityCultist;
 import thaumcraft.common.entities.monster.cult.EntityCultistCleric;
@@ -26,8 +26,8 @@ import java.util.Random;
 @OnlyIn(Dist.CLIENT)
 public class CultistRenderer extends HumanoidMobRenderer<EntityCultist, HumanoidModel<EntityCultist>> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/cultist.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/cultist.png");
     
     public CultistRenderer(EntityRendererProvider.Context context) {
         super(context, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER)), 0.5F);
@@ -39,7 +39,7 @@ public class CultistRenderer extends HumanoidMobRenderer<EntityCultist, Humanoid
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityCultist entity) {
+    public Identifier getTextureLocation(EntityCultist entity) {
         return TEXTURE;
     }
     

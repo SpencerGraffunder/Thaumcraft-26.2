@@ -2,7 +2,7 @@ package thaumcraft.api.damagesource;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
@@ -25,13 +25,13 @@ public class DamageSourceThaumcraft {
     
     // Resource keys for custom damage types
     public static final ResourceKey<DamageType> TAINT = ResourceKey.create(
-            Registries.DAMAGE_TYPE, new ResourceLocation(Thaumcraft.MODID, "taint"));
+            Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint"));
     public static final ResourceKey<DamageType> TENTACLE = ResourceKey.create(
-            Registries.DAMAGE_TYPE, new ResourceLocation(Thaumcraft.MODID, "tentacle"));
+            Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "tentacle"));
     public static final ResourceKey<DamageType> SWARM = ResourceKey.create(
-            Registries.DAMAGE_TYPE, new ResourceLocation(Thaumcraft.MODID, "swarm"));
+            Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "swarm"));
     public static final ResourceKey<DamageType> DISSOLVE = ResourceKey.create(
-            Registries.DAMAGE_TYPE, new ResourceLocation(Thaumcraft.MODID, "dissolve"));
+            Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "dissolve"));
     
     /**
      * Create taint damage source (bypasses armor, magic damage).

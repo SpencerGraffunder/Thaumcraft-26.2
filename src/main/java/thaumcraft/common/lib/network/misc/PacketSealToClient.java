@@ -5,7 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.seals.ISeal;
 import thaumcraft.api.golems.seals.ISealConfigArea;

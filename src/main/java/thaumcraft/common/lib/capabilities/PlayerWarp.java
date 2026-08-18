@@ -4,10 +4,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.minecraftforge.common.util.LazyOptional;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.IPlayerWarp;
@@ -21,7 +21,7 @@ import thaumcraft.api.capabilities.IPlayerWarp;
  */
 public class PlayerWarp {
     
-    public static final ResourceLocation ID = new ResourceLocation(Thaumcraft.MODID, "warp");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "warp");
     
     /**
      * Default implementation of IPlayerWarp

@@ -7,9 +7,9 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.entities.monster.boss.EntityCultistLeader;
 
@@ -20,8 +20,8 @@ import thaumcraft.common.entities.monster.boss.EntityCultistLeader;
 @OnlyIn(Dist.CLIENT)
 public class CultistLeaderRenderer extends HumanoidMobRenderer<EntityCultistLeader, HumanoidModel<EntityCultistLeader>> {
     
-    private static final ResourceLocation TEXTURE = 
-            new ResourceLocation(Thaumcraft.MODID, "textures/entity/cultist.png");
+    private static final Identifier TEXTURE = 
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/cultist.png");
     
     public CultistLeaderRenderer(EntityRendererProvider.Context context) {
         super(context, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER)), 0.5F);
@@ -33,7 +33,7 @@ public class CultistLeaderRenderer extends HumanoidMobRenderer<EntityCultistLead
     }
     
     @Override
-    public ResourceLocation getTextureLocation(EntityCultistLeader entity) {
+    public Identifier getTextureLocation(EntityCultistLeader entity) {
         return TEXTURE;
     }
     

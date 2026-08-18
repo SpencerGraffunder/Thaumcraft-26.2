@@ -3,13 +3,13 @@ package thaumcraft.common.golems.seals;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.GolemHelper;
@@ -38,11 +38,11 @@ public class SealLumber implements ISeal, ISealConfigArea {
     
     private int delay;
     private HashMap<Integer, Long> cache = new HashMap<>();
-    private ResourceLocation icon;
+    private Identifier icon;
     
     public SealLumber() {
         delay = new Random(System.nanoTime()).nextInt(33);
-        icon = new ResourceLocation(Thaumcraft.MODID, "items/seals/seal_lumber");
+        icon = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "items/seals/seal_lumber");
     }
     
     @Override
@@ -129,7 +129,7 @@ public class SealLumber implements ISeal, ISealConfigArea {
     }
     
     @Override
-    public ResourceLocation getSealIcon() {
+    public Identifier getSealIcon() {
         return icon;
     }
     
