@@ -3,102 +3,47 @@
 > Everything below this header tracks the **26.2 NeoForge port** (NeoForge
 > 26.2.0.59, Java 25). The historical 1.20.1 plan is preserved further down.
 
-## 26.2 Current Wave — BlockEntity Sync NBT → ValueIO (✅ COMPLETE)
+## 26.2 Status: ✅ COMPILES & BUILDS (`./gradlew build` → `thaumcraft-6.2.0+26.2.jar`)
 
-**Goal:** convert the `writeSyncNBT(CompoundTag)` / `readSyncNBT(CompoundTag)`
-sync chain (36 block-entity subclasses, inherited from `TileThaumcraft`) to the
-26.2 ValueIO API (`ValueOutput` / `ValueInput`). This cascades from the 26.2
-`BlockEntity` signatures `saveAdditional(ValueOutput)` /
-`loadAdditional(ValueInput)` — there is no `CompoundTag` variant left.
+The port is now compile-green. The remaining work is runtime testing.
 
-### Verified 26.2 API surface (ground truth from transformSource/classes)
+### Completed (compile-green as of this update)
 
-- `ValueOutput`: `<T> store(String, Codec<T>, T)` / `storeNullable`, primitives
-  (`putBoolean/Byte/Short/Int/Long/Float/Double/String`), `putIntArray`,
-  `child(String)`, `childrenList(String)`, `list(String, Codec<T>)`, `discard(String)`
-  - **No** `putByteArray` / `long[]` / `double[]` — byte arrays used `putIntArray`
-  - NeoForge extensions: `store(CompoundTag)` (merges via `CompoundTag.CODEC`),
-    `putChild(String, ValueIOSerializable)`
-- `ValueInput`: mirrors read side — `read(String, Codec<T>)` → `Optional<T>`,
-  `getBooleanOr/getByteOr/getShortOr/getIntOr/getLongOr/getFloatOr/getDoubleOr/
-  getStringOr`, `getIntArray`, `childOrEmpty`, `listOrEmpty`, plus extension
-  `keySet()`, `readChild(String, ValueIOSerializable)`
-  - ⚠️ `getShortOr` returns `int` (not `short`) → cast with `(short)`
-- `TagValueOutput.createWithContext(...)` / `buildResult()` bridges ValueOutput →
-  `CompoundTag` (used by `saveWithFullMetadata` etc.)
-- MC `ContainerHelper` is already ValueIO: `saveAllItems(ValueOutput, NonNullList)`,
-  `loadAllItems(ValueInput, NonNullList)`
-- `FluidTank` implements `ValueIOSerializable` → `putChild`/`readChild`
-- `ItemStack` old CompoundTag API is **removed** in 26.2 — use `OPTIONAL_CODEC`
-  (a `Codec<ItemStack>`, `.listOf()` works), `MAP_CODEC`, `lenientOptionalFieldOf`
-- Network read path is unified on `loadAdditional(ValueInput)`;
-  `getUpdateTag(HolderLookup.Provider)` (no no-arg overload) → return `saveWithoutMetadata(registries)`
-- `AspectList` — ValueIO overloads added ✅ (both `CompoundTag` and `ValueIO`
-  variants coexist)
+- [x] Build pipeline: NeoGradle 7.1 userdev, Java 25, Gradle 8.14.5
+- [x] Mechanical renames: `Identifier`, `DeferredHolder`, `ToolMaterial`/
+      `ArmorMaterial` records, `EntitySpawnReason`, `InteractionResult`,
+      `EnumProperty<Direction>`, `getRandom()`
+- [x] Armor/tools on 26.2 component API (`humanoidArmor`, `.pickaxe()/.sword()`)
+- [x] Particles + FX on render-state model (`SingleQuadParticle.extract()`,
+      `QuadParticleRenderState`; beams/arcs/bolts and all FX ported)
+- [x] BlockEntity sync → ValueIO (`ValueOutput`/`ValueInput`)
+- [x] Entity renderers (~36), tile renderers (~23), screens (~19) and widgets →
+      `EntityRenderer<T,S>` / `BlockEntityRenderer<T,S>` / `GuiGraphicsExtractor`
+      with `SubmitNodeCollector.submitCustomGeometry` and `RenderTypes.*`
+- [x] Recipe serializers → `MapCodec` + `StreamCodec` records (arcane shaped/
+      shapeless, crucible, infusion, infusion-enchantment)
+- [x] ItemStack NBT → `DataComponents.CUSTOM_DATA` / `CustomData`; codecs
+- [x] NeoForge capabilities → 26.2 (`Capabilities.Item/Fluid/Energy.BLOCK`,
+      `IItemHandler.of(ResourceHandler<ItemResource>)`); player knowledge/warp →
+      `AttachmentType` DataAttachments
+- [x] Entities → `hurtServer`/`hurtClient`, `finalizeSpawn(EntitySpawnReason)`,
+      `getDefaultGravity`, `EntityReference`, `GameRules` rework, `MobEffect`
+      tick API, `PotionContents`, etc.
+- [x] Block API → `codec()` overrides, `noCollision()`, `isSolidRender()`,
+      removed `onRemove`/`isValidRepairItem`/`PlantType`/`MobType`
+- [x] Networking → NeoForge payload system (`CustomPacketPayload` +
+      `PayloadRegistrar`)
 
-### Progress
+### Remaining (runtime testing on a test server)
 
-- [x] Add `AspectList` ValueIO overloads (`writeToNBT`/`readFromNBT` for both
-      `ValueOutput`/`ValueInput`)
-- [x] Migrate `AspectList` callers to the ValueIO overloads: `TileCrucible`,
-      `TileWaterJug`, `TileInfusionMatrix`, `TileSmelter`, `TileTubeBuffer`,
-      `TilePotionSprayer`, `TileFocalManipulator`, `TileThaumatorium`
-- [x] Migrate the 36 `writeSyncNBT`/`readSyncNBT` decls (script + hand-fixes)
-      — `tag.putX` → `output.putX`, `tag.getXOr` → `input.getXOr`
-- [x] Hand-fix special cases:
-  - [x] `byte[]` grids (TileDioptra `grid_a` [169], tube Open/Choke) →
-        `putIntArray`/`getIntArray` with byte↔int conversion
-  - [x] `contains(...)` → `input.keySet().contains(...)`
-  - [x] Focus-node `ListTag` loop (`TileFocalManipulator`) →
-        `output.store("nodes", CompoundTag.CODEC.listOf(), ...)` / `input.read(...)`
-  - [x] Aspect stores → `AspectList` ValueIO overloads
-  - [x] ItemStack save/load (`TileThaumatorium`, `TileInfusionMatrix`, `TileSpa`,
-        `TileMirror`) → `ItemStack.OPTIONAL_CODEC` / `.listOf()`
-  - [x] `ResearchTableData` (`TileResearchTable` note) → `CompoundTag.CODEC`
-- [x] Rewrite `TileThaumcraft` base class: `writeSyncNBT(ValueOutput)` /
-      `readSyncNBT(ValueInput)` decls + `getUpdateTag(HolderLookup.Provider)`
-- [x] Fix `TileSmelter` `saveAdditional`/`loadAdditional` + `writeSyncNBT`
-- [x] Fix `TileBanner` `getUpdateTag` signature (no-arg → `(HolderLookup.Provider)`)
-- [x] Fix `TileMemory`/`TileWaterJug`/`TileInfusionMatrix`/`TileMirror`
-      `loadAdditional` CompoundTag leftovers → codecs
-- [ ] Recompile to zero ValueIO errors — done as part of the wider build
-      (remaining ~3.8k errors are in other subsystems, see below)
-
-## 26.2 Remaining Work (compile still red — ~3.8k errors)
-
-1. **Render/GUI subsystem (~1.2k errors)** — the 26.2 render-state model:
-   - `GuiGraphics` → `GuiGraphicsExtractor` (~290 errors; screens)
-   - `MultiBufferSource` / `VertexConsumer.vertex(Matrix4f,...)` → new submit-node
-     pipeline (~700 errors; FX beams `FXBeam*`, `FXArc`, `FXBolt`, `FXEssentiaStream`)
-   - `EntityRenderer<T, S extends EntityRenderState>` with `extractRenderState`/
-     `submit` replacing `getTextureLocation`/`render` (~30 entity + tile renderers)
-2. **Wave 2 — ItemStack old NBT removal (~340 errors)** — `hasTag`/`getTag`/
-   `getOrCreateTag`/`isSameItemSameTags`/`ItemStack.of` across ~50 files →
-   `DataComponents`/`ItemStack` codecs (persistence-sensitive; do carefully)
-3. **NeoForge capabilities rework** — `LazyOptional`/`Capability`/
-   `ForgeCapabilities`/`getCapability`/`invalidateCaps` gone in 26.2
-   (`TileCrucible`, `TileWaterJug`, `TileVisGenerator`, `ThaumcraftCapabilities`)
-4. **Recipe codec rewrite** — `RecipeSerializer` is a record
-   (`MapCodec` + `StreamCodec`); old `fromJson`/`fromNetwork` serializers
-   (`InfusionEnchantmentRecipeSerializer`, `ShapedArcaneRecipe`, `ShapelessArcaneRecipe`,
-   `CrucibleRecipeType`, `InfusionRecipeType`) need MapCodec/StreamCodec
-5. **Block/Item/Player API removals** — `onRemove` (removed), `updateShape`,
-   `isSolidRender`, `isValidRepairItem`, `getItems`, `displayClientMessage`
-6. **Renderer registration** — `EntityRenderers.register`, `RegisterRenderers`/
-   `BlockEntityRenderers.register` signatures, `MenuScreens.register` private,
-   `imageWidth/imageHeight` final, `ModEntities` DeferredHolder generics
-7. **Networking** — NeoForge payload system
-8. **Full in-game testing** on a test server
-
-## 26.2 Wave 2 (scoped) — ItemStack old NBT removal
-
-`hasTag()` / `setTag()` / `getOrCreateTag()` / `getTag()` and `ItemStack.of(...)`
-are gone in 26.2. ~50 files affected (incl. `ThaumcraftInvHelper`, `AspectList`,
-`IEssentiaContainerItem`, `TileTube*`, `TileJar`, `TileCentrifuge`, `TileAlembic`,
-`TileEssentiaReservoir`, `LogisticsMenu`, `ResearchManager`, casters, cards,
-golems, tools, armor, consumables). Replace with 26.2 `DataComponentMap` / codecs.
-
----
+- [ ] Launch server/client, verify mod loads without crashes
+- [ ] Entity spawning/behaviour, golem seals, bosses
+- [ ] Crafting UIs (arcane workbench, crucible, infusion altar, research table)
+- [ ] Worldgen (greatwood/silverwood, ores, ruins, taint biome)
+- [ ] Visual QA — several renderers use compile-first approximations
+      (billboard beams, block-atlas sprite substitutions, banner tint limits)
+- [ ] Data migration — ~22 crucible JSONs still use old-style `"nbt"` in
+      catalyst/result which the 26.2 codecs ignore (recipes load, NBT dropped)
 
 # Thaumcraft 6 - Minecraft 1.20.1 Migration Plan
 
