@@ -11,6 +11,7 @@ import net.neoforged.neoforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
@@ -23,7 +24,7 @@ import thaumcraft.common.golems.seals.SealHandler;
  * 
  * Ported to 1.20.1
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class ThaumcraftCapabilities {
     
     // Capability instances

@@ -9,6 +9,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.world.aura.AuraHandler;
@@ -27,7 +28,7 @@ import java.util.HashMap;
  * 
  * Ported from Thaumcraft 1.12.2 to 1.20.1
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class WorldEvents {
     
     public static final WorldEvents INSTANCE = new WorldEvents();

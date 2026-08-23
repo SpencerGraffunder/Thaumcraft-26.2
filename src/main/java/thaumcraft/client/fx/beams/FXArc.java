@@ -1,21 +1,18 @@
 package thaumcraft.client.fx.beams;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Vector3f;
+import org.joml.Quaternionf;
+import thaumcraft.client.fx.particles.ThaumcraftParticle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,14 +131,12 @@ public class FXArc extends ThaumcraftParticle {
     }
 
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        // Arc uses custom rendering with its own texture
-        // We need to render this separately from the standard particle batch
-        // For now, we'll render using the standard particle system with electric spark approximation
-
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        // Arc uses custom rendering with its own texture.
+        // Render as a chain of camera-facing billboard quads along the arc points.
         if (points.size() < 2) return;
 
-        Vec3 cameraPos = camera.getPosition();
+        Vec3 cameraPos = camera.position();
         double px = Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x();
         double py = Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y();
         double pz = Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z();
@@ -150,75 +145,27 @@ public class FXArc extends ThaumcraftParticle {
         float size = 0.125f;
 
         int light = 0xF000F0; // Full brightness
+        int color = ARGB.colorFromFloat(alpha, this.rCol, this.gCol, this.bCol);
+        Quaternionf rot = camera.rotation();
 
         // Render line segments between points
         for (int i = 0; i < points.size() - 1; i++) {
             Vec3 p1 = points.get(i);
             Vec3 p2 = points.get(i + 1);
 
-            float x1 = (float) (px + p1.x);
-            float y1 = (float) (py + p1.y);
-            float z1 = (float) (pz + p1.z);
-
-            float x2 = (float) (px + p2.x);
-            float y2 = (float) (py + p2.y);
-            float z2 = (float) (pz + p2.z);
-
             // Midpoint for the quad
-            float mx = (x1 + x2) / 2;
-            float my = (y1 + y2) / 2;
-            float mz = (z1 + z2) / 2;
+            float mx = (float) (px + (p1.x + p2.x) / 2);
+            float my = (float) (py + (p1.y + p2.y) / 2);
+            float mz = (float) (pz + (p1.z + p2.z) / 2);
 
-            // Simple sprite at midpoint
-            float u = (i % 16) / 64.0f;
-            renderSegmentQuad(buffer, camera, mx, my, mz, size, u, alpha, light);
+            state.add(getLayer(), mx, my, mz, rot.x, rot.y, rot.z, rot.w, size,
+                    0.0f, 1.0f, 0.0f, 1.0f, color, light);
         }
-    }
-
-    protected void renderSegmentQuad(VertexConsumer buffer, Camera camera, 
-                                      float x, float y, float z, float size,
-                                      float u, float alpha, int light) {
-        float u0 = u;
-        float u1 = u + 0.015625f;
-        float v0 = 0.0f;
-        float v1 = 0.015625f;
-
-        Vector3f[] vertices = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(camera.rotation());
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, alpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, alpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, alpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, alpha)
-                .uv2(light).endVertex();
     }
 
     @Override
     public int getLightCoords(float partialTick) {
         return 0xF000F0; // Full brightness for lightning
-    }
-
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     // ==================== Configuration Methods ====================

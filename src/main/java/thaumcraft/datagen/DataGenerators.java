@@ -5,10 +5,11 @@ import net.minecraft.data.PackOutput;
 import net.neoforged.data.ExistingFileHelper;
 import net.neoforged.neoforge.event.GatherDataEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class DataGenerators {
 
     @SubscribeEvent

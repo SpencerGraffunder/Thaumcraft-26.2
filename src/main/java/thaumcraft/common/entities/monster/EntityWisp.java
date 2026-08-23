@@ -15,7 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.FlyingMob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -43,7 +43,7 @@ import java.util.List;
  * Spawns in dark areas and attacks players with magical zaps.
  * Drops crystals of its aspect type on death.
  */
-public class EntityWisp extends FlyingMob implements Enemy {
+public class EntityWisp extends PathfinderMob implements Enemy {
     
     private static final EntityDataAccessor<String> DATA_TYPE = 
             SynchedEntityData.defineId(EntityWisp.class, EntityDataSerializers.STRING);

@@ -5,6 +5,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 
@@ -15,7 +16,7 @@ import thaumcraft.Thaumcraft;
  * Ported to 1.20.1
  */
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Thaumcraft.MODID, value = Dist.CLIENT)
 public class ClientEvents {
     
     /**

@@ -12,6 +12,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ import thaumcraft.common.lib.utils.PosXY;
  * 
  * Aura is generated based on biome modifiers and nearby chunks.
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class AuraChunkHandler {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(AuraChunkHandler.class);

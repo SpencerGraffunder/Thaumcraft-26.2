@@ -10,6 +10,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.seals.ISealEntity;
@@ -33,7 +34,7 @@ import thaumcraft.common.lib.network.misc.PacketSealToClient;
  * - ChunkDataEvent APIs updated for 1.20.1
  * - ChunkWatchEvent.Watch -> ChunkWatchEvent.Watch with updated API
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class ChunkEvents {
     
     private static final String THAUMCRAFT_DATA_KEY = "Thaumcraft";

@@ -26,30 +26,30 @@ public class ModRecipeSerializers {
     /**
      * Serializer for shaped arcane workbench recipes.
      */
-    public static final DeferredHolder<RecipeSerializer<ShapedArcaneRecipe>, RecipeSerializer<ShapedArcaneRecipe>> ARCANE_WORKBENCH_SHAPED = 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ShapedArcaneRecipe>> ARCANE_WORKBENCH_SHAPED = 
             RECIPE_SERIALIZERS.register("arcane_workbench_shaped", () -> ShapedArcaneRecipe.Serializer.INSTANCE);
     
     /**
      * Serializer for shapeless arcane workbench recipes.
      */
-    public static final DeferredHolder<RecipeSerializer<ShapelessArcaneRecipe>, RecipeSerializer<ShapelessArcaneRecipe>> ARCANE_WORKBENCH_SHAPELESS = 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ShapelessArcaneRecipe>> ARCANE_WORKBENCH_SHAPELESS = 
             RECIPE_SERIALIZERS.register("arcane_workbench_shapeless", () -> ShapelessArcaneRecipe.Serializer.INSTANCE);
     
     /**
      * Serializer for crucible alchemy recipes.
      */
-    public static final DeferredHolder<RecipeSerializer<CrucibleRecipeType>, RecipeSerializer<CrucibleRecipeType>> CRUCIBLE = 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CrucibleRecipeType>> CRUCIBLE = 
             RECIPE_SERIALIZERS.register("crucible", () -> CrucibleRecipeType.Serializer.INSTANCE);
     
     /**
      * Serializer for infusion altar recipes.
      */
-    public static final DeferredHolder<RecipeSerializer<InfusionRecipeType>, RecipeSerializer<InfusionRecipeType>> INFUSION = 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<InfusionRecipeType>> INFUSION = 
             RECIPE_SERIALIZERS.register("infusion", () -> InfusionRecipeType.Serializer.INSTANCE);
             
     /**
      * Serializer for infusion enchantment recipes.
      */
-    public static final DeferredHolder<RecipeSerializer<InfusionEnchantmentRecipe>, RecipeSerializer<InfusionEnchantmentRecipe>> INFUSION_ENCHANTMENT = 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<InfusionEnchantmentRecipe>> INFUSION_ENCHANTMENT = 
             RECIPE_SERIALIZERS.register("infusion_enchantment", () -> InfusionEnchantmentRecipeSerializer.INSTANCE);
 }

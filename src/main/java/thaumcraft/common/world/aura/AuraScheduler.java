@@ -8,6 +8,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 
@@ -15,7 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class AuraScheduler {
 
     private static final Map<ResourceKey<Level>, Long> lastWorldTime = new ConcurrentHashMap<>();

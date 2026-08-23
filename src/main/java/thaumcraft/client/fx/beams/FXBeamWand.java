@@ -1,21 +1,19 @@
 package thaumcraft.client.fx.beams;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
+import net.minecraft.client.GraphicsPreset;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import org.joml.Quaternionf;
+import thaumcraft.client.fx.particles.ThaumcraftParticle;
 
 /**
  * FXBeamWand - Continuous beam effect from a living entity to a target point.
@@ -96,7 +94,6 @@ public class FXBeamWand extends ThaumcraftParticle {
         this.gCol = g;
         this.bCol = b;
         
-        this.setSize(0.02f, 0.02f);
         this.xd = 0;
         this.yd = 0;
         this.zd = 0;
@@ -117,9 +114,9 @@ public class FXBeamWand extends ThaumcraftParticle {
         
         // Distance-based visibility culling
         Minecraft mc = Minecraft.getInstance();
-        if (mc.cameraEntity != null) {
-            int visibleDistance = mc.options.graphicsMode().get().getId() > 0 ? 50 : 25;
-            if (mc.cameraEntity.distanceTo(source) > visibleDistance) {
+        if (mc.getCameraEntity() != null) {
+            int visibleDistance = mc.options.graphicsPreset().get() != GraphicsPreset.FAST ? 50 : 25;
+            if (mc.getCameraEntity().distanceTo(source) > visibleDistance) {
                 this.lifetime = 0;
             }
         }
@@ -193,69 +190,38 @@ public class FXBeamWand extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        // Beams need custom rendering - we'll render directly here
-        renderBeam(camera, partialTicks);
-    }
-    
-    /**
-     * Render the beam using custom rendering.
-     */
-    protected void renderBeam(Camera camera, float partialTicks) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder builder = tesselator.getBuilder();
-        
-        // Calculate size with pulse
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        // Beam attached to the casting entity: render as billboard quads along the axis.
         float size = 1.0f;
         if (pulse) {
             size = Math.min(age / 4.0f, 1.0f);
             size = prevSize + (size - prevSize) * partialTicks;
         }
-        
-        // Calculate opacity with fade
+
         float opacity = 0.4f;
         if (pulse && lifetime - age <= 4) {
             opacity = 0.4f - (4 - (lifetime - age)) * 0.1f;
         }
-        
-        // Bind beam texture
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        Identifier texture = switch (beamType) {
-            case 1 -> BEAM1_TEXTURE;
-            case 2 -> BEAM2_TEXTURE;
-            case 3 -> BEAM3_TEXTURE;
-            default -> BEAM_TEXTURE;
-        };
-        RenderSystem.setShaderTexture(0, texture);
-        
-        // Set up render state
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(770, 1); // Additive blending
-        RenderSystem.depthMask(false);
-        RenderSystem.disableCull();
-        
-        // Calculate source position with offset for hand position
+
+        // Source position follows the casting entity's hand
         double prevSX = sourceEntity.xo;
         double prevSY = sourceEntity.yo + offset;
         double prevSZ = sourceEntity.zo;
         double currSX = sourceEntity.getX();
         double currSY = sourceEntity.getY() + offset;
         double currSZ = sourceEntity.getZ();
-        
-        // Apply hand offset based on yaw
-        float yawRad = sourceEntity.getYRot() * ((float)Math.PI / 180.0f);
+
+        float yawRad = sourceEntity.getYRot() * ((float) Math.PI / 180.0f);
         float cosYaw = Mth.cos(yawRad);
         float sinYaw = Mth.sin(yawRad);
-        
+
         prevSX -= cosYaw * 0.066f;
         prevSY -= 0.06;
         prevSZ -= sinYaw * 0.04f;
-        
         currSX -= cosYaw * 0.066f;
         currSY -= 0.06;
         currSZ -= sinYaw * 0.04f;
-        
-        // Add look direction offset
+
         Vec3 look = sourceEntity.getLookAngle();
         prevSX += look.x * 0.3;
         prevSY += look.y * 0.3;
@@ -263,158 +229,48 @@ public class FXBeamWand extends ThaumcraftParticle {
         currSX += look.x * 0.3;
         currSY += look.y * 0.3;
         currSZ += look.z * 0.3;
-        
-        // Interpolate position
-        Vec3 camPos = camera.getPosition();
-        float sx = (float)(Mth.lerp(partialTicks, prevSX, currSX) - camPos.x());
-        float sy = (float)(Mth.lerp(partialTicks, prevSY, currSY) - camPos.y());
-        float sz = (float)(Mth.lerp(partialTicks, prevSZ, currSZ) - camPos.z());
-        
-        // Interpolate rotation
-        float yaw = Mth.lerp(partialTicks, prevYaw, rotYaw);
-        float pitch = Mth.lerp(partialTicks, prevPitch, rotPitch);
-        
-        // Calculate UV scroll
-        float slide = (float)(Minecraft.getInstance().player.tickCount) + partialTicks;
-        if (reverse) slide *= -1.0f;
-        float uvOffset = -slide * 0.2f - Mth.floor(-slide * 0.1f);
-        
-        // Rotation for beam cylinder effect
-        float rot = (level.getGameTime() % (360 / rotationSpeed)) * rotationSpeed + rotationSpeed * partialTicks;
-        
-        // Set up transformation
-        PoseStack poseStack = new PoseStack();
-        poseStack.pushPose();
-        poseStack.translate(sx, sy, sz);
-        poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
-        poseStack.mulPose(Axis.ZN.rotationDegrees(180.0f + yaw));
-        poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
-        poseStack.mulPose(Axis.YP.rotationDegrees(rot));
-        
-        Matrix4f matrix = poseStack.last().pose();
-        
-        // Beam dimensions
+
+        float sx = (float) Mth.lerp(partialTicks, prevSX, currSX);
+        float sy = (float) Mth.lerp(partialTicks, prevSY, currSY);
+        float sz = (float) Mth.lerp(partialTicks, prevSZ, currSZ);
+        float tx = (float) Mth.lerp(partialTicks, prevTargetX, targetX);
+        float ty = (float) Mth.lerp(partialTicks, prevTargetY, targetY);
+        float tz = (float) Mth.lerp(partialTicks, prevTargetZ, targetZ);
+
+        Vec3 camPos = camera.position();
+        float cxp = (float) camPos.x();
+        float cyp = (float) camPos.y();
+        float czp = (float) camPos.z();
+
+        int color = ARGB.colorFromFloat(opacity, rCol, gCol, bCol);
+        int light = 0xF000F0;
+        Quaternionf rot = camera.rotation();
+
         float beamWidth = 0.15f * size;
         float beamWidthEnd = beamWidth * endMod;
         float beamLength = this.length * size;
-        
-        // Draw 3 quads rotated 60 degrees apart for cylindrical effect
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        
-        for (int t = 0; t < 3; t++) {
-            float u0 = 0.0f;
-            float u1 = 1.0f;
-            float v0 = uvOffset + t / 3.0f;
-            float v1 = beamLength * size + v0;
-            
-            // Quad vertices
-            builder.vertex(matrix, -beamWidthEnd, beamLength, 0)
-                    .uv(u1, v1).color(rCol, gCol, bCol, opacity).endVertex();
-            builder.vertex(matrix, -beamWidth, 0, 0)
-                    .uv(u1, v0).color(rCol, gCol, bCol, opacity).endVertex();
-            builder.vertex(matrix, beamWidth, 0, 0)
-                    .uv(u0, v0).color(rCol, gCol, bCol, opacity).endVertex();
-            builder.vertex(matrix, beamWidthEnd, beamLength, 0)
-                    .uv(u0, v1).color(rCol, gCol, bCol, opacity).endVertex();
-            
-            // Rotate for next quad
-            poseStack.mulPose(Axis.YP.rotationDegrees(60.0f));
-            matrix = poseStack.last().pose();
+
+        int segments = Math.max(2, (int) (beamLength * 4.0f));
+        for (int i = 0; i <= segments; i++) {
+            float t = i / (float) segments;
+            float px = sx + (tx - sx) * t - cxp;
+            float py = sy + (ty - sy) * t - cyp;
+            float pz = sz + (tz - sz) * t - czp;
+            float w = beamWidth + (beamWidthEnd - beamWidth) * t;
+            state.add(getLayer(), px, py, pz, rot.x, rot.y, rot.z, rot.w, w,
+                    0.0f, 1.0f, 0.0f, 1.0f, color, light);
         }
-        
-        tesselator.end();
-        
-        poseStack.popPose();
-        
-        // Render impact flash if active
+
+        // Impact flash at the target point
         if (impact > 0) {
-            renderImpact(camera, partialTicks);
+            float impactSize = endMod / 2.0f / Math.max(1.0f, 6 - impact);
+            state.add(getLayer(), tx - cxp, ty - cyp, tz - czp, rot.x, rot.y, rot.z, rot.w, impactSize,
+                    0.0f, 1.0f, 0.0f, 1.0f, color, light);
         }
-        
-        // Restore render state
-        RenderSystem.depthMask(true);
-        RenderSystem.blendFunc(770, 771);
-        RenderSystem.disableBlend();
-        RenderSystem.enableCull();
-        
+
         prevSize = size;
     }
-    
-    /**
-     * Render the impact flash at the target point.
-     */
-    protected void renderImpact(Camera camera, float partialTicks) {
-        RenderSystem.setShaderTexture(0, PARTICLE_TEXTURE);
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(770, 1);
-        
-        Vec3 camPos = camera.getPosition();
-        float tx = (float)(Mth.lerp(partialTicks, prevTargetX, targetX) - camPos.x());
-        float ty = (float)(Mth.lerp(partialTicks, prevTargetY, targetY) - camPos.y());
-        float tz = (float)(Mth.lerp(partialTicks, prevTargetZ, targetZ) - camPos.z());
-        
-        float impactSize = endMod / 2.0f / (6 - impact);
-        
-        // UV coordinates for impact particle in sprite sheet
-        int frame = age % 16;
-        float u0 = frame / 16.0f;
-        float u1 = u0 + 0.0625f;
-        float v0 = 0.3125f;
-        float v1 = v0 + 0.0625f;
-        
-        // Billboard the impact sprite
-        Quaternionf rotation = camera.rotation();
-        
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder builder = tesselator.getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        
-        // Create billboard quad
-        float[][] offsets = {
-            {-impactSize, -impactSize},
-            {-impactSize, impactSize},
-            {impactSize, impactSize},
-            {impactSize, -impactSize}
-        };
-        float[][] uvs = {
-            {u1, v1},
-            {u1, v0},
-            {u0, v0},
-            {u0, v1}
-        };
-        
-        for (int i = 0; i < 4; i++) {
-            float ox = offsets[i][0];
-            float oy = offsets[i][1];
-            
-            // Rotate offset by camera rotation
-            float rx = ox * (1 - 2 * rotation.y() * rotation.y() - 2 * rotation.z() * rotation.z())
-                     + oy * (2 * rotation.x() * rotation.y() - 2 * rotation.w() * rotation.z());
-            float ry = ox * (2 * rotation.x() * rotation.y() + 2 * rotation.w() * rotation.z())
-                     + oy * (1 - 2 * rotation.x() * rotation.x() - 2 * rotation.z() * rotation.z());
-            float rz = ox * (2 * rotation.x() * rotation.z() - 2 * rotation.w() * rotation.y())
-                     + oy * (2 * rotation.y() * rotation.z() + 2 * rotation.w() * rotation.x());
-            
-            builder.vertex(tx + rx, ty + ry, tz + rz)
-                    .uv(uvs[i][0], uvs[i][1])
-                    .color(rCol, gCol, bCol, 0.66f)
-                    .endVertex();
-        }
-        
-        tesselator.end();
-        
-        RenderSystem.blendFunc(770, 771);
-        RenderSystem.disableBlend();
-        RenderSystem.depthMask(true);
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        // Use custom render type that doesn't batch with other particles
-        return ParticleRenderType.CUSTOM;
-    }
-    
+
     // ==================== Configuration Methods ====================
     
     public void setRGB(float r, float g, float b) {

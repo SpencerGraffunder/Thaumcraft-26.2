@@ -26,6 +26,7 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.ThaumcraftApiHelper;
@@ -58,7 +59,7 @@ import java.util.List;
  * 
  * Ported from Thaumcraft 1.12.2 to 1.20.1
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class ToolEvents {
     
     // Track last clicked face per player for DESTRUCTIVE enchantment

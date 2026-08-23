@@ -10,11 +10,11 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import org.slf4j.Logger;
 import thaumcraft.init.ModBlocks;
@@ -59,9 +59,8 @@ public class Thaumcraft {
     // Singleton instance
     private static Thaumcraft instance;
     
-    public Thaumcraft() {
+    public Thaumcraft(IEventBus modEventBus) {
         instance = this;
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -152,7 +151,7 @@ public class Thaumcraft {
     }
 
     // Entity attribute registration
-    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = MODID)
     public static class ModEvents {
         @SubscribeEvent
         public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -236,7 +235,7 @@ public class Thaumcraft {
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
     public static class ClientModEvents {
 
         @SubscribeEvent
@@ -248,281 +247,89 @@ public class Thaumcraft {
             // Register entity renderers and menu screens
             event.enqueueWork(() -> {
                 // Entity renderers
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.THAUMCRAFT_GOLEM.get(),
-                    thaumcraft.client.renderers.entity.GolemRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.TURRET_CROSSBOW.get(),
-                    thaumcraft.client.renderers.entity.TurretCrossbowRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.TURRET_CROSSBOW_ADVANCED.get(),
-                    thaumcraft.client.renderers.entity.TurretCrossbowAdvancedRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.ARCANE_BORE.get(),
-                    thaumcraft.client.renderers.entity.ArcaneBoreRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.PECH.get(),
-                    thaumcraft.client.renderers.entity.PechRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.WISP.get(),
-                    thaumcraft.client.renderers.entity.WispRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.FLUX_RIFT.get(),
-                    thaumcraft.client.renderers.entity.FluxRiftRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.BRAINY_ZOMBIE.get(),
-                    thaumcraft.client.renderers.entity.BrainyZombieRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.GIANT_BRAINY_ZOMBIE.get(),
-                    thaumcraft.client.renderers.entity.BrainyZombieRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.THAUMIC_SLIME.get(),
-                    thaumcraft.client.renderers.entity.ThaumicSlimeRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.MIND_SPIDER.get(),
-                    thaumcraft.client.renderers.entity.MindSpiderRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.FIRE_BAT.get(),
-                    thaumcraft.client.renderers.entity.FireBatRenderer::new
-                );
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 // Cultists
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.CULTIST.get(),
-                    thaumcraft.client.renderers.entity.CultistRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.CULTIST_KNIGHT.get(),
-                    thaumcraft.client.renderers.entity.CultistRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.CULTIST_CLERIC.get(),
-                    thaumcraft.client.renderers.entity.CultistRenderer::new
-                );
+                
+                
+                
                 // Tainted entities
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.TAINT_CRAWLER.get(),
-                    thaumcraft.client.renderers.entity.TaintCrawlerRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.TAINT_SWARM.get(),
-                    thaumcraft.client.renderers.entity.TaintSwarmRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.TAINTACLE.get(),
-                    thaumcraft.client.renderers.entity.TaintacleRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.TAINTACLE_SMALL.get(),
-                    thaumcraft.client.renderers.entity.TaintacleRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.TAINTACLE_GIANT.get(),
-                    thaumcraft.client.renderers.entity.TaintacleRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.TAINT_SEED.get(),
-                    thaumcraft.client.renderers.entity.TaintSeedRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.TAINT_SEED_PRIME.get(),
-                    thaumcraft.client.renderers.entity.TaintSeedRenderer::new
-                );
+                
+                
+                
+                
+                
+                
+                
                 // Eldritch entities
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.ELDRITCH_CRAB.get(),
-                    thaumcraft.client.renderers.entity.EldritchCrabRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.ELDRITCH_GUARDIAN.get(),
-                    thaumcraft.client.renderers.entity.EldritchGuardianRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.ELDRITCH_GOLEM.get(),
-                    thaumcraft.client.renderers.entity.EldritchGolemRenderer::new
-                );
+                
+                
+                
                 // SpellBat
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.SPELL_BAT.get(),
-                    thaumcraft.client.renderers.entity.SpellBatRenderer::new
-                );
+                
                 // InhabitedZombie
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.INHABITED_ZOMBIE.get(),
-                    thaumcraft.client.renderers.entity.InhabitedZombieRenderer::new
-                );
+                
                 // Boss entities
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.CULTIST_LEADER.get(),
-                    thaumcraft.client.renderers.entity.CultistLeaderRenderer::new
-                );
+                
                 // Cultist portals
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.CULTIST_PORTAL_LESSER.get(),
-                    thaumcraft.client.renderers.entity.CultistPortalRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.CULTIST_PORTAL_GREATER.get(),
-                    thaumcraft.client.renderers.entity.CultistPortalGreaterRenderer::new
-                );
+                
+                
                 // Projectiles - using generic renderer
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.GOLEM_ORB.get(),
-                    ctx -> thaumcraft.client.renderers.entity.ThaumcraftProjectileRenderer.Factory.orb(ctx, 0x8844FF)
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.GOLEM_DART.get(),
-                    ctx -> thaumcraft.client.renderers.entity.ThaumcraftProjectileRenderer.Factory.dart(ctx)
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.ELDRITCH_ORB.get(),
-                    thaumcraft.client.renderers.entity.EldritchOrbRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.HOMING_SHARD.get(),
-                    ctx -> thaumcraft.client.renderers.entity.ThaumcraftProjectileRenderer.Factory.magic(ctx, 0x66FFFF)
-                );
+                
+                
+                
+                
                 // Focus/projectile renderers
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.FOCUS_MINE.get(),
-                    thaumcraft.client.renderers.entity.FocusMineRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.FOCUS_CLOUD.get(),
-                    thaumcraft.client.renderers.entity.FocusCloudRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.GRAPPLE.get(),
-                    thaumcraft.client.renderers.entity.GrappleRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.RIFT_BLAST.get(),
-                    thaumcraft.client.renderers.entity.RiftBlastRenderer::new
-                );
+                
+                
+                
+                
                 // Falling taint
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.FALLING_TAINT.get(),
-                    thaumcraft.client.renderers.entity.FallingTaintRenderer::new
-                );
+                
                 // Special/Following items - glowing magical item entities
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.SPECIAL_ITEM.get(),
-                    thaumcraft.client.renderers.entity.SpecialItemRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.FOLLOWING_ITEM.get(),
-                    thaumcraft.client.renderers.entity.SpecialItemRenderer::new
-                );
+                
+                
                 // Invisible projectiles (effects come from particles)
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.FOCUS_PROJECTILE.get(),
-                    thaumcraft.client.renderers.entity.NoProjectileRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.ALUMENTUM.get(),
-                    thaumcraft.client.renderers.entity.NoProjectileRenderer::new
-                );
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.CAUSALITY_COLLAPSER.get(),
-                    thaumcraft.client.renderers.entity.NoProjectileRenderer::new
-                );
+                
+                
+                
                 // Bottle Taint - uses item rendering (thrown item texture)
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.BOTTLE_TAINT.get(),
-                    thaumcraft.client.renderers.entity.BottleTaintRenderer::new
-                );
+                
                 // Eldritch Warden - boss version of Eldritch Guardian
-                net.minecraft.client.renderer.entity.EntityRenderers.register(
-                    ModEntities.ELDRITCH_WARDEN.get(),
-                    thaumcraft.client.renderers.entity.EldritchWardenRenderer::new
-                );
+                
                 LOGGER.info("Registered Thaumcraft entity renderers");
                 
                 // Menu screens
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.GOLEM_BUILDER.get(),
-                    thaumcraft.client.gui.screens.GolemBuilderScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.ARCANE_WORKBENCH.get(),
-                    thaumcraft.client.gui.screens.ArcaneWorkbenchScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.THAUMATORIUM.get(),
-                    thaumcraft.client.gui.screens.ThaumatoriumScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.SMELTER.get(),
-                    thaumcraft.client.gui.screens.SmelterScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.RESEARCH_TABLE.get(),
-                    thaumcraft.client.gui.screens.ResearchTableScreen::new
-                );
+                
+                
+                
+                
+                
                 
                 // New menu screens
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.FOCAL_MANIPULATOR.get(),
-                    thaumcraft.client.gui.screens.FocalManipulatorScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.FOCUS_POUCH.get(),
-                    thaumcraft.client.gui.screens.FocusPouchScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.HAND_MIRROR.get(),
-                    thaumcraft.client.gui.screens.HandMirrorScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.POTION_SPRAYER.get(),
-                    thaumcraft.client.gui.screens.PotionSprayerScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.SPA.get(),
-                    thaumcraft.client.gui.screens.SpaScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.VOID_SIPHON.get(),
-                    thaumcraft.client.gui.screens.VoidSiphonScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.TURRET_BASIC.get(),
-                    thaumcraft.client.gui.screens.TurretScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.TURRET_ADVANCED.get(),
-                    thaumcraft.client.gui.screens.TurretScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.ARCANE_BORE.get(),
-                    thaumcraft.client.gui.screens.ArcaneBoreScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.PECH_TRADING.get(),
-                    thaumcraft.client.gui.screens.PechScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.HUNGRY_CHEST.get(),
-                    thaumcraft.client.gui.screens.HungryChestScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.LOGISTICS.get(),
-                    thaumcraft.client.gui.screens.LogisticsScreen::new
-                );
-                net.minecraft.client.gui.screens.MenuScreens.register(
-                    ModMenuTypes.SEAL.get(),
-                    thaumcraft.client.gui.screens.SealScreen::new
-                );
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 LOGGER.info("Registered Thaumcraft menu screens");
             });
             
@@ -602,88 +409,270 @@ public class Thaumcraft {
         
         @SubscribeEvent
         public static void onRegisterRenderers(net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
-            // Register block entity renderers
-            
-            // Jar renderers
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.JAR.get(),
-                thaumcraft.client.renderers.tile.JarRenderer::new
+
+            event.registerEntityRenderer(
+                ModEntities.THAUMCRAFT_GOLEM.get(),
+                thaumcraft.client.renderers.entity.GolemRenderer::new
             );
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.JAR_VOID.get(),
-                thaumcraft.client.renderers.tile.JarRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.TURRET_CROSSBOW.get(),
+                thaumcraft.client.renderers.entity.TurretCrossbowRenderer::new
             );
-            
-            // Pedestal renderers
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.PEDESTAL.get(),
-                thaumcraft.client.renderers.tile.PedestalRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.TURRET_CROSSBOW_ADVANCED.get(),
+                thaumcraft.client.renderers.entity.TurretCrossbowAdvancedRenderer::new
             );
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.RECHARGE_PEDESTAL.get(),
-                thaumcraft.client.renderers.tile.RechargePedestalRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.ARCANE_BORE.get(),
+                thaumcraft.client.renderers.entity.ArcaneBoreRenderer::new
             );
-            
-            // Crafting device renderers
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.CRUCIBLE.get(),
-                thaumcraft.client.renderers.tile.CrucibleRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.PECH.get(),
+                thaumcraft.client.renderers.entity.PechRenderer::new
             );
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.INFUSION_MATRIX.get(),
-                thaumcraft.client.renderers.tile.InfusionMatrixRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.WISP.get(),
+                thaumcraft.client.renderers.entity.WispRenderer::new
             );
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.RESEARCH_TABLE.get(),
-                thaumcraft.client.renderers.tile.ResearchTableRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.FLUX_RIFT.get(),
+                thaumcraft.client.renderers.entity.FluxRiftRenderer::new
             );
-            
-            // Essentia device renderers
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.CENTRIFUGE.get(),
-                thaumcraft.client.renderers.tile.CentrifugeRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.BRAINY_ZOMBIE.get(),
+                thaumcraft.client.renderers.entity.BrainyZombieRenderer::new
             );
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.ALEMBIC.get(),
-                thaumcraft.client.renderers.tile.AlembicRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.GIANT_BRAINY_ZOMBIE.get(),
+                thaumcraft.client.renderers.entity.BrainyZombieRenderer::new
             );
-            
-            // Other device renderers
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.BELLOWS.get(),
-                thaumcraft.client.renderers.tile.BellowsRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.THAUMIC_SLIME.get(),
+                thaumcraft.client.renderers.entity.ThaumicSlimeRenderer::new
             );
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.MIRROR_ITEM.get(),
-                thaumcraft.client.renderers.tile.MirrorRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.MIND_SPIDER.get(),
+                thaumcraft.client.renderers.entity.MindSpiderRenderer::new
             );
-            
-            // Essentia tube renderers
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.TUBE_VALVE.get(),
-                thaumcraft.client.renderers.tile.TubeValveRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.FIRE_BAT.get(),
+                thaumcraft.client.renderers.entity.FireBatRenderer::new
             );
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.TUBE_BUFFER.get(),
-                thaumcraft.client.renderers.tile.TubeBufferRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.CULTIST.get(),
+                thaumcraft.client.renderers.entity.CultistRenderer::new
             );
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.TUBE_ONEWAY.get(),
-                thaumcraft.client.renderers.tile.TubeOnewayRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.CULTIST_KNIGHT.get(),
+                thaumcraft.client.renderers.entity.CultistRenderer::new
             );
-            
-            // Brain in a Jar renderer
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.JAR_BRAIN.get(),
-                thaumcraft.client.renderers.tile.JarBrainRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.CULTIST_CLERIC.get(),
+                thaumcraft.client.renderers.entity.CultistRenderer::new
             );
-            
-            // Banner renderer
-            event.registerBlockEntityRenderer(
-                ModBlockEntities.BANNER.get(),
-                thaumcraft.client.renderers.tile.BannerRenderer::new
+            event.registerEntityRenderer(
+                ModEntities.TAINT_CRAWLER.get(),
+                thaumcraft.client.renderers.entity.TaintCrawlerRenderer::new
             );
+            event.registerEntityRenderer(
+                ModEntities.TAINT_SWARM.get(),
+                thaumcraft.client.renderers.entity.TaintSwarmRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.TAINTACLE.get(),
+                thaumcraft.client.renderers.entity.TaintacleRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.TAINTACLE_SMALL.get(),
+                thaumcraft.client.renderers.entity.TaintacleRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.TAINTACLE_GIANT.get(),
+                thaumcraft.client.renderers.entity.TaintacleRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.TAINT_SEED.get(),
+                thaumcraft.client.renderers.entity.TaintSeedRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.TAINT_SEED_PRIME.get(),
+                thaumcraft.client.renderers.entity.TaintSeedRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.ELDRITCH_CRAB.get(),
+                thaumcraft.client.renderers.entity.EldritchCrabRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.ELDRITCH_GUARDIAN.get(),
+                thaumcraft.client.renderers.entity.EldritchGuardianRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.ELDRITCH_GOLEM.get(),
+                thaumcraft.client.renderers.entity.EldritchGolemRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.SPELL_BAT.get(),
+                thaumcraft.client.renderers.entity.SpellBatRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.INHABITED_ZOMBIE.get(),
+                thaumcraft.client.renderers.entity.InhabitedZombieRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.CULTIST_LEADER.get(),
+                thaumcraft.client.renderers.entity.CultistLeaderRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.CULTIST_PORTAL_LESSER.get(),
+                thaumcraft.client.renderers.entity.CultistPortalRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.CULTIST_PORTAL_GREATER.get(),
+                thaumcraft.client.renderers.entity.CultistPortalGreaterRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.GOLEM_ORB.get(),
+                ctx -> thaumcraft.client.renderers.entity.ThaumcraftProjectileRenderer.Factory.orb(ctx, 0x8844FF)
+            );
+            event.registerEntityRenderer(
+                ModEntities.GOLEM_DART.get(),
+                ctx -> thaumcraft.client.renderers.entity.ThaumcraftProjectileRenderer.Factory.dart(ctx)
+            );
+            event.registerEntityRenderer(
+                ModEntities.ELDRITCH_ORB.get(),
+                thaumcraft.client.renderers.entity.EldritchOrbRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.HOMING_SHARD.get(),
+                ctx -> thaumcraft.client.renderers.entity.ThaumcraftProjectileRenderer.Factory.magic(ctx, 0x66FFFF)
+            );
+            event.registerEntityRenderer(
+                ModEntities.FOCUS_MINE.get(),
+                thaumcraft.client.renderers.entity.FocusMineRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.FOCUS_CLOUD.get(),
+                thaumcraft.client.renderers.entity.FocusCloudRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.GRAPPLE.get(),
+                thaumcraft.client.renderers.entity.GrappleRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.RIFT_BLAST.get(),
+                thaumcraft.client.renderers.entity.RiftBlastRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.FALLING_TAINT.get(),
+                thaumcraft.client.renderers.entity.FallingTaintRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.SPECIAL_ITEM.get(),
+                thaumcraft.client.renderers.entity.SpecialItemRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.FOLLOWING_ITEM.get(),
+                thaumcraft.client.renderers.entity.SpecialItemRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.FOCUS_PROJECTILE.get(),
+                thaumcraft.client.renderers.entity.NoProjectileRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.ALUMENTUM.get(),
+                thaumcraft.client.renderers.entity.NoProjectileRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.CAUSALITY_COLLAPSER.get(),
+                thaumcraft.client.renderers.entity.NoProjectileRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.BOTTLE_TAINT.get(),
+                thaumcraft.client.renderers.entity.BottleTaintRenderer::new
+            );
+            event.registerEntityRenderer(
+                ModEntities.ELDRITCH_WARDEN.get(),
+                thaumcraft.client.renderers.entity.EldritchWardenRenderer::new
+            );
+
             LOGGER.info("Registered Thaumcraft block entity renderers");
+        }
+
+        @SubscribeEvent
+        public static void onRegisterMenuScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+            event.register(
+                ModMenuTypes.GOLEM_BUILDER.get(),
+                thaumcraft.client.gui.screens.GolemBuilderScreen::new
+            );
+            event.register(
+                ModMenuTypes.ARCANE_WORKBENCH.get(),
+                thaumcraft.client.gui.screens.ArcaneWorkbenchScreen::new
+            );
+            event.register(
+                ModMenuTypes.THAUMATORIUM.get(),
+                thaumcraft.client.gui.screens.ThaumatoriumScreen::new
+            );
+            event.register(
+                ModMenuTypes.SMELTER.get(),
+                thaumcraft.client.gui.screens.SmelterScreen::new
+            );
+            event.register(
+                ModMenuTypes.RESEARCH_TABLE.get(),
+                thaumcraft.client.gui.screens.ResearchTableScreen::new
+            );
+            event.register(
+                ModMenuTypes.FOCAL_MANIPULATOR.get(),
+                thaumcraft.client.gui.screens.FocalManipulatorScreen::new
+            );
+            event.register(
+                ModMenuTypes.FOCUS_POUCH.get(),
+                thaumcraft.client.gui.screens.FocusPouchScreen::new
+            );
+            event.register(
+                ModMenuTypes.HAND_MIRROR.get(),
+                thaumcraft.client.gui.screens.HandMirrorScreen::new
+            );
+            event.register(
+                ModMenuTypes.POTION_SPRAYER.get(),
+                thaumcraft.client.gui.screens.PotionSprayerScreen::new
+            );
+            event.register(
+                ModMenuTypes.SPA.get(),
+                thaumcraft.client.gui.screens.SpaScreen::new
+            );
+            event.register(
+                ModMenuTypes.VOID_SIPHON.get(),
+                thaumcraft.client.gui.screens.VoidSiphonScreen::new
+            );
+            event.register(
+                ModMenuTypes.TURRET_BASIC.get(),
+                thaumcraft.client.gui.screens.TurretScreen::new
+            );
+            event.register(
+                ModMenuTypes.TURRET_ADVANCED.get(),
+                thaumcraft.client.gui.screens.TurretScreen::new
+            );
+            event.register(
+                ModMenuTypes.ARCANE_BORE.get(),
+                thaumcraft.client.gui.screens.ArcaneBoreScreen::new
+            );
+            event.register(
+                ModMenuTypes.PECH_TRADING.get(),
+                thaumcraft.client.gui.screens.PechScreen::new
+            );
+            event.register(
+                ModMenuTypes.HUNGRY_CHEST.get(),
+                thaumcraft.client.gui.screens.HungryChestScreen::new
+            );
+            event.register(
+                ModMenuTypes.LOGISTICS.get(),
+                thaumcraft.client.gui.screens.LogisticsScreen::new
+            );
+            event.register(
+                ModMenuTypes.SEAL.get(),
+                thaumcraft.client.gui.screens.SealScreen::new
+            );
+            LOGGER.info("Registered Thaumcraft menu screens");
         }
         
         @SubscribeEvent

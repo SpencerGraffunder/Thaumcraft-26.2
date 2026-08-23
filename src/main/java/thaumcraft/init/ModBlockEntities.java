@@ -41,319 +41,319 @@ public class ModBlockEntities {
 
     // ==================== Essentia ====================
 
-    public static final DeferredHolder<BlockEntityType<TileJar>, BlockEntityType<TileJar>> JAR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileJar>> JAR =
             BLOCK_ENTITIES.register("jar",
-                    () -> BlockEntityType.Builder.of(TileJar::new,
+                    () -> new BlockEntityType<>(TileJar::new,
                             ModBlocks.JAR_NORMAL.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileJarVoid>, BlockEntityType<TileJarVoid>> JAR_VOID =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileJarVoid>> JAR_VOID =
             BLOCK_ENTITIES.register("jar_void",
-                    () -> BlockEntityType.Builder.of(TileJarVoid::new,
+                    () -> new BlockEntityType<>(TileJarVoid::new,
                             ModBlocks.JAR_VOID.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileJarBrain>, BlockEntityType<TileJarBrain>> JAR_BRAIN =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileJarBrain>> JAR_BRAIN =
             BLOCK_ENTITIES.register("jar_brain",
-                    () -> BlockEntityType.Builder.of(TileJarBrain::new,
+                    () -> new BlockEntityType<>(TileJarBrain::new,
                             ModBlocks.JAR_BRAIN.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileAlembic>, BlockEntityType<TileAlembic>> ALEMBIC =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileAlembic>> ALEMBIC =
             BLOCK_ENTITIES.register("alembic",
-                    () -> BlockEntityType.Builder.of(TileAlembic::new,
+                    () -> new BlockEntityType<>(TileAlembic::new,
                             ModBlocks.ALEMBIC.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileSmelter>, BlockEntityType<TileSmelter>> SMELTER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileSmelter>> SMELTER =
             BLOCK_ENTITIES.register("smelter",
-                    () -> BlockEntityType.Builder.of(TileSmelter::new,
+                    () -> new BlockEntityType<>(TileSmelter::new,
                             ModBlocks.SMELTER.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileTube>, BlockEntityType<TileTube>> TUBE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileTube>> TUBE =
             BLOCK_ENTITIES.register("tube",
-                    () -> BlockEntityType.Builder.of(TileTube::new,
+                    () -> new BlockEntityType<>(TileTube::new,
                             ModBlocks.TUBE_NORMAL.get(),
                             ModBlocks.TUBE_RESTRICTED.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileTubeFilter>, BlockEntityType<TileTubeFilter>> TUBE_FILTER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileTubeFilter>> TUBE_FILTER =
             BLOCK_ENTITIES.register("tube_filter",
-                    () -> BlockEntityType.Builder.of(TileTubeFilter::new,
+                    () -> new BlockEntityType<>(TileTubeFilter::new,
                             ModBlocks.TUBE_FILTER.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileTubeValve>, BlockEntityType<TileTubeValve>> TUBE_VALVE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileTubeValve>> TUBE_VALVE =
             BLOCK_ENTITIES.register("tube_valve",
-                    () -> BlockEntityType.Builder.of(TileTubeValve::new,
+                    () -> new BlockEntityType<>(TileTubeValve::new,
                             ModBlocks.TUBE_VALVE.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileTubeBuffer>, BlockEntityType<TileTubeBuffer>> TUBE_BUFFER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileTubeBuffer>> TUBE_BUFFER =
             BLOCK_ENTITIES.register("tube_buffer",
-                    () -> BlockEntityType.Builder.of(TileTubeBuffer::new,
+                    () -> new BlockEntityType<>(TileTubeBuffer::new,
                             ModBlocks.TUBE_BUFFER.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileTubeOneway>, BlockEntityType<TileTubeOneway>> TUBE_ONEWAY =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileTubeOneway>> TUBE_ONEWAY =
             BLOCK_ENTITIES.register("tube_oneway",
-                    () -> BlockEntityType.Builder.of(TileTubeOneway::new,
+                    () -> new BlockEntityType<>(TileTubeOneway::new,
                             ModBlocks.TUBE_ONEWAY.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileTubeRestrict>, BlockEntityType<TileTubeRestrict>> TUBE_RESTRICT =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileTubeRestrict>> TUBE_RESTRICT =
             BLOCK_ENTITIES.register("tube_restrict",
-                    () -> BlockEntityType.Builder.of(TileTubeRestrict::new,
+                    () -> new BlockEntityType<>(TileTubeRestrict::new,
                             ModBlocks.TUBE_RESTRICTED.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileCentrifuge>, BlockEntityType<TileCentrifuge>> CENTRIFUGE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileCentrifuge>> CENTRIFUGE =
             BLOCK_ENTITIES.register("centrifuge",
-                    () -> BlockEntityType.Builder.of(TileCentrifuge::new,
+                    () -> new BlockEntityType<>(TileCentrifuge::new,
                             ModBlocks.CENTRIFUGE.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileEssentiaReservoir>, BlockEntityType<TileEssentiaReservoir>> ESSENTIA_RESERVOIR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileEssentiaReservoir>> ESSENTIA_RESERVOIR =
             BLOCK_ENTITIES.register("essentia_reservoir",
-                    () -> BlockEntityType.Builder.of(TileEssentiaReservoir::new,
+                    () -> new BlockEntityType<>(TileEssentiaReservoir::new,
                             ModBlocks.ESSENTIA_RESERVOIR.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileEssentiaInput>, BlockEntityType<TileEssentiaInput>> ESSENTIA_INPUT =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileEssentiaInput>> ESSENTIA_INPUT =
             BLOCK_ENTITIES.register("essentia_input",
-                    () -> BlockEntityType.Builder.of(TileEssentiaInput::new,
+                    () -> new BlockEntityType<>(TileEssentiaInput::new,
                             ModBlocks.ESSENTIA_INPUT.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileEssentiaOutput>, BlockEntityType<TileEssentiaOutput>> ESSENTIA_OUTPUT =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileEssentiaOutput>> ESSENTIA_OUTPUT =
             BLOCK_ENTITIES.register("essentia_output",
-                    () -> BlockEntityType.Builder.of(TileEssentiaOutput::new,
+                    () -> new BlockEntityType<>(TileEssentiaOutput::new,
                             ModBlocks.ESSENTIA_OUTPUT.get()
-                    ).build(null));
+                    ));
 
     // ==================== Crafting ====================
 
-    public static final DeferredHolder<BlockEntityType<TilePedestal>, BlockEntityType<TilePedestal>> PEDESTAL =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TilePedestal>> PEDESTAL =
             BLOCK_ENTITIES.register("pedestal",
-                    () -> BlockEntityType.Builder.of(TilePedestal::new,
+                    () -> new BlockEntityType<>(TilePedestal::new,
                             ModBlocks.PEDESTAL_ARCANE.get(),
                             ModBlocks.PEDESTAL_ANCIENT.get(),
                             ModBlocks.PEDESTAL_ELDRITCH.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileCrucible>, BlockEntityType<TileCrucible>> CRUCIBLE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileCrucible>> CRUCIBLE =
             BLOCK_ENTITIES.register("crucible",
-                    () -> BlockEntityType.Builder.of(TileCrucible::new,
+                    () -> new BlockEntityType<>(TileCrucible::new,
                             ModBlocks.CRUCIBLE.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileArcaneWorkbench>, BlockEntityType<TileArcaneWorkbench>> ARCANE_WORKBENCH =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileArcaneWorkbench>> ARCANE_WORKBENCH =
             BLOCK_ENTITIES.register("arcane_workbench",
-                    () -> BlockEntityType.Builder.of(TileArcaneWorkbench::new,
+                    () -> new BlockEntityType<>(TileArcaneWorkbench::new,
                             ModBlocks.ARCANE_WORKBENCH.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileResearchTable>, BlockEntityType<TileResearchTable>> RESEARCH_TABLE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileResearchTable>> RESEARCH_TABLE =
             BLOCK_ENTITIES.register("research_table",
-                    () -> BlockEntityType.Builder.of(TileResearchTable::new,
+                    () -> new BlockEntityType<>(TileResearchTable::new,
                             ModBlocks.RESEARCH_TABLE.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileInfusionMatrix>, BlockEntityType<TileInfusionMatrix>> INFUSION_MATRIX =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileInfusionMatrix>> INFUSION_MATRIX =
             BLOCK_ENTITIES.register("infusion_matrix",
-                    () -> BlockEntityType.Builder.of(TileInfusionMatrix::new,
+                    () -> new BlockEntityType<>(TileInfusionMatrix::new,
                             ModBlocks.INFUSION_MATRIX.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileFocalManipulator>, BlockEntityType<TileFocalManipulator>> FOCAL_MANIPULATOR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileFocalManipulator>> FOCAL_MANIPULATOR =
             BLOCK_ENTITIES.register("focal_manipulator",
-                    () -> BlockEntityType.Builder.of(TileFocalManipulator::new,
+                    () -> new BlockEntityType<>(TileFocalManipulator::new,
                             ModBlocks.FOCAL_MANIPULATOR.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileThaumatorium>, BlockEntityType<TileThaumatorium>> THAUMATORIUM =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileThaumatorium>> THAUMATORIUM =
             BLOCK_ENTITIES.register("thaumatorium",
-                    () -> BlockEntityType.Builder.of(TileThaumatorium::new,
+                    () -> new BlockEntityType<>(TileThaumatorium::new,
                             ModBlocks.THAUMATORIUM.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileThaumatoriumTop>, BlockEntityType<TileThaumatoriumTop>> THAUMATORIUM_TOP =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileThaumatoriumTop>> THAUMATORIUM_TOP =
             BLOCK_ENTITIES.register("thaumatorium_top",
-                    () -> BlockEntityType.Builder.of(TileThaumatoriumTop::new,
+                    () -> new BlockEntityType<>(TileThaumatoriumTop::new,
                             ModBlocks.THAUMATORIUM_TOP.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TilePatternCrafter>, BlockEntityType<TilePatternCrafter>> PATTERN_CRAFTER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TilePatternCrafter>> PATTERN_CRAFTER =
             BLOCK_ENTITIES.register("pattern_crafter",
-                    () -> BlockEntityType.Builder.of(TilePatternCrafter::new,
+                    () -> new BlockEntityType<>(TilePatternCrafter::new,
                             ModBlocks.PATTERN_CRAFTER.get()
-                    ).build(null));
+                    ));
 
     // ==================== Devices ====================
 
-    public static final DeferredHolder<BlockEntityType<TileBellows>, BlockEntityType<TileBellows>> BELLOWS =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileBellows>> BELLOWS =
             BLOCK_ENTITIES.register("bellows",
-                    () -> BlockEntityType.Builder.of(TileBellows::new,
+                    () -> new BlockEntityType<>(TileBellows::new,
                             ModBlocks.BELLOWS.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileHungryChest>, BlockEntityType<TileHungryChest>> HUNGRY_CHEST =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileHungryChest>> HUNGRY_CHEST =
             BLOCK_ENTITIES.register("hungry_chest",
-                    () -> BlockEntityType.Builder.of(TileHungryChest::new,
+                    () -> new BlockEntityType<>(TileHungryChest::new,
                             ModBlocks.HUNGRY_CHEST.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileLampArcane>, BlockEntityType<TileLampArcane>> LAMP_ARCANE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileLampArcane>> LAMP_ARCANE =
             BLOCK_ENTITIES.register("lamp_arcane",
-                    () -> BlockEntityType.Builder.of(TileLampArcane::new,
+                    () -> new BlockEntityType<>(TileLampArcane::new,
                             ModBlocks.LAMP_ARCANE.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileLampGrowth>, BlockEntityType<TileLampGrowth>> LAMP_GROWTH =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileLampGrowth>> LAMP_GROWTH =
             BLOCK_ENTITIES.register("lamp_growth",
-                    () -> BlockEntityType.Builder.of(TileLampGrowth::new,
+                    () -> new BlockEntityType<>(TileLampGrowth::new,
                             ModBlocks.LAMP_GROWTH.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileLampFertility>, BlockEntityType<TileLampFertility>> LAMP_FERTILITY =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileLampFertility>> LAMP_FERTILITY =
             BLOCK_ENTITIES.register("lamp_fertility",
-                    () -> BlockEntityType.Builder.of(TileLampFertility::new,
+                    () -> new BlockEntityType<>(TileLampFertility::new,
                             ModBlocks.LAMP_FERTILITY.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileMirror>, BlockEntityType<TileMirror>> MIRROR_ITEM =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileMirror>> MIRROR_ITEM =
             BLOCK_ENTITIES.register("mirror_item",
-                    () -> BlockEntityType.Builder.of(TileMirror::new,
+                    () -> new BlockEntityType<>(TileMirror::new,
                             ModBlocks.MIRROR_ITEM.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileStabilizer>, BlockEntityType<TileStabilizer>> STABILIZER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileStabilizer>> STABILIZER =
             BLOCK_ENTITIES.register("stabilizer",
-                    () -> BlockEntityType.Builder.of(TileStabilizer::new,
+                    () -> new BlockEntityType<>(TileStabilizer::new,
                             ModBlocks.STABILIZER.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileMirrorEssentia>, BlockEntityType<TileMirrorEssentia>> MIRROR_ESSENTIA =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileMirrorEssentia>> MIRROR_ESSENTIA =
             BLOCK_ENTITIES.register("mirror_essentia",
-                    () -> BlockEntityType.Builder.of(TileMirrorEssentia::new,
+                    () -> new BlockEntityType<>(TileMirrorEssentia::new,
                             ModBlocks.MIRROR_ESSENTIA.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileVisGenerator>, BlockEntityType<TileVisGenerator>> VIS_GENERATOR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileVisGenerator>> VIS_GENERATOR =
             BLOCK_ENTITIES.register("vis_generator",
-                    () -> BlockEntityType.Builder.of(TileVisGenerator::new,
+                    () -> new BlockEntityType<>(TileVisGenerator::new,
                             ModBlocks.VIS_GENERATOR.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileCondenser>, BlockEntityType<TileCondenser>> CONDENSER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileCondenser>> CONDENSER =
             BLOCK_ENTITIES.register("condenser",
-                    () -> BlockEntityType.Builder.of(TileCondenser::new,
+                    () -> new BlockEntityType<>(TileCondenser::new,
                             ModBlocks.CONDENSER.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileArcaneEar>, BlockEntityType<TileArcaneEar>> ARCANE_EAR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileArcaneEar>> ARCANE_EAR =
             BLOCK_ENTITIES.register("arcane_ear",
-                    () -> BlockEntityType.Builder.of(TileArcaneEar::new,
+                    () -> new BlockEntityType<>(TileArcaneEar::new,
                             ModBlocks.ARCANE_EAR.get(),
                             ModBlocks.ARCANE_EAR_TOGGLE.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileRedstoneRelay>, BlockEntityType<TileRedstoneRelay>> REDSTONE_RELAY =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileRedstoneRelay>> REDSTONE_RELAY =
             BLOCK_ENTITIES.register("redstone_relay",
-                    () -> BlockEntityType.Builder.of(TileRedstoneRelay::new,
+                    () -> new BlockEntityType<>(TileRedstoneRelay::new,
                             ModBlocks.REDSTONE_RELAY.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileInfernalFurnace>, BlockEntityType<TileInfernalFurnace>> INFERNAL_FURNACE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileInfernalFurnace>> INFERNAL_FURNACE =
             BLOCK_ENTITIES.register("infernal_furnace",
-                    () -> BlockEntityType.Builder.of(TileInfernalFurnace::new,
+                    () -> new BlockEntityType<>(TileInfernalFurnace::new,
                             ModBlocks.INFERNAL_FURNACE.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileSpa>, BlockEntityType<TileSpa>> SPA =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileSpa>> SPA =
             BLOCK_ENTITIES.register("spa",
-                    () -> BlockEntityType.Builder.of(TileSpa::new,
+                    () -> new BlockEntityType<>(TileSpa::new,
                             ModBlocks.SPA.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileFluxScrubber>, BlockEntityType<TileFluxScrubber>> FLUX_SCRUBBER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileFluxScrubber>> FLUX_SCRUBBER =
             BLOCK_ENTITIES.register("flux_scrubber",
-                    () -> BlockEntityType.Builder.of(TileFluxScrubber::new,
+                    () -> new BlockEntityType<>(TileFluxScrubber::new,
                             ModBlocks.FLUX_SCRUBBER.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileVisRelay>, BlockEntityType<TileVisRelay>> VIS_RELAY =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileVisRelay>> VIS_RELAY =
             BLOCK_ENTITIES.register("vis_relay",
-                    () -> BlockEntityType.Builder.of(TileVisRelay::new,
+                    () -> new BlockEntityType<>(TileVisRelay::new,
                             ModBlocks.VIS_RELAY.get()
-                    ).build(null));
+                    ));
 
     // ==================== Golem Crafting ====================
 
-    public static final DeferredHolder<BlockEntityType<TileGolemBuilder>, BlockEntityType<TileGolemBuilder>> GOLEM_BUILDER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileGolemBuilder>> GOLEM_BUILDER =
             BLOCK_ENTITIES.register("golem_builder",
-                    () -> BlockEntityType.Builder.of(TileGolemBuilder::new,
+                    () -> new BlockEntityType<>(TileGolemBuilder::new,
                             ModBlocks.GOLEM_BUILDER.get()
-                    ).build(null));
+                    ));
 
     // ==================== Misc ====================
 
-    public static final DeferredHolder<BlockEntityType<TileHole>, BlockEntityType<TileHole>> HOLE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileHole>> HOLE =
             BLOCK_ENTITIES.register("hole",
-                    () -> BlockEntityType.Builder.of(TileHole::new,
+                    () -> new BlockEntityType<>(TileHole::new,
                             ModBlocks.HOLE.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileBarrierStone>, BlockEntityType<TileBarrierStone>> BARRIER_STONE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileBarrierStone>> BARRIER_STONE =
             BLOCK_ENTITIES.register("barrier_stone",
-                    () -> BlockEntityType.Builder.of(TileBarrierStone::new,
+                    () -> new BlockEntityType<>(TileBarrierStone::new,
                             ModBlocks.PAVING_STONE_BARRIER.get()
-                    ).build(null));
+                    ));
 
     // ==================== New Devices ====================
 
-    public static final DeferredHolder<BlockEntityType<TileLevitator>, BlockEntityType<TileLevitator>> LEVITATOR =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileLevitator>> LEVITATOR =
             BLOCK_ENTITIES.register("levitator",
-                    () -> BlockEntityType.Builder.of(TileLevitator::new,
+                    () -> new BlockEntityType<>(TileLevitator::new,
                             ModBlocks.LEVITATOR.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileRechargePedestal>, BlockEntityType<TileRechargePedestal>> RECHARGE_PEDESTAL =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileRechargePedestal>> RECHARGE_PEDESTAL =
             BLOCK_ENTITIES.register("recharge_pedestal",
-                    () -> BlockEntityType.Builder.of(TileRechargePedestal::new,
+                    () -> new BlockEntityType<>(TileRechargePedestal::new,
                             ModBlocks.RECHARGE_PEDESTAL.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileDioptra>, BlockEntityType<TileDioptra>> DIOPTRA =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileDioptra>> DIOPTRA =
             BLOCK_ENTITIES.register("dioptra",
-                    () -> BlockEntityType.Builder.of(TileDioptra::new,
+                    () -> new BlockEntityType<>(TileDioptra::new,
                             ModBlocks.DIOPTRA.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileVoidSiphon>, BlockEntityType<TileVoidSiphon>> VOID_SIPHON =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileVoidSiphon>> VOID_SIPHON =
             BLOCK_ENTITIES.register("void_siphon",
-                    () -> BlockEntityType.Builder.of(TileVoidSiphon::new,
+                    () -> new BlockEntityType<>(TileVoidSiphon::new,
                             ModBlocks.VOID_SIPHON.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TilePotionSprayer>, BlockEntityType<TilePotionSprayer>> POTION_SPRAYER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TilePotionSprayer>> POTION_SPRAYER =
             BLOCK_ENTITIES.register("potion_sprayer",
-                    () -> BlockEntityType.Builder.of(TilePotionSprayer::new,
+                    () -> new BlockEntityType<>(TilePotionSprayer::new,
                             ModBlocks.POTION_SPRAYER.get()
-                    ).build(null));
+                    ));
 
-    public static final DeferredHolder<BlockEntityType<TileWaterJug>, BlockEntityType<TileWaterJug>> WATER_JUG =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileWaterJug>> WATER_JUG =
             BLOCK_ENTITIES.register("water_jug",
-                    () -> BlockEntityType.Builder.of(TileWaterJug::new,
+                    () -> new BlockEntityType<>(TileWaterJug::new,
                             ModBlocks.EVERFULL_URN.get()
-                    ).build(null));
+                    ));
 
     // ==================== Banners ====================
 
-    public static final DeferredHolder<BlockEntityType<TileBanner>, BlockEntityType<TileBanner>> BANNER =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileBanner>> BANNER =
             BLOCK_ENTITIES.register("banner",
-                    () -> BlockEntityType.Builder.of(TileBanner::new,
+                    () -> new BlockEntityType<>(TileBanner::new,
                             ModBlocks.BANNER_WHITE.get(),
                             ModBlocks.BANNER_ORANGE.get(),
                             ModBlocks.BANNER_MAGENTA.get(),
@@ -371,5 +371,5 @@ public class ModBlockEntities {
                             ModBlocks.BANNER_RED.get(),
                             ModBlocks.BANNER_BLACK.get(),
                             ModBlocks.BANNER_CRIMSON_CULT.get()
-                    ).build(null));
+                    ));
 }

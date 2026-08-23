@@ -28,7 +28,7 @@ public class ModRecipeTypes {
      * Arcane Workbench recipe type.
      * Used for crafting items that require vis from the aura and primal crystals.
      */
-    public static final DeferredHolder<RecipeType<IArcaneRecipe>, RecipeType<IArcaneRecipe>> ARCANE_WORKBENCH = 
+    public static final DeferredHolder<RecipeType<?>, RecipeType<IArcaneRecipe>> ARCANE_WORKBENCH = 
             RECIPE_TYPES.register("arcane_workbench", () -> new RecipeType<IArcaneRecipe>() {
                 @Override
                 public String toString() {
@@ -40,7 +40,7 @@ public class ModRecipeTypes {
      * Crucible recipe type.
      * Used for alchemy transmutation by throwing items into a crucible with aspects.
      */
-    public static final DeferredHolder<RecipeType<CrucibleRecipeType>, RecipeType<CrucibleRecipeType>> CRUCIBLE = 
+    public static final DeferredHolder<RecipeType<?>, RecipeType<CrucibleRecipeType>> CRUCIBLE = 
             RECIPE_TYPES.register("crucible", () -> new RecipeType<CrucibleRecipeType>() {
                 @Override
                 public String toString() {
@@ -52,7 +52,7 @@ public class ModRecipeTypes {
      * Infusion altar recipe type.
      * Used for creating powerful items via the infusion altar with pedestals and essentia.
      */
-    public static final DeferredHolder<RecipeType<InfusionRecipeType>, RecipeType<InfusionRecipeType>> INFUSION = 
+    public static final DeferredHolder<RecipeType<?>, RecipeType<InfusionRecipeType>> INFUSION = 
             RECIPE_TYPES.register("infusion", () -> new RecipeType<InfusionRecipeType>() {
                 @Override
                 public String toString() {

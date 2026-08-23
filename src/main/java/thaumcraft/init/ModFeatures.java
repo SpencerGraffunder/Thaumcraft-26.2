@@ -79,7 +79,7 @@ public class ModFeatures {
      * Cinderpearl plant cluster - desert fire plants.
      * Spawns in desert biomes on sand.
      */
-    public static final DeferredHolder<Feature<NoneFeatureConfiguration>, Feature<NoneFeatureConfiguration>> CINDERPEARL_PATCH = 
+    public static final DeferredHolder<Feature<?>, Feature<NoneFeatureConfiguration>> CINDERPEARL_PATCH = 
             FEATURES.register("cinderpearl_patch", 
                     () -> new ThaumcraftPlantFeature(NoneFeatureConfiguration.CODEC, 
                             ThaumcraftPlantFeature.PlantType.CINDERPEARL));
@@ -88,7 +88,7 @@ public class ModFeatures {
      * Shimmerleaf plant cluster - glowing magical flowers.
      * Primarily spawns around silverwood trees, but can appear in magical biomes.
      */
-    public static final DeferredHolder<Feature<NoneFeatureConfiguration>, Feature<NoneFeatureConfiguration>> SHIMMERLEAF_PATCH = 
+    public static final DeferredHolder<Feature<?>, Feature<NoneFeatureConfiguration>> SHIMMERLEAF_PATCH = 
             FEATURES.register("shimmerleaf_patch", 
                     () -> new ThaumcraftPlantFeature(NoneFeatureConfiguration.CODEC, 
                             ThaumcraftPlantFeature.PlantType.SHIMMERLEAF));
@@ -97,7 +97,7 @@ public class ModFeatures {
      * Vishroom mushroom cluster - magical cave mushrooms.
      * Spawns underground in caves.
      */
-    public static final DeferredHolder<Feature<NoneFeatureConfiguration>, Feature<NoneFeatureConfiguration>> VISHROOM_PATCH = 
+    public static final DeferredHolder<Feature<?>, Feature<NoneFeatureConfiguration>> VISHROOM_PATCH = 
             FEATURES.register("vishroom_patch", 
                     () -> new ThaumcraftPlantFeature(NoneFeatureConfiguration.CODEC, 
                             ThaumcraftPlantFeature.PlantType.VISHROOM));

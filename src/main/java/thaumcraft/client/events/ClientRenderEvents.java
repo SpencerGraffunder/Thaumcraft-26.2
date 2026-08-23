@@ -7,6 +7,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.ISealDisplayer;
@@ -22,7 +23,7 @@ import thaumcraft.client.renderers.SealRenderer;
  * Ported from 1.12.2 RenderEventHandler.
  */
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Thaumcraft.MODID, value = Dist.CLIENT)
 public class ClientRenderEvents {
     
     /**

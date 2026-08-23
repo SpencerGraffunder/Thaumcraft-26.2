@@ -16,6 +16,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import thaumcraft.Thaumcraft;
@@ -46,7 +47,7 @@ import java.util.function.Predicate;
  * 
  * Ported from 1.12.2 with 1.20.1 compatibility updates.
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class ServerEvents {
     
     // Track tick counts per dimension for periodic tasks

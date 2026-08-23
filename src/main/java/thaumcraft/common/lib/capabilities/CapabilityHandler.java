@@ -2,6 +2,7 @@ package thaumcraft.common.lib.capabilities;
 
 import net.neoforged.neoforge.registries.RegisterCapabilitiesEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
@@ -12,7 +13,7 @@ import thaumcraft.api.capabilities.IPlayerWarp;
  * 
  * Ported to 1.20.1
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class CapabilityHandler {
     
     /**

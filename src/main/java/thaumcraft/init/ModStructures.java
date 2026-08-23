@@ -42,7 +42,7 @@ public class ModStructures {
      * - Thaumcraft loot crates and urns
      * - Iron bar entrance
      */
-    public static final DeferredHolder<StructureType<BarrowStructure>, StructureType<BarrowStructure>> BARROW = 
+    public static final DeferredHolder<StructureType<?>, StructureType<BarrowStructure>> BARROW = 
             STRUCTURE_TYPES.register("barrow", () -> explicitCodec(BarrowStructure.CODEC));
     
     // ==================== Helper Methods ====================

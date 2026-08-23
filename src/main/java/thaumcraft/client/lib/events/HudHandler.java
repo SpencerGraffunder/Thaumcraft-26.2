@@ -16,6 +16,7 @@ import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
 import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
@@ -39,7 +40,7 @@ import java.text.DecimalFormat;
  * Ported from 1.12.2 to use 1.20.1 GUI overlay system.
  */
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Thaumcraft.MODID, value = Dist.CLIENT)
 public class HudHandler {
 
     private static final Identifier HUD_TEXTURE = 

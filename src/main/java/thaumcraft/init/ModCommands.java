@@ -2,11 +2,12 @@ package thaumcraft.init;
 
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.lib.CommandThaumcraft;
 
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID)
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class ModCommands {
 
     @SubscribeEvent
