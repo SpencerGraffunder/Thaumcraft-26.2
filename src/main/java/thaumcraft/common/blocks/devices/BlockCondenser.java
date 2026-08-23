@@ -23,6 +23,7 @@ import thaumcraft.common.tiles.devices.TileCondenser;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Flux Condenser block - converts flux from the aura into Vitium essentia.
@@ -35,12 +36,12 @@ public class BlockCondenser extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 
     public BlockCondenser() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(2.0f)
                 .sound(SoundType.METAL)
                 .noOcclusion()
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(ENABLED, true));
     }

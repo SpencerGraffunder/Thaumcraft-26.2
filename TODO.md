@@ -3,11 +3,15 @@
 > Everything below this header tracks the **26.2 NeoForge port** (NeoForge
 > 26.2.0.59, Java 25). The historical 1.20.1 plan is preserved further down.
 
-## 26.2 Status: ✅ COMPILES & BUILDS (`./gradlew build` → `thaumcraft-6.2.0+26.2.jar`)
+## 26.2 Status: ✅ COMPILES & BUILDS — server-boot testing in progress
 
-The port is now compile-green. The remaining work is runtime testing.
+`./gradlew compileJava` is GREEN (0 errors); `./gradlew build` produces
+`thaumcraft-6.2.0+26.2.jar`. `runServer` gets through mod construction and
+block registration; it currently stops at **item registration** (`Item id not
+set` — the item classes need the same `Properties.setId` ThreadLocal treatment
+that blocks already got).
 
-### Completed (compile-green as of this update)
+### Completed
 
 - [x] Build pipeline: NeoGradle 7.1 userdev, Java 25, Gradle 8.14.5
 - [x] Mechanical renames: `Identifier`, `DeferredHolder`, `ToolMaterial`/
@@ -20,30 +24,38 @@ The port is now compile-green. The remaining work is runtime testing.
 - [x] Entity renderers (~36), tile renderers (~23), screens (~19) and widgets →
       `EntityRenderer<T,S>` / `BlockEntityRenderer<T,S>` / `GuiGraphicsExtractor`
       with `SubmitNodeCollector.submitCustomGeometry` and `RenderTypes.*`
-- [x] Recipe serializers → `MapCodec` + `StreamCodec` records (arcane shaped/
-      shapeless, crucible, infusion, infusion-enchantment)
-- [x] ItemStack NBT → `DataComponents.CUSTOM_DATA` / `CustomData`; codecs
+- [x] Recipe serializers → `MapCodec` + `StreamCodec` records
+- [x] ItemStack NBT → `DataComponents.CUSTOM_DATA` / `CustomData`
 - [x] NeoForge capabilities → 26.2 (`Capabilities.Item/Fluid/Energy.BLOCK`,
-      `IItemHandler.of(ResourceHandler<ItemResource>)`); player knowledge/warp →
-      `AttachmentType` DataAttachments
+      `IItemHandler.of(ResourceHandler)`); player knowledge/warp as DataAttachments
 - [x] Entities → `hurtServer`/`hurtClient`, `finalizeSpawn(EntitySpawnReason)`,
-      `getDefaultGravity`, `EntityReference`, `GameRules` rework, `MobEffect`
-      tick API, `PotionContents`, etc.
+      `getDefaultGravity`, `EntityReference`, GameRules rework, `MobEffect`
+      tick API, `PotionContents`
 - [x] Block API → `codec()` overrides, `noCollision()`, `isSolidRender()`,
       removed `onRemove`/`isValidRepairItem`/`PlantType`/`MobType`
-- [x] Networking → NeoForge payload system (`CustomPacketPayload` +
-      `PayloadRegistrar`)
+- [x] Networking → NeoForge payload system
+- [x] 26.2 mod metadata: `META-INF/neoforge.mods.toml`, `loaderVersion=[11,)`,
+      dep `type=REQUIRED/OPTIONAL`; removed legacy mcmod.info
+- [x] Server-safe common code (no direct client-class refs in common classes)
+- [x] Block registration id-injection: `DeferredRegister.createBlocks` +
+      `thaumcraft.init.BlockRegistration` ThreadLocal; `Properties.setId` in
+      every block constructor before `super(...)`
+- [x] Recipe codecs: empty `Ingredient` defaults → `Optional<Ingredient>`
+      (avoids the "Ingredients can't be empty" class-init crash)
 
 ### Remaining (runtime testing on a test server)
 
-- [ ] Launch server/client, verify mod loads without crashes
+- [ ] **Item registration id-injection** — same ThreadLocal pattern as blocks:
+      `ModItems` + every item constructor wraps `Properties` with
+      `ItemRegistration.id(...)` (item `Properties` also require an id at
+      construction in 26.2)
 - [ ] Entity spawning/behaviour, golem seals, bosses
 - [ ] Crafting UIs (arcane workbench, crucible, infusion altar, research table)
 - [ ] Worldgen (greatwood/silverwood, ores, ruins, taint biome)
 - [ ] Visual QA — several renderers use compile-first approximations
       (billboard beams, block-atlas sprite substitutions, banner tint limits)
-- [ ] Data migration — ~22 crucible JSONs still use old-style `"nbt"` in
-      catalyst/result which the 26.2 codecs ignore (recipes load, NBT dropped)
+- [ ] Data migration — some recipe JSONs still use old-style `"nbt"` which the
+      26.2 codecs ignore (recipes load, NBT dropped)
 
 # Thaumcraft 6 - Minecraft 1.20.1 Migration Plan
 

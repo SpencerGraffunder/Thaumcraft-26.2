@@ -29,6 +29,7 @@ import thaumcraft.api.capabilities.IPlayerWarp;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.init.ModEffects;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockFluidPure - A purifying liquid that cleanses warp.
@@ -57,7 +58,7 @@ public class BlockFluidPure extends Block {
     };
     
     public BlockFluidPure() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.QUARTZ)
                 .strength(0.0f)
                 .noOcclusion()
@@ -65,7 +66,7 @@ public class BlockFluidPure extends Block {
                 .randomTicks()
                 .noCollision()
                 .lightLevel(state -> 10)
-                .sound(net.minecraft.world.level.block.SoundType.HONEY_BLOCK));
+                .sound(net.minecraft.world.level.block.SoundType.HONEY_BLOCK)));
         registerDefaultState(stateDefinition.any().setValue(LEVEL, 7));
     }
     

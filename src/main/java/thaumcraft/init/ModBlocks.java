@@ -58,8 +58,10 @@ import thaumcraft.common.blocks.world.taint.BlockTaintLog;
 import thaumcraft.common.blocks.world.BlockGrassAmbient;
 import thaumcraft.common.blocks.world.BlockLoot;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 
 /**
  * Registry for all Thaumcraft blocks.
@@ -67,7 +69,7 @@ import net.minecraft.core.registries.Registries;
  */
 public class ModBlocks {
 
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Thaumcraft.MODID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Thaumcraft.MODID);
     public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Thaumcraft.MODID);
 
     // ==================== Stone Blocks ====================
@@ -106,39 +108,42 @@ public class ModBlocks {
     // ==================== Stairs ====================
 
     public static final DeferredHolder<Block, Block> ARCANE_STONE_STAIRS = registerBlock("arcane_stone_stairs",
-            () -> new StairBlock(ARCANE_STONE.get().defaultBlockState(),
-                    BlockBehaviour.Properties.ofFullCopy(ARCANE_STONE.get())));
+            p -> new StairBlock(ARCANE_STONE.get().defaultBlockState(), p),
+            () -> BlockBehaviour.Properties.ofFullCopy(ARCANE_STONE.get()));
 
     public static final DeferredHolder<Block, Block> ARCANE_STONE_BRICK_STAIRS = registerBlock("arcane_stone_brick_stairs",
-            () -> new StairBlock(ARCANE_STONE_BRICK.get().defaultBlockState(),
-                    BlockBehaviour.Properties.ofFullCopy(ARCANE_STONE_BRICK.get())));
+            p -> new StairBlock(ARCANE_STONE_BRICK.get().defaultBlockState(), p),
+            () -> BlockBehaviour.Properties.ofFullCopy(ARCANE_STONE_BRICK.get()));
 
     public static final DeferredHolder<Block, Block> ANCIENT_STONE_STAIRS = registerBlock("ancient_stone_stairs",
-            () -> new StairBlock(ANCIENT_STONE.get().defaultBlockState(),
-                    BlockBehaviour.Properties.ofFullCopy(ANCIENT_STONE.get())));
+            p -> new StairBlock(ANCIENT_STONE.get().defaultBlockState(), p),
+            () -> BlockBehaviour.Properties.ofFullCopy(ANCIENT_STONE.get()));
 
     // ==================== Slabs ====================
 
     public static final DeferredHolder<Block, Block> ARCANE_STONE_SLAB = registerBlock("arcane_stone_slab",
-            () -> new SlabBlock(BlockBehaviour.Properties.of()
+            p -> new SlabBlock(p),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
                     .strength(2.0f, 10.0f)
                     .sound(SoundType.STONE)
-                    .requiresCorrectToolForDrops()));
+                    .requiresCorrectToolForDrops());
 
     public static final DeferredHolder<Block, Block> ARCANE_STONE_BRICK_SLAB = registerBlock("arcane_stone_brick_slab",
-            () -> new SlabBlock(BlockBehaviour.Properties.of()
+            p -> new SlabBlock(p),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
                     .strength(2.0f, 10.0f)
                     .sound(SoundType.STONE)
-                    .requiresCorrectToolForDrops()));
+                    .requiresCorrectToolForDrops());
 
     public static final DeferredHolder<Block, Block> ANCIENT_STONE_SLAB = registerBlock("ancient_stone_slab",
-            () -> new SlabBlock(BlockBehaviour.Properties.of()
+            p -> new SlabBlock(p),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
                     .strength(2.0f, 10.0f)
                     .sound(SoundType.STONE)
-                    .requiresCorrectToolForDrops()));
+                    .requiresCorrectToolForDrops());
 
     // ==================== Pillars ====================
 
@@ -170,24 +175,26 @@ public class ModBlocks {
             BlockPlanksTC::createSilverwood);
 
     public static final DeferredHolder<Block, Block> GREATWOOD_STAIRS = registerBlock("greatwood_stairs",
-            () -> new StairBlock(GREATWOOD_PLANKS.get().defaultBlockState(),
-                    BlockBehaviour.Properties.ofFullCopy(GREATWOOD_PLANKS.get())));
+            p -> new StairBlock(GREATWOOD_PLANKS.get().defaultBlockState(), p),
+            () -> BlockBehaviour.Properties.ofFullCopy(GREATWOOD_PLANKS.get()));
 
     public static final DeferredHolder<Block, Block> SILVERWOOD_STAIRS = registerBlock("silverwood_stairs",
-            () -> new StairBlock(SILVERWOOD_PLANKS.get().defaultBlockState(),
-                    BlockBehaviour.Properties.ofFullCopy(SILVERWOOD_PLANKS.get())));
+            p -> new StairBlock(SILVERWOOD_PLANKS.get().defaultBlockState(), p),
+            () -> BlockBehaviour.Properties.ofFullCopy(SILVERWOOD_PLANKS.get()));
 
     public static final DeferredHolder<Block, Block> GREATWOOD_SLAB = registerBlock("greatwood_slab",
-            () -> new SlabBlock(BlockBehaviour.Properties.of()
+            p -> new SlabBlock(p),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(2.0f, 3.0f)
-                    .sound(SoundType.WOOD)));
+                    .sound(SoundType.WOOD));
 
     public static final DeferredHolder<Block, Block> SILVERWOOD_SLAB = registerBlock("silverwood_slab",
-            () -> new SlabBlock(BlockBehaviour.Properties.of()
+            p -> new SlabBlock(p),
+            () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.QUARTZ)
                     .strength(2.0f, 3.0f)
-                    .sound(SoundType.WOOD)));
+                    .sound(SoundType.WOOD));
 
     // ==================== Metal Blocks ====================
 
@@ -706,9 +713,29 @@ public class ModBlocks {
 
     /**
      * Register a block and its corresponding item.
+     * The block is constructed inside the registration lambda so the pending
+     * registration id (BlockRegistration) is visible to its constructor, which
+     * applies it to the Properties before the Block super-constructor runs.
      */
     private static <T extends Block> DeferredHolder<Block, T> registerBlock(String name, Supplier<T> block) {
-        DeferredHolder<Block, T> blockObj = BLOCKS.register(name, block);
+        DeferredHolder<Block, T> blockObj = BLOCKS.register(name, id -> {
+            BlockRegistration.set(ResourceKey.create(Registries.BLOCK, id));
+            T b = block.get();
+            BlockRegistration.clear();
+            return b;
+        });
+        registerBlockItem(name, blockObj);
+        return blockObj;
+    }
+
+    /**
+     * Register a block and its item from a Properties factory. NeoForge sets
+     * the registration id on the properties before the factory runs; used for
+     * blocks built from vanilla classes (StairBlock, SlabBlock, ...) whose
+     * constructors cannot apply the pending id themselves.
+     */
+    private static <T extends Block> DeferredHolder<Block, T> registerBlock(String name, Function<BlockBehaviour.Properties, T> factory, Supplier<BlockBehaviour.Properties> props) {
+        DeferredHolder<Block, T> blockObj = BLOCKS.registerBlock(name, factory, props);
         registerBlockItem(name, blockObj);
         return blockObj;
     }
@@ -718,7 +745,12 @@ public class ModBlocks {
      * Used for effect blocks, holes, and other non-obtainable blocks.
      */
     private static <T extends Block> DeferredHolder<Block, T> registerBlockNoItem(String name, Supplier<T> block) {
-        return BLOCKS.register(name, block);
+        return BLOCKS.register(name, id -> {
+            BlockRegistration.set(ResourceKey.create(Registries.BLOCK, id));
+            T b = block.get();
+            BlockRegistration.clear();
+            return b;
+        });
     }
 
     /**

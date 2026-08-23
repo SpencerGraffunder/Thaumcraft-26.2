@@ -39,6 +39,7 @@ import thaumcraft.common.tiles.misc.TileBanner;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockBannerTC - Thaumcraft banner block.
@@ -71,12 +72,12 @@ public class BlockBannerTC extends Block implements EntityBlock {
      * @param color The dye color, or null for crimson cult banner
      */
     public BlockBannerTC(@Nullable DyeColor color) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(color != null ? color.getMapColor() : MapColor.COLOR_RED)
                 .strength(1.0f)
                 .sound(SoundType.WOOD)
                 .noOcclusion()
-                .noCollision());
+                .noCollision()));
         this.dyeColor = color;
         registerDefaultState(stateDefinition.any().setValue(ROTATION, 0));
     }

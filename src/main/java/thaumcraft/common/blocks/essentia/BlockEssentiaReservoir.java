@@ -23,6 +23,7 @@ import thaumcraft.common.tiles.essentia.TileEssentiaReservoir;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Essentia Reservoir - A large tank for storing essentia.
@@ -36,11 +37,11 @@ public class BlockEssentiaReservoir extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
     public BlockEssentiaReservoir() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(2.0f)
                 .sound(SoundType.METAL)
-                .noOcclusion());
+                .noOcclusion()));
     }
 
     @Override

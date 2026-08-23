@@ -36,6 +36,7 @@ import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Infernal Furnace - A magical furnace powered by aura.
@@ -55,13 +56,13 @@ public class BlockInfernalFurnace extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Shapes.box(0, 0, 0, 1, 1.5, 1);
 
     public BlockInfernalFurnace() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.NETHER)
                 .strength(5.0f, 100.0f)
                 .sound(SoundType.STONE)
                 .lightLevel(state -> 15)
                 .noOcclusion()
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH));
     }

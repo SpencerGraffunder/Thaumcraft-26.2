@@ -18,6 +18,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import thaumcraft.api.entities.IEldritchMob;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockEffect - Invisible effect blocks that apply effects to entities.
@@ -37,7 +38,7 @@ public class BlockEffect extends Block {
     private final EffectType effectType;
     
     public BlockEffect(EffectType type) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .replaceable()
                 .noCollision()
                 .instabreak()
@@ -45,7 +46,7 @@ public class BlockEffect extends Block {
                 .air()
                 .lightLevel(state -> type == EffectType.GLIMMER ? 15 : 7)
                 .randomTicks()
-                .pushReaction(PushReaction.DESTROY));
+                .pushReaction(PushReaction.DESTROY)));
         this.effectType = type;
     }
     

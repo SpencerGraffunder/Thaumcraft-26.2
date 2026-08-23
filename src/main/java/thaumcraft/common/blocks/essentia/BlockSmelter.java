@@ -31,6 +31,7 @@ import thaumcraft.common.tiles.essentia.TileSmelter;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Essentia smelter (alchemical furnace) that breaks down items into essentia.
@@ -42,12 +43,12 @@ public class BlockSmelter extends Block implements EntityBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public BlockSmelter() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(3.0f)
                 .sound(SoundType.METAL)
                 .lightLevel(state -> state.getValue(LIT) ? 13 : 0)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));

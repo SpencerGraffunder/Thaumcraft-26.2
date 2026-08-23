@@ -24,6 +24,7 @@ import thaumcraft.common.tiles.essentia.TileEssentiaOutput;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Essentia transport blocks for connecting to machines that produce or consume essentia.
@@ -51,11 +52,11 @@ public class BlockEssentiaTransport extends Block implements EntityBlock {
     private final TransportType transportType;
     
     public BlockEssentiaTransport(TransportType type) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(1.0f, 10.0f)
                 .sound(SoundType.METAL)
-                .noOcclusion());
+                .noOcclusion()));
         this.transportType = type;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.UP));

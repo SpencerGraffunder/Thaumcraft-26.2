@@ -14,6 +14,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Runic matrix stabilizer for infusion crafting.
@@ -27,12 +28,12 @@ public class BlockStabilizer extends Block implements EntityBlock {
     private static final float STABILIZATION_BONUS = 0.25f;
 
     public BlockStabilizer() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
                 .strength(3.0f)
                 .sound(SoundType.STONE)
                 .noOcclusion()
-                .lightLevel(state -> 4));
+                .lightLevel(state -> 4)));
     }
 
     @Override

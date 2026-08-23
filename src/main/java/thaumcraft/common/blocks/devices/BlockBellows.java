@@ -25,6 +25,7 @@ import thaumcraft.common.tiles.devices.TileBellows;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Bellows that speed up adjacent furnaces and alchemical furnaces.
@@ -38,11 +39,11 @@ public class BlockBellows extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 10.0, 15.0);
 
     public BlockBellows() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.WOOD)
                 .strength(1.0f)
                 .sound(SoundType.WOOD)
-                .noOcclusion());
+                .noOcclusion()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(ENABLED, true));

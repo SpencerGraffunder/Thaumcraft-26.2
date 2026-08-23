@@ -29,6 +29,7 @@ import thaumcraft.common.tiles.devices.TileDioptra;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockDioptra - Vis/Flux visualization device.
@@ -45,11 +46,11 @@ public class BlockDioptra extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 14.0, 14.0);
     
     public BlockDioptra() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
                 .strength(2.0f)
                 .sound(SoundType.STONE)
-                .noOcclusion());
+                .noOcclusion()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(ENABLED, true)); // true = show vis, false = show flux
     }

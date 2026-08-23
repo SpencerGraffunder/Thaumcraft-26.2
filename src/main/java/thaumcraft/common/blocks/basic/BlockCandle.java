@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Candle blocks that provide light and infusion stabilization.
@@ -30,13 +31,13 @@ public class BlockCandle extends Block {
     private final float stabilizationBonus;
 
     public BlockCandle(DyeColor color) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(getMapColorForDye(color))
                 .strength(0.1f)
                 .sound(SoundType.WOOL)
                 .lightLevel(state -> 14)
                 .noOcclusion()
-                .noCollision());
+                .noCollision()));
         this.color = color;
         this.stabilizationBonus = 0.1f;
     }

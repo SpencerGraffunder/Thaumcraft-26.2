@@ -21,6 +21,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Alembic for distilling essentia from items in a crucible.
@@ -34,11 +35,11 @@ public class BlockAlembic extends Block implements EntityBlock {
     private static final int MAX_ESSENTIA = 64;
 
     public BlockAlembic() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.WOOD)
                 .strength(1.0f)
                 .sound(SoundType.WOOD)
-                .noOcclusion());
+                .noOcclusion()));
     }
 
     @Override

@@ -24,6 +24,7 @@ import thaumcraft.common.tiles.essentia.TileJarVoid;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Warded jars for storing essentia.
@@ -55,11 +56,11 @@ public class BlockJar extends Block implements EntityBlock {
     private final JarType jarType;
 
     public BlockJar(JarType type) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.NONE)
                 .strength(0.3f)
                 .sound(SoundType.GLASS)
-                .noOcclusion());
+                .noOcclusion()));
         this.jarType = type;
     }
 

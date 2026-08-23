@@ -29,6 +29,7 @@ import thaumcraft.init.ModBlocks;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockPavingStone - Decorative stone blocks with special properties.
@@ -54,7 +55,7 @@ public class BlockPavingStone extends Block implements EntityBlock {
     private final Type type;
 
     public BlockPavingStone(Properties properties, Type type) {
-        super(properties);
+        super(BlockRegistration.id(properties));
         this.type = type;
     }
 

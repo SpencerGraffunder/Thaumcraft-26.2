@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Cinderpearl - A fiery magical plant that grows in deserts and near heat.
@@ -34,13 +35,13 @@ public class BlockCinderpearl extends BushBlock {
     protected static final VoxelShape SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
     public BlockCinderpearl() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_ORANGE)
                 .noCollision()
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .lightLevel(state -> 8)
-                .offsetType(BlockBehaviour.OffsetType.XZ));
+                .offsetType(BlockBehaviour.OffsetType.XZ)));
     }
 
     @Override

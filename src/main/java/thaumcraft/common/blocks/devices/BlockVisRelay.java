@@ -27,6 +27,7 @@ import thaumcraft.common.tiles.devices.TileVisRelay;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Vis Relay - Distributes vis across a network for distant access.
@@ -39,13 +40,13 @@ public class BlockVisRelay extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(4.0, 0.0, 4.0, 12.0, 12.0, 12.0);
 
     public BlockVisRelay() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.QUARTZ)
                 .strength(2.0f)
                 .sound(SoundType.GLASS)
                 .noOcclusion()
                 .lightLevel(state -> 7)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
     }
 
     @Override

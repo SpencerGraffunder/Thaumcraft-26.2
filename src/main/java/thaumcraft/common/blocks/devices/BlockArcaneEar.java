@@ -36,6 +36,7 @@ import thaumcraft.common.tiles.devices.TileArcaneEar;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Arcane Ear block - detects note block sounds and emits redstone.
@@ -57,11 +58,11 @@ public class BlockArcaneEar extends Block implements EntityBlock {
     private final boolean isToggle;
 
     public BlockArcaneEar(boolean toggle) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.WOOD)
                 .strength(1.0f)
                 .sound(SoundType.WOOD)
-                .noOcclusion());
+                .noOcclusion()));
         this.isToggle = toggle;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.UP)

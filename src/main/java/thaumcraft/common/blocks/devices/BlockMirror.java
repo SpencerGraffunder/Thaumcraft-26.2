@@ -25,6 +25,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Magic mirror for item teleportation.
@@ -50,12 +51,12 @@ public class BlockMirror extends Block implements EntityBlock {
     private final MirrorType mirrorType;
 
     public BlockMirror(MirrorType type) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(2.0f)
                 .sound(SoundType.GLASS)
                 .noOcclusion()
-                .lightLevel(state -> state.getValue(LINKED) ? 7 : 0));
+                .lightLevel(state -> state.getValue(LINKED) ? 7 : 0)));
         this.mirrorType = type;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)

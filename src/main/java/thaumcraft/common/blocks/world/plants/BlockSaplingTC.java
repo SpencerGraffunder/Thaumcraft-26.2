@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Sapling blocks for greatwood and silverwood trees.
@@ -23,7 +24,7 @@ import javax.annotation.Nullable;
 public class BlockSaplingTC extends SaplingBlock {
 
     public BlockSaplingTC(TreeGrower treeGrower, Properties properties) {
-        super(treeGrower, properties);
+        super(treeGrower, BlockRegistration.id(properties));
     }
 
     /**

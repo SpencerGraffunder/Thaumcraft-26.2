@@ -36,6 +36,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Inlay block - golden wire decoration that connects to pedestals and stabilizers.
@@ -92,12 +93,12 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
     };
 
     public BlockInlay() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.GOLD)
                 .sound(SoundType.METAL)
                 .strength(0.5f)
                 .noCollision()
-                .lightLevel(state -> 1));
+                .lightLevel(state -> 1)));
         
         registerDefaultState(stateDefinition.any()
                 .setValue(NORTH, EnumAttachPosition.NONE)

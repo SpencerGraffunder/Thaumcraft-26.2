@@ -23,6 +23,7 @@ import thaumcraft.common.tiles.devices.TileFluxScrubber;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Flux Scrubber - Removes flux from the aura and converts it to vitium essentia.
@@ -35,13 +36,13 @@ public class BlockFluxScrubber extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 14.0, 14.0);
 
     public BlockFluxScrubber() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(3.0f)
                 .sound(SoundType.METAL)
                 .noOcclusion()
                 .lightLevel(state -> 3)
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
     }
 
     @Override

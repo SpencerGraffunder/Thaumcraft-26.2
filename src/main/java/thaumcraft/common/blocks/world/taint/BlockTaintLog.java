@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
 import thaumcraft.init.ModBlocks;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockTaintLog - Tainted wood logs with axis rotation property.
@@ -28,11 +29,11 @@ import thaumcraft.init.ModBlocks;
 public class BlockTaintLog extends RotatedPillarBlock implements ITaintBlock {
 
     public BlockTaintLog() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(3.0f, 100.0f)
                 .sound(SoundType.SLIME_BLOCK)
-                .randomTicks());
+                .randomTicks()));
         registerDefaultState(stateDefinition.any().setValue(AXIS, Direction.Axis.Y));
     }
 

@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Nitor blocks - floating magical light sources.
@@ -27,14 +28,14 @@ public class BlockNitor extends Block {
     private final DyeColor color;
 
     public BlockNitor(DyeColor color) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(getMapColorForDye(color))
                 .strength(0.1f)
                 .sound(SoundType.WOOL)
                 .lightLevel(state -> 15)
                 .noOcclusion()
                 .noCollision()
-                .replaceable());
+                .replaceable()));
         this.color = color;
     }
 

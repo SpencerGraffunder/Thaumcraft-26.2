@@ -23,6 +23,7 @@ import thaumcraft.common.tiles.devices.TileSpa;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Sanitizing Spa - A pool that cleanses negative effects and warp.
@@ -36,11 +37,11 @@ public class BlockSpa extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 10.0, 16.0);
 
     public BlockSpa() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_LIGHT_BLUE)
                 .strength(2.0f)
                 .sound(SoundType.STONE)
-                .noOcclusion());
+                .noOcclusion()));
     }
 
     @Override

@@ -24,6 +24,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.MenuProvider;
 import thaumcraft.common.tiles.crafting.TileArcaneWorkbench;
 import thaumcraft.init.ModBlocks;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Arcane Workbench Charger - An accessory block placed on top of the Arcane Workbench.
@@ -40,11 +41,11 @@ public class BlockArcaneWorkbenchCharger extends Block {
     private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 6, 14);
     
     public BlockArcaneWorkbenchCharger() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.WOOD)
                 .strength(1.25f, 10.0f)
                 .sound(SoundType.WOOD)
-                .noOcclusion());
+                .noOcclusion()));
     }
     
     @Override

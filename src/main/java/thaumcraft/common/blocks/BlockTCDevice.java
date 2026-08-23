@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Base class for Thaumcraft device blocks that have a tile entity and can face different directions.
@@ -28,7 +29,7 @@ public abstract class BlockTCDevice extends Block implements EntityBlock {
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
 
     public BlockTCDevice(Properties properties) {
-        super(properties);
+        super(BlockRegistration.id(properties));
         
         // Set default state based on what properties this block has
         BlockState defaultState = this.stateDefinition.any();

@@ -20,6 +20,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import thaumcraft.init.ModBlocks;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Brain Box - Attaches to the Thaumatorium to enable automated crafting.
@@ -38,11 +39,11 @@ public class BlockBrainBox extends Block {
     private static final VoxelShape SHAPE = Block.box(3, 3, 3, 13, 13, 13);
     
     public BlockBrainBox() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(1.0f, 10.0f)
                 .sound(SoundType.METAL)
-                .noOcclusion());
+                .noOcclusion()));
         
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }

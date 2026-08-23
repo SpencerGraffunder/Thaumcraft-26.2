@@ -4,6 +4,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Base class for all Thaumcraft blocks.
@@ -12,7 +13,7 @@ import net.minecraft.world.level.material.MapColor;
 public class BlockTC extends Block {
 
     public BlockTC(Properties properties) {
-        super(properties);
+        super(BlockRegistration.id(properties));
     }
 
     /**

@@ -32,6 +32,7 @@ import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.api.entities.ITaintedMob;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModItems;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockTaintFibre - Taint growth that spreads on surfaces.
@@ -67,14 +68,14 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
     protected static final VoxelShape SHAPE_EAST = Block.box(15, 0, 0, 16, 16, 16);
     
     public BlockTaintFibre() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(1.0f)
                 .noOcclusion()
                 .pushReaction(PushReaction.DESTROY)
                 .randomTicks()
                 .ignitedByLava()
-                .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK));
+                .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK)));
         
         registerDefaultState(stateDefinition.any()
                 .setValue(NORTH, false)

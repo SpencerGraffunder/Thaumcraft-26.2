@@ -41,6 +41,7 @@ import thaumcraft.common.tiles.devices.TileHungryChest;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Hungry chest that automatically picks up items that touch it.
@@ -53,11 +54,11 @@ public class BlockHungryChest extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 
     public BlockHungryChest() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.WOOD)
                 .strength(2.5f)
                 .sound(SoundType.WOOD)
-                .noOcclusion());
+                .noOcclusion()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH));
     }

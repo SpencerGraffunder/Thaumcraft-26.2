@@ -24,6 +24,7 @@ import thaumcraft.common.tiles.essentia.TileCentrifuge;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Essentia Centrifuge - Separates compound aspects into their component primal aspects.
@@ -38,12 +39,12 @@ public class BlockCentrifuge extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 12.0, 15.0);
 
     public BlockCentrifuge() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(3.0f)
                 .sound(SoundType.METAL)
                 .noOcclusion()
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH));
     }

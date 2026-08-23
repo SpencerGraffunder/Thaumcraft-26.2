@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Leaves blocks for greatwood and silverwood trees.
@@ -20,7 +21,7 @@ public class BlockLeavesTC extends LeavesBlock {
     private final boolean glows;
 
     public BlockLeavesTC(Properties properties, boolean glows) {
-        super(0.25f, properties);
+        super(0.25f, BlockRegistration.id(properties));
         this.glows = glows;
     }
 

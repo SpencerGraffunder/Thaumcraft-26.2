@@ -32,6 +32,7 @@ import thaumcraft.init.ModBlockEntities;
 import thaumcraft.init.ModBlocks;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockThaumatoriumTop - The top half of the Thaumatorium multiblock.
@@ -52,13 +53,13 @@ public class BlockThaumatoriumTop extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(4.0, 0.0, 4.0, 12.0, 10.0, 12.0);
 
     public BlockThaumatoriumTop() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(3.0f)
                 .sound(SoundType.METAL)
                 .noOcclusion()
                 .noLootTable() // No drops - only thaumatorium drops when broken
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
     }
 
     @Override

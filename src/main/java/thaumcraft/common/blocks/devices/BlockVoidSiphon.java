@@ -28,6 +28,7 @@ import thaumcraft.common.tiles.crafting.TileVoidSiphon;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockVoidSiphon - Harvests void seeds from flux rifts.
@@ -47,11 +48,11 @@ public class BlockVoidSiphon extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Shapes.or(SHAPE_BASE, SHAPE_TOP, SHAPE_ORB);
     
     public BlockVoidSiphon() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_BLACK)
                 .strength(3.0f)
                 .sound(SoundType.METAL)
-                .noOcclusion());
+                .noOcclusion()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(ENABLED, true));
     }

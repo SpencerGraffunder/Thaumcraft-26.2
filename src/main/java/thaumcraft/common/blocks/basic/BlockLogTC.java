@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Log blocks for greatwood and silverwood trees.
@@ -16,7 +17,7 @@ import net.minecraft.world.level.material.MapColor;
 public class BlockLogTC extends RotatedPillarBlock {
 
     public BlockLogTC(Properties properties) {
-        super(properties);
+        super(BlockRegistration.id(properties));
         this.registerDefaultState(this.defaultBlockState().setValue(AXIS, Direction.Axis.Y));
     }
 

@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Vishroom - A mystical purple mushroom that grows in dark caves.
@@ -39,13 +40,13 @@ public class BlockVishroom extends BushBlock {
     protected static final VoxelShape SHAPE = Block.box(3.0, 0.0, 3.0, 13.0, 10.0, 13.0);
 
     public BlockVishroom() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .noCollision()
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .lightLevel(state -> 5)
-                .offsetType(BlockBehaviour.OffsetType.XZ));
+                .offsetType(BlockBehaviour.OffsetType.XZ)));
     }
 
     @Override

@@ -29,6 +29,7 @@ import thaumcraft.init.ModItems;
 
 import java.util.Collections;
 import java.util.List;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockTaint - Base class for taint blocks (soil, rock, crust, geyser variants).
@@ -52,12 +53,12 @@ public class BlockTaint extends Block implements ITaintBlock {
     private final TaintType type;
     
     public BlockTaint(TaintType type) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(10.0f, 100.0f)
                 .sound(SoundType.SLIME_BLOCK) // Gore-like sound
                 .randomTicks()
-                .requiresCorrectToolForDrops());
+                .requiresCorrectToolForDrops()));
         this.type = type;
     }
     

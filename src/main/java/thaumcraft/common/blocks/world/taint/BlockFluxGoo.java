@@ -31,6 +31,7 @@ import thaumcraft.common.entities.monster.EntityThaumicSlime;
 import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModEntities;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockFluxGoo - A semi-fluid taint block that spreads vis exhaustion.
@@ -60,14 +61,14 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
     };
     
     public BlockFluxGoo() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(0.5f)
                 .noOcclusion()
                 .pushReaction(PushReaction.DESTROY)
                 .randomTicks()
                 .noCollision()
-                .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK));
+                .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK)));
         registerDefaultState(stateDefinition.any().setValue(LEVEL, 7));
     }
     

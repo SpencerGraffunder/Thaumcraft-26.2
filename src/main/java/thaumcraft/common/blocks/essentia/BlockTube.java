@@ -26,6 +26,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import thaumcraft.api.aspects.IEssentiaTransport;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Essentia tubes for transporting essentia between containers.
@@ -68,11 +69,11 @@ public class BlockTube extends Block implements EntityBlock {
     private final TubeType tubeType;
 
     public BlockTube(TubeType type) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(0.5f, 5.0f)
                 .sound(SoundType.METAL)
-                .noOcclusion());
+                .noOcclusion()));
         this.tubeType = type;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(NORTH, false)

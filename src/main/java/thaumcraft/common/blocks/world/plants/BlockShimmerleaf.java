@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Shimmerleaf - A magical glowing plant that spawns near silverwood trees.
@@ -34,13 +35,13 @@ public class BlockShimmerleaf extends BushBlock {
     protected static final VoxelShape SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
     public BlockShimmerleaf() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.PLANT)
                 .noCollision()
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .lightLevel(state -> 6)
-                .offsetType(BlockBehaviour.OffsetType.XZ));
+                .offsetType(BlockBehaviour.OffsetType.XZ)));
     }
 
     @Override

@@ -83,7 +83,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
                 int checkX = x - offsetX;
                 int checkY = y - offsetY;
                 
-                Ingredient ingredient = Ingredient.of(net.minecraft.core.HolderSet.empty());
+                Ingredient ingredient = null;
                 if (checkX >= 0 && checkY >= 0 && checkX < width && checkY < height) {
                     if (mirrored) {
                         ingredient = ingredients.get(width - checkX - 1 + checkY * width);
@@ -93,7 +93,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
                 }
                 
                 // Slots 0-8 are the crafting grid
-                if (!ingredient.test(container.getItem(x + y * 3))) {
+                if (ingredient != null && !ingredient.test(container.getItem(x + y * 3))) {
                     return false;
                 }
             }
@@ -214,7 +214,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
             int height = buffer.readVarInt();
             NonNullList<Ingredient> ingredients = NonNullList.create();
             for (int i = 0; i < width * height; i++) {
-                ingredients.add(Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.decode(buffer).orElse(Ingredient.of(net.minecraft.core.HolderSet.empty())));
+                ingredients.add(Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.decode(buffer).orElse(null));
             }
             
             ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
@@ -253,7 +253,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
     private static NonNullList<Ingredient> toIngredients(List<Optional<Ingredient>> list) {
         NonNullList<Ingredient> ingredients = NonNullList.create();
         for (Optional<Ingredient> opt : list) {
-            ingredients.add(opt.orElse(Ingredient.of(net.minecraft.core.HolderSet.empty())));
+            ingredients.add(opt.orElse(null));
         }
         return ingredients;
     }

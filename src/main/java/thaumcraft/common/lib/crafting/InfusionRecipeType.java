@@ -213,13 +213,14 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
 
     public static final MapCodec<InfusionRecipeType> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
-            Ingredient.CODEC.optionalFieldOf("center", Ingredient.of(net.minecraft.core.HolderSet.empty())).forGetter(r -> r.centralItem),
+            Ingredient.CODEC.optionalFieldOf("center").forGetter(r -> java.util.Optional.ofNullable(r.centralItem)),
             Ingredient.CODEC.listOf().optionalFieldOf("ingredients", List.of()).forGetter(r -> r.components),
             ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.aspects),
             ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result),
             Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research),
             Codec.INT.optionalFieldOf("instability", 0).forGetter(r -> r.instability)
-    ).apply(i, InfusionRecipeType::new));
+    ).apply(i, (group, center, ingredients, aspects, result, research, instability) ->
+            new InfusionRecipeType(group, center.orElse(null), ingredients, aspects, result, research, instability)));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, InfusionRecipeType> STREAM_CODEC = new StreamCodec<>() {
         @Override

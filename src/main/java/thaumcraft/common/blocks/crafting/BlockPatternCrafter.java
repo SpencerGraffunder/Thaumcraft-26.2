@@ -32,6 +32,7 @@ import thaumcraft.init.ModBlockEntities;
 import thaumcraft.init.ModSounds;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockPatternCrafter - Automated crafting device.
@@ -48,11 +49,11 @@ public class BlockPatternCrafter extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 16, 16);
     
     public BlockPatternCrafter() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(2.0f)
                 .sound(SoundType.METAL)
-                .noOcclusion());
+                .noOcclusion()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(ENABLED, true));

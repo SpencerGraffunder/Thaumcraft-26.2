@@ -30,6 +30,7 @@ import thaumcraft.init.ModSounds;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockLevitator - Arcane Levitator that pushes entities in a direction.
@@ -55,11 +56,11 @@ public class BlockLevitator extends Block implements EntityBlock {
     private static final VoxelShape SHAPE_EAST = Block.box(0, 0, 0, 14, 16, 16);
     
     public BlockLevitator() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.WOOD)
                 .strength(1.5f)
                 .sound(SoundType.WOOD)
-                .noOcclusion());
+                .noOcclusion()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.UP));
     }

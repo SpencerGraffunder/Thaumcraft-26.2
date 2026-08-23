@@ -144,7 +144,9 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     }
     
     public NonNullList<Ingredient> getIngredients() {
-        return NonNullList.of(Ingredient.of(net.minecraft.core.HolderSet.empty()), catalyst);
+        java.util.List<Ingredient> list = new java.util.ArrayList<>();
+        if (catalyst != null) list.add(catalyst);
+        return NonNullList.copyOf(list);
     }
     
     @Override
@@ -180,11 +182,11 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     public static final MapCodec<CrucibleRecipeType> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
             Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research),
-            Ingredient.CODEC.optionalFieldOf("catalyst", Ingredient.of(net.minecraft.core.HolderSet.empty())).forGetter(r -> r.catalyst),
-            Ingredient.CODEC.optionalFieldOf("ingredient", Ingredient.of(net.minecraft.core.HolderSet.empty())).forGetter(r -> r.catalyst),
+            Ingredient.CODEC.optionalFieldOf("catalyst").forGetter(r -> java.util.Optional.ofNullable(r.catalyst)),
+            Ingredient.CODEC.optionalFieldOf("ingredient").forGetter(r -> java.util.Optional.ofNullable(r.catalyst)),
             ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.aspects),
             ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result)
-    ).apply(i, CrucibleRecipeType::create));
+    ).apply(i, (group, research, catalyst, ingredient, aspects, result) -> CrucibleRecipeType.create(group, research, catalyst.orElse(null), ingredient.orElse(null), aspects, result)));
     
     public static final StreamCodec<RegistryFriendlyByteBuf, CrucibleRecipeType> STREAM_CODEC = new StreamCodec<>() {
         @Override
@@ -219,7 +221,7 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     private static CrucibleRecipeType create(String group, String research,
                                              Ingredient catalyst, Ingredient ingredient,
                                              AspectList aspects, ItemStack result) {
-        return new CrucibleRecipeType(group, !catalyst.isEmpty() ? catalyst : ingredient, aspects, result, research);
+        return new CrucibleRecipeType(group, (catalyst != null && !catalyst.isEmpty()) ? catalyst : ingredient, aspects, result, research);
     }
     
     private static AspectList readAspects(RegistryFriendlyByteBuf buffer) {

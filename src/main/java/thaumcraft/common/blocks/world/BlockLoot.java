@@ -16,6 +16,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import thaumcraft.common.lib.utils.Utils;
 import thaumcraft.init.ModSounds;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Loot container blocks - crates (wood) and urns (stone).
@@ -38,7 +39,7 @@ public class BlockLoot extends Block {
     private final boolean isUrn;
     
     public BlockLoot(LootType type, boolean isUrn) {
-        super(createProperties(isUrn));
+        super(BlockRegistration.id(createProperties(isUrn)));
         this.lootType = type;
         this.isUrn = isUrn;
     }

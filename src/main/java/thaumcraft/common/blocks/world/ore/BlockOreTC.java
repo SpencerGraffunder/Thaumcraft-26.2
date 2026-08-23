@@ -4,6 +4,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Ore blocks for Thaumcraft (amber, cinnabar, quartz).
@@ -12,7 +13,7 @@ import net.minecraft.world.level.material.MapColor;
 public class BlockOreTC extends Block {
 
     public BlockOreTC(Properties properties) {
-        super(properties);
+        super(BlockRegistration.id(properties));
     }
 
     /**

@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Base class for Thaumcraft plants (shimmerleaf, cinderpearl, vishroom).
@@ -20,7 +21,7 @@ public class BlockPlantTC extends BushBlock {
     protected static final VoxelShape SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
     public BlockPlantTC(Properties properties) {
-        super(properties);
+        super(BlockRegistration.id(properties));
     }
 
     @Override

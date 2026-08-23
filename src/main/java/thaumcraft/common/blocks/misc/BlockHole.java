@@ -22,6 +22,7 @@ import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
 import net.minecraft.core.registries.Registries;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockHole - The portable hole block.
@@ -34,13 +35,13 @@ import net.minecraft.core.registries.Registries;
 public class BlockHole extends BaseEntityBlock {
     
     public BlockHole() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .strength(-1.0f, 6000000.0f) // Unbreakable
                 .sound(SoundType.WOOL)
                 .lightLevel(state -> 11)
                 .noLootTable()
                 .noOcclusion()
-                .pushReaction(PushReaction.BLOCK));
+                .pushReaction(PushReaction.BLOCK)));
     }
     
     @Override

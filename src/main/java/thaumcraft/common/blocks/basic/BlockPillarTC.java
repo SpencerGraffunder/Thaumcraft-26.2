@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Pillar blocks that can be oriented on different axes.
@@ -16,7 +17,7 @@ import net.minecraft.world.level.material.MapColor;
 public class BlockPillarTC extends RotatedPillarBlock {
 
     public BlockPillarTC(Properties properties) {
-        super(properties);
+        super(BlockRegistration.id(properties));
         this.registerDefaultState(this.defaultBlockState().setValue(AXIS, Direction.Axis.Y));
     }
 

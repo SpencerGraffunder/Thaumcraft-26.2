@@ -16,6 +16,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * The infusion altar's central matrix block.
@@ -27,13 +28,13 @@ public class BlockInfusionMatrix extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(4.0, 4.0, 4.0, 12.0, 12.0, 12.0);
 
     public BlockInfusionMatrix() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
                 .strength(5.0f, 100.0f)
                 .sound(SoundType.STONE)
                 .noOcclusion()
                 .noCollision()
-                .lightLevel(state -> 5));
+                .lightLevel(state -> 5)));
     }
 
     @Override

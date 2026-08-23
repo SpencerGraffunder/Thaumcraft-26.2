@@ -27,6 +27,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Arcane lamp that provides magical light.
@@ -51,12 +52,12 @@ public class BlockLamp extends Block implements EntityBlock {
     private final LampType lampType;
 
     public BlockLamp(LampType type) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(1.0f)
                 .sound(SoundType.METAL)
                 .noOcclusion()
-                .lightLevel(state -> state.getValue(ENABLED) ? 15 : 0));
+                .lightLevel(state -> state.getValue(ENABLED) ? 15 : 0)));
         this.lampType = type;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.DOWN)

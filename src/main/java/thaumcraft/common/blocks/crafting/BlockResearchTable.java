@@ -28,6 +28,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import thaumcraft.common.tiles.crafting.TileResearchTable;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Research table for performing research and completing research notes.
@@ -47,11 +48,11 @@ public class BlockResearchTable extends Block implements EntityBlock {
     );
 
     public BlockResearchTable() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.WOOD)
                 .strength(2.0f)
                 .sound(SoundType.WOOD)
-                .noOcclusion());
+                .noOcclusion()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH));
     }

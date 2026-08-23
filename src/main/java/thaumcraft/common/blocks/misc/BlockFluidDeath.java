@@ -26,6 +26,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import thaumcraft.api.damagesource.DamageSourceThaumcraft;
 import thaumcraft.client.fx.FXDispatcher;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockFluidDeath - A corrosive, deadly liquid that damages entities.
@@ -50,7 +51,7 @@ public class BlockFluidDeath extends Block {
     };
     
     public BlockFluidDeath() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(0.0f)
                 .noOcclusion()
@@ -58,7 +59,7 @@ public class BlockFluidDeath extends Block {
                 .randomTicks()
                 .noCollision()
                 .lightLevel(state -> 3)
-                .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK));
+                .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK)));
         registerDefaultState(stateDefinition.any().setValue(LEVEL, 3));
     }
     

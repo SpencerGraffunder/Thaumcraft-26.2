@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import thaumcraft.client.fx.FXDispatcher;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Magical ambient grass block that spawns in the Magical Forest biome.
@@ -21,11 +22,11 @@ import thaumcraft.client.fx.FXDispatcher;
 public class BlockGrassAmbient extends GrassBlock {
     
     public BlockGrassAmbient() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.GRASS)
                 .strength(0.6f)
                 .randomTicks()
-                .sound(SoundType.GRASS));
+                .sound(SoundType.GRASS)));
     }
     
     @Override

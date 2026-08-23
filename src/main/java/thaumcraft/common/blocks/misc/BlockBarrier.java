@@ -25,6 +25,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import thaumcraft.common.tiles.misc.TileBarrierStone;
 import thaumcraft.init.ModBlocks;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockBarrier - Invisible barrier block that blocks non-player entities.
@@ -44,14 +45,14 @@ public class BlockBarrier extends Block {
     private static final VoxelShape FULL = Shapes.block();
 
     public BlockBarrier() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.NONE)
                 .strength(-1.0f) // Unbreakable
                 .noLootTable()
                 .noOcclusion()
                 .noCollision() // Base collision is off, we handle it per-entity
                 .replaceable()
-                .pushReaction(PushReaction.BLOCK));
+                .pushReaction(PushReaction.BLOCK)));
     }
 
     @Override

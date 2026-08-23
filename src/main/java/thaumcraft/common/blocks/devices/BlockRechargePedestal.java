@@ -28,6 +28,7 @@ import thaumcraft.common.tiles.devices.TileRechargePedestal;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockRechargePedestal - Recharges vis-powered items from ambient aura.
@@ -41,11 +42,11 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
     
     public BlockRechargePedestal() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
                 .strength(2.0f)
                 .sound(SoundType.STONE)
-                .noOcclusion());
+                .noOcclusion()));
     }
     
     @Override

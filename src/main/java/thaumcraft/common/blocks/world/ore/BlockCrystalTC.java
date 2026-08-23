@@ -32,6 +32,7 @@ import thaumcraft.init.ModItems;
 
 import java.util.ArrayList;
 import java.util.List;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Crystal cluster blocks that grow on stone surfaces.
@@ -53,14 +54,14 @@ public class BlockCrystalTC extends Block {
     private final Aspect aspect;
 
     public BlockCrystalTC(Aspect aspect) {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(getColorForAspect(aspect))
                 .strength(0.25f)
                 .sound(SoundType.GLASS)
                 .lightLevel(state -> 1)
                 .noOcclusion()
                 .noCollision()
-                .randomTicks());
+                .randomTicks()));
         this.aspect = aspect;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(SIZE, 0)

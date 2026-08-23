@@ -36,6 +36,7 @@ import thaumcraft.common.tiles.devices.TileWaterJug;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockWaterJug (Everfull Urn) - A device that converts vis into water.
@@ -52,11 +53,11 @@ public class BlockWaterJug extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
 
     public BlockWaterJug() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
                 .strength(2.0f)
                 .sound(SoundType.STONE)
-                .noOcclusion());
+                .noOcclusion()));
     }
 
     @Override

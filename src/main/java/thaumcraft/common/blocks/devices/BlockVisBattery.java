@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.MapColor;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.world.aura.AuraHandler;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Vis Battery - stores vis from the aura and releases it when powered by redstone.
@@ -37,12 +38,12 @@ public class BlockVisBattery extends Block {
     public static final IntegerProperty CHARGE = IntegerProperty.create("charge", 0, 10);
     
     public BlockVisBattery() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
                 .strength(0.5f)
                 .sound(SoundType.STONE)
                 .randomTicks()
-                .lightLevel(state -> state.getValue(CHARGE)));
+                .lightLevel(state -> state.getValue(CHARGE))));
         
         registerDefaultState(stateDefinition.any().setValue(CHARGE, 0));
     }

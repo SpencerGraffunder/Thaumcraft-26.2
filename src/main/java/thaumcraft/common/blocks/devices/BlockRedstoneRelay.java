@@ -36,6 +36,7 @@ import thaumcraft.common.tiles.devices.TileRedstoneRelay;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * Redstone Relay block - converts redstone signal strength.
@@ -50,12 +51,12 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
 
     public BlockRedstoneRelay() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.NONE)
                 .strength(0.0f)
                 .sound(SoundType.WOOD)
                 .noOcclusion()
-                .noCollision());
+                .noCollision()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(ENABLED, false));

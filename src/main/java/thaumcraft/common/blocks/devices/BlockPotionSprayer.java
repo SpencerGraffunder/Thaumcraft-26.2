@@ -31,6 +31,7 @@ import thaumcraft.common.tiles.devices.TilePotionSprayer;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockPotionSprayer - Applies potion effects to nearby entities using essentia.
@@ -47,11 +48,11 @@ public class BlockPotionSprayer extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 14.0, 14.0);
     
     public BlockPotionSprayer() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(2.0f)
                 .sound(SoundType.METAL)
-                .noOcclusion());
+                .noOcclusion()));
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.UP)
                 .setValue(ENABLED, true));

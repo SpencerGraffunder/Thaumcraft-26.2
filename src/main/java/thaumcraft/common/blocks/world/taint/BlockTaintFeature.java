@@ -28,6 +28,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.entities.monster.tainted.EntityTaintCrawler;
 import thaumcraft.init.ModBlocks;
+import thaumcraft.init.BlockRegistration;
 
 /**
  * BlockTaintFeature - Taint tendrils/growths that attach to surfaces.
@@ -53,13 +54,13 @@ public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
     private static final VoxelShape SHAPE_EAST = Block.box(0, 2, 2, 6, 14, 14);
 
     public BlockTaintFeature() {
-        super(BlockBehaviour.Properties.of()
+        super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(0.1f)
                 .sound(SoundType.SLIME_BLOCK)
                 .lightLevel(state -> 10) // 0.625f * 16 ≈ 10
                 .noOcclusion()
-                .randomTicks());
+                .randomTicks()));
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.UP));
     }
 
