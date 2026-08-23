@@ -55,6 +55,11 @@ public class ArcaneWorkbenchCraftingContainer implements CraftingContainer, IArc
     }
     
     @Override
+    public int size() {
+        return getContainerSize();
+    }
+    
+    @Override
     public boolean isEmpty() {
         for (int i = 0; i < getContainerSize(); i++) {
             if (!getItem(i).isEmpty()) {

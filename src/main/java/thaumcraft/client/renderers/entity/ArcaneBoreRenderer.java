@@ -127,11 +127,12 @@ public class ArcaneBoreRenderer extends MobRenderer<EntityArcaneBore, ArcaneBore
             int g = (int)(1.0F * 255);
             int b = (int)(0.4F * 255);
             int a = (int)(opacity * 255);
+            final float fScroll = scroll;
             
             submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(BEAM_TEXTURE), (pose, buffer) -> {
                 float u0 = 0.0F;
                 float u1 = 1.0F;
-                float v0 = scroll + quad / 3.0F;
+                float v0 = fScroll + quad / 3.0F;
                 float v1 = beamLength + v0;
                 
                 // Draw quad

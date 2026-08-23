@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -252,7 +253,7 @@ public class BlockCrystalTC extends Block {
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
         List<ItemStack> drops = new ArrayList<>();
         
-        ItemStack tool = builder.getOptionalParameter(LootContextParams.TOOL);
+        ItemInstance tool = builder.getOptionalParameter(LootContextParams.TOOL);
         boolean silkTouch = tool != null && getEnchantmentLevel(builder.getLevel(), Enchantments.SILK_TOUCH, tool) > 0;
         
         if (silkTouch) {
@@ -294,9 +295,9 @@ public class BlockCrystalTC extends Block {
      */
     private static int getEnchantmentLevel(net.minecraft.server.level.ServerLevel level,
                                            net.minecraft.resources.ResourceKey<net.minecraft.world.item.enchantment.Enchantment> enchantment,
-                                           ItemStack tool) {
+                                           ItemInstance tool) {
         net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment> holder =
                 level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(enchantment);
-        return tool.getEnchantments().getLevel(holder);
+        return tool.getEnchantmentLevel(holder);
     }
 }

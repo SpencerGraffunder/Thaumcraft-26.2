@@ -209,7 +209,7 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
         NonNullList<Ingredient> list = NonNullList.create();
         list.addAll(ingredients);
         return new ShapelessArcaneRecipe(group, list, result, visCost,
-                !aspects.isEmpty() ? aspects : crystals, research);
+                aspects.size() > 0 ? aspects : crystals, research);
     }
     
     private static AspectList readAspects(RegistryFriendlyByteBuf buffer) {

@@ -54,7 +54,7 @@ public class BlockVishroom extends BushBlock {
     }
 
     @Override
-    public MapCodec<BlockVishroom> codec() {
+    public MapCodec<BushBlock> codec() {
         return simpleCodec(p -> new BlockVishroom());
     }
 
@@ -65,7 +65,7 @@ public class BlockVishroom extends BushBlock {
                state.is(Blocks.DEEPSLATE) ||
                state.is(Blocks.MYCELIUM) ||
                state.is(BlockTags.BASE_STONE_OVERWORLD) ||
-               state.is(BlockTags.MUSHROOM_GROW_BLOCK);
+               state.is(BlockTags.HUGE_BROWN_MUSHROOM_CAN_PLACE_ON);
     }
 
     @Override

@@ -358,12 +358,12 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         var pose = graphics.pose();
         pose.pushMatrix();
         
-        pose.translate(x + r.nextGaussian(), y + r.nextGaussian());
+        pose.translate((float)(x + r.nextGaussian()), (float)(y + r.nextGaussian()));
         pose.scale(scale, scale);
         
         // Random rotation
         float rotation = (float)(r.nextGaussian() * tilt);
-        pose.rotate(new org.joml.Quaternionf().rotationZ((float)Math.toRadians(rotation)));
+        pose.rotate((float)Math.toRadians(rotation));
         
         pose.pushMatrix();
         // Select paper texture
@@ -371,7 +371,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         
         // Random flip
         if (r.nextBoolean()) {
-            pose.rotate(new org.joml.Quaternionf().rotationZ((float)Math.PI));
+            pose.rotate((float)Math.PI);
         }
         if (r.nextBoolean()) {
             pose.scale(-1.0f, 1.0f);

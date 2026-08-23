@@ -137,8 +137,8 @@ public class BlockTaint extends Block implements ITaintBlock {
                     
                     if (nearby.isEmpty()) {
                         EntityTaintSwarm swarm = new EntityTaintSwarm(level);
-                        swarm.moveTo(pos.getX() + 0.5, pos.getY() + 1.25, pos.getZ() + 0.5,
-                                random.nextInt(360), 0.0f);
+                        swarm.setPos(pos.getX() + 0.5, pos.getY() + 1.25, pos.getZ() + 0.5);
+                        swarm.setYRot(random.nextInt(360));
                         level.addFreshEntity(swarm);
                     }
                 } else if (AuraHandler.getFlux(level, pos) < 2.0f) {

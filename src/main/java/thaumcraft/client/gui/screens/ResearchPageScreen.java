@@ -320,7 +320,7 @@ public class ResearchPageScreen extends Screen {
         float offsetY = (height - PANE_HEIGHT * scale) / 2.0f;
         graphics.pose().translate(offsetX, offsetY);
         graphics.pose().scale(scale);
-        graphics.blit(RenderPipelines.GUI_TEXTURED);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 0.0F, 0.0F, PANE_WIDTH, PANE_HEIGHT, 256, 256);
         graphics.pose().popMatrix();
         
         // Draw title on first page

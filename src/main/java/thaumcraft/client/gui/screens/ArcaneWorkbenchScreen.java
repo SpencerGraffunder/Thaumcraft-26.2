@@ -130,6 +130,8 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
         int textWidth = this.font.width(availText);
         int textColor = (auraVis < visCost) ? 0xEE4444 : 0x6E8E5E; // Red if not enough);
         
+        graphics.text(this.font, availText, -textWidth / 2, 0, textColor, false);
+        
         graphics.pose().popMatrix();
         
         // Draw vis cost if there's a recipe
@@ -143,7 +145,7 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
                 costText += " (" + discount + "% " + Component.translatable("gui.thaumcraft.workbench.discount").getString() + ")";
             }
             textWidth = this.font.width(costText);
-            graphics.text(this.font);
+            graphics.text(this.font, costText, -textWidth / 2, 0, 0xC0C0FF, false);
             
             graphics.pose().popMatrix();
             

@@ -1,6 +1,7 @@
 package thaumcraft.common.lib.potions;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,8 +22,8 @@ public class PotionThaumarhia extends MobEffect {
     }
     
     @Override
-    public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide()) return;
+    public boolean applyEffectTick(ServerLevel serverLevel, LivingEntity target, int amplifier) {
+        if (target.level().isClientSide()) return true;
         
         Level level = target.level();
         BlockPos pos = target.blockPosition();
@@ -31,10 +32,11 @@ public class PotionThaumarhia extends MobEffect {
         if (level.getRandom().nextInt(15) == 0 && level.isEmptyBlock(pos)) {
             level.setBlockAndUpdate(pos, BlockFluxGoo.withLevel(ModBlocks.FLUX_GOO.get(), 2 + level.getRandom().nextInt(3)));
         }
+        return true;
     }
     
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 20 == 0; // Every second
     }
 }

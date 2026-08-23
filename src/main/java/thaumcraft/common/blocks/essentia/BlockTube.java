@@ -124,7 +124,7 @@ public class BlockTube extends Block implements EntityBlock {
         };
     }
 
-    private boolean canConnectTo(LevelAccessor level, BlockPos pos, Direction side) {
+    private boolean canConnectTo(LevelReader level, BlockPos pos, Direction side) {
         BlockEntity te = level.getBlockEntity(pos);
         if (te instanceof IEssentiaTransport transport) {
             return transport.isConnectable(side);

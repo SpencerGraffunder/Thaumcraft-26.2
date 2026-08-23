@@ -1,5 +1,6 @@
 package thaumcraft.common.lib.potions;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -24,8 +25,8 @@ public class PotionInfectiousVisExhaust extends MobEffect {
     }
     
     @Override
-    public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide()) return;
+    public boolean applyEffectTick(ServerLevel serverLevel, LivingEntity target, int amplifier) {
+        if (target.level().isClientSide()) return true;
         
         Level level = target.level();
         AABB searchBox = target.getBoundingBox().inflate(4.0, 4.0, 4.0);
@@ -57,10 +58,11 @@ public class PotionInfectiousVisExhaust extends MobEffect {
                 }
             }
         }
+        return true;
     }
     
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 40 == 0; // Every 2 seconds
     }
 }

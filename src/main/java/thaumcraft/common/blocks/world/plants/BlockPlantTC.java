@@ -68,7 +68,7 @@ public class BlockPlantTC extends BushBlock {
     }
 
     @Override
-    public MapCodec<BlockPlantTC> codec() {
+    public MapCodec<BushBlock> codec() {
         return simpleCodec(BlockPlantTC::new);
     }
 }

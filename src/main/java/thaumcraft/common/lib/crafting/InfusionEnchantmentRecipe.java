@@ -121,10 +121,13 @@ public class InfusionEnchantmentRecipe extends InfusionRecipeType {
         Random rand = new Random(System.nanoTime());
         if (rand.nextInt(10) < el.size()) {
             int base = 1;
-            if (input.hasTag()) {
-                base += input.getTag().getByteOr("TC.WARP", (byte)0);
+            if (input.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA)) {
+                base += input.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA).copyTag().getByteOr("TC.WARP", (byte)0);
             }
-            out.addTagElement("TC.WARP", ByteTag.valueOf((byte)base));
+            final int warpBase = base;
+            net.minecraft.world.item.component.CustomData.update(
+                    net.minecraft.core.component.DataComponents.CUSTOM_DATA, out,
+                    tag -> tag.putByte("TC.WARP", (byte)warpBase));
         }
         
         EnumInfusionEnchantment.addInfusionEnchantment(out, enchantment, cl + 1);

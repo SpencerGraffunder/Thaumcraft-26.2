@@ -147,17 +147,8 @@ public class FXBoreParticles extends ThaumcraftParticle {
                 }
             } catch (Exception ignored) {}
         } else if (this.itemStack != null) {
-            try {
-                ItemStackRenderState scratch = new ItemStackRenderState();
-                Minecraft.getInstance().getItemModelResolver()
-                        .updateForTopItem(scratch, this.itemStack, ItemDisplayContext.GROUND, this.level, null, 0);
-                if (!scratch.tintLayers().isEmpty()) {
-                    int color = scratch.tintLayers().getInt(0);
-                    this.rCol *= (color >> 16 & 0xFF) / 255.0f;
-                    this.gCol *= (color >> 8 & 0xFF) / 255.0f;
-                    this.bCol *= (color & 0xFF) / 255.0f;
-                }
-            } catch (Exception ignored) {}
+            // TODO(26.2): item particle tint moved to ItemStackRenderState.LayerRenderState.tintLayers()
+            // (private, no public accessor); item particles are left untinted like vanilla BreakingItemParticle.
         }
         return this;
     }

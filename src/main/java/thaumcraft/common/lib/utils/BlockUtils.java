@@ -26,6 +26,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
@@ -484,7 +485,7 @@ public class BlockUtils {
                 }
             } else {
                 // Tag-based match
-                var tag = BlockTags.create(Identifier.parse(parts[0]));
+                var tag = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BLOCK, Identifier.parse(parts[0]));
                 if (state.is(tag)) {
                     return true;
                 }

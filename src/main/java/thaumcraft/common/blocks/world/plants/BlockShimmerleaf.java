@@ -49,7 +49,7 @@ public class BlockShimmerleaf extends BushBlock {
     }
 
     @Override
-    public MapCodec<BlockShimmerleaf> codec() {
+    public MapCodec<BushBlock> codec() {
         return simpleCodec(p -> new BlockShimmerleaf());
     }
 

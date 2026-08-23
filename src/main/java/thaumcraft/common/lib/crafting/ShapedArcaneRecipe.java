@@ -247,7 +247,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
                                              ShapedRecipePattern pattern, ItemStack result) {
         return new ShapedArcaneRecipe(group, pattern.width(), pattern.height(),
                 toIngredients(pattern.ingredients()), result, visCost,
-                !aspects.isEmpty() ? aspects : crystals, research);
+                aspects.size() > 0 ? aspects : crystals, research);
     }
     
     private static NonNullList<Ingredient> toIngredients(List<Optional<Ingredient>> list) {

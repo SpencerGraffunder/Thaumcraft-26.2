@@ -529,9 +529,10 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                 net.minecraft.core.Holder<Enchantment> enchHolder = enchRegistry.listElements()
                         .filter(h -> h.value() == ench)
                         .findFirst()
-                        .orElseGet(() -> net.minecraft.core.Holder.direct(ench));
-                EnchantmentHelper.updateEnchantments(temp, enchantments ->
-                        enchantments.upgrade(enchHolder, enchantments.getLevel(enchHolder) + 1));
+                        .orElseThrow();
+                EnchantmentHelper.updateEnchantments(temp, enchantments -> {
+                    enchantments.upgrade(enchHolder, enchantments.getLevel(enchHolder) + 1);
+                });
                 syncTile(false);
                 te.setChanged();
             }

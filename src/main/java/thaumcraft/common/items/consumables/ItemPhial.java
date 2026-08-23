@@ -132,7 +132,7 @@ public class ItemPhial extends ItemEssentiaContainer {
                                         pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, filledPhial));
                             }
                             
-                            level.playSound(null, pos, SoundEvents.BOTTLE_FILL.value(), SoundSource.PLAYERS, 0.25f, 1.0f);
+                            level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.25f, 1.0f);
                             return InteractionResult.CONSUME;
                         }
                     }
@@ -163,7 +163,7 @@ public class ItemPhial extends ItemEssentiaContainer {
                                         pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, emptyPhial));
                             }
                             
-                            level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY.value(), SoundSource.PLAYERS, 0.25f, 1.0f);
+                            level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 0.25f, 1.0f);
                             return InteractionResult.CONSUME;
                         }
                     }

@@ -1,6 +1,7 @@
 package thaumcraft.common.lib.potions;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -20,8 +21,8 @@ public class PotionSunScorned extends MobEffect {
     }
     
     @Override
-    public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide()) return;
+    public boolean applyEffectTick(ServerLevel serverLevel, LivingEntity target, int amplifier) {
+        if (target.level().isClientSide()) return true;
         
         Level level = target.level();
         float brightness = target.getLightLevelDependentMagicValue();
@@ -35,16 +36,17 @@ public class PotionSunScorned extends MobEffect {
         if (brightness > 0.5f 
                 && level.getRandom().nextFloat() * 30.0f < (brightness - 0.4f) * 2.0f 
                 && level.canSeeSky(pos)) {
-            target.setSecondsOnFire(4);
+            target.igniteForTicks(80); // 4 seconds
         }
         // In darkness - heal
         else if (brightness < 0.25f && level.getRandom().nextFloat() > brightness * 2.0f) {
             target.heal(1.0f);
         }
+        return true;
     }
     
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 40 == 0; // Every 2 seconds
     }
 }

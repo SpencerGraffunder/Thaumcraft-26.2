@@ -213,12 +213,12 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
 
     public static final MapCodec<InfusionRecipeType> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
-            Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research),
-            Codec.INT.optionalFieldOf("instability", 0).forGetter(r -> r.instability),
             Ingredient.CODEC.optionalFieldOf("center", Ingredient.of()).forGetter(r -> r.centralItem),
             Ingredient.CODEC.listOf().optionalFieldOf("ingredients", List.of()).forGetter(r -> r.components),
             ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.aspects),
-            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result)
+            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result),
+            Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research),
+            Codec.INT.optionalFieldOf("instability", 0).forGetter(r -> r.instability)
     ).apply(i, InfusionRecipeType::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, InfusionRecipeType> STREAM_CODEC = new StreamCodec<>() {

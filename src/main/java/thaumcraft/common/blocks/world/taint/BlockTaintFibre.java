@@ -129,7 +129,7 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
     /**
      * Calculate connection state based on adjacent solid blocks.
      */
-    private BlockState getStateWithConnections(LevelAccessor level, BlockPos pos) {
+    private BlockState getStateWithConnections(LevelReader level, BlockPos pos) {
         boolean down = canConnectTo(level, pos, Direction.DOWN);
         boolean up = canConnectTo(level, pos, Direction.UP);
         boolean north = canConnectTo(level, pos, Direction.NORTH);
@@ -157,7 +157,7 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
     /**
      * Check if this block should connect to a face (adjacent block is solid).
      */
-    private boolean canConnectTo(LevelAccessor level, BlockPos pos, Direction face) {
+    private boolean canConnectTo(LevelReader level, BlockPos pos, Direction face) {
         BlockPos adjacentPos = pos.relative(face);
         BlockState adjacentState = level.getBlockState(adjacentPos);
         return adjacentState.isFaceSturdy(level, adjacentPos, face.getOpposite());
@@ -262,8 +262,8 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
     }
     
     @Override
-    public int getLightEmission(BlockGetter level, BlockPos pos) {
-        return level.getBlockState(pos).getValue(HAS_CRYSTAL) ? 12 : 0;
+    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
+        return state.getValue(HAS_CRYSTAL) ? 12 : 0;
     }
     
     @Override

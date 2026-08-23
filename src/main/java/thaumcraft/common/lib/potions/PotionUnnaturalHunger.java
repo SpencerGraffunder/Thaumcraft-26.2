@@ -1,5 +1,6 @@
 package thaumcraft.common.lib.potions;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,18 +20,19 @@ public class PotionUnnaturalHunger extends MobEffect {
     }
     
     @Override
-    public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide()) return;
+    public boolean applyEffectTick(ServerLevel serverLevel, LivingEntity target, int amplifier) {
+        if (target.level().isClientSide()) return true;
         
         if (target instanceof Player player) {
             // Add exhaustion to drain food faster
             // 0.025 per tick at amplifier 0, scales with amplifier
             player.causeFoodExhaustion(0.025f * (amplifier + 1));
         }
+        return true;
     }
     
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return true; // Every tick
     }
 }

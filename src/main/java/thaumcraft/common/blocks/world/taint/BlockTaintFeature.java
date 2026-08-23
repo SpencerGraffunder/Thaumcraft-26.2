@@ -153,8 +153,8 @@ public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
             if (random.nextFloat() < 0.333f) {
                 // Spawn a taint crawler
                 Entity crawler = new EntityTaintCrawler(level);
-                crawler.moveTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                        random.nextInt(360), 0.0f);
+                crawler.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+                crawler.setYRot(random.nextInt(360));
                 level.addFreshEntity(crawler);
             } else {
                 // Release flux into the aura
@@ -162,10 +162,5 @@ public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
             }
         }
         return super.playerWillDestroy(level, pos, state, player);
-    }
-
-    @Override
-    public int getLightBlock(BlockState state, BlockGetter level, BlockPos pos) {
-        return 0; // Transparent
     }
 }

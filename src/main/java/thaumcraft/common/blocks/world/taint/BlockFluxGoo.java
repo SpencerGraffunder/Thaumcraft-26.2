@@ -130,7 +130,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
         if (gooLevel >= 2 && gooLevel < 6 && level.isEmptyBlock(pos.above()) && random.nextInt(50) == 0) {
             level.removeBlock(pos, false);
             EntityThaumicSlime slime = new EntityThaumicSlime(ModEntities.THAUMIC_SLIME.get(), level);
-            slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0f, 0.0f);
+            slime.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             slime.setSize(1, true);
             level.addFreshEntity(slime);
             level.playSound(null, pos, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 1.0f, 1.0f);
@@ -141,7 +141,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
         if (gooLevel >= 6 && level.isEmptyBlock(pos.above()) && random.nextInt(50) == 0) {
             level.removeBlock(pos, false);
             EntityThaumicSlime slime = new EntityThaumicSlime(ModEntities.THAUMIC_SLIME.get(), level);
-            slime.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0f, 0.0f);
+            slime.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             slime.setSize(2, true);
             level.addFreshEntity(slime);
             level.playSound(null, pos, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 1.0f, 1.0f);
@@ -173,7 +173,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
         // Flow down if there's space below
         if (directionToNeighbour == Direction.DOWN && neighbourState.isAir()) {
             // Schedule a tick to handle flowing
-            level.scheduleTick(pos, this, 5);
+            ticks.scheduleTick(pos, this, 5);
         }
         return state;
     }

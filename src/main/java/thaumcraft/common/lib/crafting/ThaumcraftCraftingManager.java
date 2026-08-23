@@ -326,13 +326,11 @@ public class ThaumcraftCraftingManager {
         }
         
         // Food
-        if (item.isEdible()) {
-            var food = item.getFoodProperties();
-            if (food != null) {
-                result.merge(Aspect.LIFE, food.getNutrition());
-                if (food.getSaturationModifier() > 0.5f) {
-                    result.merge(Aspect.DESIRE, 2);
-                }
+        var food = stack.get(net.minecraft.core.component.DataComponents.FOOD);
+        if (food != null) {
+            result.merge(Aspect.LIFE, food.nutrition());
+            if (food.saturation() > 0.5f) {
+                result.merge(Aspect.DESIRE, 2);
             }
         }
         

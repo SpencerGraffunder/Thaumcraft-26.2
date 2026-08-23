@@ -413,14 +413,14 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
                     if (parent.target) {
                         graphics.pose().translate(xx - offset, yy);
                         graphics.pose().scale(0.5f);
-                        graphics.blit(RenderPipelines.GUI_TEXTURED);
+                        graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, -8, -8, 152.0F, 240.0F, 16, 16, 256, 256);
                         graphics.pose().popMatrix();
                         graphics.pose().pushMatrix();
                     }
                     if (parent.trajectory) {
                         graphics.pose().translate(xx + offset, yy);
                         graphics.pose().scale(0.5f);
-                        graphics.blit(RenderPipelines.GUI_TEXTURED);
+                        graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, -8, -8, 168.0F, 240.0F, 16, 16, 256, 256);
                     }
                     graphics.pose().popMatrix();
                 }
@@ -506,7 +506,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         graphics.pose().pushMatrix();
         graphics.pose().scale(iconScale, iconScale);
         Identifier icon = FocusEngine.getElementIcon(node.getKey());
-        graphics.blit(RenderPipelines.GUI_TEXTURED);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, icon, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
         graphics.pose().popMatrix();
         
         graphics.pose().popMatrix();

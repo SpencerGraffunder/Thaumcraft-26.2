@@ -1,5 +1,6 @@
 package thaumcraft.common.lib.potions;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,12 +20,13 @@ public class PotionWarpWard extends MobEffect {
     }
     
     @Override
-    public void applyEffectTick(LivingEntity target, int amplifier) {
+    public boolean applyEffectTick(ServerLevel level, LivingEntity target, int amplifier) {
         // Effect is passive - checked by warp and soap code
+        return true;
     }
     
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return false; // No periodic effect
     }
 }

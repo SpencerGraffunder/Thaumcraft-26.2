@@ -80,12 +80,12 @@ public class SliderWidget extends AbstractWidget {
         graphics.pose().pushMatrix();
         if (vertical) {
             graphics.pose().translate(getX() + 2, getY());
-            graphics.pose().scale(1.0f);
-            graphics.blit(RenderPipelines.GUI_TEXTURED);
+            graphics.pose().scale(1.0f, height / 32.0f);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 240.0F, 176.0F, 4, 32, 256, 256);
         } else {
             graphics.pose().translate(getX(), getY() + 2);
-            graphics.pose().scale(width / 32.0f);
-            graphics.blit(RenderPipelines.GUI_TEXTURED);
+            graphics.pose().scale(width / 32.0f, 1.0f);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 208.0F, 176.0F, 32, 4, 256, 256);
         }
         graphics.pose().popMatrix();
         

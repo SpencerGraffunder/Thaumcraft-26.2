@@ -103,11 +103,13 @@ public class CultistPortalRenderer extends EntityRenderer<EntityCultistPortalLes
         int light = 0xF000F0; // Full bright
         
         // Render the quad
+        final float fScale = scale, fScaley = scaley, fMinU = minU, fMaxU = maxU, fMinV = minV, fMaxV = maxV, fAlpha = alpha;
+        final int fLight = light;
         submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(TEXTURE), (pose, buffer) -> {
-            vertex(buffer, pose, -scale, -scaley, 0, maxU, minV, alpha, light);
-            vertex(buffer, pose, -scale, scaley, 0, maxU, maxV, alpha, light);
-            vertex(buffer, pose, scale, scaley, 0, minU, maxV, alpha, light);
-            vertex(buffer, pose, scale, -scaley, 0, minU, minV, alpha, light);
+            vertex(buffer, pose, -fScale, -fScaley, 0, fMaxU, fMinV, fAlpha, fLight);
+            vertex(buffer, pose, -fScale, fScaley, 0, fMaxU, fMaxV, fAlpha, fLight);
+            vertex(buffer, pose, fScale, fScaley, 0, fMinU, fMaxV, fAlpha, fLight);
+            vertex(buffer, pose, fScale, -fScaley, 0, fMinU, fMinV, fAlpha, fLight);
         });
         
         poseStack.popPose();

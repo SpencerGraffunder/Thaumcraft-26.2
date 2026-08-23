@@ -512,7 +512,7 @@ public class InventoryUtils {
     public static void dropHarvestsAtPos(Level level, BlockPos pos, List<ItemStack> items,
             boolean followItem, int color, @Nullable Entity target) {
         if (level.isClientSide()) return;
-        if (!level.getGameRules().get(net.minecraft.world.level.gamerules.GameRules.BLOCK_DROPS)) return;
+        if (level instanceof net.minecraft.server.level.ServerLevel sl && !sl.getGameRules().get(net.minecraft.world.level.gamerules.GameRules.BLOCK_DROPS)) return;
         
         for (ItemStack item : items) {
             if (item.isEmpty()) continue;

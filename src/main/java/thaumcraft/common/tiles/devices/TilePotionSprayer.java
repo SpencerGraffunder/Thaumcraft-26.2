@@ -134,7 +134,7 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
                 }
                 
                 // Play sound and visual effect
-                level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH.value(), SoundSource.BLOCKS, 
+                level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 
                         0.25f, 2.6f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.8f);
                 level.blockEvent(pos, state.getBlock(), 0, 0);
                 tile.syncTile(false);

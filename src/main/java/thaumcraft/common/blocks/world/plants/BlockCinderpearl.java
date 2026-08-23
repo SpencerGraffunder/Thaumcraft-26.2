@@ -49,7 +49,7 @@ public class BlockCinderpearl extends BushBlock {
     }
 
     @Override
-    public MapCodec<BlockCinderpearl> codec() {
+    public MapCodec<BushBlock> codec() {
         return simpleCodec(p -> new BlockCinderpearl());
     }
 
