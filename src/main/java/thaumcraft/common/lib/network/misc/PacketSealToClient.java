@@ -34,7 +34,7 @@ import thaumcraft.common.golems.seals.SealHandler;
  * - IMessage/IMessageHandler pattern replaced with static encode/decode/handle methods
  * - ByteBuf -> FriendlyByteBuf with built-in ItemStack support
  * - EnumFacing -> Direction
- * - Proxy.getClientWorld() -> Thaumcraft.getClientWorld()
+ * - Proxy.getClientWorld() -> net.minecraft.client.Minecraft.getInstance().level
  */
 public class PacketSealToClient implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<PacketSealToClient> TYPE =
@@ -216,7 +216,7 @@ public class PacketSealToClient implements CustomPacketPayload {
             if (msg.type.equals("REMOVE")) {
                 // Remove seal from client
                 SealHandler.removeSealEntity(
-                    Thaumcraft.getClientWorld(), 
+                    net.minecraft.client.Minecraft.getInstance().level, 
                     new SealPos(msg.pos, msg.face), 
                     true
                 );
@@ -231,7 +231,7 @@ public class PacketSealToClient implements CustomPacketPayload {
                 // Create new seal instance
                 ISeal seal = template.getClass().getDeclaredConstructor().newInstance();
                 SealEntity sealEntity = new SealEntity(
-                    Thaumcraft.getClientWorld(), 
+                    net.minecraft.client.Minecraft.getInstance().level, 
                     new SealPos(msg.pos, msg.face), 
                     seal
                 );
@@ -265,7 +265,7 @@ public class PacketSealToClient implements CustomPacketPayload {
                 sealEntity.setOwner(msg.owner);
                 
                 // Add to handler (replaces existing if present)
-                SealHandler.addSealEntity(Thaumcraft.getClientWorld(), sealEntity);
+                SealHandler.addSealEntity(net.minecraft.client.Minecraft.getInstance().level, sealEntity);
             }
         } catch (Exception e) {
             Thaumcraft.LOGGER.error("Error handling seal packet at {}", msg.pos, e);

@@ -144,7 +144,7 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     }
     
     public NonNullList<Ingredient> getIngredients() {
-        return NonNullList.of(Ingredient.of(), catalyst);
+        return NonNullList.of(Ingredient.of(net.minecraft.core.HolderSet.empty()), catalyst);
     }
     
     @Override
@@ -180,8 +180,8 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     public static final MapCodec<CrucibleRecipeType> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
             Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research),
-            Ingredient.CODEC.optionalFieldOf("catalyst", Ingredient.of()).forGetter(r -> r.catalyst),
-            Ingredient.CODEC.optionalFieldOf("ingredient", Ingredient.of()).forGetter(r -> r.catalyst),
+            Ingredient.CODEC.optionalFieldOf("catalyst", Ingredient.of(net.minecraft.core.HolderSet.empty())).forGetter(r -> r.catalyst),
+            Ingredient.CODEC.optionalFieldOf("ingredient", Ingredient.of(net.minecraft.core.HolderSet.empty())).forGetter(r -> r.catalyst),
             ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.aspects),
             ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result)
     ).apply(i, CrucibleRecipeType::create));

@@ -213,7 +213,7 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
 
     public static final MapCodec<InfusionRecipeType> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
-            Ingredient.CODEC.optionalFieldOf("center", Ingredient.of()).forGetter(r -> r.centralItem),
+            Ingredient.CODEC.optionalFieldOf("center", Ingredient.of(net.minecraft.core.HolderSet.empty())).forGetter(r -> r.centralItem),
             Ingredient.CODEC.listOf().optionalFieldOf("ingredients", List.of()).forGetter(r -> r.components),
             ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.aspects),
             ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result),

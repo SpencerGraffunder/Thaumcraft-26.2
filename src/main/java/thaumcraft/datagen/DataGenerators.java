@@ -3,15 +3,13 @@ package thaumcraft.datagen;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 
-@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class DataGenerators {
 
-    @SubscribeEvent
+    // NOTE: registered providers are commented out; kept as a plain helper class
+    // so the datagen hook can be re-enabled later via a concrete GatherDataEvent
+    // subclass (GatherDataEvent.Client / .Server) when providers are implemented.
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();

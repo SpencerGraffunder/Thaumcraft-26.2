@@ -34,7 +34,7 @@ public class InfusionEnchantmentRecipe extends InfusionRecipeType {
     public final EnumInfusionEnchantment enchantment;
     
     public InfusionEnchantmentRecipe(EnumInfusionEnchantment ench, AspectList as, NonNullList<Ingredient> components) {
-        super("", Ingredient.of(), components, as, ItemStack.EMPTY, ench.research, 4);
+        super("", Ingredient.of(net.minecraft.core.HolderSet.empty()), components, as, ItemStack.EMPTY, ench.research, 4);
         this.enchantment = ench;
     }
     

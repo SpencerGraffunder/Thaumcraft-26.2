@@ -1,7 +1,6 @@
 package thaumcraft;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.common.NeoForge;
@@ -242,7 +241,7 @@ public class Thaumcraft {
         public static void onClientSetup(FMLClientSetupEvent event) {
             // Some client setup code
             LOGGER.info("Thaumcraft client setup");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+            LOGGER.info("MINECRAFT NAME >> {}", net.minecraft.client.Minecraft.getInstance().getUser().getName());
             
             // Register entity renderers and menu screens
             event.enqueueWork(() -> {
@@ -690,16 +689,7 @@ public class Thaumcraft {
     }
     
     /**
-     * Get the client world (client side only)
+     * Get the client world (client side only) - moved to client code to keep
+     * this class dedicated-server safe (no client class references).
      */
-    public static Level getClientWorld() {
-        return Minecraft.getInstance().level;
-    }
-    
-    /**
-     * Check if shift key is pressed (client side only)
-     */
-    public static boolean isShiftKeyDown() {
-        return Minecraft.getInstance().hasShiftDown();
-    }
 }

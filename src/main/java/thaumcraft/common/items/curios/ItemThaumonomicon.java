@@ -12,7 +12,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.client.gui.screens.ResearchBrowserScreen;
 import thaumcraft.common.items.ItemTC;
 
 import javax.annotation.Nullable;
@@ -52,7 +51,15 @@ public class ItemThaumonomicon extends ItemTC {
      */
     @OnlyIn(Dist.CLIENT)
     private void openThaumonomiconGui() {
-        Minecraft.getInstance().gui.setScreen(new ResearchBrowserScreen());
+        // Use reflection so this common item class carries no direct client-class
+        // references (keeps the class loadable on the dedicated server in dev).
+        try {
+            Class<?> screenClass = Class.forName("thaumcraft.client.gui.screens.ResearchBrowserScreen");
+            Object screen = screenClass.getConstructor().newInstance();
+            Minecraft.getInstance().gui.setScreen((net.minecraft.client.gui.screens.Screen) screen);
+        } catch (Exception e) {
+            thaumcraft.Thaumcraft.LOGGER.error("Failed to open Thaumonomicon GUI", e);
+        }
     }
 
     @Override
