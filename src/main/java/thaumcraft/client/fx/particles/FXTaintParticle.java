@@ -2,12 +2,13 @@ package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * FXTaintParticle - Purple/pink taint corruption particle.
@@ -118,54 +119,29 @@ public class FXTaintParticle extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 camPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 camPos = camera.position();
         float px = (float)(Mth.lerp(partialTicks, xo, x) - camPos.x());
         float py = (float)(Mth.lerp(partialTicks, yo, y) - camPos.y());
         float pz = (float)(Mth.lerp(partialTicks, zo, z) - camPos.z());
-        
-        // Billboard quad with rotation
+
+        // Billboard rotation plus spin
         Quaternionf rotation = camera.rotation();
-        
-        // Add spin rotation
         float currentRot = rotationAngle + rotationSpeed * partialTicks;
         Quaternionf spinRot = new Quaternionf().rotateZ((float)Math.toRadians(currentRot));
         rotation = rotation.mul(spinRot, new Quaternionf());
-        
-        Vector3f[] vertices = new Vector3f[] {
-            new Vector3f(-1.0f, -1.0f, 0.0f),
-            new Vector3f(-1.0f, 1.0f, 0.0f),
-            new Vector3f(1.0f, 1.0f, 0.0f),
-            new Vector3f(1.0f, -1.0f, 0.0f)
-        };
-        
-        for (Vector3f vertex : vertices) {
-            vertex.rotate(rotation);
-            vertex.mul(quadSize);
-            vertex.add(px, py, pz);
-        }
-        
+
         // Taint sprite animation (using witch-like sprites, row 2 columns 8-11)
         int sprite = 72 + spriteFrame;  // Wispy sprites
         float u0 = (sprite % 64) / 64.0f;
         float u1 = u0 + 0.015625f;
         float v0 = (sprite / 64) / 64.0f;
         float v1 = v0 + 0.015625f;
-        
+
         int light = 0xF000F0;  // Full brightness for glow effect
-        
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(rCol, gCol, bCol, alpha).uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(rCol, gCol, bCol, alpha).uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(rCol, gCol, bCol, alpha).uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(rCol, gCol, bCol, alpha).uv2(light).endVertex();
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_LIT;
+        int color = ARGB.colorFromFloat(alpha, rCol, gCol, bCol);
+
+        state.add(getLayer(), px, py, pz, rotation.x, rotation.y, rotation.z, rotation.w, quadSize,
+                u0, u1, v0, v1, color, light);
     }
 }

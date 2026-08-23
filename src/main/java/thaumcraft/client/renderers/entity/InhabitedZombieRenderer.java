@@ -2,11 +2,11 @@ package thaumcraft.client.renderers.entity;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ZombieRenderer;
+import net.minecraft.client.renderer.entity.state.ZombieRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
-import thaumcraft.common.entities.monster.EntityInhabitedZombie;
 
 /**
  * Renderer for Inhabited Zombies - zombies containing eldritch crabs.
@@ -23,7 +23,7 @@ public class InhabitedZombieRenderer extends ZombieRenderer {
     }
     
     @Override
-    public Identifier getTextureLocation(net.minecraft.world.entity.monster.Zombie entity) {
+    public Identifier getTextureLocation(ZombieRenderState state) {
         return TEXTURE;
     }
 }

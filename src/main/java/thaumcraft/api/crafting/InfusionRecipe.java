@@ -6,10 +6,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.item.ItemStackHelper;
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
+import net.neoforged.neoforge.common.util.RecipeMatcher;
 
 import java.util.List;
 
@@ -94,7 +94,7 @@ public class InfusionRecipe implements IThaumcraftRecipe {
             return false;
         }
 
-        boolean centralMatches = getRecipeInput() == Ingredient.EMPTY || 
+        boolean centralMatches = getRecipeInput().isEmpty() || 
                                  getRecipeInput().test(centralItem);
         boolean componentsMatch = RecipeMatcher.findMatches(pedestalItems, getComponents()) != null;
         

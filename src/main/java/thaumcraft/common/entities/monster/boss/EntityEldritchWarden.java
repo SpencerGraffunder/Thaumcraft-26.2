@@ -89,7 +89,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
     public EntityEldritchWarden(EntityType<? extends EntityEldritchWarden> type, Level level) {
         super(type, level);
         this.xpReward = 100;
-        this.bossEventShield = new ServerBossEvent(Component.literal(""), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.NOTCHED_10);
+        this.bossEventShield = new ServerBossEvent(java.util.UUID.randomUUID(), Component.literal(""), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.NOTCHED_10);
     }
     
     public EntityEldritchWarden(Level level) {
@@ -174,7 +174,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
         spawnTimer = 150;
         setTitle(random.nextInt(TITLES.length));
@@ -183,12 +183,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
         float shieldAmount = (float)(getAttributeValue(Attributes.MAX_HEALTH) * 0.66);
         setAbsorptionAmount(shieldAmount);
         
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
-    }
-    
-    @Override
-    public float getEyeHeight(net.minecraft.world.entity.Pose pose) {
-        return 3.1f;
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnData);
     }
     
     // ==================== AI / Update ====================
@@ -300,7 +295,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
                 
                 if (level().isEmptyBlock(bp)) {
                     BlockState below = level().getBlockState(bp.below());
-                    if (below.isSolidRender(level(), bp.below())) {
+                    if (below.isSolidRender()) {
                         level().setBlock(bp, ModBlocks.EFFECT_SAP.get().defaultBlockState(), 3);
                         level().scheduleTick(bp, ModBlocks.EFFECT_SAP.get(), 20 + random.nextInt(40));
                     }
@@ -318,7 +313,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
     private void teleportHome() {
         if (!hasHome()) return;
         
-        BlockPos home = getRestrictCenter();
+        BlockPos home = getHomePosition();
         double oldX = getX();
         double oldY = getY();
         double oldZ = getZ();
@@ -368,15 +363,15 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo((ServerLevel) this.level(), source)) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (isInvulnerableTo(level, source)) {
             return false;
         }
         
-        boolean wasHurt = super.hurt(source, amount);
+        boolean wasHurt = super.hurtServer(level, source, amount);
         
         // Trigger field frenzy when absorption shield is depleted
-        if (!level().isClientSide() && wasHurt && !fieldFrenzy && getAbsorptionAmount() <= 0.0f) {
+        if (wasHurt && !fieldFrenzy && getAbsorptionAmount() <= 0.0f) {
             fieldFrenzy = true;
             fieldFrenzyCounter = 150;
         }

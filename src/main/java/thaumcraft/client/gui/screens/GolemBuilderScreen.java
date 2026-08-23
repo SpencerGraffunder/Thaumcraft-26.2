@@ -1,9 +1,9 @@
 package thaumcraft.client.gui.screens;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,10 +36,7 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
     private Button craftBtn;
     
     public GolemBuilderScreen(GolemBuilderMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
-        this.imageWidth = 208;
-        this.imageHeight = 224;
-        this.inventoryLabelY = this.imageHeight - 94;
+        super(menu, playerInventory, title, 208, 224);
     }
     
     @Override
@@ -87,41 +84,38 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        this.renderTooltip(graphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         
         // Render part names and stats
         renderPartInfo(graphics);
     }
     
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int x = this.leftPos;
         int y = this.topPos;
         
         // Draw main background
-        graphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
         
         // Draw crafting progress bar if crafting
         TileGolemBuilder tile = menu.getBlockEntity();
         if (tile != null && tile.cost > 0) {
             int progress = (int)(46.0f * tile.getCraftingProgress());
-            graphics.blit(TEXTURE, x + 145, y + 89, 209, 89, progress, 6);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x + 145, y + 89, 209.0F, 89.0F, progress, 6, 256, 256);
         }
     }
     
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Don't render default labels - we'll draw custom ones
     }
     
     /**
      * Render information about selected parts and stats.
      */
-    private void renderPartInfo(GuiGraphics graphics) {
+    private void renderPartInfo(GuiGraphicsExtractor graphics) {
         TileGolemBuilder tile = menu.getBlockEntity();
         if (tile == null) return;
         
@@ -139,33 +133,33 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
         // Material name (left top)
         if (mat != null) {
             Component matName = mat.getLocalizedName();
-            graphics.drawCenteredString(this.font, matName, x + 24, y + 8, 0xFFFFFF);
+            graphics.centeredText(this.font, matName, x + 24, y + 8, 0xFFFFFF);
         }
         
         // Head name (right top)
         if (head != null) {
             Component headName = head.getLocalizedName();
-            graphics.drawCenteredString(this.font, headName, x + 120, y + 8, 0xFFFFFF);
+            graphics.centeredText(this.font, headName, x + 120, y + 8, 0xFFFFFF);
         }
         
         // Arms name (right middle)
         if (arms != null) {
             Component armsName = arms.getLocalizedName();
-            graphics.drawCenteredString(this.font, armsName, x + 120, y + 32, 0xFFFFFF);
+            graphics.centeredText(this.font, armsName, x + 120, y + 32, 0xFFFFFF);
         }
         
         // Legs name (right bottom)
         if (legs != null) {
             Component legsName = legs.getLocalizedName();
-            graphics.drawCenteredString(this.font, legsName, x + 120, y + 56, 0xFFFFFF);
+            graphics.centeredText(this.font, legsName, x + 120, y + 56, 0xFFFFFF);
         }
         
         // Addon name (left bottom)
         if (addon != null && !addon.key.equalsIgnoreCase("none")) {
             Component addonName = addon.getLocalizedName();
-            graphics.drawCenteredString(this.font, addonName, x + 24, y + 56, 0xFFFFFF);
+            graphics.centeredText(this.font, addonName, x + 24, y + 56, 0xFFFFFF);
         } else {
-            graphics.drawCenteredString(this.font, Component.literal("No Addon"), x + 24, y + 56, 0x888888);
+            graphics.centeredText(this.font, Component.literal("No Addon"), x + 24, y + 56, 0x888888);
         }
         
         // Calculate and display stats
@@ -195,9 +189,9 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
         float armorVal = armor / 2.0f;
         float damageVal = damage / 2.0f;
         
-        graphics.drawCenteredString(this.font, String.format("%.1f", hearts), x + 48, y + 108, 0xFFFFFF);
-        graphics.drawCenteredString(this.font, String.format("%.1f", armorVal), x + 72, y + 108, 0xFFFFFF);
-        graphics.drawCenteredString(this.font, String.format("%.1f", damageVal), x + 97, y + 108, 0xFFFFFF);
+        graphics.centeredText(this.font, String.format("%.1f", hearts), x + 48, y + 108, 0xFFFFFF);
+        graphics.centeredText(this.font, String.format("%.1f", armorVal), x + 72, y + 108, 0xFFFFFF);
+        graphics.centeredText(this.font, String.format("%.1f", damageVal), x + 97, y + 108, 0xFFFFFF);
         
         // Draw trait icons/names
         int traitX = x + 56;
@@ -207,7 +201,7 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
             if (traitCount >= 8) break; // Limit display
             int tx = traitX + (traitCount % 4) * 18;
             int ty = traitY - (traitCount / 4) * 10;
-            graphics.drawString(this.font, trait.name().substring(0, Math.min(3, trait.name().length())), 
+            graphics.text(this.font, trait.name().substring(0, Math.min(3, trait.name().length())), 
                     tx, ty, 0xFFFFFF, false);
             traitCount++;
         }
@@ -216,7 +210,7 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
         int cost = menu.getCost();
         int maxCost = menu.getMaxCost();
         if (maxCost > 0) {
-            graphics.drawString(this.font, "Cost: " + cost + "/" + maxCost, x + 145, y + 78, 0xFFFFFF);
+            graphics.text(this.font, "Cost: " + cost + "/" + maxCost, x + 145, y + 78, 0xFFFFFF);
         }
     }
     

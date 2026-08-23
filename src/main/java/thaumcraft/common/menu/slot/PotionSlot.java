@@ -4,7 +4,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 
 /**
@@ -58,13 +57,15 @@ public class PotionSlot extends Slot {
         
         // Check if it has actual effects
         try {
-            var potion = PotionUtils.getPotion(stack);
-            return potion != null && 
-                   potion != Potions.WATER && 
-                   potion != Potions.MUNDANE && 
-                   potion != Potions.THICK && 
-                   potion != Potions.AWKWARD &&
-                   potion != Potions.EMPTY;
+            var contents = stack.getOrDefault(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
+                    net.minecraft.world.item.alchemy.PotionContents.EMPTY);
+            var potion = contents.potion();
+            return potion.isPresent() &&
+                   potion.get() != Potions.WATER &&
+                   potion.get() != Potions.MUNDANE &&
+                   potion.get() != Potions.THICK &&
+                   potion.get() != Potions.AWKWARD &&
+                   contents.hasEffects();
         } catch (Exception e) {
             return false;
         }

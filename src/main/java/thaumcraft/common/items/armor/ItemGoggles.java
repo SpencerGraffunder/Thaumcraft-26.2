@@ -46,17 +46,6 @@ public class ItemGoggles extends Item implements IVisDiscountGear, IRevealer, IG
         return true;
     }
     
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.THAUMIUM_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return "thaumcraft:textures/entity/armor/goggles.png";
-    }
-    
     // TODO: Add Curios integration for wearing as bauble
     // This would require adding the Curios API as a dependency and implementing ICurioItem
 }

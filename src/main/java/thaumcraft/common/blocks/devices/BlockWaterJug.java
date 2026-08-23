@@ -1,5 +1,7 @@
 package thaumcraft.common.blocks.devices;
 
+import net.minecraft.core.Direction;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -10,7 +12,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -69,7 +70,7 @@ public class BlockWaterJug extends Block implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, 
                                   InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
@@ -79,8 +80,6 @@ public class BlockWaterJug extends Block implements EntityBlock {
         if (!(be instanceof TileWaterJug tile)) {
             return InteractionResult.PASS;
         }
-
-        ItemStack heldItem = player.getItemInHand(hand);
 
         // Try standard fluid handler interaction (buckets)
         if (FluidUtil.interactWithFluidHandler(player, hand, tile.tank)) {
@@ -93,7 +92,7 @@ public class BlockWaterJug extends Block implements EntityBlock {
 
         // Handle glass bottle filling
         if (heldItem.is(Items.GLASS_BOTTLE) && tile.tank.getFluidAmount() >= 333) {
-            ItemStack waterBottle = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+            ItemStack waterBottle = net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, Potions.WATER);
             
             if (!player.getAbilities().instabuild) {
                 heldItem.shrink(1);
@@ -136,7 +135,7 @@ public class BlockWaterJug extends Block implements EntityBlock {
     }
 
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof TileWaterJug tile) {
             return (int) ((float) tile.getWaterLevel() / TileWaterJug.TANK_CAPACITY * 15);

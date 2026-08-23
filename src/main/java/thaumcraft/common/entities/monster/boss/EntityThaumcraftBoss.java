@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
@@ -53,7 +54,7 @@ public abstract class EntityThaumcraftBoss extends Monster {
     public EntityThaumcraftBoss(EntityType<? extends EntityThaumcraftBoss> type, Level level) {
         super(type, level);
         this.xpReward = 50;
-        this.bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+        this.bossEvent = new ServerBossEvent(java.util.UUID.randomUUID(), getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
         this.bossEvent.setDarkenScreen(true);
     }
     
@@ -88,7 +89,7 @@ public abstract class EntityThaumcraftBoss extends Monster {
     public void setHomePos(BlockPos pos, int distance) {
         this.homePos = pos;
         this.homeDistance = distance;
-        restrictTo(pos, distance);
+        setHomeTo(pos, distance);
     }
     
     public boolean hasHome() {
@@ -162,36 +163,34 @@ public abstract class EntityThaumcraftBoss extends Monster {
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (!level().isClientSide()) {
-            // Track aggro
-            if (source.getEntity() instanceof LivingEntity living) {
-                int targetId = living.getId();
-                int currentAggro = aggro.getOrDefault(targetId, 0);
-                aggro.put(targetId, currentAggro + (int) amount);
-            }
-            
-            // Damage cap with enrage
-            if (amount > 35.0f) {
-                if (getAnger() == 0) {
-                    // Enrage!
-                    try {
-                        addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, (int)(amount / 15.0f)));
-                        addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 200, (int)(amount / 10.0f)));
-                        addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 200, (int)(amount / 40.0f)));
-                    } catch (Exception ignored) {}
-                    setAnger(200);
-                    
-                    // Notify attacker
-                    if (source.getEntity() instanceof Player player) {
-                        player.displayClientMessage(
-                                Component.translatable("tc.boss.enrage", getDisplayName()), true);
-                    }
-                }
-                amount = 35.0f;
-            }
+    public boolean hurtServer(net.minecraft.server.level.ServerLevel level, DamageSource source, float amount) {
+        // Track aggro
+        if (source.getEntity() instanceof LivingEntity living) {
+            int targetId = living.getId();
+            int currentAggro = aggro.getOrDefault(targetId, 0);
+            aggro.put(targetId, currentAggro + (int) amount);
         }
-        return super.hurt(source, amount);
+        
+        // Damage cap with enrage
+        if (amount > 35.0f) {
+            if (getAnger() == 0) {
+                // Enrage!
+                try {
+                    addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, (int)(amount / 15.0f)));
+                    addEffect(new MobEffectInstance(MobEffects.STRENGTH, 200, (int)(amount / 10.0f)));
+                    addEffect(new MobEffectInstance(MobEffects.HASTE, 200, (int)(amount / 40.0f)));
+                } catch (Exception ignored) {}
+                setAnger(200);
+                
+                // Notify attacker
+                if (source.getEntity() instanceof Player player) {
+                    player.sendSystemMessage(
+                            Component.translatable("tc.boss.enrage", getDisplayName()));
+                }
+            }
+            amount = 35.0f;
+        }
+        return super.hurtServer(level, source, amount);
     }
     
     // ==================== Spawn ====================
@@ -199,7 +198,7 @@ public abstract class EntityThaumcraftBoss extends Monster {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
         setHomePos(blockPosition(), 24);
         generateName();
@@ -243,17 +242,17 @@ public abstract class EntityThaumcraftBoss extends Monster {
     
     @Override
     public boolean isPushable() {
-        return !isInvulnerableTo(damageSources().starve());
+        return !isInvulnerableTo((net.minecraft.server.level.ServerLevel) level(), damageSources().starve());
     }
     
     // ==================== Team Logic ====================
     
     @Override
-    public boolean isAlliedTo(Entity entity) {
+    protected boolean considersEntityAsAlly(Entity entity) {
         if (entity instanceof IEldritchMob) {
             return true;
         }
-        return super.isAlliedTo(entity);
+        return super.considersEntityAsAlly(entity);
     }
     
     // ==================== NBT ====================
@@ -272,7 +271,7 @@ public abstract class EntityThaumcraftBoss extends Monster {
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        if (input.contains("HomeD")) {
+        if (input.keySet().contains("HomeD")) {
             setHomePos(new BlockPos(
                     input.getIntOr("HomeX", 0),
                     input.getIntOr("HomeY", 0),

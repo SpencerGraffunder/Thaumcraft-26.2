@@ -1,17 +1,16 @@
 package thaumcraft.client.fx.other;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.joml.Quaternionf;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.fx.particles.ThaumcraftParticle;
 
@@ -83,27 +82,14 @@ public class FXSonic extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        // End the current batch
-        Tesselator.getInstance().end();
-        
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         float fade = (this.age + partialTicks) / this.lifetime;
-        int frame = Math.min(15, (int)(14.0f * fade) + 1);
         
-        // Set up our own rendering
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, RIPPLE_TEXTURES[frame]);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(false);
-        
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        
-        // Camera position
-        float px = (float)(Mth.lerp(partialTicks, this.xo, this.x) - camera.getPosition().x);
-        float py = (float)(Mth.lerp(partialTicks, this.yo, this.y) - camera.getPosition().y);
-        float pz = (float)(Mth.lerp(partialTicks, this.zo, this.z) - camera.getPosition().z);
+        // Camera position (interpolated)
+        Vec3 camPos = camera.position();
+        float px = (float)(Mth.lerp(partialTicks, this.xo, this.x) - camPos.x());
+        float py = (float)(Mth.lerp(partialTicks, this.yo, this.y) - camPos.y());
+        float pz = (float)(Mth.lerp(partialTicks, this.zo, this.z) - camPos.z());
         
         // Size based on target
         float size = 0.25f * this.target.getBbHeight() * (1.0f + fade * 2.0f);
@@ -123,24 +109,13 @@ public class FXSonic extends ThaumcraftParticle {
         py += fy * offset;
         pz += fz * offset;
         
-        // Simple billboard facing camera
-        float b = 0.5f;
-        builder.vertex(px - size, py - size, pz).uv(0, 1).color(b, b, b, 1.0f).endVertex();
-        builder.vertex(px - size, py + size, pz).uv(0, 0).color(b, b, b, 1.0f).endVertex();
-        builder.vertex(px + size, py + size, pz).uv(1, 0).color(b, b, b, 1.0f).endVertex();
-        builder.vertex(px + size, py - size, pz).uv(1, 1).color(b, b, b, 1.0f).endVertex();
+        // Camera-facing billboard quad (full 0..1 UVs; ripple frame textures are not
+        // selectable in the render-state particle model)
+        Quaternionf rot = camera.rotation();
+        int color = ARGB.colorFromFloat(1.0f, 0.5f, 0.5f, 0.5f);
+        int light = 0xF000F0; // Full brightness
         
-        Tesselator.getInstance().end();
-        
-        RenderSystem.depthMask(true);
-        
-        // Restart particle batch
-        RenderSystem.setShaderTexture(0, TextureManager.INTENTIONAL_MISSING_TEXTURE);
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        state.add(getLayer(), px, py, pz, rot.x, rot.y, rot.z, rot.w, size,
+                0.0f, 1.0f, 0.0f, 1.0f, color, light);
     }
 }

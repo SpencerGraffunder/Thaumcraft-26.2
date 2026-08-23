@@ -1,12 +1,12 @@
 package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -15,6 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.entity.ArcaneBoreModel;
+import thaumcraft.client.renderers.entity.state.ArcaneBoreRenderState;
 import thaumcraft.common.entities.construct.EntityArcaneBore;
 
 /**
@@ -26,7 +27,7 @@ import thaumcraft.common.entities.construct.EntityArcaneBore;
  * - Glow effect on the front crystal
  */
 @OnlyIn(Dist.CLIENT)
-public class ArcaneBoreRenderer extends MobRenderer<EntityArcaneBore, ArcaneBoreModel> {
+public class ArcaneBoreRenderer extends MobRenderer<EntityArcaneBore, ArcaneBoreRenderState, ArcaneBoreModel> {
     
     private static final Identifier TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/arcanebore.png");
@@ -39,101 +40,87 @@ public class ArcaneBoreRenderer extends MobRenderer<EntityArcaneBore, ArcaneBore
     }
     
     @Override
-    public Identifier getTextureLocation(EntityArcaneBore entity) {
+    public Identifier getTextureLocation(ArcaneBoreRenderState state) {
         return TEXTURE;
     }
     
     @Override
-    public void render(EntityArcaneBore entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public ArcaneBoreRenderState createRenderState() {
+        return new ArcaneBoreRenderState();
+    }
+    
+    @Override
+    public void extractRenderState(EntityArcaneBore entity, ArcaneBoreRenderState state, float partialTick) {
         // Reset yaw offset (bore rotates head, not body)
         entity.yBodyRot = 0.0F;
         entity.yBodyRotO = 0.0F;
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.extractRenderState(entity, state, partialTick);
+        
+        state.digging = entity.isClientDigging() && entity.isActive() && entity.hasValidInventory();
+        state.yaw = Mth.lerp(partialTick, entity.yRotO, entity.getYRot());
+        state.pitch = Mth.lerp(partialTick, entity.xRotO, entity.getXRot());
+        state.eyeHeight = entity.getEyeHeight();
+        state.gameTime = entity.level().getGameTime();
+    }
+    
+    @Override
+    public void submit(ArcaneBoreRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        super.submit(state, poseStack, submitNodeCollector, camera);
         
         // Render mining beam if actively digging
-        if (entity.isClientDigging() && entity.isActive() && entity.hasValidInventory()) {
-            renderMiningBeam(entity, partialTicks, poseStack, buffer, packedLight);
+        if (state.digging) {
+            renderMiningBeam(state, poseStack, submitNodeCollector);
         }
     }
     
     /**
      * Renders the mining beam effect when the bore is digging.
      */
-    private void renderMiningBeam(EntityArcaneBore entity, float partialTicks, 
-                                  PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    private void renderMiningBeam(ArcaneBoreRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         poseStack.pushPose();
-        
-        // Calculate beam start position (from the front of the bore)
-        float yaw = Mth.lerp(partialTicks, entity.yRotO, entity.getYRot());
-        float pitch = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot());
         
         // Offset from center to tip
         Vec3 offset = new Vec3(0.5, 0.075, 0.0);
-        offset = rotateAroundZ(offset, pitch * Mth.DEG_TO_RAD);
-        offset = rotateAroundY(offset, -((yaw + 90.0F) * Mth.DEG_TO_RAD));
+        offset = rotateAroundZ(offset, state.pitch * Mth.DEG_TO_RAD);
+        offset = rotateAroundY(offset, -((state.yaw + 90.0F) * Mth.DEG_TO_RAD));
         
-        poseStack.translate(offset.x, entity.getEyeHeight() + offset.y, offset.z);
-        
-        // Render glow at beam origin
-        renderGlow(poseStack, buffer, entity.tickCount, partialTicks);
+        poseStack.translate(offset.x, state.eyeHeight + offset.y, offset.z);
         
         // Render the beam
-        renderBeam(poseStack, buffer, entity, partialTicks, packedLight);
+        renderBeam(state, poseStack, submitNodeCollector);
         
         poseStack.popPose();
     }
     
     /**
-     * Renders a glow effect at the beam origin.
-     */
-    private void renderGlow(PoseStack poseStack, MultiBufferSource buffer, int tickCount, float partialTicks) {
-        // TODO: Implement proper glow rendering using node texture
-        // This is a placeholder - the full implementation would use UtilsFX.renderBillboardQuad
-    }
-    
-    /**
      * Renders the mining beam itself.
      */
-    private void renderBeam(PoseStack poseStack, MultiBufferSource buffer, 
-                           EntityArcaneBore entity, float partialTicks, int packedLight) {
+    private void renderBeam(ArcaneBoreRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         // Beam parameters
         float beamLength = 5.0F;
         float beamWidth = 0.15F;
         float opacity = 0.4F;
         
         // Animation
-        float rotation = (entity.level().getGameTime() % 72L) * 5L + 5.0F * partialTicks;
-        float scroll = -(entity.tickCount + partialTicks) * 0.2F;
+        float rotation = (state.gameTime % 72L) * 5.0F + 5.0F * state.partialTick;
+        float scroll = -state.ageInTicks * 0.2F;
         scroll = scroll - Mth.floor(scroll);
-        
-        // Get beam rotation
-        float yaw = Mth.lerp(partialTicks, entity.yRotO, entity.getYRot());
-        float pitch = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot());
         
         poseStack.pushPose();
         
         // Rotate to face correct direction
         poseStack.mulPose(Axis.XN.rotationDegrees(90.0F));
-        poseStack.mulPose(Axis.ZN.rotationDegrees(180.0F + yaw));
-        poseStack.mulPose(Axis.XN.rotationDegrees(pitch));
+        poseStack.mulPose(Axis.ZN.rotationDegrees(180.0F + state.yaw));
+        poseStack.mulPose(Axis.XN.rotationDegrees(state.pitch));
         poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
-        
-        // Get render type for beam
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucentEmissive(BEAM_TEXTURE));
         
         // Draw 3 beam quads rotated 60 degrees apart
         for (int i = 0; i < 3; i++) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(60.0F));
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(60.0F * (i + 1)));
             
-            PoseStack.Pose pose = poseStack.last();
-            
-            // Beam quad vertices
-            float u0 = 0.0F;
-            float u1 = 1.0F;
-            float v0 = scroll + i / 3.0F;
-            float v1 = beamLength + v0;
+            final int quad = i;
             
             // Green tint (0, 1, 0.4)
             int r = (int)(0.0F * 255);
@@ -141,38 +128,43 @@ public class ArcaneBoreRenderer extends MobRenderer<EntityArcaneBore, ArcaneBore
             int b = (int)(0.4F * 255);
             int a = (int)(opacity * 255);
             
-            // Draw quad
-            vertexConsumer.vertex(pose.pose(), 0.0F, beamLength, 0.0F)
-                .color(r, g, b, a)
-                .uv(u1, v1)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(packedLight)
-                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
-                .endVertex();
+            submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(BEAM_TEXTURE), (pose, buffer) -> {
+                float u0 = 0.0F;
+                float u1 = 1.0F;
+                float v0 = scroll + quad / 3.0F;
+                float v1 = beamLength + v0;
+                
+                // Draw quad
+                buffer.addVertex(pose, 0.0F, beamLength, 0.0F)
+                    .setColor(r, g, b, a)
+                    .setUv(u1, v1)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(state.lightCoords)
+                    .setNormal(pose, 0.0F, 1.0F, 0.0F);
+                
+                buffer.addVertex(pose, -beamWidth, 0.0F, 0.0F)
+                    .setColor(r, g, b, a)
+                    .setUv(u1, v0)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(state.lightCoords)
+                    .setNormal(pose, 0.0F, 1.0F, 0.0F);
+                
+                buffer.addVertex(pose, beamWidth, 0.0F, 0.0F)
+                    .setColor(r, g, b, a)
+                    .setUv(u0, v0)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(state.lightCoords)
+                    .setNormal(pose, 0.0F, 1.0F, 0.0F);
+                
+                buffer.addVertex(pose, 0.0F, beamLength, 0.0F)
+                    .setColor(r, g, b, a)
+                    .setUv(u0, v1)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(state.lightCoords)
+                    .setNormal(pose, 0.0F, 1.0F, 0.0F);
+            });
             
-            vertexConsumer.vertex(pose.pose(), -beamWidth, 0.0F, 0.0F)
-                .color(r, g, b, a)
-                .uv(u1, v0)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(packedLight)
-                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
-                .endVertex();
-            
-            vertexConsumer.vertex(pose.pose(), beamWidth, 0.0F, 0.0F)
-                .color(r, g, b, a)
-                .uv(u0, v0)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(packedLight)
-                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
-                .endVertex();
-            
-            vertexConsumer.vertex(pose.pose(), 0.0F, beamLength, 0.0F)
-                .color(r, g, b, a)
-                .uv(u0, v1)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(packedLight)
-                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
-                .endVertex();
+            poseStack.popPose();
         }
         
         poseStack.popPose();
@@ -201,7 +193,7 @@ public class ArcaneBoreRenderer extends MobRenderer<EntityArcaneBore, ArcaneBore
     }
     
     @Override
-    protected boolean shouldShowName(EntityArcaneBore entity) {
+    protected boolean shouldShowName(EntityArcaneBore entity, double distanceToCameraSq) {
         return false; // Bores don't show names
     }
 }

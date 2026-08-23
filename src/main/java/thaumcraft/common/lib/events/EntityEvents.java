@@ -2,6 +2,7 @@ package thaumcraft.common.lib.events;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.TriState;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,10 +20,12 @@ import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -86,7 +89,7 @@ public class EntityEvents {
      * TODO: Full champion mod system needs to be ported
      */
     @SubscribeEvent
-    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+    public static void onLivingTick(EntityTickEvent.Post event) {
         // Champion mob tick effects would go here
         // For now, this is a placeholder for future implementation
     }
@@ -98,19 +101,19 @@ public class EntityEvents {
      * - Runic shield visuals
      */
     @SubscribeEvent
-    public static void onEntityHurt(LivingHurtEvent event) {
+    public static void onEntityHurt(LivingDamageEvent.Pre event) {
         Entity entity = event.getEntity();
         DamageSource source = event.getSource();
         
         // Player-specific hurt handling
         if (entity instanceof Player player) {
-            handlePlayerHurt(player, source, event.getAmount());
+            handlePlayerHurt(player, source, event.getNewDamage());
         }
         
         // Attacker-related effects
         Entity attacker = source.getEntity();
         if (attacker instanceof Player attackingPlayer) {
-            handlePlayerAttack(attackingPlayer, event.getEntity(), event.getAmount());
+            handlePlayerAttack(attackingPlayer, event.getEntity(), event.getNewDamage());
         }
     }
 
@@ -176,10 +179,10 @@ public class EntityEvents {
      * Thaumcraft uses fake players for some automation.
      */
     @SubscribeEvent
-    public static void onItemPickup(PlayerEvent.ItemPickupEvent event) {
-        Player player = event.getEntity();
+    public static void onItemPickup(ItemEntityPickupEvent.Pre event) {
+        Player player = event.getPlayer();
         if (player != null && player.getName().getString().startsWith("FakeThaumcraft")) {
-            event.setCanceled(true);
+            event.setCanPickup(TriState.FALSE);
         }
     }
 
@@ -199,7 +202,7 @@ public class EntityEvents {
         
         // Zombie brain drops
         if (entity instanceof Zombie && !(entity.getType().getDescriptionId().contains("brainy"))) {
-            if (event.isRecentlyHit() && entity.level().getRandom().nextInt(10) - event.getLootingLevel() < 1) {
+            if (event.isRecentlyHit() && entity.level().getRandom().nextInt(10) < 1) {
                 if (ModItems.ZOMBIE_BRAIN != null) {
                     ItemEntity brainDrop = new ItemEntity(
                             entity.level(),

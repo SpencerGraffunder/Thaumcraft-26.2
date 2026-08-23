@@ -3,6 +3,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -45,7 +46,8 @@ public class EntityGolemOrb extends ThrowableProjectile {
     }
     
     public EntityGolemOrb(Level level, LivingEntity owner, LivingEntity target, boolean red) {
-        super(ModEntities.GOLEM_ORB.get(), owner, level);
+        super(ModEntities.GOLEM_ORB.get(), level);
+        this.setOwner(owner);
         this.target = target;
         entityData.set(DATA_RED, red);
         entityData.set(DATA_TARGET_ID, target.getId());
@@ -62,8 +64,8 @@ public class EntityGolemOrb extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
-        return 0.0f; // No gravity
+    protected double getDefaultGravity() {
+        return 0.0; // No gravity
     }
     
     @Override
@@ -115,8 +117,8 @@ public class EntityGolemOrb extends ThrowableProjectile {
             float g = ((color >> 8) & 0xFF) / 255.0f;
             float b = (color & 0xFF) / 255.0f;
             
-            level().addParticle(ParticleTypes.ENTITY_EFFECT,
-                getX(), getY(), getZ(), r, g, b);
+            level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, r, g, b),
+                getX(), getY(), getZ(), 0, 0, 0);
         }
     }
     
@@ -152,14 +154,14 @@ public class EntityGolemOrb extends ThrowableProjectile {
                 float damage = (float)(attackDamage * (isRed() ? 1.0 : 0.6));
                 
                 DamageSource source = level().damageSources().indirectMagic(this, owner);
-                result.getEntity().hurt(source, damage);
+                result.getEntity().hurtServer((ServerLevel) level(), source, damage);
             }
         }
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo((ServerLevel) this.level(), source)) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (isInvulnerableToBase(source)) {
             return false;
         }
         
@@ -187,7 +189,7 @@ public class EntityGolemOrb extends ThrowableProjectile {
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         entityData.set(DATA_RED, input.getBooleanOr("Red", false));
-        if (input.contains("TargetId")) {
+        if (input.keySet().contains("TargetId")) {
             entityData.set(DATA_TARGET_ID, input.getIntOr("TargetId", 0));
         }
     }

@@ -1,9 +1,11 @@
 package thaumcraft.common.blocks.devices;
 
+import net.minecraft.core.Direction;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
+
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -57,8 +59,8 @@ public class BlockVisRelay extends Block implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                  BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
@@ -69,10 +71,9 @@ public class BlockVisRelay extends Block implements EntityBlock {
             // For now, display stored vis in chat
             float vis = relay.getStoredVis();
             int links = relay.getLinkedRelays().size();
-            player.displayClientMessage(
+            player.sendSystemMessage(
                     net.minecraft.network.chat.Component.literal(
-                            String.format("Vis: %.1f/25 | Links: %d", vis, links)),
-                    true);
+                            String.format("Vis: %.1f/25 | Links: %d", vis, links)));
         }
 
         return InteractionResult.CONSUME;
@@ -99,7 +100,7 @@ public class BlockVisRelay extends Block implements EntityBlock {
     }
 
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof TileVisRelay relay) {
             return (int) (relay.getVisPercent() * 15);

@@ -8,10 +8,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -64,7 +66,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
                 .noOcclusion()
                 .pushReaction(PushReaction.DESTROY)
                 .randomTicks()
-                .noCollission()
+                .noCollision()
                 .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK));
         registerDefaultState(stateDefinition.any().setValue(LEVEL, 7));
     }
@@ -85,7 +87,8 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
     }
     
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
+            InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         int gooLevel = state.getValue(LEVEL);
         
         // Thaumic Slimes feed on flux goo
@@ -165,10 +168,10 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
     }
     
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, 
-            LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+            BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
         // Flow down if there's space below
-        if (direction == Direction.DOWN && neighborState.isAir()) {
+        if (directionToNeighbour == Direction.DOWN && neighbourState.isAir()) {
             // Schedule a tick to handle flowing
             level.scheduleTick(pos, this, 5);
         }

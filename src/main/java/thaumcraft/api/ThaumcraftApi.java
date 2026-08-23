@@ -291,11 +291,8 @@ public class ThaumcraftApi {
         try {
             Identifier tagLoc = Identifier.withDefaultNamespace(tagName);
             net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.ItemTags.create(tagLoc);
-            var tag = net.minecraft.core.registries.BuiltInRegistries.ITEM.tags().getTag(tagKey);
-            if (tag.isBound()) {
-                for (Item item : tag) {
-                    registerObjectTag(new ItemStack(item), aspects.copy());
-                }
+            for (net.minecraft.core.Holder<Item> holder : net.minecraft.core.registries.BuiltInRegistries.ITEM.getTagOrEmpty(tagKey)) {
+                registerObjectTag(new ItemStack(holder.value()), aspects.copy());
             }
         } catch (Exception e) {}
     }
@@ -334,11 +331,8 @@ public class ThaumcraftApi {
         try {
             Identifier tagLoc = Identifier.withDefaultNamespace(tagName);
             net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.ItemTags.create(tagLoc);
-            var tag = net.minecraft.core.registries.BuiltInRegistries.ITEM.tags().getTag(tagKey);
-            if (tag.isBound()) {
-                for (Item item : tag) {
-                    registerComplexObjectTag(new ItemStack(item), aspects.copy());
-                }
+            for (net.minecraft.core.Holder<Item> holder : net.minecraft.core.registries.BuiltInRegistries.ITEM.getTagOrEmpty(tagKey)) {
+                registerComplexObjectTag(new ItemStack(holder.value()), aspects.copy());
             }
         } catch (Exception e) {}
     }

@@ -1,5 +1,6 @@
 package thaumcraft.common.blocks.misc;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -43,6 +44,11 @@ public class BlockHole extends BaseEntityBlock {
     }
     
     @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(p -> new BlockHole());
+    }
+
+    @Override
     public RenderShape getRenderShape(BlockState state) {
         // Render as invisible - the hole effect is shown via particles/rendering
         return RenderShape.INVISIBLE;
@@ -67,7 +73,7 @@ public class BlockHole extends BaseEntityBlock {
     }
     
     @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    protected boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
     
@@ -117,13 +123,13 @@ public class BlockHole extends BaseEntityBlock {
         net.minecraft.nbt.CompoundTag tileData = null;
         BlockEntity existingTile = level.getBlockEntity(pos);
         if (existingTile != null) {
-            tileData = existingTile.saveWithoutMetadata();
+            tileData = existingTile.saveWithoutMetadata(level.registryAccess());
         }
         
         // Place the hole block
         // We need to get the block from the registry since ModBlocks.HOLE might cause circular reference
         Block holeBlock = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getValue(
-            new net.minecraft.resources.Identifier("thaumcraft", "hole"));
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("thaumcraft", "hole"));
         
         if (holeBlock == null) return false;
         

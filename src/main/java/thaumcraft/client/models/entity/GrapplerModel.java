@@ -2,7 +2,7 @@ package thaumcraft.client.models.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,8 +11,10 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
@@ -22,7 +24,7 @@ import thaumcraft.Thaumcraft;
  * A central core with three prongs extending in different directions.
  */
 @OnlyIn(Dist.CLIENT)
-public class GrapplerModel extends Model {
+public class GrapplerModel extends EntityModel<EntityRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "grappler"), "main");
@@ -33,7 +35,7 @@ public class GrapplerModel extends Model {
     private final ModelPart prong3;
     
     public GrapplerModel(ModelPart root) {
-        super(RenderType::entityCutout);
+        super(root, RenderTypes::entityCutout);
         this.core = root.getChild("core");
         this.prong1 = root.getChild("prong1");
         this.prong2 = root.getChild("prong2");
@@ -75,13 +77,16 @@ public class GrapplerModel extends Model {
         return LayerDefinition.create(meshdefinition, 64, 32);
     }
     
-    @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, 
                                int packedLight, int packedOverlay, 
                                float red, float green, float blue, float alpha) {
-        core.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        prong1.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        prong2.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        prong3.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        core.render(poseStack, vertexConsumer, packedLight, packedOverlay,
+                net.minecraft.util.ARGB.colorFromFloat(alpha, red, green, blue));
+        prong1.render(poseStack, vertexConsumer, packedLight, packedOverlay,
+                net.minecraft.util.ARGB.colorFromFloat(alpha, red, green, blue));
+        prong2.render(poseStack, vertexConsumer, packedLight, packedOverlay,
+                net.minecraft.util.ARGB.colorFromFloat(alpha, red, green, blue));
+        prong3.render(poseStack, vertexConsumer, packedLight, packedOverlay,
+                net.minecraft.util.ARGB.colorFromFloat(alpha, red, green, blue));
     }
 }

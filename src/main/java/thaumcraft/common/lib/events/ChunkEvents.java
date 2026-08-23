@@ -18,6 +18,7 @@ import thaumcraft.common.golems.seals.SealEntity;
 import thaumcraft.common.golems.seals.SealHandler;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.misc.PacketSealToClient;
+import thaumcraft.common.world.aura.AuraChunkHandler;
 
 /**
  * ChunkEvents - Handles chunk-based data persistence and syncing.
@@ -65,7 +66,10 @@ public class ChunkEvents {
             
             // Only write data if we have something to save
             if (!thaumcraftData.isEmpty()) {
-                event.getData().put(THAUMCRAFT_DATA_KEY, thaumcraftData);
+                CompoundTag data = event.getChunk().getData(AuraChunkHandler.CHUNK_DATA);
+                data.put(THAUMCRAFT_DATA_KEY, thaumcraftData);
+                event.getChunk().setData(AuraChunkHandler.CHUNK_DATA, data);
+                event.getChunk().markUnsaved();
             }
             
             // Clean up seals from unloaded chunks to prevent memory leaks
@@ -85,7 +89,7 @@ public class ChunkEvents {
     @SubscribeEvent
     public static void onChunkLoad(ChunkDataEvent.Load event) {
         if (event.getLevel() instanceof Level level && !level.isClientSide()) {
-            CompoundTag data = event.getData();
+            CompoundTag data = event.getChunk().getData(AuraChunkHandler.CHUNK_DATA);
             
             if (data.contains(THAUMCRAFT_DATA_KEY)) {
                 CompoundTag thaumcraftData = data.getCompoundOrEmpty(THAUMCRAFT_DATA_KEY);

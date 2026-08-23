@@ -1,5 +1,6 @@
 package thaumcraft.common.lib.events;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -7,11 +8,14 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -113,7 +117,7 @@ public class PlayerEvents {
      * Player tick event - handles periodic sync and warp effects
      */
     @SubscribeEvent
-    public static void livingTick(LivingEvent.LivingTickEvent event) {
+    public static void livingTick(EntityTickEvent.Post event) {
         if (event.getEntity() instanceof Player player) {
             if (!player.level().isClientSide()) {
                 // Periodic knowledge sync (every 20 ticks)
@@ -171,10 +175,10 @@ public class PlayerEvents {
             ThaumcraftApi.internalMethods.completeResearch(player, "!gotdream");
             
             // Show dream message to player
-            player.displayClientMessage(
-                Component.translatable("tc.dream.1"), false);
-            player.displayClientMessage(
-                Component.translatable("tc.dream.2"), false);
+            player.sendSystemMessage(
+                Component.translatable("tc.dream.1"));
+            player.sendSystemMessage(
+                Component.translatable("tc.dream.2"));
             
             Thaumcraft.LOGGER.info("Player {} received the Thaumcraft dream", player.getName().getString());
         }
@@ -187,13 +191,13 @@ public class PlayerEvents {
      * This is essential for starting Thaumcraft progression.
      */
     @SubscribeEvent
-    public static void onItemPickup(PlayerEvent.ItemPickupEvent event) {
-        Player player = event.getEntity();
+    public static void onItemPickup(ItemEntityPickupEvent.Post event) {
+        Player player = event.getPlayer();
         if (player == null || player.level().isClientSide()) {
             return;
         }
         
-        ItemStack stack = event.getStack();
+        ItemStack stack = event.getOriginalStack();
         if (stack.isEmpty()) return;
         
         Item item = stack.getItem();
@@ -223,8 +227,8 @@ public class PlayerEvents {
                 ThaumcraftApi.internalMethods.completeResearch(player, "!gotcrystal");
                 
                 // Show hint message
-                player.displayClientMessage(
-                    Component.translatable("tc.crystal.pickup"), true);
+                player.sendSystemMessage(
+                    Component.translatable("tc.crystal.pickup"));
                 
                 Thaumcraft.LOGGER.info("Player {} picked up first crystal - sleep to receive dream!", 
                     player.getName().getString());
@@ -265,10 +269,10 @@ public class PlayerEvents {
      * Get runic charge from an item
      */
     public static int getRunicCharge(net.minecraft.world.item.ItemStack stack) {
-        if (stack.isEmpty() || !stack.hasTag()) {
+        if (stack.isEmpty() || !stack.has(DataComponents.CUSTOM_DATA)) {
             return 0;
         }
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag != null && tag.contains("TC.RUNIC")) {
             return tag.getByteOr("TC.RUNIC", (byte)0);
         }
@@ -290,8 +294,8 @@ public class PlayerEvents {
         }
         
         // Check for NBT warp tag
-        if (stack.hasTag()) {
-            CompoundTag tag = stack.getTag();
+        if (stack.has(DataComponents.CUSTOM_DATA)) {
+            CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
             if (tag != null && tag.contains("TC.WARP")) {
                 warp += tag.getByteOr("TC.WARP", (byte)0);
             }

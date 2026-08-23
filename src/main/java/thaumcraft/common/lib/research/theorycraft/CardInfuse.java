@@ -1,7 +1,9 @@
 package thaumcraft.common.lib.research.theorycraft;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import thaumcraft.api.aspects.Aspect;
@@ -26,7 +28,7 @@ public class CardInfuse extends TheorycraftCard {
         new ItemStack(Items.EMERALD),
         new ItemStack(Items.BLAZE_ROD),
         new ItemStack(Items.LEATHER),
-        new ItemStack(Items.WHITE_WOOL),
+        new ItemStack(Items.WOOL.pick(DyeColor.WHITE)),
         new ItemStack(Items.BRICK),
         new ItemStack(Items.ARROW),
         new ItemStack(Items.EGG),
@@ -48,7 +50,7 @@ public class CardInfuse extends TheorycraftCard {
     public CompoundTag serialize() {
         CompoundTag nbt = super.serialize();
         nbt.putString("aspect", aspect != null ? aspect.getTag() : "");
-        nbt.put("stack", stack.save(new CompoundTag()));
+        nbt.put("stack", (CompoundTag) ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, stack).resultOrPartial().orElse(new CompoundTag()));
         return nbt;
     }
 
@@ -56,7 +58,9 @@ public class CardInfuse extends TheorycraftCard {
     public void deserialize(CompoundTag nbt) {
         super.deserialize(nbt);
         aspect = Aspect.getAspect(nbt.getStringOr("aspect", ""));
-        stack = ItemStack.of(nbt.getCompoundOrEmpty("stack"));
+        stack = nbt.contains("stack")
+                ? ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, nbt.get("stack")).resultOrPartial().orElse(ItemStack.EMPTY)
+                : ItemStack.EMPTY;
     }
 
     @Override

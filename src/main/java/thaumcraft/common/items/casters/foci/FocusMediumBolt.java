@@ -63,7 +63,7 @@ public class FocusMediumBolt extends FocusMediumTouch {
                     start, end,
                     ClipContext.Block.OUTLINE,
                     ClipContext.Fluid.NONE,
-                    null));
+                    (Entity) null));
             
             if (hit != null && hit.getType() == HitResult.Type.BLOCK) {
                 end = hit.getLocation();

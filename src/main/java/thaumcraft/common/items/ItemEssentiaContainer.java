@@ -1,7 +1,9 @@
 package thaumcraft.common.items;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
@@ -33,9 +35,9 @@ public class ItemEssentiaContainer extends ItemTC implements IEssentiaContainerI
 
     @Override
     public AspectList getAspects(ItemStack stack) {
-        if (stack.hasTag()) {
+        if (stack.has(DataComponents.CUSTOM_DATA)) {
             AspectList aspects = new AspectList();
-            aspects.readFromNBT(stack.getTag());
+            aspects.readFromNBT(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag());
             return aspects.size() > 0 ? aspects : null;
         }
         return null;
@@ -43,10 +45,9 @@ public class ItemEssentiaContainer extends ItemTC implements IEssentiaContainerI
 
     @Override
     public void setAspects(ItemStack stack, AspectList aspects) {
-        if (!stack.hasTag()) {
-            stack.setTag(new CompoundTag());
-        }
-        aspects.writeToNBT(stack.getTag());
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        aspects.writeToNBT(tag);
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
 
     @Override

@@ -5,12 +5,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.core.registries.BuiltInRegistries;
 import thaumcraft.Thaumcraft;
@@ -742,7 +744,7 @@ public class ResearchManager {
                 ItemStack stack = new ItemStack(item, count);
                 if (nbt != null && !nbt.isEmpty()) {
                     try {
-                        stack.setTag(TagParser.parseTag(nbt));
+                        CustomData.set(DataComponents.CUSTOM_DATA, stack, TagParser.parseCompoundFully(nbt));
                     } catch (Exception nbtEx) {
                         Thaumcraft.LOGGER.debug("Failed to parse NBT for {}: {}", entry, nbtEx.getMessage());
                     }

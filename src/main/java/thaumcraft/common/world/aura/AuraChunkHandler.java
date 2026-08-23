@@ -2,6 +2,7 @@ package thaumcraft.common.world.aura;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -9,8 +10,15 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -43,6 +51,35 @@ public class AuraChunkHandler {
     private static final String TAG_FLUX = "flux";
     
     /**
+     * Chunk attachment storing Thaumcraft per-chunk data (aura, seals, etc.).
+     * Replaces the old direct ChunkDataEvent NBT access, which is no longer
+     * available in 26.2 (ChunkDataEvent now exposes SerializableChunkData only).
+     */
+    public static AttachmentType<CompoundTag> CHUNK_DATA;
+
+    @SubscribeEvent
+    public static void registerAttachmentTypes(RegisterEvent event) {
+        if (event.getRegistryKey().equals(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)) {
+            CHUNK_DATA = AttachmentType.<CompoundTag>builder(() -> new CompoundTag())
+                    .serialize(new IAttachmentSerializer<CompoundTag>() {
+                        @Override
+                        public CompoundTag read(IAttachmentHolder holder, ValueInput input) {
+                            return input.read("data", CompoundTag.CODEC).orElse(new CompoundTag());
+                        }
+
+                        @Override
+                        public boolean write(CompoundTag tag, ValueOutput output) {
+                            output.store("data", CompoundTag.CODEC, tag);
+                            return true;
+                        }
+                    })
+                    .build();
+            event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, helper ->
+                    helper.register(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "chunk_data"), CHUNK_DATA));
+        }
+    }
+    
+    /**
      * Called when chunk data is loaded from disk.
      * Restores aura values from saved NBT data.
      */
@@ -60,7 +97,7 @@ public class AuraChunkHandler {
             return;
         }
         
-        CompoundTag data = event.getData();
+        CompoundTag data = chunk.getData(CHUNK_DATA);
         ResourceKey<Level> dimension = level.dimension();
         ChunkPos chunkPos = chunk.getPos();
         
@@ -105,7 +142,8 @@ public class AuraChunkHandler {
             return;
         }
         
-        CompoundTag data = event.getData();
+        ChunkAccess chunk = event.getChunk();
+        CompoundTag data = chunk.getData(CHUNK_DATA);
         
         CompoundTag tcData = data.contains(TAG_THAUMCRAFT) ? 
                 data.getCompoundOrEmpty(TAG_THAUMCRAFT) : new CompoundTag();
@@ -117,6 +155,8 @@ public class AuraChunkHandler {
         
         tcData.put(TAG_AURA, auraData);
         data.put(TAG_THAUMCRAFT, tcData);
+        chunk.setData(CHUNK_DATA, data);
+        chunk.markUnsaved();
     }
     
     /**

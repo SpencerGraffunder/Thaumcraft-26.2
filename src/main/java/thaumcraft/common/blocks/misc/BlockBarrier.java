@@ -3,12 +3,14 @@ import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
@@ -47,7 +49,7 @@ public class BlockBarrier extends Block {
                 .strength(-1.0f) // Unbreakable
                 .noLootTable()
                 .noOcclusion()
-                .noCollission() // Base collision is off, we handle it per-entity
+                .noCollision() // Base collision is off, we handle it per-entity
                 .replaceable()
                 .pushReaction(PushReaction.BLOCK));
     }
@@ -103,8 +105,8 @@ public class BlockBarrier extends Block {
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction facing, BlockState facingState,
-                                   LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+                                   BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
         // If the block below is broken and not a barrier or paving stone, remove this block
         if (facing == Direction.DOWN) {
             BlockState below = level.getBlockState(currentPos.below());
@@ -112,7 +114,7 @@ public class BlockBarrier extends Block {
                 return Blocks.AIR.defaultBlockState();
             }
         }
-        return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+        return super.updateShape(state, level, ticks, currentPos, facing, facingPos, facingState, random);
     }
 
     @Override

@@ -87,6 +87,11 @@ public class EntityFluxRift extends Entity {
     }
     
     @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        return false;
+    }
+    
+    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(DATA_SEED, 0);
         builder.define(DATA_SIZE, 5);
@@ -278,7 +283,7 @@ public class EntityFluxRift extends Entity {
                     if (e instanceof Player player && player.isCreative()) {
                         continue;
                     }
-                    e.hurt(damageSources().fellOutOfWorld(), 2.0f);
+                    e.hurtServer((ServerLevel) level(), damageSources().fellOutOfWorld(), 2.0f);
                     if (e instanceof ItemEntity) {
                         e.discard();
                     }
@@ -386,7 +391,7 @@ public class EntityFluxRift extends Entity {
             List<LivingEntity> targets = level().getEntitiesOfClass(LivingEntity.class, 
                     getBoundingBox().inflate(16.0));
             for (LivingEntity target : targets) {
-                target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
+                target.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0));
             }
             setRiftStability(getRiftStability() + 5);
         } else {
@@ -470,7 +475,7 @@ public class EntityFluxRift extends Entity {
         pos = pos.offset(level.getRandom().nextInt(16), 0, level.getRandom().nextInt(16));
         BlockPos spawnPos = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, pos);
         
-        if (spawnPos.getY() >= level.getMaxBuildHeight() - 4) return;
+        if (spawnPos.getY() >= level.getMaxY() - 4) return;
         
         // Check for existing rifts nearby
         List<EntityFluxRift> nearbyRifts = level.getEntitiesOfClass(EntityFluxRift.class, 
@@ -484,8 +489,9 @@ public class EntityFluxRift extends Entity {
         if (size > 5) {
             EntityFluxRift rift = new EntityFluxRift(level);
             rift.setRiftSeed(level.getRandom().nextInt());
-            rift.moveTo(spawnPos.getX() + 0.5, spawnPos.getY() + 0.5, spawnPos.getZ() + 0.5, 
-                    level.getRandom().nextFloat() * 360.0f, 0.0f);
+            rift.setPos(spawnPos.getX() + 0.5, spawnPos.getY() + 0.5, spawnPos.getZ() + 0.5);
+        rift.setYRot(level.getRandom().nextFloat() * 360.0f);
+        rift.setXRot(0.0f);
             rift.setRiftSize(size);
             
             if (level.addFreshEntity(rift)) {
@@ -509,7 +515,7 @@ public class EntityFluxRift extends Entity {
     // ==================== Fire Immunity ====================
     
     @Override
-    public void setSecondsOnFire(int seconds) {
+    public void setRemainingFireTicks(int remainingTicks) {
         // Rifts can't burn
     }
     

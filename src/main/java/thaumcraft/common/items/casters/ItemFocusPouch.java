@@ -1,7 +1,10 @@
 package thaumcraft.common.items.casters;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,6 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -48,7 +52,7 @@ public class ItemFocusPouch extends Item {
         
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             final InteractionHand usedHand = hand;
-            NetworkHooks.openScreen(serverPlayer, new MenuProvider() {
+            serverPlayer.openMenu(new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return Component.translatable("container.thaumcraft.focus_pouch");
@@ -58,7 +62,7 @@ public class ItemFocusPouch extends Item {
                 public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player menuPlayer) {
                     return new FocusPouchMenu(containerId, playerInventory, usedHand);
                 }
-            }, (FriendlyByteBuf buf) -> {
+            }, (buf) -> {
                 buf.writeEnum(usedHand);
             });
         }
@@ -71,8 +75,13 @@ public class ItemFocusPouch extends Item {
      */
     public NonNullList<ItemStack> getInventory(ItemStack item) {
         NonNullList<ItemStack> stackList = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
-        if (item.hasTag()) {
-            ContainerHelper.loadAllItems(item.getTag(), stackList);
+        CompoundTag data = item.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (data != null && data.contains("items")) {
+            List<ItemStack> loaded = ItemStack.OPTIONAL_CODEC.listOf()
+                    .parse(NbtOps.INSTANCE, data.get("items")).resultOrPartial().orElse(List.of());
+            for (int i = 0; i < stackList.size() && i < loaded.size(); i++) {
+                stackList.set(i, loaded.get(i));
+            }
         }
         return stackList;
     }
@@ -81,8 +90,14 @@ public class ItemFocusPouch extends Item {
      * Set the inventory contents of this pouch.
      */
     public void setInventory(ItemStack item, NonNullList<ItemStack> stackList) {
-        CompoundTag tag = item.getOrCreateTag();
-        ContainerHelper.saveAllItems(tag, stackList);
+        CompoundTag tag = item.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        List<ItemStack> list = new java.util.ArrayList<>();
+        for (ItemStack stack : stackList) {
+            list.add(stack);
+        }
+        tag.put("items", ItemStack.OPTIONAL_CODEC.listOf()
+                .encodeStart(NbtOps.INSTANCE, list).resultOrPartial().orElse(new ListTag()));
+        CustomData.set(DataComponents.CUSTOM_DATA, item, tag);
     }
 
     /**

@@ -3,13 +3,14 @@ package thaumcraft.client.fx.particles;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * FXWisp - Wispy trailing particle that follows an entity.
@@ -37,7 +38,7 @@ public class FXWisp extends ThaumcraftParticle {
         this.zd = this.random.nextGaussian() * 0.03;
 
         this.quadSize *= 0.4f;
-        this.lifetime = (int) (40.0 / (Math.getRandom() * 0.3 + 0.7));
+        this.lifetime = (int) (40.0 / (this.random.nextFloat() * 0.3 + 0.7));
 
         this.setSize(0.01f, 0.01f);
 
@@ -90,7 +91,7 @@ public class FXWisp extends ThaumcraftParticle {
     }
 
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         Entity viewEntity = Minecraft.getInstance().getCameraEntity();
         if (viewEntity == null) return;
 
@@ -105,7 +106,7 @@ public class FXWisp extends ThaumcraftParticle {
         float finalAlpha = 0.2f * ageScale * distFade;
         if (finalAlpha <= 0) return;
 
-        Vec3 cameraPos = camera.getPosition();
+        Vec3 cameraPos = camera.position();
         float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
@@ -120,45 +121,16 @@ public class FXWisp extends ThaumcraftParticle {
         float v1 = v0 + 0.015625f;
 
         int light = 0xF000F0; // Full brightness
+        int color = ARGB.colorFromFloat(finalAlpha, this.rCol, this.gCol, this.bCol);
 
         Quaternionf quaternion = camera.rotation();
-
-        Vector3f[] vertices = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, finalAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, finalAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, finalAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, finalAlpha)
-                .uv2(light).endVertex();
+        state.add(getLayer(), x, y, z, quaternion.x, quaternion.y, quaternion.z, quaternion.w, size,
+                u0, u1, v0, v1, color, light);
     }
 
     @Override
     public int getLightCoords(float partialTick) {
         return 0xF000F0; // Full brightness
-    }
-
-    @Override
-    public ParticleRenderType getRenderType() {
-        return blendMode != 1 ? ParticleRenderType.PARTICLE_SHEET_LIT : ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     // ==================== Configuration Methods ====================

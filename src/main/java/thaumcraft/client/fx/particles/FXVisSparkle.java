@@ -2,12 +2,13 @@ package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * FXVisSparkle - Sparkle particle that travels toward a target location.
@@ -146,64 +147,29 @@ public class FXVisSparkle extends ThaumcraftParticle {
     }
 
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         // Bobbing effect
         float bob = Mth.sin(this.age / 3.0f) * 0.3f + 6.0f;
 
-        Vec3 cameraPos = camera.getPosition();
+        Vec3 cameraPos = camera.position();
         float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
 
         float size = 0.1f * this.quadSize * bob;
 
-        // Animated sprite (16 frames)
-        int frame = this.age % 16;
-        float u0 = frame / 64.0f;
-        float u1 = u0 + 0.015625f;
-        float v0 = 0.125f;
-        float v1 = v0 + 0.015625f;
-
+        int color = ARGB.colorFromFloat(0.5f, this.rCol, this.gCol, this.bCol);
         int light = 0xF000F0; // Full brightness
 
-        Quaternionf quaternion = camera.rotation();
+        Quaternionf rot = camera.rotation();
 
-        Vector3f[] vertices = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, 0.5f)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, 0.5f)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, 0.5f)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, 0.5f)
-                .uv2(light).endVertex();
+        state.add(getLayer(), x, y, z, rot.x, rot.y, rot.z, rot.w, size,
+                0.0f, 1.0f, 0.0f, 1.0f, color, light);
     }
 
     @Override
     public int getLightCoords(float partialTick) {
         return 0xF000F0; // Full brightness
-    }
-
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     // ==================== Configuration Methods ====================

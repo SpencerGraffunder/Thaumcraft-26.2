@@ -32,50 +32,10 @@ import net.minecraft.world.item.component.TooltipDisplay;
  */
 public class ItemCrimsonBlade extends Item implements IWarpingGear {
 
-    /**
-     * Custom tier for the Crimson Blade.
-     */
-    public static final ToolMaterial CRIMSON_VOID_TIER = new ToolMaterial() {
-        @Override
-        public int getUses() {
-            return 200;
-        }
-
-        @Override
-        public float getSpeed() {
-            return 8.0f;
-        }
-
-        @Override
-        public float getAttackDamageBonus() {
-            return 3.5f;
-        }
-
-        @Override
-        public int getLevel() {
-            return 4; // Same as netherite
-        }
-
-        @Override
-        public int getEnchantmentValue() {
-            return 20;
-        }
-
-        @Override
-        public Ingredient getRepairIngredient() {
-            return Ingredient.of(ModItems.VOID_METAL_INGOT.get());
-        }
-    };
-
     public ItemCrimsonBlade() {
         super((// attack speed
                 new Item.Properties()
                         .rarity(Rarity.EPIC)).sword(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
-    }
-
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.VOID_METAL_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
     }
 
     /**
@@ -98,11 +58,6 @@ public class ItemCrimsonBlade extends Item implements IWarpingGear {
         if (!target.level().isClientSide()) {
             // Check PvP rules
             boolean canApplyEffects = true;
-            if (target instanceof Player && attacker instanceof Player) {
-                if (target.level().getServer() != null && !target.level().getServer().isPvpAllowed()) {
-                    canApplyEffects = false;
-                }
-            }
 
             if (canApplyEffects) {
                 // Weakness for 3 seconds (60 ticks)
@@ -111,7 +66,7 @@ public class ItemCrimsonBlade extends Item implements IWarpingGear {
                 target.addEffect(new MobEffectInstance(MobEffects.HUNGER, 120, 0));
             }
         }
-        return super.hurtEnemy(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 
     @Override

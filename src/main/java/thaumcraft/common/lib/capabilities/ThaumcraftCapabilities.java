@@ -1,56 +1,51 @@
 package thaumcraft.common.lib.capabilities;
 
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.capabilities.IPlayerWarp;
 import thaumcraft.common.golems.seals.SealHandler;
 
+import java.util.Optional;
+
 /**
- * ThaumcraftCapabilities - Holds references to all Thaumcraft capabilities
- * and handles their registration and attachment.
+ * ThaumcraftCapabilities - Holds references to all Thaumcraft data attachments
+ * and handles their event-based synchronization.
  * 
- * Ported to 1.20.1
+ * The attachment types themselves are registered in
+ * {@link thaumcraft.api.capabilities.ThaumcraftCapabilities}.
+ * 
+ * Ported to 1.20.1 / NeoForge 26.2
  */
 @EventBusSubscriber(modid = Thaumcraft.MODID)
 public class ThaumcraftCapabilities {
-    
-    // Capability instances
-    public static final Capability<IPlayerKnowledge> KNOWLEDGE = CapabilityManager.get(new CapabilityToken<>() {});
-    public static final Capability<IPlayerWarp> WARP = CapabilityManager.get(new CapabilityToken<>() {});
     
     // Resource locations for capability attachment
     public static final Identifier KNOWLEDGE_ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "knowledge");
     public static final Identifier WARP_ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "warp");
     
     /**
-     * Get the knowledge capability from a player
+     * Get the knowledge attachment from a player
      * @param player the player
-     * @return LazyOptional containing the capability, or empty if not present
+     * @return Optional containing the knowledge, or empty if not registered yet
      */
-    public static LazyOptional<IPlayerKnowledge> getKnowledge(Player player) {
-        return player.getCapability(KNOWLEDGE);
+    public static Optional<IPlayerKnowledge> getKnowledge(Player player) {
+        return Optional.ofNullable(thaumcraft.api.capabilities.ThaumcraftCapabilities.KNOWLEDGE)
+                .map(player::getData);
     }
     
     /**
-     * Get the warp capability from a player
+     * Get the warp attachment from a player
      * @param player the player
-     * @return LazyOptional containing the capability, or empty if not present
+     * @return Optional containing the warp, or empty if not registered yet
      */
-    public static LazyOptional<IPlayerWarp> getWarp(Player player) {
-        return player.getCapability(WARP);
+    public static Optional<IPlayerWarp> getWarp(Player player) {
+        return Optional.ofNullable(thaumcraft.api.capabilities.ThaumcraftCapabilities.WARP)
+                .map(player::getData);
     }
     
     /**
@@ -74,46 +69,6 @@ public class ThaumcraftCapabilities {
     }
     
     // ==================== Event Handlers ====================
-    
-    /**
-     * Attach capabilities to players
-     */
-    @SubscribeEvent
-    public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof Player) {
-            // Attach knowledge capability
-            if (!event.getObject().getCapability(KNOWLEDGE).isPresent()) {
-                event.addCapability(KNOWLEDGE_ID, new PlayerKnowledge.Provider());
-            }
-            
-            // Attach warp capability
-            if (!event.getObject().getCapability(WARP).isPresent()) {
-                event.addCapability(WARP_ID, new PlayerWarp.Provider());
-            }
-        }
-    }
-    
-    /**
-     * Copy capabilities when player is cloned (death, dimension change, etc.)
-     */
-    @SubscribeEvent
-    public static void onPlayerClone(PlayerEvent.Clone event) {
-        if (event.isWasDeath()) {
-            // Copy knowledge (research persists through death)
-            event.getOriginal().getCapability(KNOWLEDGE).ifPresent(oldKnowledge -> {
-                event.getEntity().getCapability(KNOWLEDGE).ifPresent(newKnowledge -> {
-                    newKnowledge.deserializeNBT(oldKnowledge.serializeNBT());
-                });
-            });
-            
-            // Copy warp (warp persists through death, though temporary warp might decay)
-            event.getOriginal().getCapability(WARP).ifPresent(oldWarp -> {
-                event.getEntity().getCapability(WARP).ifPresent(newWarp -> {
-                    newWarp.deserializeNBT(oldWarp.serializeNBT());
-                });
-            });
-        }
-    }
     
     /**
      * Sync capabilities when player respawns or changes dimension

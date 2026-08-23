@@ -19,7 +19,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -116,11 +115,6 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
     }
     
     @Override
-    public double getMyRidingOffset() {
-        return isPassenger() ? 0.5 : 0.0;
-    }
-    
-    @Override
     public int getArmorValue() {
         return hasHelm() ? 5 : 0;
     }
@@ -128,9 +122,9 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
-        spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
+        spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData);
         
         // Chance to have helm
         if (level.getDifficulty() == Difficulty.HARD) {
@@ -143,8 +137,8 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
         if (level.getDifficulty() == Difficulty.HARD && random.nextFloat() < 0.1f * difficulty.getSpecialMultiplier()) {
             int effectType = random.nextInt(3);
             MobEffectInstance effect = switch (effectType) {
-                case 0 -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, Integer.MAX_VALUE, 1);
-                case 1 -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, Integer.MAX_VALUE, 0);
+                case 0 -> new MobEffectInstance(MobEffects.SPEED, Integer.MAX_VALUE, 1);
+                case 1 -> new MobEffectInstance(MobEffects.STRENGTH, Integer.MAX_VALUE, 0);
                 default -> new MobEffectInstance(MobEffects.REGENERATION, Integer.MAX_VALUE, 0);
             };
             addEffect(effect);
@@ -176,7 +170,7 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
             // Attack while riding
             if (getVehicle() != null && isAlive() && attackTime <= 0) {
                 attackTime = 10 + random.nextInt(10);
-                doHurtTarget(getVehicle());
+                doHurtTarget((ServerLevel) level(), getVehicle());
                 
                 // Chance to dismount
                 if (random.nextFloat() < 0.2) {
@@ -212,8 +206,8 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        boolean hurt = super.hurt(source, amount);
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        boolean hurt = super.hurtServer(level, source, amount);
         
         // Helm breaks at half health
         if (hasHelm() && getHealth() / getMaxHealth() <= 0.5f) {
@@ -259,10 +253,6 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
         playSound(SoundEvents.SPIDER_STEP, 0.15f, 1.0f);
     }
     
-    @Override
-    public MobType getMobType() {
-        return MobType.ARTHROPOD;
-    }
     
     @Override
     public boolean canBeAffected(MobEffectInstance effect) {
@@ -274,12 +264,12 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
     }
     
     @Override
-    public boolean isAlliedTo(Entity entity) {
+    protected boolean considersEntityAsAlly(Entity entity) {
         // Allied with other crabs
         if (entity instanceof EntityEldritchCrab) {
             return true;
         }
-        return super.isAlliedTo(entity);
+        return super.considersEntityAsAlly(entity);
     }
     
     @Override

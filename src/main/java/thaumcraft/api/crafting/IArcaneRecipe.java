@@ -1,5 +1,6 @@
 package thaumcraft.api.crafting;
 
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import thaumcraft.api.aspects.AspectList;
 
@@ -8,6 +9,12 @@ import thaumcraft.api.aspects.AspectList;
  * These recipes consume vis from the aura and require specific crystals.
  */
 public interface IArcaneRecipe extends Recipe<IArcaneWorkbench>, IThaumcraftRecipe {
+
+    /**
+     * Gets the result of this recipe.
+     * @return the resulting ItemStack
+     */
+    ItemStack getResultItem();
 
     /**
      * Gets the vis cost for this recipe.

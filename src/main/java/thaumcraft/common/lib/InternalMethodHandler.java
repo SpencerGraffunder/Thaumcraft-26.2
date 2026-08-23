@@ -121,7 +121,7 @@ public class InternalMethodHandler implements IInternalMethodHandler {
                 && ThaumcraftCapabilities.knowsResearchStrict(player, "FIRSTSTEPS") 
                 && !ThaumcraftCapabilities.knowsResearchStrict(player, "WARP")) {
             completeResearch(player, "WARP");
-            player.displayClientMessage(Component.translatable("research.WARP.warn"), true);
+            player.sendSystemMessage(Component.translatable("research.WARP.warn"));
         }
         
         // Sync warp data to client

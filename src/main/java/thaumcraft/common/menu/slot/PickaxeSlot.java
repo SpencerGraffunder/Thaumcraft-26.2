@@ -3,7 +3,6 @@ package thaumcraft.common.menu.slot;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
 
 /**
  * PickaxeSlot - A mob equipment slot that only accepts pickaxes.
@@ -32,12 +31,7 @@ public class PickaxeSlot extends MobEquipmentSlot {
             return false;
         }
         
-        // Check if it's a PickaxeItem (vanilla or modded that extends it)
-        if (stack.getItem() instanceof PickaxeItem) {
-            return true;
-        }
-        
-        // Also check the pickaxes tag for items that might not extend PickaxeItem
+        // Check the pickaxes tag for items that might not extend PickaxeItem
         if (stack.is(ItemTags.PICKAXES)) {
             return true;
         }

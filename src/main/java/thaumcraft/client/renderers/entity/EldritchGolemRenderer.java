@@ -1,17 +1,17 @@
 package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.entity.EldritchGolemModel;
+import thaumcraft.client.renderers.entity.state.EldritchGolemRenderState;
 import thaumcraft.common.entities.monster.boss.EntityEldritchGolem;
 
 /**
@@ -19,7 +19,7 @@ import thaumcraft.common.entities.monster.boss.EntityEldritchGolem;
  * Renders with transparency/blending for eldritch effect.
  */
 @OnlyIn(Dist.CLIENT)
-public class EldritchGolemRenderer extends MobRenderer<EntityEldritchGolem, EldritchGolemModel> {
+public class EldritchGolemRenderer extends MobRenderer<EntityEldritchGolem, EldritchGolemRenderState, EldritchGolemModel> {
     
     private static final Identifier TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/eldritch_golem.png");
@@ -29,36 +29,37 @@ public class EldritchGolemRenderer extends MobRenderer<EntityEldritchGolem, Eldr
     }
     
     @Override
-    public Identifier getTextureLocation(EntityEldritchGolem entity) {
+    public Identifier getTextureLocation(EldritchGolemRenderState state) {
         return TEXTURE;
     }
     
     @Override
-    public void render(EntityEldritchGolem entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        // Render with slight transparency for eldritch effect
-        poseStack.pushPose();
-        
-        // Use translucent render type
-        RenderType renderType = RenderType.entityTranslucent(getTextureLocation(entity));
-        VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
-        
-        // Set up model animation
-        this.model.setupAnim(entity, entity.walkAnimation.position(), entity.walkAnimation.speed(),
-                entity.tickCount + partialTicks, entity.yHeadRot, entity.getXRot());
-        
-        // Render with slight transparency
-        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, 
-                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.9F);
-        
-        poseStack.popPose();
-        
-        // Render name tag and shadow normally
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+    public EldritchGolemRenderState createRenderState() {
+        return new EldritchGolemRenderState();
     }
     
     @Override
-    protected void scale(EntityEldritchGolem entity, PoseStack poseStack, float partialTicks) {
+    public void extractRenderState(EntityEldritchGolem entity, EldritchGolemRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.spawnTimer = entity.getSpawnTimer();
+        state.headless = entity.isHeadless();
+        state.attackTimer = entity.getAttackTimer();
+    }
+    
+    @Override
+    protected RenderType getRenderType(EldritchGolemRenderState state, boolean isBodyVisible, boolean forceTransparent, boolean appearGlowing) {
+        // Render with translucent blending for the eldritch effect
+        return RenderTypes.entityTranslucent(this.getTextureLocation(state));
+    }
+    
+    @Override
+    protected int getModelTint(EldritchGolemRenderState state) {
+        // Slight transparency (alpha ~0.9) for the eldritch look
+        return ARGB.color((int)(0.9F * 255.0F), 255, 255, 255);
+    }
+    
+    @Override
+    protected void scale(EldritchGolemRenderState state, PoseStack poseStack) {
         // Eldritch golem is 70% larger than normal
         poseStack.scale(1.7F, 1.7F, 1.7F);
     }

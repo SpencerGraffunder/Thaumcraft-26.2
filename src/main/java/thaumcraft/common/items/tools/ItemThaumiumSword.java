@@ -13,9 +13,4 @@ public class ItemThaumiumSword extends Item {
     public ItemThaumiumSword() {
         super((new Item.Properties()).sword(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 3, -2.4F));
     }
-    
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.THAUMIUM_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
 }

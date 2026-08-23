@@ -2,6 +2,7 @@ package thaumcraft.common.entities.monster;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
@@ -48,9 +49,9 @@ public class EntityInhabitedZombie extends Zombie {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable net.minecraft.nbt.CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
-        SpawnGroupData result = super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
+        SpawnGroupData result = super.finalizeSpawn(level, difficulty, spawnType, spawnData);
         
         // Equip with crimson armor based on difficulty
         float armorChance = (level.getDifficulty() == Difficulty.HARD) ? 0.9f : 0.6f;
@@ -72,7 +73,7 @@ public class EntityInhabitedZombie extends Zombie {
     // which we already set to 0.0 in createAttributes()
     
     @Override
-    protected boolean shouldDropLoot() {
+    protected boolean shouldDropLoot(ServerLevel level) {
         return false; // No normal loot, crab spawns instead
     }
     
@@ -98,9 +99,9 @@ public class EntityInhabitedZombie extends Zombie {
             // level().addFreshEntity(crab);
             
             // Drop XP
-            if ((lastHurtByPlayerTime > 0 || isAlwaysExperienceDropper()) && 
-                    level().getGameRules().getBooleanOr(net.minecraft.world.level.GameRules.RULE_DOMOBLOOT, false)) {
-                int xp = getExperienceReward();
+            if ((lastHurtByPlayerMemoryTime > 0 || isAlwaysExperienceDropper()) && 
+                    ((net.minecraft.server.level.ServerLevel) level()).getGameRules().get(net.minecraft.world.level.gamerules.GameRules.MOB_DROPS)) {
+                int xp = getBaseExperienceReward((net.minecraft.server.level.ServerLevel)level());
                 net.minecraft.world.entity.ExperienceOrb.award((net.minecraft.server.level.ServerLevel)level(), position(), xp);
             }
         }

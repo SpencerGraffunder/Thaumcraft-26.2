@@ -1,6 +1,7 @@
 package thaumcraft.common.items.tools;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,7 +52,8 @@ public class ItemHandMirror extends Item {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains("linkX");
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        return tag != null && tag.contains("linkX");
     }
 
     @Override
@@ -77,11 +80,12 @@ public class ItemHandMirror extends Item {
         // Link to the mirror
         BlockEntity te = level.getBlockEntity(pos);
         if (te != null) {
-            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
             tag.putInt("linkX", pos.getX());
             tag.putInt("linkY", pos.getY());
             tag.putInt("linkZ", pos.getZ());
             tag.putString("linkDim", level.dimension().identifier().toString());
+            CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
 
             player.playSound(ModSounds.JAR.get(), 1.0f, 1.0f);
             player.sendSystemMessage(Component.translatable("tc.handmirrorlinked"));
@@ -95,8 +99,8 @@ public class ItemHandMirror extends Item {
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if (!level.isClientSide() && stack.hasTag()) {
-            CompoundTag tag = stack.getTag();
+        if (!level.isClientSide() && stack.has(DataComponents.CUSTOM_DATA)) {
+            CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
             if (tag != null && tag.contains("linkX")) {
                 int lx = tag.getIntOr("linkX", 0);
                 int ly = tag.getIntOr("linkY", 0);
@@ -124,7 +128,7 @@ public class ItemHandMirror extends Item {
                 // Check if the mirror still exists
                 if (te == null || !targetLevel.getBlockState(targetPos).is(ModBlocks.MIRROR_ITEM.get())) {
                     // Mirror is gone, clear link
-                    stack.setTag(null);
+                    stack.remove(DataComponents.CUSTOM_DATA);
                     player.playSound(ModSounds.ZAP.get(), 1.0f, 1.0f);
                     player.sendSystemMessage(Component.translatable("tc.handmirrorerror"));
                     return InteractionResult.FAIL;
@@ -133,7 +137,7 @@ public class ItemHandMirror extends Item {
                 // Open mirror GUI
                 if (player instanceof ServerPlayer serverPlayer) {
                     final InteractionHand usedHand = hand;
-                    NetworkHooks.openScreen(serverPlayer, new MenuProvider() {
+                    serverPlayer.openMenu(new MenuProvider() {
                         @Override
                         public Component getDisplayName() {
                             return Component.translatable("container.thaumcraft.hand_mirror");
@@ -143,7 +147,7 @@ public class ItemHandMirror extends Item {
                         public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player menuPlayer) {
                             return new HandMirrorMenu(containerId, playerInventory, usedHand);
                         }
-                    }, (FriendlyByteBuf buf) -> {
+                    }, (buf) -> {
                         buf.writeEnum(usedHand);
                     });
                     return InteractionResult.SUCCESS;
@@ -164,11 +168,11 @@ public class ItemHandMirror extends Item {
      * @return true if transport was successful
      */
     public static boolean transport(ItemStack mirror, ItemStack items, Player player, Level level) {
-        if (!mirror.hasTag()) {
+        if (!mirror.has(DataComponents.CUSTOM_DATA)) {
             return false;
         }
 
-        CompoundTag tag = mirror.getTag();
+        CompoundTag tag = mirror.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag == null || !tag.contains("linkX")) {
             return false;
         }
@@ -198,7 +202,7 @@ public class ItemHandMirror extends Item {
 
         if (te == null || !(te instanceof TileMirror tileMirror)) {
             // Mirror is gone, clear link
-            mirror.setTag(null);
+            mirror.remove(DataComponents.CUSTOM_DATA);
             player.playSound(ModSounds.ZAP.get(), 1.0f, 0.8f);
             player.sendSystemMessage(Component.translatable("tc.handmirrorerror"));
             return false;
@@ -217,8 +221,8 @@ public class ItemHandMirror extends Item {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        if (stack.hasTag()) {
-            CompoundTag tag = stack.getTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (tag != null) {
             if (tag != null && tag.contains("linkX")) {
                 int lx = tag.getIntOr("linkX", 0);
                 int ly = tag.getIntOr("linkY", 0);

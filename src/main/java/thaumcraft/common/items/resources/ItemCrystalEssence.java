@@ -1,6 +1,7 @@
 package thaumcraft.common.items.resources;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -9,6 +10,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -45,9 +47,9 @@ public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
     
     @Override
     public AspectList getAspects(ItemStack stack) {
-        if (stack.hasTag()) {
+        if (stack.has(DataComponents.CUSTOM_DATA)) {
             AspectList aspects = new AspectList();
-            aspects.readFromNBT(stack.getTag());
+            aspects.readFromNBT(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag());
             return aspects.size() > 0 ? aspects : null;
         }
         return null;
@@ -55,10 +57,9 @@ public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
     
     @Override
     public void setAspects(ItemStack stack, AspectList aspects) {
-        if (!stack.hasTag()) {
-            stack.setTag(new CompoundTag());
-        }
-        aspects.writeToNBT(stack.getTag());
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        aspects.writeToNBT(tag);
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     @Override
@@ -74,7 +75,7 @@ public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
         if (aspects != null && aspects.size() > 0) {
             Aspect aspect = aspects.getAspects()[0];
             // Format: "Aspect Crystal" or localized version
-            return Component.translatable(this.getDescriptionId(stack), aspect.getName());
+            return Component.translatable(this.getDescriptionId(), aspect.getName());
         }
         return super.getName(stack);
     }
@@ -86,17 +87,17 @@ public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
         super.inventoryTick(stack, level, entity, slot);
         
         // Assign random aspect if none set (for items spawned without NBT)
-        if (!level.isClientSide() && !stack.hasTag()) {
+        if (!level.isClientSide() && !stack.has(DataComponents.CUSTOM_DATA)) {
             assignRandomAspect(stack, level);
         }
     }
     
     @Override
-    public void onCraftedBy(ItemStack stack, Level level, Player player) {
-        super.onCraftedBy(stack, level, player);
+    public void onCraftedBy(ItemStack stack, Player player) {
+        super.onCraftedBy(stack, player);
         
-        if (!level.isClientSide() && !stack.hasTag()) {
-            assignRandomAspect(stack, level);
+        if (!player.level().isClientSide() && !stack.has(DataComponents.CUSTOM_DATA)) {
+            assignRandomAspect(stack, player.level());
         }
     }
     

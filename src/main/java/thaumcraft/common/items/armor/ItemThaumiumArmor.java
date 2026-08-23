@@ -36,19 +36,4 @@ public class ItemThaumiumArmor extends Item {
     public static ItemThaumiumArmor createBoots() {
         return new ItemThaumiumArmor(ArmorType.BOOTS);
     }
-    
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.THAUMIUM_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        // Use layer 1 for helmet/chest/boots, layer 2 for legs
-        if (slot == EquipmentSlot.LEGS) {
-            return "thaumcraft:textures/entity/armor/thaumium_2.png";
-        }
-        return "thaumcraft:textures/entity/armor/thaumium_1.png";
-    }
 }

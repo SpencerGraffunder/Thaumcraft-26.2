@@ -49,7 +49,7 @@ public class SilverwoodTreeFeature extends Feature<NoneFeatureConfiguration> {
         int z = pos.getZ();
         
         // Check world bounds
-        if (y < 1 || y + height + 1 > level.getMaxBuildHeight()) {
+        if (y < 1 || y + height + 1 > level.getMaxY()) {
             return false;
         }
         
@@ -64,7 +64,7 @@ public class SilverwoodTreeFeature extends Feature<NoneFeatureConfiguration> {
             return false;
         }
         
-        if (y >= level.getMaxBuildHeight() - height - 1) {
+        if (y >= level.getMaxY() - height - 1) {
             return false;
         }
         
@@ -92,7 +92,7 @@ public class SilverwoodTreeFeature extends Feature<NoneFeatureConfiguration> {
             
             for (int cx = x - spread; cx <= x + spread; cx++) {
                 for (int cz = z - spread; cz <= z + spread; cz++) {
-                    if (cy < 0 || cy >= level.getMaxBuildHeight()) {
+                    if (cy < 0 || cy >= level.getMaxY()) {
                         return false;
                     }
                     

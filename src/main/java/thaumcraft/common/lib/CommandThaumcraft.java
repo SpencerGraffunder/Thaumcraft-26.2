@@ -34,7 +34,7 @@ public class CommandThaumcraft {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("thaumcraft")
-                .requires(source -> source.hasPermission(2));
+                .requires(Commands.hasPermission(Commands.LEVEL_ADMINS));
 
         // Aliases
         dispatcher.register(Commands.literal("thaum").redirect(builder.build()));
@@ -61,9 +61,9 @@ public class CommandThaumcraft {
                                 .executes(context -> resetResearch(context.getSource(), EntityArgument.getPlayer(context, "player"))))
                         .then(Commands.argument("research", StringArgumentType.string())
                                 .suggests(RESEARCH_SUGGESTIONS)
-                                .executes(context -> giveResearch(context.getSource(), EntityArgument.getPlayer(context, "player"), StringArgumentType.getStringOr(context, "research", "")))
+                                .executes(context -> giveResearch(context.getSource(), EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "research")))
                                 .then(Commands.literal("revoke")
-                                        .executes(context -> revokeResearch(context.getSource(), EntityArgument.getPlayer(context, "player"), StringArgumentType.getStringOr(context, "research", ""))))
+                                        .executes(context -> revokeResearch(context.getSource(), EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "research"))))
                         )
                 )
         );

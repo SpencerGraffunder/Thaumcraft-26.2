@@ -682,23 +682,10 @@ public class Thaumcraft {
         }
         
         @SubscribeEvent
-        public static void onRegisterItemColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item event) {
-            // Register vis crystal color handlers - tint based on aspect color
-            event.register(
-                (stack, tintIndex) -> {
-                    if (stack.getItem() instanceof thaumcraft.common.items.resources.ItemVisCrystal crystal) {
-                        return crystal.getColor();
-                    }
-                    return 0xFFFFFF;
-                },
-                ModItems.VIS_CRYSTAL_AIR.get(),
-                ModItems.VIS_CRYSTAL_FIRE.get(),
-                ModItems.VIS_CRYSTAL_WATER.get(),
-                ModItems.VIS_CRYSTAL_EARTH.get(),
-                ModItems.VIS_CRYSTAL_ORDER.get(),
-                ModItems.VIS_CRYSTAL_ENTROPY.get()
-            );
-            LOGGER.info("Registered Thaumcraft item color handlers");
+        public static void onRegisterItemColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.ItemTintSources event) {
+            // TODO(26.2): vis crystal tinting now uses the codec-based ItemTintSource system;
+            // register a custom ItemTintSource map codec here when the item models are updated.
+            LOGGER.info("Item color handlers: skipped (codec-based ItemTintSource system)");
         }
     }
     
@@ -713,6 +700,6 @@ public class Thaumcraft {
      * Check if shift key is pressed (client side only)
      */
     public static boolean isShiftKeyDown() {
-        return net.minecraft.client.gui.screens.Screen.hasShiftDown();
+        return Minecraft.getInstance().hasShiftDown();
     }
 }

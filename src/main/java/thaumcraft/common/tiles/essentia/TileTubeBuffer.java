@@ -47,7 +47,7 @@ public class TileTubeBuffer extends TileTube implements IAspectContainer {
     @Override
     protected void writeSyncNBT(ValueOutput output) {
         // Don't call super - buffer has different sync data
-        aspects.writeToNBT(tag);
+        aspects.writeToNBT(output);
         
         int[] sides = new int[6];
         for (int i = 0; i < 6; i++) {
@@ -65,7 +65,7 @@ public class TileTubeBuffer extends TileTube implements IAspectContainer {
     @Override
     protected void readSyncNBT(ValueInput input) {
         // Don't call super - buffer has different sync data
-        aspects.readFromNBT(tag);
+        aspects.readFromNBT(input);
         
         int[] sides = input.getIntArray("Open").orElse(new int[0]);
         if (sides.length == 6) {

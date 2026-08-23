@@ -27,7 +27,7 @@ public class ChampionModSpined implements IChampionModifierEffect {
             // Reflect 25% of incoming damage
             float reflectedDamage = amount * 0.25f;
             if (reflectedDamage > 0.5f) {
-                target.hurt(champion.damageSources().thorns(champion), reflectedDamage);
+                target.hurtServer((net.minecraft.server.level.ServerLevel) champion.level(), champion.damageSources().thorns(champion), reflectedDamage);
             }
         }
         return amount;

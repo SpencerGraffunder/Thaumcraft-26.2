@@ -2,19 +2,17 @@ package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
+import thaumcraft.client.renderers.entity.state.FluxRiftRenderState;
 import thaumcraft.common.entities.EntityFluxRift;
 
 import java.util.List;
@@ -33,7 +31,7 @@ import java.util.List;
  * - Emissive rendering for glow effect
  */
 @OnlyIn(Dist.CLIENT)
-public class FluxRiftRenderer extends EntityRenderer<EntityFluxRift> {
+public class FluxRiftRenderer extends EntityRenderer<EntityFluxRift, FluxRiftRenderState> {
     
     private static final Identifier RIFT_TEXTURE = 
             Identifier.withDefaultNamespace("textures/entity/end_portal.png");
@@ -45,71 +43,76 @@ public class FluxRiftRenderer extends EntityRenderer<EntityFluxRift> {
     }
     
     @Override
-    public Identifier getTextureLocation(EntityFluxRift entity) {
-        return RIFT_TEXTURE;
+    public FluxRiftRenderState createRenderState() {
+        return new FluxRiftRenderState();
     }
     
     @Override
-    public void render(EntityFluxRift entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void extractRenderState(EntityFluxRift entity, FluxRiftRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
         List<Vec3> points = entity.getPoints();
         List<Float> widths = entity.getPointWidths();
+        state.points = points == null ? List.of() : List.copyOf(points);
+        state.widths = widths == null ? List.of() : List.copyOf(widths);
+        state.stability = entity.getRiftStability();
+        state.time = entity.tickCount + partialTick;
+    }
+    
+    @Override
+    public void submit(FluxRiftRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        List<Vec3> points = state.points;
+        List<Float> widths = state.widths;
         
-        if (points == null || points.size() < 2 || widths == null || widths.size() < 2) {
+        if (points.size() < 2 || widths.size() < 2) {
             return;
         }
         
         poseStack.pushPose();
         
         // Calculate wobble based on stability
-        float stability = entity.getRiftStability();
-        float stab = Mth.clamp(1.0F - stability / 50.0F, 0.0F, 1.5F);
-        float time = entity.tickCount + partialTicks;
+        float stab = Mth.clamp(1.0F - state.stability / 50.0F, 0.0F, 1.5F);
+        float time = state.time;
         
         // Get render type - use end portal effect
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.endPortal());
-        
-        // Render the rift as connected segments
-        for (int i = 0; i < points.size() - 1; i++) {
-            Vec3 start = points.get(i);
-            Vec3 end = points.get(i + 1);
-            
-            // Add wobble animation
-            float varStart = time + (i > points.size() / 2 ? -i * 10 : i * 10);
-            float varEnd = time + ((i + 1) > points.size() / 2 ? -(i + 1) * 10 : (i + 1) * 10);
-            
-            double wobbleX1 = Math.sin(varStart / 50.0) * 0.1 * stab;
-            double wobbleY1 = Math.sin(varStart / 60.0) * 0.1 * stab;
-            double wobbleZ1 = Math.sin(varStart / 70.0) * 0.1 * stab;
-            
-            double wobbleX2 = Math.sin(varEnd / 50.0) * 0.1 * stab;
-            double wobbleY2 = Math.sin(varEnd / 60.0) * 0.1 * stab;
-            double wobbleZ2 = Math.sin(varEnd / 70.0) * 0.1 * stab;
-            
-            float w1 = widths.get(i) * (float)(1.0 - Math.sin(varStart / 8.0) * 0.1 * stab);
-            float w2 = widths.get(i + 1) * (float)(1.0 - Math.sin(varEnd / 8.0) * 0.1 * stab);
-            
-            // Render segment
-            renderSegment(poseStack, vertexConsumer,
-                    (float)(start.x + wobbleX1), (float)(start.y + wobbleY1), (float)(start.z + wobbleZ1), w1,
-                    (float)(end.x + wobbleX2), (float)(end.y + wobbleY2), (float)(end.z + wobbleZ2), w2);
-        }
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.endPortal(), (pose, buffer) -> {
+            // Render the rift as connected segments
+            for (int i = 0; i < points.size() - 1; i++) {
+                Vec3 start = points.get(i);
+                Vec3 end = points.get(i + 1);
+                
+                // Add wobble animation
+                float varStart = time + (i > points.size() / 2 ? -i * 10 : i * 10);
+                float varEnd = time + ((i + 1) > points.size() / 2 ? -(i + 1) * 10 : (i + 1) * 10);
+                
+                double wobbleX1 = Math.sin(varStart / 50.0) * 0.1 * stab;
+                double wobbleY1 = Math.sin(varStart / 60.0) * 0.1 * stab;
+                double wobbleZ1 = Math.sin(varStart / 70.0) * 0.1 * stab;
+                
+                double wobbleX2 = Math.sin(varEnd / 50.0) * 0.1 * stab;
+                double wobbleY2 = Math.sin(varEnd / 60.0) * 0.1 * stab;
+                double wobbleZ2 = Math.sin(varEnd / 70.0) * 0.1 * stab;
+                
+                float w1 = widths.get(i) * (float)(1.0 - Math.sin(varStart / 8.0) * 0.1 * stab);
+                float w2 = widths.get(i + 1) * (float)(1.0 - Math.sin(varEnd / 8.0) * 0.1 * stab);
+                
+                // Render segment
+                renderSegment(pose, buffer,
+                        (float)(start.x + wobbleX1), (float)(start.y + wobbleY1), (float)(start.z + wobbleZ1), w1,
+                        (float)(end.x + wobbleX2), (float)(end.y + wobbleY2), (float)(end.z + wobbleZ2), w2);
+            }
+        });
         
         poseStack.popPose();
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
     
     /**
      * Renders a single segment of the rift as a rectangular tube.
      */
-    private void renderSegment(PoseStack poseStack, VertexConsumer vertexConsumer,
-                              float x1, float y1, float z1, float w1,
-                              float x2, float y2, float z2, float w2) {
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix = pose.pose();
-        Matrix3f normal = pose.normal();
-        
+    private static void renderSegment(PoseStack.Pose pose, VertexConsumer vertexConsumer,
+                                      float x1, float y1, float z1, float w1,
+                                      float x2, float y2, float z2, float w2) {
         // Calculate direction and perpendicular vectors
         float dx = x2 - x1;
         float dy = y2 - y1;
@@ -173,10 +176,10 @@ public class FluxRiftRenderer extends EntityRenderer<EntityFluxRift> {
             float oz2b = (pz * cos2 + qz * sin2) * w2;
             
             // Render quad (end portal doesn't use normal UV mapping)
-            vertexConsumer.vertex(matrix, x1 + ox1a, y1 + oy1a, z1 + oz1a).endVertex();
-            vertexConsumer.vertex(matrix, x1 + ox1b, y1 + oy1b, z1 + oz1b).endVertex();
-            vertexConsumer.vertex(matrix, x2 + ox2b, y2 + oy2b, z2 + oz2b).endVertex();
-            vertexConsumer.vertex(matrix, x2 + ox2a, y2 + oy2a, z2 + oz2a).endVertex();
+            vertexConsumer.addVertex(pose, x1 + ox1a, y1 + oy1a, z1 + oz1a);
+            vertexConsumer.addVertex(pose, x1 + ox1b, y1 + oy1b, z1 + oz1b);
+            vertexConsumer.addVertex(pose, x2 + ox2b, y2 + oy2b, z2 + oz2b);
+            vertexConsumer.addVertex(pose, x2 + ox2a, y2 + oy2a, z2 + oz2a);
         }
     }
 }

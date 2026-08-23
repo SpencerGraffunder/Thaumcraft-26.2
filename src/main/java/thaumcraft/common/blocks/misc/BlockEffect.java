@@ -39,7 +39,7 @@ public class BlockEffect extends Block {
     public BlockEffect(EffectType type) {
         super(BlockBehaviour.Properties.of()
                 .replaceable()
-                .noCollission()
+                .noCollision()
                 .instabreak()
                 .noLootTable()
                 .air()
@@ -69,7 +69,8 @@ public class BlockEffect extends Block {
     }
     
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
+            net.minecraft.world.entity.InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         if (level.isClientSide()) return;
         
         if (effectType == EffectType.SHOCK) {
@@ -77,7 +78,7 @@ public class BlockEffect extends Block {
                 // Deal magic damage
                 entity.hurt(level.damageSources().magic(), 1.0f);
                 // Apply slowness
-                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0, true, true));
+                living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 20, 0, true, true));
             }
             // Small chance to disappear
             if (level.getRandom().nextInt(100) == 0) {
@@ -90,7 +91,7 @@ public class BlockEffect extends Block {
             if (entity instanceof LivingEntity living && !living.hasEffect(MobEffects.WITHER)) {
                 // Apply wither, slowness, and hunger
                 living.addEffect(new MobEffectInstance(MobEffects.WITHER, 40, 0, true, true));
-                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1, true, true));
+                living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 1, true, true));
                 living.addEffect(new MobEffectInstance(MobEffects.HUNGER, 40, 1, true, true));
             }
         }

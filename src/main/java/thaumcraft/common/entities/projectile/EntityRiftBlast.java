@@ -45,7 +45,8 @@ public class EntityRiftBlast extends ThrowableProjectile {
     }
     
     public EntityRiftBlast(Level level, LivingEntity owner, LivingEntity target, boolean red) {
-        super(ModEntities.RIFT_BLAST.get(), owner, level);
+        super(ModEntities.RIFT_BLAST.get(), level);
+        this.setOwner(owner);
         this.target = target;
         entityData.set(DATA_RED, red);
         entityData.set(DATA_TARGET_ID, target.getId());
@@ -62,7 +63,7 @@ public class EntityRiftBlast extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return 0.0f; // No gravity
     }
     
@@ -169,14 +170,14 @@ public class EntityRiftBlast extends ThrowableProjectile {
                 float damage = (float)(attackDamage * (isRed() ? 1.0 : 0.6));
                 
                 DamageSource source = level().damageSources().indirectMagic(this, owner);
-                result.getEntity().hurt(source, damage);
+                result.getEntity().hurtServer((ServerLevel) level(), source, damage);
             }
         }
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo((ServerLevel) this.level(), source)) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (isInvulnerableToBase(source)) {
             return false;
         }
         
@@ -204,7 +205,7 @@ public class EntityRiftBlast extends ThrowableProjectile {
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         entityData.set(DATA_RED, input.getBooleanOr("Red", false));
-        if (input.contains("TargetId")) {
+        if (input.keySet().contains("TargetId")) {
             entityData.set(DATA_TARGET_ID, input.getIntOr("TargetId", 0));
         }
     }

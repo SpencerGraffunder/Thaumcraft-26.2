@@ -391,7 +391,7 @@ public class BigMagicTreeFeature extends Feature<NoneFeatureConfiguration> {
     private boolean isReplaceable(LevelAccessor level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         return state.isAir() || state.is(BlockTags.LEAVES) || state.canBeReplaced() ||
-               state.is(BlockTags.LOGS) || state.is(BlockTags.SAPLINGS);
+               state.is(BlockTags.LOGS) || state.is(net.minecraft.tags.BlockItemTags.SAPLINGS.block());
     }
     
     /**

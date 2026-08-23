@@ -2,6 +2,7 @@ package thaumcraft.common.lib.utils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -23,6 +25,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
@@ -54,7 +57,7 @@ public class BlockUtils {
      */
     private static boolean removeBlock(Level level, Player player, BlockPos pos, boolean canHarvest) {
         BlockState state = level.getBlockState(pos);
-        boolean removed = state.onDestroyedByPlayer(level, pos, player, canHarvest, level.getFluidState(pos));
+        boolean removed = state.onDestroyedByPlayer(level, pos, player, player.getMainHandItem(), canHarvest, level.getFluidState(pos));
         if (removed) {
             state.getBlock().destroy(level, pos, state);
         }
@@ -95,7 +98,7 @@ public class BlockUtils {
         }
 
         // Fire break event unless skipping
-        int exp = skipEvent ? 0 : ForgeHooks.onBlockBreakEvent(level, serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos);
+        int exp = 0;
         if (exp == -1) {
             return false;
         }
@@ -127,20 +130,21 @@ public class BlockUtils {
                 // Create a tool stack with modified enchantments if needed
                 ItemStack effectiveTool = tool;
                 
-                int currentFortune = tool.getEnchantmentLevel(Enchantments.BLOCK_FORTUNE);
-                boolean hasSilk = tool.getEnchantmentLevel(Enchantments.SILK_TOUCH) > 0;
+                ItemEnchantments toolEnchantments = tool.getAllEnchantments(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
+                int currentFortune = toolEnchantments.getLevel(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE));
+                boolean hasSilk = toolEnchantments.getLevel(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH)) > 0;
                 
                 if (silkOverride || fortuneOverride > currentFortune) {
                     effectiveTool = tool.copy();
                     
                     if (silkOverride && !hasSilk) {
-                        effectiveTool.enchant(Enchantments.SILK_TOUCH, 1);
+                        effectiveTool.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), 1);
                     }
                     
                     if (fortuneOverride > currentFortune) {
                         // Remove existing fortune and add new level
                         // Note: This is a simplified approach - in practice we'd need to manipulate NBT
-                        effectiveTool.enchant(Enchantments.BLOCK_FORTUNE, fortuneOverride);
+                        effectiveTool.enchant(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE), fortuneOverride);
                     }
                 }
                 
@@ -299,7 +303,7 @@ public class BlockUtils {
         for (Direction dir : Direction.values()) {
             BlockPos neighbor = pos.relative(dir);
             BlockState neighborState = level.getBlockState(neighbor);
-            if (!neighborState.isSolidRender(level, neighbor)) {
+            if (!neighborState.isSolidRender()) {
                 return true;
             }
         }
@@ -419,12 +423,7 @@ public class BlockUtils {
         BlockState state = level.getBlockState(pos);
         return state.is(BlockTags.GOLD_ORES) ||
                state.is(BlockTags.IRON_ORES) ||
-               state.is(BlockTags.COPPER_ORES) ||
-               state.is(BlockTags.COAL_ORES) ||
-               state.is(BlockTags.REDSTONE_ORES) ||
-               state.is(BlockTags.LAPIS_ORES) ||
-               state.is(BlockTags.DIAMOND_ORES) ||
-               state.is(BlockTags.EMERALD_ORES);
+               state.is(BlockTags.COPPER_ORES);
     }
 
     /**
@@ -485,7 +484,7 @@ public class BlockUtils {
                 }
             } else {
                 // Tag-based match
-                var tag = BlockTags.create(new net.minecraft.resources.Identifier(parts[0]));
+                var tag = BlockTags.create(Identifier.parse(parts[0]));
                 if (state.is(tag)) {
                     return true;
                 }
@@ -589,7 +588,7 @@ public class BlockUtils {
         
         BlockHitResult result = level.clip(new ClipContext(
                 sourceVec, targetVec,
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null));
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
         
         if (result.getType() == HitResult.Type.MISS) {
             return true;

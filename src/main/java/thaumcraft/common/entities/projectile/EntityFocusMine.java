@@ -40,7 +40,8 @@ public class EntityFocusMine extends ThrowableProjectile {
     }
     
     public EntityFocusMine(Level level, LivingEntity owner) {
-        super(ModEntities.FOCUS_MINE.get(), owner, level);
+        super(ModEntities.FOCUS_MINE.get(), level);
+        this.setOwner(owner);
     }
     
     /**
@@ -81,7 +82,7 @@ public class EntityFocusMine extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return 0.01f;
     }
     
@@ -205,7 +206,8 @@ public class EntityFocusMine extends ThrowableProjectile {
         
         // Check if target is owned by owner (pets, tamed animals)
         if (target instanceof net.minecraft.world.entity.OwnableEntity ownable) {
-            if (owner.getUUID().equals(ownable.getOwnerUUID())) return true;
+            LivingEntity ownableOwner = ownable.getOwner();
+            if (ownableOwner != null && owner.getUUID().equals(ownableOwner.getUUID())) return true;
         }
         
         return false;
@@ -217,7 +219,7 @@ public class EntityFocusMine extends ThrowableProjectile {
         output.putBoolean("armed", isArmed());
         output.putBoolean("friendly", targetFriendly);
         if (focusPackage != null) {
-            output.put("pack", focusPackage.serialize());
+            output.store("pack", net.minecraft.nbt.CompoundTag.CODEC, focusPackage.serialize());
         }
     }
     
@@ -229,9 +231,9 @@ public class EntityFocusMine extends ThrowableProjectile {
         if (isArmed()) {
             armingCountdown = 0;
         }
-        if (input.contains("pack")) {
+        if (input.keySet().contains("pack")) {
             focusPackage = new FocusPackage();
-            focusPackage.deserialize(input.getCompoundOrEmpty("pack"));
+            input.read("pack", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(focusPackage::deserialize);
         }
     }
     

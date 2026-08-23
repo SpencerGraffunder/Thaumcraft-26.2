@@ -1,6 +1,5 @@
 package thaumcraft.common.entities.monster;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -9,6 +8,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -78,11 +78,6 @@ public class EntityMindSpider extends Spider {
     }
     
     @Override
-    protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions dimensions) {
-        return 0.45f;
-    }
-    
-    @Override
     protected float getSoundVolume() {
         return super.getSoundVolume() * 0.7f;
     }
@@ -98,8 +93,8 @@ public class EntityMindSpider extends Spider {
     }
     
     @Override
-    public int getExperienceReward() {
-        return isHarmless() ? 0 : super.getExperienceReward();
+    public int getBaseExperienceReward(net.minecraft.server.level.ServerLevel level) {
+        return isHarmless() ? 0 : super.getBaseExperienceReward(level);
     }
     
     @Override
@@ -116,7 +111,7 @@ public class EntityMindSpider extends Spider {
     }
     
     @Override
-    protected boolean shouldDropLoot() {
+    protected boolean shouldDropLoot(ServerLevel level) {
         return false; // No loot drops
     }
     
@@ -137,7 +132,7 @@ public class EntityMindSpider extends Spider {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, 
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         // Don't apply default spider spawn logic (no jockeys)
         return spawnData;
     }

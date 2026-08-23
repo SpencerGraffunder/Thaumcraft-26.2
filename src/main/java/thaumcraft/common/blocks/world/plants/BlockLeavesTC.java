@@ -3,6 +3,7 @@ package thaumcraft.common.blocks.world.plants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -18,8 +19,18 @@ public class BlockLeavesTC extends LeavesBlock {
     private final boolean glows;
 
     public BlockLeavesTC(Properties properties, boolean glows) {
-        super(properties);
+        super(0.25f, properties);
         this.glows = glows;
+    }
+
+    @Override
+    protected void spawnFallingLeavesParticle(Level level, BlockPos pos, net.minecraft.util.RandomSource random) {
+        // No falling leaf particles for Thaumcraft trees
+    }
+
+    @Override
+    public MapCodec<? extends LeavesBlock> codec() {
+        return simpleCodec(properties -> new BlockLeavesTC(properties, this.glows));
     }
 
     /**

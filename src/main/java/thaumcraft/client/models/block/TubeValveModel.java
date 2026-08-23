@@ -7,8 +7,9 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
@@ -18,7 +19,7 @@ import thaumcraft.Thaumcraft;
  * Used by TileTubeValveRenderer, TileTubeBufferRenderer, and TileTubeOnewayRenderer.
  */
 @OnlyIn(Dist.CLIENT)
-public class TubeValveModel extends Model {
+public class TubeValveModel extends Model<Unit> {
 
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "tube_valve"), "main");
@@ -27,7 +28,7 @@ public class TubeValveModel extends Model {
     private final ModelPart valveRing;
 
     public TubeValveModel(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
+        super(root, RenderTypes::entityCutoutCull);
         this.valveRod = root.getChild("valve_rod");
         this.valveRing = root.getChild("valve_ring");
     }
@@ -51,26 +52,31 @@ public class TubeValveModel extends Model {
         return LayerDefinition.create(meshdefinition, 64, 32);
     }
 
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        valveRod.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        valveRing.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-
     /**
      * Render only the rod part.
      */
-    public void renderRod(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                          int packedOverlay, float red, float green, float blue, float alpha) {
-        valveRod.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderRod(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        valveRod.render(poseStack, buffer, packedLight, packedOverlay, color);
     }
 
     /**
      * Render only the ring part.
      */
-    public void renderRing(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                           int packedOverlay, float red, float green, float blue, float alpha) {
-        valveRing.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderRing(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        valveRing.render(poseStack, buffer, packedLight, packedOverlay, color);
+    }
+
+    /**
+     * Get the rod part.
+     */
+    public ModelPart getRod() {
+        return valveRod;
+    }
+
+    /**
+     * Get the ring part.
+     */
+    public ModelPart getRing() {
+        return valveRing;
     }
 }

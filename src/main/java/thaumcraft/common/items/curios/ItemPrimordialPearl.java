@@ -8,6 +8,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.FuelValues;
 import thaumcraft.common.items.ItemTCBase;
 
 import javax.annotation.Nullable;
@@ -74,7 +75,6 @@ public class ItemPrimordialPearl extends ItemTCBase {
      * Returns the item left in the crafting grid after using this item.
      * The pearl returns a damaged version of itself until fully consumed.
      */
-    @Override
     public ItemStack getCraftingRemainingItem(ItemStack stack) {
         if (!hasCraftingRemainingItem(stack)) {
             return ItemStack.EMPTY;
@@ -84,48 +84,39 @@ public class ItemPrimordialPearl extends ItemTCBase {
         return result;
     }
 
-    @Override
     public boolean hasCraftingRemainingItem(ItemStack stack) {
         // Returns true if there's still uses left after this use
         return stack.getDamageValue() < MAX_DAMAGE - 1;
     }
 
-    @Override
-    public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+    public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
         return 0; // Not a fuel
     }
 
-    @Override
     public boolean isRepairable(ItemStack stack) {
         return false;
     }
 
-    @Override
     public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
         return false;
     }
 
-    @Override
     public boolean isEnchantable(ItemStack stack) {
         return false;
     }
 
-    @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
         return false;
     }
 
-    @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
     }
 
-    @Override
     public int getEnchantmentValue() {
         return 0;
     }
 
-    @Override
     public Rarity getRarity(ItemStack stack) {
         // Color based on remaining uses
         return switch (getVariant(stack)) {

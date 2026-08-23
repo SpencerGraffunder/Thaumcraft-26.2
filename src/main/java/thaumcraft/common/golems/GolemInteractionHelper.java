@@ -3,8 +3,10 @@ package thaumcraft.common.golems;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -12,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import thaumcraft.api.golems.IGolemAPI;
 import thaumcraft.common.lib.utils.InventoryUtils;
 
@@ -141,37 +143,38 @@ public class GolemInteractionHelper {
      */
     private static void dropSomeItems(FakePlayer fp, IGolemAPI golem) {
         // Transfer main inventory items
-        for (int i = 0; i < fp.getInventory().getItems().size(); i++) {
-            ItemStack stack = fp.getInventory().getItems().get(i);
+        NonNullList<ItemStack> items = fp.getInventory().getNonEquipmentItems();
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack stack = items.get(i);
             if (!stack.isEmpty()) {
                 // Try to give to golem
                 if (golem.canCarry(stack, true)) {
                     ItemStack remaining = golem.holdItem(stack);
-                    fp.getInventory().getItems().set(i, remaining);
+                    items.set(i, remaining);
                 }
                 
                 // Drop anything left over
-                if (!fp.getInventory().getItems().get(i).isEmpty()) {
+                if (!items.get(i).isEmpty()) {
                     InventoryUtils.dropItemAtEntity(golem.getGolemWorld(), 
-                            fp.getInventory().getItems().get(i), golem.getGolemEntity());
-                    fp.getInventory().getItems().set(i, ItemStack.EMPTY);
+                            items.get(i), golem.getGolemEntity());
+                    items.set(i, ItemStack.EMPTY);
                 }
             }
         }
         
-        // Transfer armor inventory items (shouldn't normally happen but just in case)
-        for (int i = 0; i < fp.getInventory().armor.size(); i++) {
-            ItemStack stack = fp.getInventory().armor.get(i);
+        // Transfer armor equipment (shouldn't normally happen but just in case)
+        for (EquipmentSlot slot : new EquipmentSlot[] { EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD }) {
+            ItemStack stack = fp.getItemBySlot(slot);
             if (!stack.isEmpty()) {
                 if (golem.canCarry(stack, true)) {
                     ItemStack remaining = golem.holdItem(stack);
-                    fp.getInventory().armor.set(i, remaining);
+                    fp.setItemSlot(slot, remaining);
                 }
                 
-                if (!fp.getInventory().armor.get(i).isEmpty()) {
+                if (!fp.getItemBySlot(slot).isEmpty()) {
                     InventoryUtils.dropItemAtEntity(golem.getGolemWorld(), 
-                            fp.getInventory().armor.get(i), golem.getGolemEntity());
-                    fp.getInventory().armor.set(i, ItemStack.EMPTY);
+                            fp.getItemBySlot(slot), golem.getGolemEntity());
+                    fp.setItemSlot(slot, ItemStack.EMPTY);
                 }
             }
         }

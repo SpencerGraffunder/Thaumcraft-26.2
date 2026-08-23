@@ -3,8 +3,6 @@ package thaumcraft.common.entities.monster;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -23,8 +21,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
-import net.minecraft.network.syncher.AdditionalSpawnData;
 import thaumcraft.api.casters.FocusPackage;
 import thaumcraft.init.ModEntities;
 
@@ -37,7 +35,7 @@ import java.util.UUID;
  * Can be friendly (healing allies) or hostile (attacking enemies).
  * Executes focus effects on targets it attacks.
  */
-public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnData {
+public class EntitySpellBat extends Monster {
     
     private static final EntityDataAccessor<Boolean> DATA_FRIENDLY = 
             SynchedEntityData.defineId(EntitySpellBat.class, EntityDataSerializers.BOOLEAN);
@@ -142,7 +140,7 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
     }
     
     @Override
-    public Team getTeam() {
+    public PlayerTeam getTeam() {
         LivingEntity owner = getOwner();
         if (owner != null) {
             return owner.getTeam();
@@ -151,7 +149,7 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
     }
     
     @Override
-    public boolean isAlliedTo(Entity other) {
+    protected boolean considersEntityAsAlly(Entity other) {
         LivingEntity owner = getOwner();
         if (other == owner) {
             return true;
@@ -159,7 +157,7 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
         if (owner != null) {
             return owner.isAlliedTo(other) || other.isAlliedTo(owner);
         }
-        return super.isAlliedTo(other);
+        return super.considersEntityAsAlly(other);
     }
     
     @Override
@@ -317,12 +315,7 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
     }
     
     @Override
-    protected boolean shouldDespawnInPeaceful() {
-        return false;
-    }
-    
-    @Override
-    public boolean causeFallDamage(float distance, float multiplier, DamageSource source) {
+    public boolean causeFallDamage(double distance, float multiplier, DamageSource source) {
         return false; // Flying - no fall damage
     }
     
@@ -337,7 +330,7 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
     }
     
     @Override
-    protected boolean isAffectedByFluids() {
+    public boolean isAffectedByFluids() {
         return false;
     }
     
@@ -345,47 +338,31 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
     public void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
         if (ownerUUID != null) {
-            output.putUUID("OwnerUUID", ownerUUID);
+            output.putString("OwnerUUID", ownerUUID.toString());
         }
         output.putBoolean("friendly", isFriendly());
         if (focusPackage != null) {
-            output.put("pack", focusPackage.serialize());
+            output.store("pack", net.minecraft.nbt.CompoundTag.CODEC, focusPackage.serialize());
         }
     }
     
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        if (input.hasUUID("OwnerUUID")) {
-            ownerUUID = input.getUUID("OwnerUUID");
+        if (input.keySet().contains("OwnerUUID")) {
+            String uuidStr = input.getStringOr("OwnerUUID", "");
+            if (!uuidStr.isEmpty()) {
+                try {
+                    ownerUUID = java.util.UUID.fromString(uuidStr);
+                } catch (Throwable ignored) {}
+            }
         }
         setFriendly(input.getBooleanOr("friendly", false));
-        if (input.contains("pack")) {
+        if (input.keySet().contains("pack")) {
             focusPackage = new FocusPackage();
             try {
-                focusPackage.deserialize(input.getCompoundOrEmpty("pack"));
+                input.read("pack", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(focusPackage::deserialize);
             } catch (Exception ignored) {}
         }
-    }
-    
-    @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        if (focusPackage != null) {
-            CompoundTag tag = focusPackage.serialize();
-            buffer.writeNbt(tag);
-        } else {
-            buffer.writeNbt(new CompoundTag());
-        }
-    }
-    
-    @Override
-    public void readSpawnData(FriendlyByteBuf buffer) {
-        try {
-            CompoundTag tag = buffer.readNbt();
-            if (tag != null && !tag.isEmpty()) {
-                focusPackage = new FocusPackage();
-                focusPackage.deserialize(tag);
-            }
-        } catch (Exception ignored) {}
     }
 }

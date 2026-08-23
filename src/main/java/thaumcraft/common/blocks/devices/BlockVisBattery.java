@@ -1,4 +1,6 @@
 package thaumcraft.common.blocks.devices;
+
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
@@ -93,7 +95,7 @@ public class BlockVisBattery extends Block {
     }
     
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         return state.getValue(CHARGE);
     }
     

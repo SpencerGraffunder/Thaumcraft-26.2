@@ -91,11 +91,11 @@ public class EntityTaintSwarm extends Monster {
     }
     
     @Override
-    public boolean isAlliedTo(Entity other) {
+    protected boolean considersEntityAsAlly(Entity other) {
         if (isTaintedMob(other)) {
             return true;
         }
-        return super.isAlliedTo(other);
+        return super.considersEntityAsAlly(other);
     }
     
     @Override
@@ -165,7 +165,7 @@ public class EntityTaintSwarm extends Monster {
         if (target == null) {
             // Summoned swarms take damage when they have no target
             if (isSummoned()) {
-                hurt(damageSources().generic(), 5.0f);
+                hurtServer(level, damageSources().generic(), 5.0f);
             }
             
             // Wander around
@@ -256,7 +256,7 @@ public class EntityTaintSwarm extends Monster {
     }
     
     @Override
-    public boolean causeFallDamage(float distance, float multiplier, DamageSource source) {
+    public boolean causeFallDamage(double distance, float multiplier, DamageSource source) {
         return false; // Flying mob
     }
     

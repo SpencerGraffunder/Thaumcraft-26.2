@@ -1,6 +1,5 @@
 package thaumcraft.common.entities;
 
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -51,14 +50,5 @@ public class EntitySpecialItem extends ItemEntity {
             setDeltaMovement(getDeltaMovement().add(0, 0.04, 0));
             super.tick();
         }
-    }
-    
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
-        // Immune to explosion damage
-        if (source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION)) {
-            return false;
-        }
-        return super.hurt(source, amount);
     }
 }

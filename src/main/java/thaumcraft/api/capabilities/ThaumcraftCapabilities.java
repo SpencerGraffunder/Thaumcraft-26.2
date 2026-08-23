@@ -1,36 +1,101 @@
 package thaumcraft.api.capabilities;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterEvent;
+import thaumcraft.Thaumcraft;
+import thaumcraft.common.lib.capabilities.PlayerKnowledge;
+import thaumcraft.common.lib.capabilities.PlayerWarp;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * ThaumcraftCapabilities - Access point for Thaumcraft's player capabilities.
+ * ThaumcraftCapabilities - Access point for Thaumcraft's player data attachments.
  * 
  * @author Azanor
- * Ported to 1.20.1
+ * Ported to 1.20.1 / NeoForge 26.2
  */
+@EventBusSubscriber(modid = Thaumcraft.MODID)
 public class ThaumcraftCapabilities {
 
     // ==================== Player Knowledge ====================
 
     /**
-     * The capability object for IPlayerKnowledge
+     * The data attachment type for IPlayerKnowledge
      */
-    public static final Capability<IPlayerKnowledge> KNOWLEDGE = CapabilityManager.get(new CapabilityToken<>() {});
+    public static AttachmentType<IPlayerKnowledge> KNOWLEDGE;
 
     /**
-     * Retrieves the knowledge capability handler for the supplied player.
+     * The data attachment type for IPlayerWarp
+     */
+    public static AttachmentType<IPlayerWarp> WARP;
+
+    /**
+     * Registers the player data attachment types.
+     */
+    @SubscribeEvent
+    public static void registerAttachmentTypes(RegisterEvent event) {
+        if (event.getRegistryKey().equals(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)) {
+            KNOWLEDGE = AttachmentType.<IPlayerKnowledge>builder(PlayerKnowledge.DefaultImpl::new)
+                    .serialize(new IAttachmentSerializer<IPlayerKnowledge>() {
+                        @Override
+                        public IPlayerKnowledge read(IAttachmentHolder holder, ValueInput input) {
+                            IPlayerKnowledge knowledge = new PlayerKnowledge.DefaultImpl();
+                            input.read("data", CompoundTag.CODEC).ifPresent(knowledge::deserializeNBT);
+                            return knowledge;
+                        }
+
+                        @Override
+                        public boolean write(IPlayerKnowledge knowledge, ValueOutput output) {
+                            output.store("data", CompoundTag.CODEC, knowledge.serializeNBT());
+                            return true;
+                        }
+                    })
+                    .copyOnDeath()
+                    .build();
+            WARP = AttachmentType.<IPlayerWarp>builder(PlayerWarp.DefaultImpl::new)
+                    .serialize(new IAttachmentSerializer<IPlayerWarp>() {
+                        @Override
+                        public IPlayerWarp read(IAttachmentHolder holder, ValueInput input) {
+                            IPlayerWarp warp = new PlayerWarp.DefaultImpl();
+                            input.read("data", CompoundTag.CODEC).ifPresent(warp::deserializeNBT);
+                            return warp;
+                        }
+
+                        @Override
+                        public boolean write(IPlayerWarp warp, ValueOutput output) {
+                            output.store("data", CompoundTag.CODEC, warp.serializeNBT());
+                            return true;
+                        }
+                    })
+                    .copyOnDeath()
+                    .build();
+
+            event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, helper -> {
+                helper.register(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "knowledge"), KNOWLEDGE);
+                helper.register(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "warp"), WARP);
+            });
+        }
+    }
+
+    /**
+     * Retrieves the knowledge attachment for the supplied player.
      * @param player The player to get knowledge for
-     * @return The knowledge capability, or null if not present
+     * @return The knowledge data, or null if not registered yet
      */
     @Nullable
     public static IPlayerKnowledge getKnowledge(@Nonnull Player player) {
-        return player.getCapability(KNOWLEDGE).orElse(null);
+        return KNOWLEDGE != null ? player.getData(KNOWLEDGE) : null;
     }
 
     /**
@@ -120,17 +185,12 @@ public class ThaumcraftCapabilities {
     // ==================== Player Warp ====================
 
     /**
-     * The capability object for IPlayerWarp
-     */
-    public static final Capability<IPlayerWarp> WARP = CapabilityManager.get(new CapabilityToken<>() {});
-
-    /**
-     * Retrieves the warp capability handler for the supplied player.
+     * Retrieves the warp attachment for the supplied player.
      * @param player The player to get warp for
-     * @return The warp capability, or null if not present
+     * @return The warp data, or null if not registered yet
      */
     @Nullable
     public static IPlayerWarp getWarp(@Nonnull Player player) {
-        return player.getCapability(WARP).orElse(null);
+        return WARP != null ? player.getData(WARP) : null;
     }
 }

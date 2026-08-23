@@ -1,5 +1,6 @@
 package thaumcraft.common.blocks.world.taint;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -9,8 +10,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DirectionalBlock;
@@ -63,6 +64,11 @@ public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
     }
 
     @Override
+    protected MapCodec<? extends DirectionalBlock> codec() {
+        return simpleCodec(p -> new BlockTaintFeature());
+    }
+
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
@@ -98,13 +104,13 @@ public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
-                                   LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+            BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
         Direction facing = state.getValue(FACING);
-        if (direction == facing.getOpposite() && !canSurvive(state, level, pos)) {
+        if (directionToNeighbour == facing.getOpposite() && !canSurvive(state, level, pos)) {
             return Blocks.AIR.defaultBlockState();
         }
-        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+        return super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
     }
 
     @Override
@@ -141,8 +147,8 @@ public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock()) && !level.isClientSide()) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             RandomSource random = level.getRandom();
             if (random.nextFloat() < 0.333f) {
                 // Spawn a taint crawler
@@ -155,13 +161,7 @@ public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
                 AuraHelper.polluteAura(level, pos, 1.0f, true);
             }
         }
-        super.onRemove(state, level, pos, newState, movedByPiston);
-    }
-
-    @Override
-    public boolean canHarvestBlock(BlockState state, BlockGetter level, BlockPos pos, Player player) {
-        // Always droppable with silk touch, but normally drops nothing
-        return player.hasCorrectToolForDrops(state);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override

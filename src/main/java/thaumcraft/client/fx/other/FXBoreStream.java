@@ -1,15 +1,14 @@
 package thaumcraft.client.fx.other;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import thaumcraft.client.fx.particles.ThaumcraftParticle;
 
 /**
@@ -69,8 +68,8 @@ public class FXBoreStream extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 cameraPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 cameraPos = camera.position();
         
         float x1 = (float)(this.x - cameraPos.x());
         float y1 = (float)(this.y - cameraPos.y());
@@ -80,81 +79,32 @@ public class FXBoreStream extends ThaumcraftParticle {
         float y2 = (float)(this.targetY - cameraPos.y());
         float z2 = (float)(this.targetZ - cameraPos.z());
         
-        // Calculate direction
+        // Calculate beam length
         float dx = x2 - x1;
         float dy = y2 - y1;
         float dz = z2 - z1;
         float length = Mth.sqrt(dx * dx + dy * dy + dz * dz);
         if (length < 0.001f) return;
         
-        dx /= length;
-        dy /= length;
-        dz /= length;
-        
-        // Calculate perpendicular vectors for beam width
-        float perpX, perpY, perpZ;
-        if (Math.abs(dy) < 0.9f) {
-            // Cross with up vector
-            perpX = -dz;
-            perpY = 0;
-            perpZ = dx;
-        } else {
-            // Cross with forward vector
-            perpX = 0;
-            perpY = dz;
-            perpZ = -dy;
-        }
-        
-        // Normalize
-        float perpLen = Mth.sqrt(perpX * perpX + perpY * perpY + perpZ * perpZ);
-        perpX /= perpLen;
-        perpY /= perpLen;
-        perpZ /= perpLen;
-        
-        // Rotate perpendicular around beam axis
-        float rotRad = (float) Math.toRadians(this.rotationAngle);
-        float cos = Mth.cos(rotRad);
-        float sin = Mth.sin(rotRad);
-        
-        // Cross product for second perpendicular
-        float perp2X = dy * perpZ - dz * perpY;
-        float perp2Y = dz * perpX - dx * perpZ;
-        float perp2Z = dx * perpY - dy * perpX;
-        
-        // Rotated perpendicular
-        float rPerpX = perpX * cos + perp2X * sin;
-        float rPerpY = perpY * cos + perp2Y * sin;
-        float rPerpZ = perpZ * cos + perp2Z * sin;
-        
+        // Render the beam as a chain of overlapping camera-facing billboard quads
+        // along the source->target line (render-state particle model).
+        int segments = Math.max(2, Math.min(8, (int)(length * 4.0f)));
         float width = this.quadSize * 0.05f;
         
-        // Render beam as quad strip
-        float u0 = 0;
-        float u1 = 1;
-        float v0 = 48.0f / 64.0f;
-        float v1 = 49.0f / 64.0f;
-        int light = 240;
+        Quaternionf rot = camera.rotation();
+        int light = 0xF000F0; // Full brightness
         
-        // Bottom left
-        buffer.vertex(x1 - rPerpX * width, y1 - rPerpY * width, z1 - rPerpZ * width)
-              .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-              .uv2(light).endVertex();
-        // Top left
-        buffer.vertex(x1 + rPerpX * width, y1 + rPerpY * width, z1 + rPerpZ * width)
-              .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-              .uv2(light).endVertex();
-        // Top right
-        buffer.vertex(x2 + rPerpX * width, y2 + rPerpY * width, z2 + rPerpZ * width)
-              .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha * 0.5f)
-              .uv2(light).endVertex();
-        // Bottom right
-        buffer.vertex(x2 - rPerpX * width, y2 - rPerpY * width, z2 - rPerpZ * width)
-              .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha * 0.5f)
-              .uv2(light).endVertex();
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        for (int i = 0; i <= segments; i++) {
+            float t = i / (float) segments;
+            float px = x1 + dx * t;
+            float py = y1 + dy * t;
+            float pz = z1 + dz * t;
+            
+            // Fade alpha towards the target end (matches the old per-vertex fade)
+            int color = ARGB.colorFromFloat(this.alpha * (1.0f - t * 0.5f), this.rCol, this.gCol, this.bCol);
+            
+            state.add(getLayer(), px, py, pz, rot.x, rot.y, rot.z, rot.w, width,
+                    0.0f, 1.0f, 0.0f, 1.0f, color, light);
+        }
     }
 }

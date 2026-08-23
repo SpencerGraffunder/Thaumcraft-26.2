@@ -1,9 +1,10 @@
 package thaumcraft.client.renderers.entity;
 
-import net.minecraft.client.model.monster.zombie.ZombieModel;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.monster.zombie.ZombieModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.client.renderer.entity.state.ZombieRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -15,7 +16,7 @@ import thaumcraft.common.entities.monster.EntityBrainyZombie;
  * Uses the vanilla zombie model with a custom texture.
  */
 @OnlyIn(Dist.CLIENT)
-public class BrainyZombieRenderer extends HumanoidMobRenderer<EntityBrainyZombie, ZombieModel<EntityBrainyZombie>> {
+public class BrainyZombieRenderer extends HumanoidMobRenderer<EntityBrainyZombie, ZombieRenderState, ZombieModel<ZombieRenderState>> {
     
     private static final Identifier TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/brainy_zombie.png");
@@ -25,7 +26,12 @@ public class BrainyZombieRenderer extends HumanoidMobRenderer<EntityBrainyZombie
     }
     
     @Override
-    public Identifier getTextureLocation(EntityBrainyZombie entity) {
+    public Identifier getTextureLocation(ZombieRenderState state) {
         return TEXTURE;
+    }
+    
+    @Override
+    public ZombieRenderState createRenderState() {
+        return new ZombieRenderState();
     }
 }

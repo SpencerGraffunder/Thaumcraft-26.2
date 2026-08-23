@@ -33,7 +33,7 @@ public class BlockNitor extends Block {
                 .sound(SoundType.WOOL)
                 .lightLevel(state -> 15)
                 .noOcclusion()
-                .noCollission()
+                .noCollision()
                 .replaceable());
         this.color = color;
     }

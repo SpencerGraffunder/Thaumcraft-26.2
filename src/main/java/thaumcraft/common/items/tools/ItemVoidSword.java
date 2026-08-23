@@ -25,11 +25,6 @@ public class ItemVoidSword extends Item implements IWarpingGear {
     }
     
     @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.VOID_METAL_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         super.inventoryTick(stack, level, entity, slot);
         // Self-repair: repair 1 durability every second (20 ticks)
@@ -47,13 +42,13 @@ public class ItemVoidSword extends Item implements IWarpingGear {
                 target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 80, 0));
             }
         }
-        return super.hurtEnemy(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
     
     private boolean isPvPEnabled(Level level) {
         // In single player or LAN, PvP is controlled by server settings
         if (level.getServer() != null) {
-            return level.getServer().isPvpAllowed();
+            return true;
         }
         return true;
     }

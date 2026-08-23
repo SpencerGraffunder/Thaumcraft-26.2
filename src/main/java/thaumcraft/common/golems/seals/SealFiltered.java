@@ -45,7 +45,14 @@ public abstract class SealFiltered implements ISeal, ISealConfigFilter {
     public void readCustomNBT(CompoundTag nbt) {
         // Load filter items
         filter = NonNullList.withSize(getFilterSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, filter);
+        net.minecraft.nbt.ListTag items = nbt.getListOrEmpty("Items");
+        for (int i = 0; i < items.size() && i < filter.size(); i++) {
+            CompoundTag slotTag = items.getCompoundOrEmpty(i);
+            int slot = slotTag.getByteOr("Slot", (byte)0) & 0xFF;
+            if (slot >= 0 && slot < filter.size()) {
+                ItemStack.MAP_CODEC.codec().parse(net.minecraft.nbt.NbtOps.INSTANCE, slotTag).result().ifPresent(stack -> filter.set(slot, stack));
+            }
+        }
         
         // Ensure filter counts are 1
         for (ItemStack s : filter) {
@@ -70,7 +77,24 @@ public abstract class SealFiltered implements ISeal, ISealConfigFilter {
     
     @Override
     public void writeCustomNBT(CompoundTag nbt) {
-        ContainerHelper.saveAllItems(nbt, filter);
+        net.minecraft.nbt.ListTag items = new net.minecraft.nbt.ListTag();
+        for (int i = 0; i < filter.size(); i++) {
+            ItemStack s = filter.get(i);
+            if (!s.isEmpty()) {
+                CompoundTag slotTag = new CompoundTag();
+                slotTag.putByte("Slot", (byte) i);
+                ItemStack.MAP_CODEC.codec().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, s).result().ifPresent(tag -> {
+                    CompoundTag itemTag = (CompoundTag) tag;
+                    for (String key : itemTag.keySet()) {
+                        slotTag.put(key, itemTag.get(key));
+                    }
+                });
+                items.add(slotTag);
+            }
+        }
+        if (!items.isEmpty()) {
+            nbt.put("Items", items);
+        }
         nbt.putBoolean("bl", blacklist);
         
         // Save filter sizes

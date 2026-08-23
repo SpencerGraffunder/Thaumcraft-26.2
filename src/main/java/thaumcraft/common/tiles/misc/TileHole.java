@@ -151,7 +151,10 @@ public class TileHole extends TileMemory {
         
         // Restore tile entity data if we had any
         if (tileEntityCompound != null && level.getBlockEntity(worldPosition) != null) {
-            level.getBlockEntity(worldPosition).load(tileEntityCompound);
+            level.getBlockEntity(worldPosition).loadWithComponents(
+                    net.minecraft.world.level.storage.TagValueInput.create(
+                            new net.minecraft.util.ProblemReporter.Collector(),
+                            level.registryAccess(), tileEntityCompound));
         }
     }
     

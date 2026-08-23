@@ -1,17 +1,16 @@
 package thaumcraft.client.fx.other;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.joml.Quaternionf;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.client.fx.particles.ThaumcraftParticle;
@@ -213,27 +212,19 @@ public class FXEssentiaStream extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         if (this.points.size() < 3) return;
         
-        // End the current batch
-        Tesselator.getInstance().end();
-        
-        // Set up our own rendering
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, ESSENTIA_TEX);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        
         // Camera position
-        double camX = camera.getPosition().x;
-        double camY = camera.getPosition().y;
-        double camZ = camera.getPosition().z;
+        Vec3 camPos = camera.position();
+        double camX = camPos.x();
+        double camY = camPos.y();
+        double camZ = camPos.z();
         
-        // Render each segment as a billboarded quad
+        Quaternionf rot = camera.rotation();
+        int light = 0xF000F0; // Full brightness
+        
+        // Render each segment as a camera-facing billboard quad
         for (int i = 1; i < this.points.size() - 1; i++) {
             StreamPoint p = this.points.get(i);
             
@@ -254,24 +245,11 @@ public class FXEssentiaStream extends ThaumcraftParticle {
             float r = this.rCol * v;
             float g = this.gCol * v;
             float b = this.bCol * v;
+            int color = ARGB.colorFromFloat(1.0f, r, g, b);
             
-            // Simple billboard (always face camera)
-            builder.vertex(px - size, py - size, pz).uv(0, 1).color(r, g, b, 1.0f).endVertex();
-            builder.vertex(px - size, py + size, pz).uv(0, 0).color(r, g, b, 1.0f).endVertex();
-            builder.vertex(px + size, py + size, pz).uv(1, 0).color(r, g, b, 1.0f).endVertex();
-            builder.vertex(px + size, py - size, pz).uv(1, 1).color(r, g, b, 1.0f).endVertex();
+            state.add(getLayer(), px, py, pz, rot.x, rot.y, rot.z, rot.w, size,
+                    0.0f, 1.0f, 0.0f, 1.0f, color, light);
         }
-        
-        Tesselator.getInstance().end();
-        
-        // Restart particle batch
-        RenderSystem.setShaderTexture(0, TextureManager.INTENTIONAL_MISSING_TEXTURE);
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
     }
     
     public FXEssentiaStream setTCGravity(float value) {

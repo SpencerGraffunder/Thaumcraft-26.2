@@ -86,7 +86,7 @@ public class BarrowFeature extends Feature<NoneFeatureConfiguration> {
         
         // Check for valid ground blocks
         if (isValidGroundBlock(blockState)) return true;
-        if ((blockState.is(Blocks.SNOW) || blockState.is(Blocks.GRASS)) && 
+        if ((blockState.is(Blocks.SNOW) || blockState.is(Blocks.SHORT_GRASS)) && 
                 isValidGroundBlock(belowState)) return true;
         
         return false;
@@ -316,7 +316,7 @@ public class BarrowFeature extends Feature<NoneFeatureConfiguration> {
         setBlock(level, spawner1Pos, Blocks.SPAWNER.defaultBlockState());
         BlockEntity be1 = level.getBlockEntity(spawner1Pos);
         if (be1 instanceof SpawnerBlockEntity spawner) {
-            spawner.setEntityId(net.minecraft.world.entity.EntityType.SKELETON, random);
+            spawner.setEntityId(net.minecraft.world.entity.EntityTypes.SKELETON, random);
         }
         
         // Zombie spawner in opposite corner
@@ -324,7 +324,7 @@ public class BarrowFeature extends Feature<NoneFeatureConfiguration> {
         setBlock(level, spawner2Pos, Blocks.SPAWNER.defaultBlockState());
         BlockEntity be2 = level.getBlockEntity(spawner2Pos);
         if (be2 instanceof SpawnerBlockEntity spawner) {
-            spawner.setEntityId(net.minecraft.world.entity.EntityType.ZOMBIE, random);
+            spawner.setEntityId(net.minecraft.world.entity.EntityTypes.ZOMBIE, random);
         }
     }
 }

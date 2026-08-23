@@ -25,11 +25,6 @@ public class ItemVoidHoe extends HoeItem implements IWarpingGear {
     }
     
     @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.VOID_METAL_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         super.inventoryTick(stack, level, entity, slot);
         // Self-repair: repair 1 durability every second (20 ticks)

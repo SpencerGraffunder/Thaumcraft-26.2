@@ -2,6 +2,7 @@ package thaumcraft.common.items.tools;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -39,11 +41,6 @@ public class ItemElementalShovel extends ShovelItem {
     public ItemElementalShovel() {
         super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 1.5f, -3.0f, new Item.Properties()
                         .rarity(Rarity.RARE));
-    }
-
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.THAUMIUM_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
     }
 
     @Override
@@ -129,7 +126,7 @@ public class ItemElementalShovel extends ShovelItem {
                     // Try to consume the block from player inventory
                     if (player.isCreative() || consumeBlock(player, clickedBlock, clickedState)) {
                         // Play sound
-                        SoundType soundType = clickedBlock.getSoundType(clickedState, level, targetPos, player);
+                        SoundType soundType = clickedState.getSoundType(level, targetPos, player);
                         level.playSound(player, targetPos, soundType.getPlaceSound(), SoundSource.BLOCKS, 
                                 0.6f, 0.9f + level.getRandom().nextFloat() * 0.2f);
                         
@@ -137,7 +134,7 @@ public class ItemElementalShovel extends ShovelItem {
                         level.setBlock(targetPos, clickedState, Block.UPDATE_ALL);
                         
                         // Damage the tool
-                        stack.hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(context.getHand()));
+                        stack.hurtAndBreak(1, player, context.getHand());
                         placedCount++;
 
                         // TODO: Add visual effect (bamf)
@@ -148,11 +145,11 @@ public class ItemElementalShovel extends ShovelItem {
                     } else if (clickedBlock == Blocks.GRASS_BLOCK) {
                         // Special case: grass can be placed as dirt
                         if (player.isCreative() || consumeBlock(player, Blocks.DIRT, Blocks.DIRT.defaultBlockState())) {
-                            SoundType soundType = Blocks.DIRT.getSoundType(Blocks.DIRT.defaultBlockState(), level, targetPos, player);
+                            SoundType soundType = Blocks.DIRT.defaultBlockState().getSoundType(level, targetPos, player);
                             level.playSound(player, targetPos, soundType.getPlaceSound(), SoundSource.BLOCKS,
                                     0.6f, 0.9f + level.getRandom().nextFloat() * 0.2f);
                             level.setBlock(targetPos, Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
-                            stack.hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(context.getHand()));
+                            stack.hurtAndBreak(1, player, context.getHand());
                             placedCount++;
                         }
                     }
@@ -191,7 +188,7 @@ public class ItemElementalShovel extends ShovelItem {
      * Gets the current placement orientation from the item's NBT.
      */
     public static byte getOrientation(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag != null && tag.contains("or")) {
             return tag.getByteOr("or", (byte)0);
         }
@@ -203,8 +200,9 @@ public class ItemElementalShovel extends ShovelItem {
      * Called via keybind packet.
      */
     public static void setOrientation(ItemStack stack, byte orientation) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         tag.putByte("or", (byte) (orientation % 3));
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
 
     /**

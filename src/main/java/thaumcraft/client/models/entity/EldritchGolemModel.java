@@ -16,7 +16,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
-import thaumcraft.common.entities.monster.boss.EntityEldritchGolem;
+import thaumcraft.client.renderers.entity.state.EldritchGolemRenderState;
 
 /**
  * EldritchGolemModel - Model for the Eldritch Golem boss.
@@ -29,7 +29,7 @@ import thaumcraft.common.entities.monster.boss.EntityEldritchGolem;
  * - Attack animations for arm swings
  */
 @OnlyIn(Dist.CLIENT)
-public class EldritchGolemModel extends EntityModel<EntityEldritchGolem> {
+public class EldritchGolemModel extends EntityModel<EldritchGolemRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_golem"), "main");
@@ -45,6 +45,7 @@ public class EldritchGolemModel extends EntityModel<EntityEldritchGolem> {
     private final ModelPart frontCloth;
     
     public EldritchGolemModel(ModelPart root) {
+        super(root);
         this.head = root.getChild("head");
         this.headStump = root.getChild("head_stump");
         this.torso = root.getChild("torso");
@@ -166,63 +167,47 @@ public class EldritchGolemModel extends EntityModel<EntityEldritchGolem> {
     }
     
     @Override
-    public void setupAnim(EntityEldritchGolem entity, float limbSwing, float limbSwingAmount, 
-                          float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(EldritchGolemRenderState state) {
         // Head rotation (unless spawning or headless)
-        if (entity.getSpawnTimer() > 0) {
-            this.head.xRot = entity.getSpawnTimer() / 2.0F / 57.3F;
+        if (state.spawnTimer > 0) {
+            this.head.xRot = state.spawnTimer / 2.0F / 57.3F;
             this.head.yRot = 0.0F;
         } else {
-            this.head.yRot = netHeadYaw / 4.0F * ((float)Math.PI / 180F);
-            this.head.xRot = headPitch / 2.0F * ((float)Math.PI / 180F) - 0.1047F;
-            this.headStump.yRot = netHeadYaw * ((float)Math.PI / 180F);
-            this.headStump.xRot = headPitch * ((float)Math.PI / 180F) - 0.1047F;
+            this.head.yRot = state.yRot / 4.0F * ((float)Math.PI / 180F);
+            this.head.xRot = state.xRot / 2.0F * ((float)Math.PI / 180F) - 0.1047F;
+            this.headStump.yRot = state.yRot * ((float)Math.PI / 180F);
+            this.headStump.xRot = state.xRot * ((float)Math.PI / 180F) - 0.1047F;
         }
         
         // Head visibility based on headless state
-        this.head.visible = !entity.isHeadless();
-        this.headStump.visible = entity.isHeadless();
+        this.head.visible = !state.headless;
+        this.headStump.visible = state.headless;
         
         // Leg animation
-        this.rightLeg.xRot = Mth.cos(limbSwing * 0.4662F) * 1.4F * limbSwingAmount;
-        this.leftLeg.xRot = Mth.cos(limbSwing * 0.4662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.rightLeg.xRot = Mth.cos(state.walkAnimationPos * 0.4662F) * 1.4F * state.walkAnimationSpeed;
+        this.leftLeg.xRot = Mth.cos(state.walkAnimationPos * 0.4662F + (float)Math.PI) * 1.4F * state.walkAnimationSpeed;
         
         // Arm animation
-        int attackTimer = entity.getAttackTimer();
+        int attackTimer = state.attackTimer;
         if (attackTimer > 0) {
             // Attack animation - arms swing down
-            float attackProgress = doAbs(attackTimer - (ageInTicks - (int)ageInTicks), 10.0F);
+            float attackProgress = doAbs(attackTimer - (state.ageInTicks - (int)state.ageInTicks), 10.0F);
             this.rightArm.xRot = -2.0F + 1.5F * attackProgress;
             this.leftArm.xRot = -2.0F + 1.5F * attackProgress;
         } else {
             // Walking arm swing
-            this.rightArm.xRot = Mth.cos(limbSwing * 0.4F + (float)Math.PI) * 2.0F * limbSwingAmount * 0.5F;
-            this.leftArm.xRot = Mth.cos(limbSwing * 0.4F) * 2.0F * limbSwingAmount * 0.5F;
+            this.rightArm.xRot = Mth.cos(state.walkAnimationPos * 0.4F + (float)Math.PI) * 2.0F * state.walkAnimationSpeed * 0.5F;
+            this.leftArm.xRot = Mth.cos(state.walkAnimationPos * 0.4F) * 2.0F * state.walkAnimationSpeed * 0.5F;
         }
         
         // Cloak animation - sways with movement
-        float cloakSway = Math.min(Mth.cos(limbSwing * 0.44F) * 1.4F * limbSwingAmount,
-                Mth.cos(limbSwing * 0.44F + (float)Math.PI) * 1.4F * limbSwingAmount);
+        float cloakSway = Math.min(Mth.cos(state.walkAnimationPos * 0.44F) * 1.4F * state.walkAnimationSpeed,
+                Mth.cos(state.walkAnimationPos * 0.44F + (float)Math.PI) * 1.4F * state.walkAnimationSpeed);
         this.cloak.xRot = -cloakSway / 3.0F + 0.1396F;
         this.frontCloth.xRot = cloakSway + 0.1745F;
     }
     
     private float doAbs(float value, float range) {
         return (Math.abs(value % range - range * 0.5F) - range * 0.25F) / (range * 0.25F);
-    }
-    
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, 
-                               int packedLight, int packedOverlay, 
-                               float red, float green, float blue, float alpha) {
-        this.head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.headStump.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.torso.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.rightArm.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.leftArm.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.rightLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.leftLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.cloak.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.frontCloth.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

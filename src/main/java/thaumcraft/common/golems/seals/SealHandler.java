@@ -147,7 +147,7 @@ public class SealHandler {
         if (dimSeals != null && !dimSeals.isEmpty()) {
             for (SealEntity se : dimSeals.values()) {
                 if (se.getSeal() != null && se.getSealPos() != null) {
-                    ChunkPos sealChunk = new ChunkPos(se.sealPos.pos);
+                    ChunkPos sealChunk = ChunkPos.containing(se.sealPos.pos);
                     if (sealChunk.equals(chunk)) {
                         out.add(se);
                     }

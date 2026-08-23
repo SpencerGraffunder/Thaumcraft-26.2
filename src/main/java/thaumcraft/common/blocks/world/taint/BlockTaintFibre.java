@@ -8,13 +8,15 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -119,8 +121,8 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
     }
     
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
-            LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+            BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
         return getStateWithConnections(level, pos);
     }
     
@@ -174,7 +176,8 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
     }
     
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
+            InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         // Apply flux taint to non-tainted living entities
         if (!level.isClientSide() && entity instanceof LivingEntity living) {
             if (!(living instanceof ITaintedMob) && !living.isInvertedHealAndHarm()) {
@@ -231,14 +234,21 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
         
         // Drop flux crystal if this has a crystal growth
         if (state.getValue(HAS_CRYSTAL)) {
-            int fortune = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
-                    net.minecraft.world.item.enchantment.Enchantments.BLOCK_FORTUNE, tool);
+            int fortune = getEnchantmentLevel(level, net.minecraft.world.item.enchantment.Enchantments.FORTUNE, tool);
             if (level.getRandom().nextInt(5) <= fortune) {
                 popResource(level, pos, new ItemStack(ModItems.FLUX_CRYSTAL.get()));
             }
             // Pollute aura when broken
             AuraHelper.polluteAura(level, pos, 1.0f, true);
         }
+    }
+
+    private static int getEnchantmentLevel(net.minecraft.server.level.ServerLevel level,
+                                           net.minecraft.resources.ResourceKey<net.minecraft.world.item.enchantment.Enchantment> enchantment,
+                                           ItemStack tool) {
+        net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment> holder =
+                level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(enchantment);
+        return tool.getEnchantmentLevel(holder);
     }
     
     @Override
@@ -247,13 +257,13 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
     }
     
     @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    protected boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
     
     @Override
-    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.getValue(HAS_CRYSTAL) ? 12 : 0;
+    public int getLightEmission(BlockGetter level, BlockPos pos) {
+        return level.getBlockState(pos).getValue(HAS_CRYSTAL) ? 12 : 0;
     }
     
     @Override

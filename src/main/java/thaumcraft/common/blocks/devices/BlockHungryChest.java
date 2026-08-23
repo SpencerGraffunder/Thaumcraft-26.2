@@ -7,10 +7,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -85,16 +85,16 @@ public class BlockHungryChest extends Block implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                  BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof TileHungryChest chest) {
+        if (blockEntity instanceof TileHungryChest chest && player instanceof ServerPlayer serverPlayer) {
             // Open the chest menu
-            NetworkHooks.openScreen((ServerPlayer) player, new MenuProvider() {
+            serverPlayer.openMenu(new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return Component.translatable("container.thaumcraft.hungry_chest");
@@ -104,14 +104,15 @@ public class BlockHungryChest extends Block implements EntityBlock {
                 public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
                     return new HungryChestMenu(containerId, playerInventory, chest);
                 }
-            }, pos);
+            }, buf -> buf.writeBlockPos(pos));
         }
 
         return InteractionResult.CONSUME;
     }
 
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
+            net.minecraft.world.entity.InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         if (level.isClientSide() || !(entity instanceof ItemEntity itemEntity)) {
             return;
         }
@@ -125,25 +126,22 @@ public class BlockHungryChest extends Block implements EntityBlock {
             ItemStack remaining = chest.insertItem(itemEntity.getItem());
             if (remaining.isEmpty()) {
                 itemEntity.discard();
-                level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.BLOCKS, 0.25f, 
+                level.playSound(null, pos, SoundEvents.GENERIC_EAT.value(), SoundSource.BLOCKS, 0.25f, 
                         (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2f + 1.0f);
             } else if (remaining.getCount() < itemEntity.getItem().getCount()) {
                 itemEntity.setItem(remaining);
-                level.playSound(null, pos, SoundEvents.GENERIC_EAT, SoundSource.BLOCKS, 0.25f, 
+                level.playSound(null, pos, SoundEvents.GENERIC_EAT.value(), SoundSource.BLOCKS, 0.25f, 
                         (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2f + 1.0f);
             }
         }
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof TileHungryChest chest) {
-                Containers.dropContents(level, pos, chest);
-                level.updateNeighbourForOutputSignal(pos, this);
-            }
-            super.onRemove(state, level, pos, newState, isMoving);
+    public void affectNeighborsAfterRemoval(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, boolean isMoving) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof TileHungryChest chest) {
+            Containers.dropContents(level, pos, chest);
+            level.updateNeighbourForOutputSignal(pos, this);
         }
     }
 
@@ -153,7 +151,7 @@ public class BlockHungryChest extends Block implements EntityBlock {
     }
 
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof TileHungryChest chest) {
             return AbstractContainerMenu.getRedstoneSignalFromContainer(chest);

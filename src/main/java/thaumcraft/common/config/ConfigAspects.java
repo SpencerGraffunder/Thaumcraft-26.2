@@ -1,5 +1,6 @@
 package thaumcraft.common.config;
 
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -225,7 +226,7 @@ public class ConfigAspects {
         
         // Wool
         ThaumcraftApi.registerObjectTag("minecraft:wool", new AspectList().add(Aspect.BEAST, 15).add(Aspect.CRAFT, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.WHITE_WOOL), new AspectList().add(Aspect.BEAST, 15).add(Aspect.CRAFT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.WOOL.pick(DyeColor.WHITE)), new AspectList().add(Aspect.BEAST, 15).add(Aspect.CRAFT, 5));
         
         // Food items
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BREAD), new AspectList().add(Aspect.PLANT, 5).add(Aspect.LIFE, 5).add(Aspect.CRAFT, 1));
@@ -427,22 +428,22 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.BEACON), new AspectList().add(Aspect.AURA, 10).add(Aspect.MAGIC, 10).add(Aspect.EXCHANGE, 10).add(Aspect.LIGHT, 15));
         
         // Dyes (basic)
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BLACK_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.DARKNESS, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.WHITE_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.LIGHT, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.RED_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.FIRE, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BLUE_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.WATER, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.YELLOW_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.LIGHT, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GREEN_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.PLANT, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BROWN_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.EARTH, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CYAN_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.WATER, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.PURPLE_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.MAGIC, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.ORANGE_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.FIRE, 1).add(Aspect.LIGHT, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.PINK_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.LIFE, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.LIME_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.PLANT, 1).add(Aspect.LIGHT, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.MAGENTA_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.MAGIC, 1).add(Aspect.SENSES, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.LIGHT_BLUE_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.AIR, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GRAY_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.ENTROPY, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.LIGHT_GRAY_DYE), new AspectList().add(Aspect.SENSES, 5).add(Aspect.ORDER, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.black()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.DARKNESS, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.white()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.LIGHT, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.red()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.FIRE, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.blue()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.WATER, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.yellow()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.LIGHT, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.green()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.PLANT, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.brown()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.EARTH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.cyan()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.WATER, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.purple()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.MAGIC, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.orange()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.FIRE, 1).add(Aspect.LIGHT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.pink()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.LIFE, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.lime()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.PLANT, 1).add(Aspect.LIGHT, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.magenta()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.MAGIC, 1).add(Aspect.SENSES, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.lightBlue()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.AIR, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.gray()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.ENTROPY, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DYE.lightGray()), new AspectList().add(Aspect.SENSES, 5).add(Aspect.ORDER, 2));
         
         // Netherite
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.NETHERITE_SCRAP), new AspectList().add(Aspect.METAL, 15).add(Aspect.FIRE, 10).add(Aspect.VOID, 5));
@@ -465,7 +466,7 @@ public class ConfigAspects {
         
         // Copper (1.17+)
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.RAW_COPPER), new AspectList().add(Aspect.METAL, 10).add(Aspect.EARTH, 5).add(Aspect.EXCHANGE, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.COPPER_BLOCK), new AspectList().add(Aspect.METAL, 80).add(Aspect.EXCHANGE, 40));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.COPPER_BLOCK.weathering().unaffected()), new AspectList().add(Aspect.METAL, 80).add(Aspect.EXCHANGE, 40));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.RAW_COPPER_BLOCK), new AspectList().add(Aspect.METAL, 80).add(Aspect.EARTH, 40).add(Aspect.EXCHANGE, 40));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.SPYGLASS), new AspectList().add(Aspect.SENSES, 20).add(Aspect.METAL, 5).add(Aspect.CRYSTAL, 5));
         

@@ -143,7 +143,7 @@ public class AuraThread implements Runnable {
         }
         
         // Update moon phase modifiers if world time changed
-        long worldTime = level.getDayTime();
+        long worldTime = level.getOverworldClockTime();
         if (lastWorldTime != worldTime) {
             lastWorldTime = worldTime;
             updateMoonPhaseModifiers(level);
@@ -159,7 +159,9 @@ public class AuraThread implements Runnable {
      * Updates the moon phase modifiers based on current world time.
      */
     private void updateMoonPhaseModifiers(ServerLevel level) {
-        int moonPhase = level.getMoonPhase();
+        int moonPhase = level.environmentAttributes()
+                .getDimensionValue(net.minecraft.world.attribute.EnvironmentAttributes.MOON_PHASE)
+                .index();
         phaseVis = PHASE_VIS_TABLE[moonPhase];
         phaseMax = 1.0f + PHASE_MAX_TABLE[moonPhase];
         phaseFlux = 0.25f - phaseVis;

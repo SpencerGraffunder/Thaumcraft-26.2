@@ -1,8 +1,8 @@
 package thaumcraft.client.gui.screens;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -44,9 +44,7 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
     };
     
     public ArcaneWorkbenchScreen(ArcaneWorkbenchMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
-        this.imageWidth = 190;
-        this.imageHeight = 234;
+        super(menu, playerInventory, title, 190, 234);
         // Adjust label positions for the larger GUI
         this.titleLabelY = 6;
         this.inventoryLabelX = 16;
@@ -54,20 +52,17 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        this.renderTooltip(graphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
     
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int x = this.leftPos;
         int y = this.topPos;
         
         // Draw main background
-        graphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
         
         // Get recipe info for highlighting crystals
         IArcaneRecipe recipe = ThaumcraftCraftingManager.findMatchingArcaneRecipe(
@@ -86,7 +81,6 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
         
         // Draw crystal slot highlights if recipe requires crystals
         if (crystals != null && crystals.size() > 0) {
-            RenderSystem.enableBlend();
             for (Aspect aspect : crystals.getAspects()) {
                 int slotIndex = getAspectSlotIndex(aspect);
                 if (slotIndex >= 0) {
@@ -99,17 +93,14 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
                     float g = ((color >> 8) & 0xFF) / 255.0f;
                     float b = (color & 0xFF) / 255.0f;
                     
-                    RenderSystem.setShaderColor(r, g, b, 0.4f);
-                    graphics.blit(TEXTURE, slotX - 1, slotY - 1, 192, 0, 18, 18);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, slotX - 1, slotY - 1, 192.0F, 0.0F, 18, 18, 256, 256);
                 }
             }
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.disableBlend();
         }
     }
     
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Don't draw default title - draw custom vis info instead
         
         TileArcaneWorkbench tile = menu.getBlockEntity();
@@ -131,43 +122,40 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
         }
         
         // Draw vis available text (right side, scaled down)
-        graphics.pose().pushPose();
-        graphics.pose().translate(168, 46, 0);
-        graphics.pose().scale(0.5f, 0.5f, 1.0f);
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(168, 46);
+        graphics.pose().scale(0.5f);
         
         String availText = auraVis + " " + Component.translatable("gui.thaumcraft.workbench.available").getString();
         int textWidth = this.font.width(availText);
-        int textColor = (auraVis < visCost) ? 0xEE4444 : 0x6E8E5E; // Red if not enough, green if ok
-        graphics.drawString(this.font, availText, -textWidth / 2, 0, textColor, false);
+        int textColor = (auraVis < visCost) ? 0xEE4444 : 0x6E8E5E; // Red if not enough);
         
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
         
         // Draw vis cost if there's a recipe
         if (visCost > 0) {
-            graphics.pose().pushPose();
-            graphics.pose().translate(168, 38, 0);
-            graphics.pose().scale(0.5f, 0.5f, 1.0f);
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(168, 38);
+            graphics.pose().scale(0.5f);
             
             String costText = visCost + " " + Component.translatable("gui.thaumcraft.workbench.cost").getString();
             if (discount > 0) {
                 costText += " (" + discount + "% " + Component.translatable("gui.thaumcraft.workbench.discount").getString() + ")";
             }
             textWidth = this.font.width(costText);
-            graphics.drawString(this.font, costText, -textWidth / 2, 0, 0xC0C0FF, false);
+            graphics.text(this.font);
             
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
             
             // If not enough vis, gray out the result slot area
             if (auraVis < visCost) {
                 // Draw semi-transparent overlay on output slot
-                RenderSystem.enableBlend();
                 graphics.fill(159, 63, 177, 81, 0x80000000);
-                RenderSystem.disableBlend();
             }
         }
         
         // Draw inventory label
-        graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
+        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
     }
     
     /**

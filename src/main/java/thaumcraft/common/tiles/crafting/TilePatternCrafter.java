@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import thaumcraft.api.aura.AuraHelper;
@@ -186,9 +186,9 @@ public class TilePatternCrafter extends TileThaumcraft {
     }
     
     private IItemHandler getItemHandler(BlockPos pos, Direction side) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be == null) return null;
-        return be.getCapability(ForgeCapabilities.ITEM_HANDLER, side).orElse(null);
+        if (level == null) return null;
+        var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, side);
+        return handler != null ? IItemHandler.of(handler) : null;
     }
     
     private boolean canExtractStack(IItemHandler handler, ItemStack stack) {
@@ -196,7 +196,7 @@ public class TilePatternCrafter extends TileThaumcraft {
         int found = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack slot = handler.getStackInSlot(i);
-            if (ItemStack.isSameItemSameTags(slot, stack)) {
+            if (ItemStack.isSameItemSameComponents(slot, stack)) {
                 found += slot.getCount();
                 if (found >= needed) return true;
             }
@@ -290,17 +290,18 @@ public class TilePatternCrafter extends TileThaumcraft {
         }
         
         // Find matching recipe
-        Optional<CraftingRecipe> recipe = level.getRecipeManager()
-                .getRecipeFor(RecipeType.CRAFTING, craftMatrix, level);
+        Optional<CraftingRecipe> recipe = level.getServer().getRecipeManager()
+                .getRecipeFor(RecipeType.CRAFTING, craftMatrix.asCraftInput(), level)
+                .map(net.minecraft.world.item.crafting.RecipeHolder::value);
         
         if (recipe.isEmpty()) {
             return false;
         }
         
-        outStack = recipe.get().assemble(craftMatrix, level.registryAccess());
+        outStack = recipe.get().assemble(craftMatrix.asCraftInput());
         
         // Handle remaining items (buckets, etc.)
-        NonNullList<ItemStack> remaining = recipe.get().getRemainingItems(craftMatrix);
+        NonNullList<ItemStack> remaining = recipe.get().getRemainingItems(craftMatrix.asCraftInput());
         for (int i = 0; i < remaining.size(); i++) {
             ItemStack original = craftMatrix.getItem(i);
             ItemStack leftover = remaining.get(i);

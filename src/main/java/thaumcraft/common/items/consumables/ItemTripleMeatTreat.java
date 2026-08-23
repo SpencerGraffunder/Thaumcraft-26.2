@@ -18,10 +18,8 @@ public class ItemTripleMeatTreat extends Item {
         super(new Properties()
                 .food(new FoodProperties.Builder()
                         .nutrition(6)
-                        .saturationMod(0.8f)
-                        .meat()
-                        .alwaysEat() // Can eat even when full
-                        .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 100, 0), 0.66f)
+                        .saturationModifier(0.8f)
+                        .alwaysEdible() // Can eat even when full
                         .build()));
     }
 }

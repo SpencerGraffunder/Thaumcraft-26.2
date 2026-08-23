@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -60,9 +60,15 @@ public class InfusionCategory implements IRecipeCategory<InfusionRecipeType> {
     }
 
     @Override
-    public IDrawable getBackground() {
-        return background;
+    public int getWidth() {
+        return 150;
     }
+
+    @Override
+    public int getHeight() {
+        return 80;
+    }
+
 
     @Override
     public IDrawable getIcon() {
@@ -83,7 +89,7 @@ public class InfusionCategory implements IRecipeCategory<InfusionRecipeType> {
         }
         
         // Add component items in a circle around the center
-        NonNullList<Ingredient> components = recipe.getComponents();
+        java.util.List<Ingredient> components = recipe.getComponents();
         int numComponents = components.size();
         int radius = 30;
         
@@ -104,30 +110,30 @@ public class InfusionCategory implements IRecipeCategory<InfusionRecipeType> {
         RegistryAccess registryAccess = Minecraft.getInstance().level != null 
                 ? Minecraft.getInstance().level.registryAccess() 
                 : RegistryAccess.EMPTY;
-        ItemStack output = recipe.getResultItem(registryAccess);
+        ItemStack output = recipe.getResultItem();
         builder.addSlot(RecipeIngredientRole.OUTPUT, 140, centerY)
                 .addItemStack(output);
     }
 
     @Override
-    public void draw(InfusionRecipeType recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(InfusionRecipeType recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
         Font font = Minecraft.getInstance().font;
         
         // Draw arrow
-        guiGraphics.drawString(font, "→", 115, 43, 0x404040, false);
+        guiGraphics.text(font, "→", 115, 43, 0x404040, false);
         
         // Draw research requirement at top
         String research = recipe.getResearch();
         if (research != null && !research.isEmpty()) {
             String displayResearch = research.length() > 20 ? research.substring(0, 17) + "..." : research;
-            guiGraphics.drawString(font, "Research: " + displayResearch, 5, 2, 0x808080, false);
+            guiGraphics.text(font, "Research: " + displayResearch, 5, 2, 0x808080, false);
         }
         
         // Draw instability level
         int instability = recipe.getInstability();
         String instabilityText = "Instability: " + getInstabilityText(instability);
         int instabilityColor = getInstabilityColor(instability);
-        guiGraphics.drawString(font, instabilityText, 5, 85, instabilityColor, false);
+        guiGraphics.text(font, instabilityText, 5, 85, instabilityColor, false);
         
         // Draw aspect requirements
         AspectList aspects = recipe.getAspects();
@@ -149,7 +155,7 @@ public class InfusionCategory implements IRecipeCategory<InfusionRecipeType> {
             if (text.length() > 35) {
                 text = text.substring(0, 32) + "...";
             }
-            guiGraphics.drawString(font, text, 5, 75, 0x8B00FF, false);
+            guiGraphics.text(font, text, 5, 75, 0x8B00FF, false);
         }
     }
     

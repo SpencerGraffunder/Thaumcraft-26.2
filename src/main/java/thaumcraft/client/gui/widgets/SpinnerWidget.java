@@ -1,13 +1,15 @@
 package thaumcraft.client.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
@@ -44,34 +46,31 @@ public class SpinnerWidget extends AbstractWidget {
     }
     
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         Font font = Minecraft.getInstance().font;
         
         // Hover state affects color
         boolean hovered = isHoveredOrFocused();
         float brightness = hovered ? 1.0f : 0.9f;
         
-        RenderSystem.setShaderColor(brightness, brightness, brightness, brightness);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        
         // Draw left arrow
-        graphics.blit(TEXTURE, getX(), getY(), 20, 0, 10, 10);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(), 20.0F, 0.0F, 10, 10, 256, 256,
+                ARGB.colorFromFloat(brightness, brightness, brightness, brightness));
         
         // Draw right arrow
-        graphics.blit(TEXTURE, getX() + width, getY(), 30, 0, 10, 10);
-        
-        // Reset color
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX() + width, getY(), 30.0F, 0.0F, 10, 10, 256, 256,
+                ARGB.colorFromFloat(brightness, brightness, brightness, brightness));
         
         // Draw value text centered between arrows
         String valueText = setting.getValueText();
         int textX = getX() + (width + 10) / 2 - font.width(valueText) / 2;
-        graphics.drawString(font, valueText, textX, getY() + 1, 0xFFFFFF, true);
+        graphics.text(font, valueText, textX, getY() + 1, 0xFFFFFF, true);
     }
     
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (!visible || !active) return false;
         
         // Check if clicked on left arrow (decrement)

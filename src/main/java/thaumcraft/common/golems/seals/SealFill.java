@@ -7,7 +7,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import thaumcraft.Thaumcraft;
@@ -100,9 +100,9 @@ public class SealFill extends SealFiltered implements ISealConfigToggles {
     private IItemHandler getItemHandler(Level level, BlockPos pos, Direction face) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
-            var cap = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, face);
-            if (cap.isPresent()) {
-                return cap.orElse(null);
+            var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, face);
+            if (handler != null) {
+                return IItemHandler.of(handler);
             }
         }
         return null;
@@ -133,7 +133,7 @@ public class SealFill extends SealFiltered implements ISealConfigToggles {
                 boolean matches = ItemStack.isSameItem(stack, filterStack);
                 
                 if (matches && props[1].getValue()) {
-                    matches = ItemStack.isSameItemSameTags(stack, filterStack);
+                    matches = ItemStack.isSameItemSameComponents(stack, filterStack);
                 }
                 
                 if (matches) {

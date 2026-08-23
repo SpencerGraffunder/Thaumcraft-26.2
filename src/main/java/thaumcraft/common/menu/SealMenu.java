@@ -9,7 +9,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
@@ -273,7 +273,7 @@ public class SealMenu extends AbstractContainerMenu {
     }
     
     @Override
-    public void clicked(int slotId, int button, ClickType clickType, Player player) {
+    public void clicked(int slotId, int button, ContainerInput clickType, Player player) {
         // Handle ghost slot clicks specially
         if (slotId >= 0 && slotId < slots.size()) {
             Slot slot = slots.get(slotId);
@@ -285,7 +285,7 @@ public class SealMenu extends AbstractContainerMenu {
         super.clicked(slotId, button, clickType, player);
     }
     
-    private void handleGhostSlotClick(GhostSlot slot, int button, ClickType clickType, Player player) {
+    private void handleGhostSlotClick(GhostSlot slot, int button, ContainerInput clickType, Player player) {
         ItemStack carried = getCarried();
         
         if (button == 1) {

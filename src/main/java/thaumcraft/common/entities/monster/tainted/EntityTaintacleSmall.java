@@ -41,7 +41,7 @@ public class EntityTaintacleSmall extends EntityTaintacle {
         // Die after lifetime expires
         if (!level().isClientSide()) {
             if (lifetime-- <= 0) {
-                hurt(damageSources().magic(), 10.0f);
+                hurtServer((ServerLevel) level(), damageSources().magic(), 10.0f);
             }
         }
     }

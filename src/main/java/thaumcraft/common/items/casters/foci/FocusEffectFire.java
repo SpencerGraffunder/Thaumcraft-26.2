@@ -85,7 +85,7 @@ public class FocusEffectFire extends FocusEffect {
             hitEntity.hurt(damageSource, damage);
             
             if (fireDuration > 0.0f) {
-                hitEntity.setSecondsOnFire(Math.round(fireDuration));
+                hitEntity.igniteForSeconds(fireDuration);
             }
             
             return true;
@@ -96,7 +96,7 @@ public class FocusEffectFire extends FocusEffect {
                 BlockPos pos = blockHit.getBlockPos().relative(blockHit.getDirection());
                 
                 if (world.isEmptyBlock(pos) && world.getRandom().nextFloat() < finalPower) {
-                    world.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 
+                    world.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE.value(), SoundSource.BLOCKS, 
                             1.0f, world.getRandom().nextFloat() * 0.4f + 0.8f);
                     world.setBlock(pos, Blocks.FIRE.defaultBlockState(), 11);
                     return true;

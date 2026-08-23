@@ -1,5 +1,6 @@
 package thaumcraft.common.lib.events;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -54,7 +55,7 @@ public class CraftingEvents {
         
         // Special handling for labels crafted from phials
         // When crafting a label with aspect info, return the empty phial
-        if (ModItems.LABEL_FILLED != null && crafted.getItem() == ModItems.LABEL_FILLED.get() && crafted.hasTag()) {
+        if (ModItems.LABEL_FILLED != null && crafted.getItem() == ModItems.LABEL_FILLED.get() && crafted.has(DataComponents.CUSTOM_DATA)) {
             // Note: In 1.20.1, we can't easily modify craftMatrix during crafting
             // This would need a different approach (loot modifier or recipe remainder)
         }

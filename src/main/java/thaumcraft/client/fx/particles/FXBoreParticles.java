@@ -1,20 +1,24 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.GraphicsPreset;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * Bore particle effect - block fragments that fly towards a target (like arcane bore).
@@ -40,9 +44,8 @@ public class FXBoreParticles extends ThaumcraftParticle {
         
         // Set sprite from block
         try {
-            this.setSprite(Minecraft.getInstance().getBlockRenderer()
-                    .getBlockModelShaper().getBlockModel(state)
-                    .getParticleIcon());
+            this.setSprite(Minecraft.getInstance().getModelManager()
+                    .getBlockStateModelSet().getParticleMaterial(state).sprite());
         } catch (Exception e) {
             // Fallback if texture fails
             this.remove();
@@ -84,9 +87,7 @@ public class FXBoreParticles extends ThaumcraftParticle {
         this.itemStack = item;
         
         // Set sprite from item
-        this.setSprite(Minecraft.getInstance().getItemRenderer()
-                .getModel(item, level, null, 0)
-                .getParticleIcon());
+        this.setSprite(itemParticleSprite(item, level));
         
         this.rCol = 0.6f;
         this.gCol = 0.6f;
@@ -112,12 +113,23 @@ public class FXBoreParticles extends ThaumcraftParticle {
         
         // Distance culling
         Entity renderEntity = Minecraft.getInstance().getCameraEntity();
-        int visibleDistance = Minecraft.getInstance().options.graphicsMode().get().getId() >= 1 ? 64 : 32;
+        int visibleDistance = Minecraft.getInstance().options.graphicsPreset().get() != GraphicsPreset.FAST ? 64 : 32;
         if (renderEntity != null && renderEntity.distanceToSqr(x, y, z) > visibleDistance * visibleDistance) {
             this.lifetime = 0;
         }
     }
     
+    private net.minecraft.client.renderer.texture.TextureAtlasSprite itemParticleSprite(ItemStack item, ClientLevel level) {
+        try {
+            ItemStackRenderState scratch = new ItemStackRenderState();
+            Minecraft.getInstance().getItemModelResolver()
+                    .updateForTopItem(scratch, item, ItemDisplayContext.GROUND, level, null, 0);
+            Material.Baked material = scratch.pickParticleMaterial(this.random);
+            if (material != null) return material.sprite();
+        } catch (Exception ignored) {}
+        return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(net.minecraft.data.AtlasIds.ITEMS).missingSprite();
+    }
+
     public FXBoreParticles setTarget(Entity target) {
         this.target = target;
         return this;
@@ -126,19 +138,25 @@ public class FXBoreParticles extends ThaumcraftParticle {
     public FXBoreParticles getObjectColor(BlockPos pos) {
         if (this.blockState != null) {
             try {
-                int color = Minecraft.getInstance().getBlockColors()
-                        .getColor(this.blockState, this.level, pos, 0);
-                this.rCol *= (color >> 16 & 0xFF) / 255.0f;
-                this.gCol *= (color >> 8 & 0xFF) / 255.0f;
-                this.bCol *= (color & 0xFF) / 255.0f;
+                BlockTintSource tintSource = Minecraft.getInstance().getBlockColors().getTintSource(this.blockState, 0);
+                if (tintSource != null) {
+                    int color = tintSource.colorAsTerrainParticle(this.blockState, this.level, pos);
+                    this.rCol *= (color >> 16 & 0xFF) / 255.0f;
+                    this.gCol *= (color >> 8 & 0xFF) / 255.0f;
+                    this.bCol *= (color & 0xFF) / 255.0f;
+                }
             } catch (Exception ignored) {}
         } else if (this.itemStack != null) {
             try {
-                int color = Minecraft.getInstance().getItemColors()
-                        .getColor(this.itemStack, 0);
-                this.rCol *= (color >> 16 & 0xFF) / 255.0f;
-                this.gCol *= (color >> 8 & 0xFF) / 255.0f;
-                this.bCol *= (color & 0xFF) / 255.0f;
+                ItemStackRenderState scratch = new ItemStackRenderState();
+                Minecraft.getInstance().getItemModelResolver()
+                        .updateForTopItem(scratch, this.itemStack, ItemDisplayContext.GROUND, this.level, null, 0);
+                if (!scratch.tintLayers().isEmpty()) {
+                    int color = scratch.tintLayers().getInt(0);
+                    this.rCol *= (color >> 16 & 0xFF) / 255.0f;
+                    this.gCol *= (color >> 8 & 0xFF) / 255.0f;
+                    this.bCol *= (color & 0xFF) / 255.0f;
+                }
             } catch (Exception ignored) {}
         }
         return this;
@@ -207,8 +225,8 @@ public class FXBoreParticles extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 cameraPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 cameraPos = camera.position();
         float x = (float)(Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float y = (float)(Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float z = (float)(Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
@@ -216,42 +234,16 @@ public class FXBoreParticles extends ThaumcraftParticle {
         Quaternionf quaternion = camera.rotation();
         float size = 0.1f * this.quadSize;
         
-        Vector3f[] vertices = new Vector3f[]{
-            new Vector3f(-1.0F, -1.0F, 0.0F),
-            new Vector3f(-1.0F, 1.0F, 0.0F),
-            new Vector3f(1.0F, 1.0F, 0.0F),
-            new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-        
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-        
+        // Sprite UVs (block/item particle icon from the particle atlas)
         float u0 = this.getU0();
         float u1 = this.getU1();
         float v0 = this.getV0();
         float v1 = this.getV1();
-        int light = this.getLightColor(partialTicks);
+        int light = this.getLightCoords(partialTicks);
         
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-              .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, 1.0f)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-              .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, 1.0f)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-              .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, 1.0f)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-              .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, 1.0f)
-              .uv2(light).endVertex();
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.TERRAIN_SHEET;
+        int color = ARGB.colorFromFloat(1.0f, this.rCol, this.gCol, this.bCol);
+        
+        state.add(getLayer(), x, y, z, quaternion.x, quaternion.y, quaternion.z, quaternion.w,
+                size, u0, u1, v0, v1, color, light);
     }
 }

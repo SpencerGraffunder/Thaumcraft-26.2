@@ -1,6 +1,6 @@
 package thaumcraft.init;
 
-import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
@@ -31,111 +31,125 @@ public class ModSpawnPlacements {
         // Brainy Zombie - spawns like regular zombies (on ground, in dark)
         event.register(
             ModEntities.BRAINY_ZOMBIE.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Giant Brainy Zombie
         event.register(
             ModEntities.GIANT_BRAINY_ZOMBIE.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Wisp - spawns in the air
         event.register(
             ModEntities.WISP.get(),
-            SpawnPlacements.Type.NO_RESTRICTIONS,
+            SpawnPlacementTypes.NO_RESTRICTIONS,
             Heightmap.Types.MOTION_BLOCKING,
-            EntityWisp::checkWispSpawnRules
+            EntityWisp::checkWispSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Fire Bat - spawns in the Nether
         event.register(
             ModEntities.FIRE_BAT.get(),
-            SpawnPlacements.Type.NO_RESTRICTIONS,
+            SpawnPlacementTypes.NO_RESTRICTIONS,
             Heightmap.Types.MOTION_BLOCKING,
-            EntityFireBat::checkFireBatSpawnRules
+            EntityFireBat::checkFireBatSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Pech - spawns in magical biomes
         event.register(
             ModEntities.PECH.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            EntityPech::checkPechSpawnRules
+            EntityPech::checkPechSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Taint Crawler
         event.register(
             ModEntities.TAINT_CRAWLER.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Thaumic Slime - Note: doesn't spawn naturally, only from flux effects
         event.register(
             ModEntities.THAUMIC_SLIME.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            EntityThaumicSlime::checkThaumicSlimeSpawnRules
+            EntityThaumicSlime::checkThaumicSlimeSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Mind Spider
         event.register(
             ModEntities.MIND_SPIDER.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Eldritch Crab
         event.register(
             ModEntities.ELDRITCH_CRAB.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Eldritch Guardian
         event.register(
             ModEntities.ELDRITCH_GUARDIAN.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Cultist entities
         event.register(
             ModEntities.CULTIST.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         event.register(
             ModEntities.CULTIST_KNIGHT.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         event.register(
             ModEntities.CULTIST_CLERIC.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         // Inhabited Zombie
         event.register(
             ModEntities.INHABITED_ZOMBIE.get(),
-            SpawnPlacements.Type.ON_GROUND,
+            SpawnPlacementTypes.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules
+            Monster::checkMonsterSpawnRules,
+            RegisterSpawnPlacementsEvent.Operation.OR
         );
 
         Thaumcraft.LOGGER.info("Registered Thaumcraft spawn placements");

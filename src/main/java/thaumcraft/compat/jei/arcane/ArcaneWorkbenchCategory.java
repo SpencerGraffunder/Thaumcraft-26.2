@@ -11,7 +11,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -63,9 +63,15 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
     }
 
     @Override
-    public IDrawable getBackground() {
-        return background;
+    public int getWidth() {
+        return 150;
     }
+
+    @Override
+    public int getHeight() {
+        return 80;
+    }
+
 
     @Override
     public IDrawable getIcon() {
@@ -75,7 +81,12 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, IArcaneRecipe recipe, IFocusGroup focuses) {
         // Get recipe ingredients
-        NonNullList<Ingredient> ingredients = recipe.getIngredients();
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        if (recipe instanceof thaumcraft.common.lib.crafting.ShapedArcaneRecipe sar) {
+            ingredients = sar.getIngredients();
+        } else if (recipe instanceof thaumcraft.common.lib.crafting.ShapelessArcaneRecipe slar) {
+            ingredients = slar.getIngredients();
+        }
         
         // Add input slots (3x3 grid)
         int ingredientIndex = 0;
@@ -99,20 +110,20 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
         RegistryAccess registryAccess = Minecraft.getInstance().level != null 
                 ? Minecraft.getInstance().level.registryAccess() 
                 : RegistryAccess.EMPTY;
-        ItemStack output = recipe.getResultItem(registryAccess);
+        ItemStack output = recipe.getResultItem();
         builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19)
                 .addItemStack(output);
     }
 
     @Override
-    public void draw(IArcaneRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(IArcaneRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
         Font font = Minecraft.getInstance().font;
         
         // Draw vis cost
         int visCost = recipe.getVis();
         if (visCost > 0) {
             String visText = visCost + " vis";
-            guiGraphics.drawString(font, visText, 58, 0, 0x8B00FF, false);
+            guiGraphics.text(font, visText, 58, 0, 0x8B00FF, false);
         }
         
         // Draw crystal requirements
@@ -125,7 +136,7 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
                 int amount = crystals.getAmount(aspect);
                 crystalText.append(amount).append(aspect.getTag().substring(0, 1).toUpperCase());
             }
-            guiGraphics.drawString(font, crystalText.toString(), 0, yOffset, 0x404040, false);
+            guiGraphics.text(font, crystalText.toString(), 0, yOffset, 0x404040, false);
         }
         
         // Draw research requirement
@@ -133,7 +144,7 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
         if (research != null && !research.isEmpty()) {
             // Truncate long research names
             String displayResearch = research.length() > 12 ? research.substring(0, 12) + "..." : research;
-            guiGraphics.drawString(font, "Research: " + displayResearch, 0, -10, 0x808080, false);
+            guiGraphics.text(font, "Research: " + displayResearch, 0, -10, 0x808080, false);
         }
     }
 }

@@ -26,7 +26,7 @@ public class ItemCuriosityBand extends Item {
     public static boolean isWearingBand(net.minecraft.world.entity.player.Player player) {
         // Check inventory for the band
         // TODO: Check Curios head slot when integrated
-        for (ItemStack stack : player.getInventory().getItems()) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (!stack.isEmpty() && stack.getItem() instanceof ItemCuriosityBand) {
                 return true;
             }

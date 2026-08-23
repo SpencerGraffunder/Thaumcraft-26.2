@@ -21,7 +21,7 @@ public class ChampionModFire implements IChampionModifierEffect {
     public float performEffect(LivingEntity champion, LivingEntity target, DamageSource source, float amount) {
         // Set target on fire
         if (target != null && !target.fireImmune()) {
-            target.setSecondsOnFire(5);
+            target.igniteForSeconds(5.0F);
         }
         return amount;
     }

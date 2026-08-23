@@ -7,16 +7,12 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 
@@ -287,38 +283,6 @@ public class PlayerKnowledge {
             
             // TODO: Add auto-unlock research when ResearchCategories is implemented
             // addAutoUnlockResearch();
-        }
-    }
-    
-    /**
-     * Capability provider for IPlayerKnowledge
-     */
-    public static class Provider implements ICapabilitySerializable<CompoundTag> {
-        
-        private final DefaultImpl knowledge = new DefaultImpl();
-        private final LazyOptional<IPlayerKnowledge> optional = LazyOptional.of(() -> knowledge);
-        
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            if (cap == ThaumcraftCapabilities.KNOWLEDGE) {
-                return optional.cast();
-            }
-            return LazyOptional.empty();
-        }
-        
-        @Override
-        public CompoundTag serializeNBT() {
-            return knowledge.serializeNBT();
-        }
-        
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            knowledge.deserializeNBT(nbt);
-        }
-        
-        public void invalidate() {
-            optional.invalidate();
         }
     }
 }

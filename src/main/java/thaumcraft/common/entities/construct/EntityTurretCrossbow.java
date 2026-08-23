@@ -77,7 +77,9 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     
     public EntityTurretCrossbow(EntityType<? extends EntityTurretCrossbow> type, Level level) {
         super(type, level);
-        this.setMaxUpStep(0.0f);
+        if (getAttribute(Attributes.STEP_HEIGHT) != null) {
+            getAttribute(Attributes.STEP_HEIGHT).setBaseValue(0.0);
+        }
     }
     
     public EntityTurretCrossbow(EntityType<? extends EntityTurretCrossbow> type, Level level, BlockPos pos) {
@@ -112,13 +114,8 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
         ItemStack ammo = getMainHandItem();
         if (!ammo.isEmpty() && ammo.getCount() > 0) {
-            Arrow arrow = new Arrow(level(), this);
+            Arrow arrow = new Arrow(level(), this, new ItemStack(Items.ARROW), null);
             arrow.setBaseDamage(2.25 + distanceFactor * 2.0 + random.nextGaussian() * 0.25);
-            
-            // Apply potion effects if tipped arrow
-            if (ammo.getItem() == Items.TIPPED_ARROW) {
-                arrow.setEffectsFromItem(ammo);
-            }
             
             Vec3 look = getLookAngle();
             if (!isPassenger()) {
@@ -273,11 +270,6 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     // ==================== Properties ====================
     
     @Override
-    protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions dimensions) {
-        return dimensions.height * 0.66f;
-    }
-    
-    @Override
     public boolean isPushable() {
         return true;
     }
@@ -295,16 +287,16 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     // ==================== Damage ====================
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         // Random rotation when hit for visual effect
         setYRot(getYRot() + (float)(getRandom().nextGaussian() * 45.0));
         setXRot(getXRot() + (float)(getRandom().nextGaussian() * 20.0));
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     @Override
-    public void knockback(double strength, double x, double z) {
-        super.knockback(strength, x / 10.0, z / 10.0);
+    public void knockback(double power, double xd, double zd, DamageSource source, float damage, boolean comesFromEffect) {
+        super.knockback(power, xd / 10.0, zd / 10.0, source, damage, comesFromEffect);
         Vec3 delta = getDeltaMovement();
         if (delta.y > 0.1) {
             setDeltaMovement(delta.x, 0.1, delta.z);
@@ -334,7 +326,7 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
             } else {
                 // Open GUI
                 // TODO: player.openMenu(...)
-                player.displayClientMessage(Component.literal("Turret GUI not yet implemented"), true);
+                player.sendSystemMessage(Component.literal("Turret GUI not yet implemented"));
                 return InteractionResult.SUCCESS;
             }
         }

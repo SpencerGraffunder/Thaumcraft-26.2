@@ -132,17 +132,17 @@ public class FocusEffectBreak extends FocusEffect {
         // Create a fake tool with enchantments
         ItemStack fakeTool = new ItemStack(net.minecraft.world.item.Items.DIAMOND_PICKAXE);
         if (silk) {
-            fakeTool.enchant(Enchantments.SILK_TOUCH, 1);
+            fakeTool.enchant(world.registryAccess().getOrThrow(Enchantments.SILK_TOUCH), 1);
         }
         if (fortune > 0) {
-            fakeTool.enchant(Enchantments.BLOCK_FORTUNE, fortune);
+            fakeTool.enchant(world.registryAccess().getOrThrow(Enchantments.FORTUNE), fortune);
         }
         
         // Drop items using the fake tool
         block.playerDestroy(world, player, pos, state, blockEntity, fakeTool);
         
         // Remove the block
-        world.destroyBlock(pos, false);
+        world.destroyBlock(pos, false, null, 512);
         
         // Play break sound
         world.playSound(null, pos, state.getSoundType().getBreakSound(), SoundSource.BLOCKS, 1.0f, 1.0f);

@@ -3,7 +3,9 @@ package thaumcraft.common.items.casters;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -92,14 +95,16 @@ public class ItemCaster extends Item implements ICaster {
         float discount = 0.0f;
         
         // Check armor slots
-        for (ItemStack armor : player.getArmorSlots()) {
+        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD}) {
+            ItemStack armor = player.getItemBySlot(slot);
             if (!armor.isEmpty() && armor.getItem() instanceof IVisDiscountGear gear) {
                 discount += gear.getVisDiscount(armor, player) / 100.0f;
             }
         }
         
         // Check held items (other hand)
-        for (ItemStack held : player.getHandSlots()) {
+        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND}) {
+            ItemStack held = player.getItemBySlot(slot);
             if (!held.isEmpty() && held.getItem() instanceof IVisDiscountGear gear) {
                 discount += gear.getVisDiscount(held, player) / 100.0f;
             }
@@ -204,28 +209,30 @@ public class ItemCaster extends Item implements ICaster {
     @Override
     @Nullable
     public ItemStack getFocusStack(ItemStack stack) {
-        if (stack.hasTag() && stack.getTag().contains("focus")) {
-            CompoundTag focusTag = stack.getTag().getCompoundOrEmpty("focus");
-            return ItemStack.of(focusTag);
+        CompoundTag data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (data != null && data.contains("focus")) {
+            CompoundTag focusTag = data.getCompoundOrEmpty("focus");
+            return ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, focusTag).resultOrPartial().orElse(ItemStack.EMPTY);
         }
         return null;
     }
     
     @Override
     public void setFocus(ItemStack stack, ItemStack focus) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (focus == null || focus.isEmpty()) {
-            if (stack.hasTag()) {
-                stack.getTag().remove("focus");
-            }
+            tag.remove("focus");
         } else {
-            stack.getOrCreateTag().put("focus", focus.save(new CompoundTag()));
+            tag.put("focus", (CompoundTag) ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, focus).resultOrPartial().orElse(new CompoundTag()));
         }
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     @Override
     public ItemStack getPickedBlock(ItemStack stack) {
-        if (stack.hasTag() && stack.getTag().contains("picked")) {
-            return ItemStack.of(stack.getTag().getCompoundOrEmpty("picked"));
+        CompoundTag data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (data != null && data.contains("picked")) {
+            return ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, data.getCompoundOrEmpty("picked")).resultOrPartial().orElse(ItemStack.EMPTY);
         }
         return ItemStack.EMPTY;
     }
@@ -234,7 +241,9 @@ public class ItemCaster extends Item implements ICaster {
      * Store a picked block for Equal Trade focus.
      */
     public void storePickedBlock(ItemStack stack, ItemStack pickedBlock) {
-        stack.getOrCreateTag().put("picked", pickedBlock.save(new CompoundTag()));
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.put("picked", (CompoundTag) ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, pickedBlock).resultOrPartial().orElse(new CompoundTag()));
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     // ==================== Item Behavior ====================
@@ -303,7 +312,7 @@ public class ItemCaster extends Item implements ICaster {
         
         // Apply cooldown
         int cooldown = focus.getActivationTime(focusStack);
-        player.getCooldowns().addCooldown(this, cooldown);
+        player.getCooldowns().addCooldown(stack, cooldown);
         
         return InteractionResult.SUCCESS;
     }
@@ -340,7 +349,7 @@ public class ItemCaster extends Item implements ICaster {
                     return !oldSort.equals(newSort);
                 }
             }
-            return !ItemStack.isSameItemSameTags(oldFocus, newFocus);
+            return !ItemStack.isSameItemSameComponents(oldFocus, newFocus);
         }
         return oldStack.getItem() != newStack.getItem();
     }
@@ -366,7 +375,9 @@ public class ItemCaster extends Item implements ICaster {
                     .withStyle(ChatFormatting.BOLD, ChatFormatting.ITALIC, ChatFormatting.GREEN));
             
             // Add focus details
-            focus.addFocusInformation(focusStack, level, tooltip, flag);
+            List<Component> focusTooltip = new java.util.ArrayList<>();
+            focus.addFocusInformation(focusStack, null, focusTooltip, flag);
+            focusTooltip.forEach(builder);
         } else {
             builder.accept(Component.translatable("item.thaumcraft.caster.no_focus")
                     .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));

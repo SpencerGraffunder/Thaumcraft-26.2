@@ -81,9 +81,9 @@ public class EntityCultist extends Monster {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
-        spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
+        spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData);
         setLoot(difficulty);
         setEnchantmentBasedOnDifficulty(difficulty);
         return spawnData;
@@ -94,7 +94,7 @@ public class EntityCultist extends Monster {
     public void setHomePos(BlockPos pos, int distance) {
         this.homePos = pos;
         this.homeDistance = distance;
-        restrictTo(pos, distance);
+        setHomeTo(pos, distance);
     }
     
     public BlockPos getHomePos() {
@@ -112,13 +112,13 @@ public class EntityCultist extends Monster {
     // ==================== Team Logic ====================
     
     @Override
-    public boolean isAlliedTo(Entity entity) {
+    protected boolean considersEntityAsAlly(Entity entity) {
         // Allied with other cultists
         if (entity instanceof EntityCultist) {
             return true;
         }
         // TODO: Also allied with EntityCultistLeader when implemented
-        return super.isAlliedTo(entity);
+        return super.considersEntityAsAlly(entity);
     }
     
     @Override
@@ -175,7 +175,7 @@ public class EntityCultist extends Monster {
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        if (input.contains("HomeD")) {
+        if (input.keySet().contains("HomeD")) {
             setHomePos(new BlockPos(
                     input.getIntOr("HomeX", 0),
                     input.getIntOr("HomeY", 0),

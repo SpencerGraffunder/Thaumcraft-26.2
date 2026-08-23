@@ -1,9 +1,10 @@
 package thaumcraft.client.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
@@ -74,47 +75,42 @@ public class SliderWidget extends AbstractWidget {
     }
     
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         // Draw track
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         if (vertical) {
-            graphics.pose().translate(getX() + 2, getY(), 0);
-            graphics.pose().scale(1.0f, height / 32.0f, 1.0f);
-            graphics.blit(TEXTURE, 0, 0, 240, 176, 4, 32);
+            graphics.pose().translate(getX() + 2, getY());
+            graphics.pose().scale(1.0f);
+            graphics.blit(RenderPipelines.GUI_TEXTURED);
         } else {
-            graphics.pose().translate(getX(), getY() + 2, 0);
-            graphics.pose().scale(width / 32.0f, 1.0f, 1.0f);
-            graphics.blit(TEXTURE, 0, 0, 208, 176, 32, 4);
+            graphics.pose().translate(getX(), getY() + 2);
+            graphics.pose().scale(width / 32.0f);
+            graphics.blit(RenderPipelines.GUI_TEXTURED);
         }
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
         
         // Draw handle
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         if (vertical) {
             int handleY = (int)(sliderPosition * (height - 8));
-            graphics.blit(TEXTURE, getX(), getY() + handleY, 20, 20, 8, 8);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY() + handleY, 20.0F, 20.0F, 8, 8, 256, 256);
         } else {
             int handleX = (int)(sliderPosition * (width - 8));
-            graphics.blit(TEXTURE, getX() + handleX, getY(), 20, 20, 8, 8);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX() + handleX, getY(), 20.0F, 20.0F, 8, 8, 256, 256);
         }
     }
     
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isValidClickButton(button) && clicked(mouseX, mouseY)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (isValidClickButton(event.buttonInfo()) && isMouseOver(event.x(), event.y())) {
             dragging = true;
-            updateSliderPosition(mouseX, mouseY);
+            updateSliderPosition(event.x(), event.y());
             return true;
         }
         return false;
     }
     
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (dragging) {
             dragging = false;
             return true;
@@ -123,9 +119,9 @@ public class SliderWidget extends AbstractWidget {
     }
     
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
         if (dragging) {
-            updateSliderPosition(mouseX, mouseY);
+            updateSliderPosition(event.x(), event.y());
             return true;
         }
         return false;

@@ -33,16 +33,4 @@ public class ItemCultistPlateArmor extends Item {
     public static ItemCultistPlateArmor createLeggings() {
         return new ItemCultistPlateArmor(ArmorType.LEGGINGS);
     }
-    
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(Items.IRON_INGOT) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        // TODO: Add check for EntityInhabitedZombie when entities are implemented
-        return "thaumcraft:textures/entity/armor/cultist_plate_armor.png";
-    }
 }

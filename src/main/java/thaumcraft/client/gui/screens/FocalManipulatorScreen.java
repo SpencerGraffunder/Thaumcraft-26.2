@@ -1,15 +1,20 @@
 package thaumcraft.client.gui.screens;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
@@ -99,9 +104,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
     private final DecimalFormat formatter = new DecimalFormat("#######.##");
     
     public FocalManipulatorScreen(FocalManipulatorMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
-        this.imageWidth = 231;
-        this.imageHeight = 231;
+        super(menu, playerInventory, title, 231, 231);
     }
     
     private TileFocalManipulator getTile() {
@@ -150,16 +153,15 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         
         // Draw parts list
         drawPartsList(graphics, mouseX, mouseY);
         
         // Draw name field
         if (!getTile().data.isEmpty() && nameField != null) {
-            nameField.render(graphics, mouseX, mouseY, partialTick);
+            nameField.extractRenderState(graphics, mouseX, mouseY, partialTick);
         }
         
         // Draw tooltips
@@ -168,22 +170,16 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         
         // Update confirm button state
         confirmButton.setButtonActive(getTile().vis <= 0.0f && valid);
-        
-        this.renderTooltip(graphics, mouseX, mouseY);
     }
     
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int x = leftPos;
         int y = topPos;
         
         // Draw background layers
-        graphics.blit(TEX_BG, x, y, 0, 0, imageWidth, imageHeight);
-        graphics.blit(TEX_SIDE, x - 71, y - 3, 0, 0, 71, 239);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_BG, x, y, 0.0F, 0.0F, imageWidth, imageHeight, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_SIDE, x - 71, y - 3, 0.0F, 0.0F, 71, 239, 256, 256);
         
         // Handle GUI reset
         TileFocalManipulator tile = getTile();
@@ -213,53 +209,53 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         drawNodes(graphics, leftPos + 132 - scrollX, topPos + 48 - scrollY, mouseX, mouseY);
         
         // Draw foreground overlay
-        graphics.blit(TEX_MAIN, x, y, 0, 0, imageWidth, imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, x, y, 0.0F, 0.0F, imageWidth, imageHeight, 256, 256);
         
         // Draw complexity
         if (maxComplexity > 0) {
             int complexColor = totalComplexity > maxComplexity ? 0xF65858 : 0xFFE59F;
-            graphics.drawString(font, totalComplexity + "/" + maxComplexity, x + 242, y + 36, complexColor, true);
+            graphics.text(font, totalComplexity + "/" + maxComplexity, x + 242, y + 36, complexColor, true);
         }
         
         // Draw XP cost
         int xpColor = costXp > minecraft.player.experienceLevel ? 0xF65858 : 0x9A1B8D;
-        graphics.drawString(font, String.valueOf(costXp), x + 242, y + 50, xpColor, true);
+        graphics.text(font, String.valueOf(costXp), x + 242, y + 50, xpColor, true);
         
         // Draw vis cost
         int visCost = getTile().vis > 0 ? (int) getTile().vis : costVis;
-        graphics.drawString(font, ChatFormatting.AQUA + String.valueOf(visCost), x + 242, y + 64, 0x9A1B8D, true);
+        graphics.text(font, ChatFormatting.AQUA + String.valueOf(visCost), x + 242, y + 64, 0x9A1B8D, true);
         
         // Draw cast cost
         if (costCast > 0) {
             String cost = formatter.format(costCast);
-            graphics.drawString(font, ChatFormatting.AQUA + Component.translatable("item.Focus.cost1").getString() + ": " + cost, 
+            graphics.text(font, ChatFormatting.AQUA + Component.translatable("item.Focus.cost1").getString() + ": " + cost, 
                 x + 230, y + 80, 0x9A1B8D, true);
         }
         
         // Draw component crystals label
         if (components != null && components.length > 0) {
-            graphics.drawString(font, ChatFormatting.GOLD + Component.translatable("wandtable.text4").getString(), 
+            graphics.text(font, ChatFormatting.GOLD + Component.translatable("wandtable.text4").getString(), 
                 x + 230, y + 92, 0x9A1B8D, true);
         }
         
         // Draw name field background
         if (!tile.data.isEmpty() && tile.focusName != null) {
-            graphics.blit(TEX_BASE, leftPos + 24, topPos + 8, 192, 224, 8, 14);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_BASE, leftPos + 24, topPos + 8, 192.0F, 224.0F, 8, 14, 256, 256);
             for (int i = 1; i < 22; i++) {
-                graphics.blit(TEX_BASE, leftPos + 24 + i * 8, topPos + 8, 200, 224, 8, 14);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_BASE, leftPos + 24 + i * 8, topPos + 8, 200.0F, 224.0F, 8, 14, 256, 256);
             }
-            graphics.blit(TEX_BASE, leftPos + 24 + 22 * 8, topPos + 8, 208, 224, 8, 14);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_BASE, leftPos + 24 + 22 * 8, topPos + 8, 208.0F, 224.0F, 8, 14, 256, 256);
         }
     }
     
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Don't draw default title
     }
     
     // ==================== Parts List ====================
     
-    private void drawPartsList(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void drawPartsList(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         int gx = leftPos;
         int gy = topPos;
         
@@ -280,7 +276,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         }
     }
     
-    private void drawPartsTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void drawPartsTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         int gx = leftPos;
         int gy = topPos;
         
@@ -293,7 +289,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
             FocusNode node = (FocusNode) FocusEngine.getElement(key);
             if (node != null && isInRegion(gx + 28, gy + 32 + 24 * index, 20, 20, mouseX, mouseY)) {
                 List<Component> tooltip = generatePartTooltip(node, -1);
-                graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+                graphics.setTooltipForNextFrame(font, tooltip, java.util.Optional.empty(), mouseX, mouseY);
             }
             
             if (++index > 5) break;
@@ -329,7 +325,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         if (power != 1.0f) {
             ChatFormatting powerFormat = power < 1.0f ? ChatFormatting.RED : ChatFormatting.GREEN;
             list.add(Component.translatable("focuspart.eff").withStyle(ChatFormatting.GOLD)
-                .append(Component.literal(" x" + ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(power)).withStyle(powerFormat)));
+                .append(Component.literal(" x" + ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(power)).withStyle(powerFormat)));
         }
         
         // Damage/healing for effects
@@ -337,11 +333,11 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
             float damage = effect.getDamageForDisplay(placed == null ? 1.0f : placed.getPower(getTile().data));
             if (damage > 0) {
                 list.add(Component.literal(ChatFormatting.DARK_RED + "" + 
-                    ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(damage) + " " +
+                    ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(damage) + " " +
                     Component.translatable("attribute.name.generic.attack_damage").getString()));
             } else if (damage < 0) {
                 list.add(Component.literal(ChatFormatting.DARK_GREEN + "" + 
-                    ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(-damage) + " " +
+                    ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(-damage) + " " +
                     Component.translatable("focus.heal.power").getString()));
             }
         }
@@ -351,7 +347,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
     
     // ==================== Node Rendering ====================
     
-    private void drawNodes(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
+    private void drawNodes(GuiGraphicsExtractor graphics, int x, int y, int mouseX, int mouseY) {
         TileFocalManipulator tile = getTile();
         if (tile.data == null || tile.data.isEmpty()) return;
         
@@ -376,18 +372,18 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
                 }
             } else {
                 // Empty slot
-                graphics.blit(TEX_MAIN, xx - 12, yy - 12, 120, 232, 24, 24);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, xx - 12, yy - 12, 120.0F, 232.0F, 24, 24, 256, 256);
             }
             
             // Draw selection highlight
             if (selectedNode == fn.id || (mouseover && fn.parent >= 0)) {
-                graphics.blit(TEX_MAIN, xx - 12, yy - 12, 96, 232, 24, 24);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, xx - 12, yy - 12, 96.0F, 232.0F, 24, 24, 256, 256);
             }
             
             // Draw connections
             FocusElementNode parent = tile.data.get(fn.parent);
             if (parent != null) {
-                graphics.blit(TEX_MAIN, xx - 6, yy - 22, 54, 232, 12, 12);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, xx - 6, yy - 22, 54.0F, 232.0F, 12, 12, 256, 256);
                 
                 // Handle split node connections
                 if (parent.node instanceof FocusModSplit) {
@@ -395,15 +391,15 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
                     for (int i = 0; i < dist; i++) {
                         if (fn.x < parent.x) {
                             if (i == 0) {
-                                graphics.blit(TEX_MAIN, xx - 4, yy - 36, 8, 240, 16, 16);
+                                graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, xx - 4, yy - 36, 8.0F, 240.0F, 16, 16, 256, 256);
                             } else {
-                                graphics.blit(TEX_MAIN, xx - 12 + i * 24, yy - 36, 72, 240, 24, 16);
+                                graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, xx - 12 + i * 24, yy - 36, 72.0F, 240.0F, 24, 16, 256, 256);
                             }
                         } else {
                             if (i == 0) {
-                                graphics.blit(TEX_MAIN, xx - 12, yy - 36, 24, 240, 16, 16);
+                                graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, xx - 12, yy - 36, 24.0F, 240.0F, 16, 16, 256, 256);
                             } else {
-                                graphics.blit(TEX_MAIN, xx - 12 - i * 24, yy - 36, 72, 240, 24, 16);
+                                graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MAIN, xx - 12 - i * 24, yy - 36, 72.0F, 240.0F, 24, 16, 256, 256);
                             }
                         }
                     }
@@ -413,20 +409,20 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
                 if (fn.node == null && isInRegion(leftPos + 48, topPos + 16, 168, 192, xx - 4, yy - 4)) {
                     int offset = (parent.target && parent.trajectory) ? 4 : 0;
                     
-                    graphics.pose().pushPose();
+                    graphics.pose().pushMatrix();
                     if (parent.target) {
-                        graphics.pose().translate(xx - offset, yy, 0);
-                        graphics.pose().scale(0.5f, 0.5f, 0.5f);
-                        graphics.blit(TEX_MAIN, -8, -8, 152, 240, 16, 16);
-                        graphics.pose().popPose();
-                        graphics.pose().pushPose();
+                        graphics.pose().translate(xx - offset, yy);
+                        graphics.pose().scale(0.5f);
+                        graphics.blit(RenderPipelines.GUI_TEXTURED);
+                        graphics.pose().popMatrix();
+                        graphics.pose().pushMatrix();
                     }
                     if (parent.trajectory) {
-                        graphics.pose().translate(xx + offset, yy, 0);
-                        graphics.pose().scale(0.5f, 0.5f, 0.5f);
-                        graphics.blit(TEX_MAIN, -8, -8, 168, 240, 16, 16);
+                        graphics.pose().translate(xx + offset, yy);
+                        graphics.pose().scale(0.5f);
+                        graphics.blit(RenderPipelines.GUI_TEXTURED);
                     }
-                    graphics.pose().popPose();
+                    graphics.pose().popMatrix();
                 }
             }
         }
@@ -446,17 +442,17 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         }
     }
     
-    private void drawNodeTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void drawNodeTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (lastNodeHover >= 0) {
             FocusElementNode fn = getTile().data.get(lastNodeHover);
             if (fn != null && fn.node != null) {
                 List<Component> tooltip = generatePartTooltip(fn.node, lastNodeHover);
-                graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+                graphics.setTooltipForNextFrame(font, tooltip, java.util.Optional.empty(), mouseX, mouseY);
             }
         }
     }
     
-    private void drawNodeSettings(GuiGraphics graphics, int nodeId) {
+    private void drawNodeSettings(GuiGraphicsExtractor graphics, int nodeId) {
         FocusElementNode fn = getTile().data.get(nodeId);
         if (fn == null || fn.node == null || fn.node.getSettingList().isEmpty()) return;
         
@@ -470,15 +466,15 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
             int settingX = leftPos + imageWidth;
             int settingY = topPos + imageHeight - 10 - fn.node.getSettingList().size() * 26 + idx * 26;
             
-            graphics.drawString(font, ChatFormatting.GOLD + setting.getLocalizedName(), settingX, settingY, 0xFFFFFF, true);
+            graphics.text(font, ChatFormatting.GOLD + setting.getLocalizedName(), settingX, settingY, 0xFFFFFF, true);
             idx++;
         }
     }
     
-    private void drawPart(GuiGraphics graphics, FocusNode node, int x, int y, float scale, boolean hover) {
-        graphics.pose().pushPose();
-        graphics.pose().translate(x, y, 0);
-        graphics.pose().mulPose(com.mojang.math.Axis.ZN.rotationDegrees(90.0f));
+    private void drawPart(GuiGraphicsExtractor graphics, FocusNode node, int x, int y, float scale, boolean hover) {
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x, y);
+        graphics.pose().rotate((float)Math.toRadians(90.0f));
         
         boolean isRoot = node.getType() == IFocusElement.EnumUnitType.MOD || node.getKey().equals("thaumcraft.ROOT");
         if (isRoot) {
@@ -493,34 +489,27 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         float actualScale = (scale * 0.9f + (hover ? 2 : 0)) / 32.0f;
         
         // Draw type background (effect or medium)
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        
         if (node.getType() == IFocusElement.EnumUnitType.EFFECT) {
-            RenderSystem.setShaderColor(r, g, b, 0.8f);
-            graphics.pose().pushPose();
-            graphics.pose().scale(actualScale, actualScale, 1.0f);
-            graphics.blit(TEX_EFFECT, -16, -16, 0, 0, 32, 32, 32, 32);
-            graphics.pose().popPose();
+            graphics.pose().pushMatrix();
+            graphics.pose().scale(actualScale, actualScale);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_EFFECT, -16, -16, 0.0F, 0.0F, 32, 32, 32, 32);
+            graphics.pose().popMatrix();
         } else if (node.getType() == IFocusElement.EnumUnitType.MEDIUM && !isRoot) {
-            RenderSystem.setShaderColor(r, g, b, 0.8f);
-            graphics.pose().pushPose();
-            graphics.pose().scale(actualScale, actualScale, 1.0f);
-            graphics.blit(TEX_MEDIUM, -16, -16, 0, 0, 32, 32, 32, 32);
-            graphics.pose().popPose();
+            graphics.pose().pushMatrix();
+            graphics.pose().scale(actualScale, actualScale);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEX_MEDIUM, -16, -16, 0.0F, 0.0F, 32, 32, 32, 32);
+            graphics.pose().popMatrix();
         }
         
         // Draw icon
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         float iconScale = (scale / 2.0f + (hover ? 2 : 0)) / 16.0f;
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 1);
-        graphics.pose().scale(iconScale, iconScale, 1.0f);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(iconScale, iconScale);
         Identifier icon = FocusEngine.getElementIcon(node.getKey());
-        graphics.blit(icon, -8, -8, 0, 0, 16, 16, 16, 16);
-        graphics.pose().popPose();
+        graphics.blit(RenderPipelines.GUI_TEXTURED);
+        graphics.pose().popMatrix();
         
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
     
     // ==================== Node Manipulation ====================
@@ -876,7 +865,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
     private boolean playerHasItem(ItemStack required) {
         if (minecraft == null || minecraft.player == null) return false;
         int needed = required.getCount();
-        for (ItemStack stack : minecraft.player.getInventory().getItems()) {
+        for (ItemStack stack : minecraft.player.getInventory().getNonEquipmentItems()) {
             if (ItemStack.isSameItem(stack, required)) {
                 needed -= stack.getCount();
                 if (needed <= 0) return true;
@@ -888,9 +877,13 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
     // ==================== Input Handling ====================
     
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
+        
         // Name field click
-        if (nameField != null && nameField.mouseClicked(mouseX, mouseY, button)) {
+        if (nameField != null && nameField.mouseClicked(event, doubleClick)) {
             return true;
         }
         
@@ -943,17 +936,19 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
             lastMouseY = (int)mouseY;
         }
         
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
     
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         isDragging = false;
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
     
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (isDragging && isInRegion(leftPos + 63, topPos + 31, 136, 160, (int)mouseX, (int)mouseY)) {
             scrollX -= (int)mouseX - lastMouseX;
             scrollY -= (int)mouseY - lastMouseY;
@@ -966,37 +961,37 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
             lastMouseY = (int)mouseY;
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(event, dragX, dragY);
     }
     
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         // Scroll parts list
         if (shownParts.size() > 6 && isInRegion(leftPos + 24, topPos + 24, 32, 157, (int)mouseX, (int)mouseY)) {
-            if (delta > 0 && partsStart > 0) {
+            if (scrollY > 0 && partsStart > 0) {
                 partsStart--;
-            } else if (delta < 0 && partsStart < shownParts.size() - 6) {
+            } else if (scrollY < 0 && partsStart < shownParts.size() - 6) {
                 partsStart++;
             }
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
     
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         if (nameField != null && nameField.isFocused()) {
-            return nameField.keyPressed(keyCode, scanCode, modifiers);
+            return nameField.keyPressed(event);
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
     
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         if (nameField != null && nameField.isFocused()) {
-            return nameField.charTyped(codePoint, modifiers);
+            return nameField.charTyped(event);
         }
-        return super.charTyped(codePoint, modifiers);
+        return super.charTyped(event);
     }
     
     // ==================== Utility ====================

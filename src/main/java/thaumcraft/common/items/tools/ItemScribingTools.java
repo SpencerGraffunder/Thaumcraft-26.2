@@ -17,17 +17,14 @@ public class ItemScribingTools extends ItemTC implements IScribeTools {
                 .durability(100));
     }
 
-    @Override
     public boolean isEnchantable(ItemStack stack) {
         return false;
     }
 
-    @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
     }
 
-    @Override
     public boolean isRepairable(ItemStack stack) {
         return false;
     }

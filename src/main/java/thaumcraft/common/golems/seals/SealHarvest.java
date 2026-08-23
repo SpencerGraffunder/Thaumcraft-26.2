@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -209,7 +210,9 @@ public class SealHarvest implements ISeal, ISealConfigArea, ISealConfigToggles {
             long loc = tag.getLongOr("taskloc", 0L);
             byte face = tag.getByteOr("taskface", (byte)0);
             boolean farmland = tag.getBooleanOr("farmland", false);
-            ItemStack seed = ItemStack.of(tag);
+            ItemStack seed = tag.contains("seed")
+                    ? ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, tag.get("seed")).resultOrPartial().orElse(ItemStack.EMPTY)
+                    : ItemStack.EMPTY;
             replantTasks.put(loc, new ReplantInfo(BlockPos.of(loc), Direction.values()[face], 0, seed, farmland));
         }
     }
@@ -224,7 +227,7 @@ public class SealHarvest implements ISeal, ISealConfigArea, ISealConfigToggles {
                 tag.putLong("taskloc", info.pos.asLong());
                 tag.putByte("taskface", (byte) info.face.ordinal());
                 tag.putBoolean("farmland", info.farmland);
-                info.seed.save(tag);
+                tag.put("seed", (CompoundTag) ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, info.seed).resultOrPartial().orElse(new CompoundTag()));
                 list.add(tag);
             }
             nbt.put("replant", list);

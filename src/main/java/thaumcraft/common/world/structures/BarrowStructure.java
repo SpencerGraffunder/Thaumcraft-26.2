@@ -114,7 +114,10 @@ public class BarrowStructure extends Structure {
                 structurePos,
                 false,
                 Optional.empty(),
-                80 // max distance from start
+                new net.minecraft.world.level.levelgen.structure.structures.JigsawStructure.MaxDistance(80),
+                net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup.EMPTY,
+                net.minecraft.world.level.levelgen.structure.pools.DimensionPadding.ZERO,
+                net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings.APPLY_WATERLOGGING
         );
     }
     

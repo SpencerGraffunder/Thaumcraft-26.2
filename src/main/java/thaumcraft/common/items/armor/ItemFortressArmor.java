@@ -1,6 +1,7 @@
 package thaumcraft.common.items.armor;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -8,6 +9,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -49,17 +51,6 @@ public class ItemFortressArmor extends Item implements IGoggles, IRevealer {
     }
     
     @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.THAUMIUM_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return "thaumcraft:textures/entity/armor/fortress_armor.png";
-    }
-    
-    @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         // Show attached goggles
         if (hasGoggles(stack)) {
@@ -83,22 +74,27 @@ public class ItemFortressArmor extends Item implements IGoggles, IRevealer {
      * Check if this helmet has goggles attached.
      */
     public static boolean hasGoggles(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains("goggles");
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        return tag != null && tag.contains("goggles");
     }
     
     /**
      * Attach goggles to this helmet.
      */
     public static void attachGoggles(ItemStack stack) {
-        stack.getOrCreateTag().putBoolean("goggles", true);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.putBoolean("goggles", true);
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     /**
      * Remove goggles from this helmet.
      */
     public static void removeGoggles(ItemStack stack) {
-        if (stack.hasTag()) {
-            stack.getTag().remove("goggles");
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (tag != null) {
+            tag.remove("goggles");
+            CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
         }
     }
     
@@ -108,33 +104,51 @@ public class ItemFortressArmor extends Item implements IGoggles, IRevealer {
      * Check if this helmet has a mask.
      */
     public static boolean hasMask(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains("mask");
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        return tag != null && tag.contains("mask");
     }
     
     /**
      * Get the mask type (0-3 for different variants).
      */
     public static int getMaskType(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getIntOr("mask", 0) : 0;
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        return tag != null ? tag.getIntOr("mask", 0) : 0;
     }
     
     /**
      * Set the mask type.
      */
     public static void setMask(ItemStack stack, int maskType) {
-        stack.getOrCreateTag().putInt("mask", maskType);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.putInt("mask", maskType);
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     // ==================== IGoggles/IRevealer Implementation ====================
     
     @Override
     public boolean showNodes(ItemStack itemstack, LivingEntity player) {
-        return hasGoggles(itemstack) && this.getType() == ArmorType.HELMET;
+        return hasGoggles(itemstack) && getArmorType(itemstack) == ArmorType.HELMET;
     }
     
     @Override
     public boolean showIngamePopups(ItemStack itemstack, LivingEntity player) {
-        return hasGoggles(itemstack) && this.getType() == ArmorType.HELMET;
+        return hasGoggles(itemstack) && getArmorType(itemstack) == ArmorType.HELMET;
+    }
+    
+    private static ArmorType getArmorType(ItemStack stack) {
+        net.minecraft.world.item.equipment.Equippable equippable = stack.getOrDefault(DataComponents.EQUIPPABLE, null);
+        if (equippable == null) {
+            return null;
+        }
+        return switch (equippable.slot()) {
+            case HEAD -> ArmorType.HELMET;
+            case CHEST -> ArmorType.CHESTPLATE;
+            case LEGS -> ArmorType.LEGGINGS;
+            case FEET -> ArmorType.BOOTS;
+            default -> null;
+        };
     }
     
     // ==================== Set Bonus Calculation ====================
@@ -144,7 +158,10 @@ public class ItemFortressArmor extends Item implements IGoggles, IRevealer {
      */
     public static int countFortressPieces(Player player) {
         int count = 0;
-        for (ItemStack armor : player.getArmorSlots()) {
+        for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[]{
+                net.minecraft.world.entity.EquipmentSlot.FEET, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.HEAD}) {
+            ItemStack armor = player.getItemBySlot(slot);
             if (!armor.isEmpty() && armor.getItem() instanceof ItemFortressArmor) {
                 count++;
             }

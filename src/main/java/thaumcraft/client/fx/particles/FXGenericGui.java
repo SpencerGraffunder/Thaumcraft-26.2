@@ -2,7 +2,6 @@ package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -17,13 +16,13 @@ public class FXGenericGui extends FXGeneric {
     
     public FXGenericGui(ClientLevel level, double x, double y, double z) {
         super(level, x, y, z);
-        this.wasInGui = Minecraft.getInstance().screen != null;
+        this.wasInGui = Minecraft.getInstance().gui.screen() != null;
     }
     
     public FXGenericGui(ClientLevel level, double x, double y, double z, 
                         double vx, double vy, double vz) {
         super(level, x, y, z, vx, vy, vz);
-        this.wasInGui = Minecraft.getInstance().screen != null;
+        this.wasInGui = Minecraft.getInstance().gui.screen() != null;
     }
     
     @Override
@@ -31,13 +30,8 @@ public class FXGenericGui extends FXGeneric {
         super.tick();
         
         // If we were in a GUI but now the screen is null (closed), expire
-        if (this.wasInGui && Minecraft.getInstance().screen == null) {
+        if (this.wasInGui && Minecraft.getInstance().gui.screen() == null) {
             this.remove();
         }
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 }

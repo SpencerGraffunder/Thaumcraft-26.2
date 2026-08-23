@@ -83,34 +83,23 @@ public class EntityGiantBrainyZombie extends EntityBrainyZombie {
     /**
      * Gets the scale factor based on anger.
      */
-    public float getScale() {
+    public float getAngerScale() {
         return 1.0f + (getAnger() - 1.0f);
     }
     
     @Override
-    public EntityDimensions getDimensions(Pose pose) {
-        EntityDimensions base = super.getDimensions(pose);
-        float scale = getScale();
+    public EntityDimensions getDefaultDimensions(Pose pose) {
+        EntityDimensions base = super.getDefaultDimensions(pose);
+        float scale = getAngerScale();
         return base.scale(scale);
     }
     
     @Override
-    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
-        float baseHeight = 1.74f;
-        float scale = getScale();
-        float height = baseHeight * scale;
-        if (isBaby()) {
-            height -= 0.81f;
-        }
-        return height;
-    }
-    
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         // Get angrier when damaged
         setAnger(Math.min(2.0f, getAnger() + 0.1f));
         refreshDimensions(); // Update hitbox size
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     @Override
@@ -118,12 +107,12 @@ public class EntityGiantBrainyZombie extends EntityBrainyZombie {
         // Drop lots of rotten flesh
         for (int a = 0; a < 6; a++) {
             if (random.nextBoolean()) {
-                spawnAtLocation(new ItemStack(Items.ROTTEN_FLESH, 2));
+                spawnAtLocation(level, new ItemStack(Items.ROTTEN_FLESH, 2));
             }
         }
         for (int a = 0; a < 6; a++) {
             if (random.nextBoolean()) {
-                spawnAtLocation(new ItemStack(Items.ROTTEN_FLESH, 2));
+                spawnAtLocation(level, new ItemStack(Items.ROTTEN_FLESH, 2));
             }
         }
     }

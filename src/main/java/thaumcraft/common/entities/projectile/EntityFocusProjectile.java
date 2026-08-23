@@ -55,7 +55,8 @@ public class EntityFocusProjectile extends ThrowableProjectile {
     }
     
     public EntityFocusProjectile(Level level, LivingEntity owner) {
-        super(ModEntities.FOCUS_PROJECTILE.get(), owner, level);
+        super(ModEntities.FOCUS_PROJECTILE.get(), level);
+        this.setOwner(owner);
     }
     
     /**
@@ -108,7 +109,7 @@ public class EntityFocusProjectile extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         // Seeking projectiles have less gravity
         return getSpecial() > 1 ? 0.005f : 0.01f;
     }
@@ -144,7 +145,7 @@ public class EntityFocusProjectile extends ThrowableProjectile {
                            getZ() - newMotion.z / len * 0.05);
                 }
                 
-                playSound(SoundEvents.LEASH_KNOT_PLACE, 0.25f, 1.0f);
+                playSound(SoundEvents.LEAD_TIED, 0.25f, 1.0f);
                 
                 // Die if too slow
                 if (newMotion.length() < 0.2) {
@@ -287,7 +288,8 @@ public class EntityFocusProjectile extends ThrowableProjectile {
         
         // Check if target is owned by owner (pets, tamed animals)
         if (target instanceof net.minecraft.world.entity.OwnableEntity ownable) {
-            if (owner.getUUID().equals(ownable.getOwnerUUID())) return true;
+            LivingEntity ownableOwner = ownable.getOwner();
+            if (ownableOwner != null && owner.getUUID().equals(ownableOwner.getUUID())) return true;
         }
         
         return false;
@@ -316,7 +318,7 @@ public class EntityFocusProjectile extends ThrowableProjectile {
         super.addAdditionalSaveData(output);
         output.putInt("special", getSpecial());
         if (focusPackage != null) {
-            output.put("pack", focusPackage.serialize());
+            output.store("pack", net.minecraft.nbt.CompoundTag.CODEC, focusPackage.serialize());
         }
     }
     
@@ -324,9 +326,9 @@ public class EntityFocusProjectile extends ThrowableProjectile {
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         setSpecial(input.getIntOr("special", 0));
-        if (input.contains("pack")) {
+        if (input.keySet().contains("pack")) {
             focusPackage = new FocusPackage();
-            focusPackage.deserialize(input.getCompoundOrEmpty("pack"));
+            input.read("pack", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(focusPackage::deserialize);
         }
         if (getOwner() != null) {
             setOwnerId(getOwner().getId());

@@ -17,7 +17,7 @@ public class BlockStoneTC extends BlockTC {
     private final boolean canSpawnMobs;
 
     public BlockStoneTC(Properties properties, boolean canSpawnMobs) {
-        super(properties);
+        super(properties.isValidSpawn((state, level, pos, entityType) -> canSpawnMobs));
         this.canSpawnMobs = canSpawnMobs;
     }
 
@@ -61,13 +61,6 @@ public class BlockStoneTC extends BlockTC {
                 .requiresCorrectToolForDrops(),
             true
         );
-    }
-
-    @Override
-    public boolean isValidSpawn(BlockState state, BlockGetter level, BlockPos pos, 
-                                net.minecraft.world.entity.SpawnPlacements.Type type, 
-                                net.minecraft.world.entity.EntityType<?> entityType) {
-        return canSpawnMobs;
     }
 
     /**

@@ -100,11 +100,6 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
                 .add(Attributes.ARMOR, 8.0);
     }
     
-    @Override
-    protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions dimensions) {
-        return 1.0f;
-    }
-    
     // ==================== Targeting Options ====================
     
     private byte getFlags() {
@@ -183,7 +178,7 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
             }
             // Check if PvP is enabled
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server != null && !server.isPvpAllowed()) {
+            if (server != null && true) {
                 setTargetPlayer(false);
                 return false;
             }
@@ -202,7 +197,7 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
         if (!level().isClientSide()) {
             // Check PvP and clear player targets if needed
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server != null && !server.isPvpAllowed() && getTarget() instanceof Player && getTarget() != getOwner()) {
+            if (server != null && true && getTarget() instanceof Player && getTarget() != getOwner()) {
                 setTarget(null);
             }
         }
@@ -236,7 +231,7 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
                 if (getTargetAnimal()) sb.append("[Animals] ");
                 if (getTargetPlayer()) sb.append("[Players] ");
                 if (getTargetFriendly()) sb.append("[Friendly] ");
-                player.displayClientMessage(Component.literal(sb.toString()), true);
+                player.sendSystemMessage(Component.literal(sb.toString()));
                 return InteractionResult.SUCCESS;
             }
         }
@@ -271,7 +266,7 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        if (input.contains("targets")) {
+        if (input.keySet().contains("targets")) {
             setFlags(input.getByteOr("targets", (byte)0));
         }
     }
@@ -397,11 +392,11 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
                         
                         // Check for other owned entities
                         if (entity instanceof OwnableEntity owned) {
-                            UUID theirOwner = owned.getOwnerUUID();
-                            if (ownerUUID != null && ownerUUID.equals(theirOwner) && !turret.getTargetFriendly()) {
+                            LivingEntity theirOwner = owned.getOwner();
+                            if (ownerUUID != null && theirOwner != null && ownerUUID.equals(theirOwner.getUUID()) && !turret.getTargetFriendly()) {
                                 return false;
                             }
-                            if (ownerUUID != null && !ownerUUID.equals(theirOwner) && turret.getTargetFriendly()) {
+                            if (ownerUUID != null && (theirOwner == null || !ownerUUID.equals(theirOwner.getUUID())) && turret.getTargetFriendly()) {
                                 return false;
                             }
                         } else if (!(entity instanceof Player) && turret.getTargetFriendly()) {

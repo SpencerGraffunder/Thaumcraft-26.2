@@ -82,11 +82,11 @@ public class EntityTaintacle extends Monster {
     }
     
     @Override
-    public boolean isAlliedTo(Entity other) {
+    protected boolean considersEntityAsAlly(Entity other) {
         if (isTaintedMob(other)) {
             return true;
         }
-        return super.isAlliedTo(other);
+        return super.considersEntityAsAlly(other);
     }
     
     @Override
@@ -108,7 +108,7 @@ public class EntityTaintacle extends Monster {
             boolean onTaint = true; // Placeholder
             
             if (!onTaint) {
-                hurt(damageSources().starve(), 1.0f);
+                hurtServer((ServerLevel) level(), damageSources().starve(), 1.0f);
             }
             
             // Spawn small tentacles near distant targets (only for large taintacles)
@@ -150,11 +150,9 @@ public class EntityTaintacle extends Monster {
         // TODO: Check for taint biome/material when implemented
         
         EntityTaintacleSmall smallTentacle = new EntityTaintacleSmall(level());
-        smallTentacle.moveTo(
-                target.getX() + random.nextFloat() - random.nextFloat(),
-                target.getY(),
-                target.getZ() + random.nextFloat() - random.nextFloat(),
-                0.0f, 0.0f);
+        smallTentacle.setPos(target.getX() + random.nextFloat() - random.nextFloat(), target.getY(), target.getZ() + random.nextFloat() - random.nextFloat());
+        smallTentacle.setYRot(0.0f);
+        smallTentacle.setXRot(0.0f);
         level().addFreshEntity(smallTentacle);
         
         playSound(ModSounds.TENTACLE.get(), getSoundVolume(), getVoicePitch());

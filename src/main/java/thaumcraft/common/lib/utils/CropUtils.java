@@ -170,7 +170,7 @@ public class CropUtils {
             // If it can't grow anymore, it's fully grown
             // (unless it's a stem which never stops being bonemealable)
             if (!(block instanceof StemBlock)) {
-                if (!bonemealable.isValidBonemealTarget(level, pos, state, level.isClientSide())) {
+                if (!bonemealable.isValidBonemealTarget(level, pos, state)) {
                     return true;
                 }
             }

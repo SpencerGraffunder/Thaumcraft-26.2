@@ -52,7 +52,7 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
     public EntityTaintacleGiant(EntityType<? extends EntityTaintacleGiant> type, Level level) {
         super(type, level);
         this.xpReward = 20;
-        this.bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
+        this.bossEvent = new ServerBossEvent(java.util.UUID.randomUUID(), getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
         this.bossEvent.setDarkenScreen(true);
     }
     
@@ -135,29 +135,27 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
     // ==================== Damage Handling ====================
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (!level().isClientSide()) {
-            // Damage cap with enrage mechanic
-            if (amount > 35.0f) {
-                if (getAnger() == 0) {
-                    // Enrage!
-                    try {
-                        addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, (int)(amount / 15.0f)));
-                        addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 200, (int)(amount / 10.0f)));
-                        addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 200, (int)(amount / 40.0f)));
-                    } catch (Exception ignored) {}
-                    setAnger(200);
-                    
-                    // Notify attacker
-                    if (source.getEntity() instanceof Player player) {
-                        player.displayClientMessage(
-                                Component.translatable("tc.boss.enrage", getDisplayName()), true);
-                    }
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        // Damage cap with enrage mechanic
+        if (amount > 35.0f) {
+            if (getAnger() == 0) {
+                // Enrage!
+                try {
+                    addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, (int)(amount / 15.0f)));
+                    addEffect(new MobEffectInstance(MobEffects.STRENGTH, 200, (int)(amount / 10.0f)));
+                    addEffect(new MobEffectInstance(MobEffects.HASTE, 200, (int)(amount / 40.0f)));
+                } catch (Exception ignored) {}
+                setAnger(200);
+                
+                // Notify attacker
+                if (source.getEntity() instanceof Player player) {
+                    player.sendSystemMessage(
+                            Component.translatable("tc.boss.enrage", getDisplayName()));
                 }
-                amount = 35.0f;
             }
+            amount = 35.0f;
         }
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     // ==================== Spawn ====================
@@ -170,7 +168,7 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
         // TODO: EntityUtils.makeChampion when implemented
         this.bossEvent.setName(getDisplayName());
@@ -224,7 +222,7 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        if (input.contains("Anger")) {
+        if (input.keySet().contains("Anger")) {
             setAnger(input.getIntOr("Anger", 0));
         }
         

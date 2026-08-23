@@ -131,22 +131,17 @@ public class EntityWisp extends PathfinderMob implements Enemy {
     }
     
     @Override
-    protected boolean shouldDespawnInPeaceful() {
-        return true;
-    }
-    
-    @Override
     public int getMaxAirSupply() {
         return Integer.MAX_VALUE; // Can't drown
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (source.getEntity() instanceof LivingEntity living) {
             setTarget(living);
             aggroCooldown = 200;
         }
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     @Override
@@ -299,12 +294,12 @@ public class EntityWisp extends PathfinderMob implements Enemy {
                     if (Math.abs(targetMotion.x) > 0.1 || Math.abs(targetMotion.y) > 0.1 || Math.abs(targetMotion.z) > 0.1) {
                         // Moving target - 40% hit chance
                         if (random.nextFloat() < 0.4f) {
-                            target.hurt(damageSources().mobAttack(this), damage);
+                            target.hurtServer(level, damageSources().mobAttack(this), damage);
                         }
                     } else {
                         // Stationary target - 66% hit chance, bonus damage
                         if (random.nextFloat() < 0.66f) {
-                            target.hurt(damageSources().mobAttack(this), damage + 1.0f);
+                            target.hurtServer(level, damageSources().mobAttack(this), damage + 1.0f);
                         }
                     }
                     
@@ -361,7 +356,7 @@ public class EntityWisp extends PathfinderMob implements Enemy {
         // Drop crystal of wisp's aspect type
         Aspect aspect = getAspect();
         if (aspect != null) {
-            this.spawnAtLocation(ThaumcraftApiHelper.makeCrystal(aspect));
+            this.spawnAtLocation(level, ThaumcraftApiHelper.makeCrystal(aspect));
         }
     }
     

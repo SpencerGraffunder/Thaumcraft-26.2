@@ -102,7 +102,7 @@ public class WarpEvents {
             // Unlock research based on warp level
             if (actualwarp > 10 && !ThaumcraftCapabilities.knowsResearch(player, "BATHSALTS") 
                     && !ThaumcraftCapabilities.knowsResearch(player, "!BATHSALTS")) {
-                player.displayClientMessage(Component.literal("§5§o" + getWarpText(8)), true);
+                player.sendSystemMessage(Component.literal("§5§o" + getWarpText(8)));
                 ThaumcraftApi.internalMethods.completeResearch(player, "!BATHSALTS");
             }
             if (actualwarp > 25 && !ThaumcraftCapabilities.knowsResearch(player, "ELDRITCHMINOR")) {
@@ -139,31 +139,31 @@ public class WarpEvents {
                     SoundSource.AMBIENT, 4.0f, (1.0f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2f) * 0.7f);
         } else if (eff <= 12) {
             // Creepy message
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(11)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(11)));
         } else if (eff <= 16) {
             // Vis Exhaustion
             MobEffectInstance pe = new MobEffectInstance(ModEffects.VIS_EXHAUST, 5000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(1)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(1)));
         } else if (eff <= 20) {
             // Thaumarhia
             MobEffectInstance pe = new MobEffectInstance(ModEffects.THAUMARHIA, Math.min(32000, 10 * warp), 0, true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(15)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(15)));
         } else if (eff <= 24) {
             // Unnatural Hunger
             MobEffectInstance pe = new MobEffectInstance(ModEffects.UNNATURAL_HUNGER, 5000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(2)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(2)));
         } else if (eff <= 28) {
             // Creepy message 2
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(12)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(12)));
         } else if (eff <= 32) {
             // Light mist + possible guardian
             spawnMist(player, warp, 1);
@@ -178,37 +178,37 @@ public class WarpEvents {
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(5)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(5)));
         } else if (eff <= 44) {
             // Mining fatigue
             try {
-                player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 1200, Math.min(3, warp / 15), true, true));
+                player.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, 1200, Math.min(3, warp / 15), true, true));
             } catch (Exception ignored) {}
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(9)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(9)));
         } else if (eff <= 48) {
             // Infectious Vis Exhaust
             MobEffectInstance pe = new MobEffectInstance(ModEffects.INFECTIOUS_VIS_EXHAUST, 6000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(1)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(1)));
         } else if (eff <= 52) {
             // Night vision
             player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, Math.min(40 * warp, 6000), 0, true, true));
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(10)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(10)));
         } else if (eff <= 56) {
             // Death Gaze
             MobEffectInstance pe = new MobEffectInstance(ModEffects.DEATH_GAZE, 6000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(4)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(4)));
         } else if (eff <= 60) {
             // Hallucination spiders
             suddenlySpiders(player, warp, false);
         } else if (eff <= 64) {
             // Creepy message 3
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(13)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(13)));
         } else if (eff <= 68) {
             // Heavy mist + guardians
             spawnMist(player, warp, warp / 30);
@@ -222,14 +222,14 @@ public class WarpEvents {
             if (nw > 0) {
                 ThaumcraftApi.internalMethods.addWarpToPlayer(player, -1, IPlayerWarp.EnumWarpType.NORMAL);
             }
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(14)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(14)));
         } else if (eff <= 80) {
             // Heavy unnatural hunger
             MobEffectInstance pe = new MobEffectInstance(ModEffects.UNNATURAL_HUNGER, 6000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
-            player.displayClientMessage(Component.literal("§5§o" + getWarpText(2)), true);
+            player.sendSystemMessage(Component.literal("§5§o" + getWarpText(2)));
         } else if (eff <= 88) {
             // Spawn cultist portal
             spawnPortal(player);
@@ -255,7 +255,7 @@ public class WarpEvents {
                 spawnGuardian(player);
             }
         }
-        player.displayClientMessage(Component.literal("§5§o" + getWarpText(6)), true);
+        player.sendSystemMessage(Component.literal("§5§o" + getWarpText(6)));
     }
     
     /**
@@ -277,16 +277,16 @@ public class WarpEvents {
             BlockPos pos = new BlockPos(i2, j2, k2);
             portal.setPos(i2 + 0.5, j2 + 1.0, k2 + 0.5);
             
-            if (level.getBlockState(pos.below()).isSolidRender(level, pos.below()) 
+            if (level.getBlockState(pos.below()).isSolidRender()
                     && level.noCollision(portal) 
                     && !level.containsAnyLiquid(portal.getBoundingBox())) {
                 portal.finalizeSpawn(
                         (net.minecraft.server.level.ServerLevel) level,
-                        level.getCurrentDifficultyAt(pos),
+                        ((net.minecraft.server.level.ServerLevel) level).getCurrentDifficultyAt(pos),
                         net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED,
-                        null, null);
+                        null);
                 level.addFreshEntity(portal);
-                player.displayClientMessage(Component.literal("§5§o" + getWarpText(16)), true);
+                player.sendSystemMessage(Component.literal("§5§o" + getWarpText(16)));
                 break;
             }
         }
@@ -310,7 +310,7 @@ public class WarpEvents {
             
             BlockPos pos = new BlockPos(i2, j2, k2);
             
-            if (level.getBlockState(pos.below()).isSolidRender(level, pos.below())) {
+            if (level.getBlockState(pos.below()).isSolidRender()) {
                 guardian.setPos(i2, j2, k2);
                 
                 if (level.noCollision(guardian) 
@@ -346,7 +346,7 @@ public class WarpEvents {
                 
                 BlockPos pos = new BlockPos(i2, j2, k2);
                 
-                if (level.getBlockState(pos.below()).isSolidRender(level, pos.below())) {
+                if (level.getBlockState(pos.below()).isSolidRender()) {
                     spider.setPos(i2, j2, k2);
                     
                     if (level.noCollision(spider) 
@@ -366,7 +366,7 @@ public class WarpEvents {
                 level.addFreshEntity(spider);
             }
         }
-        player.displayClientMessage(Component.literal("§5§o" + getWarpText(7)), true);
+        player.sendSystemMessage(Component.literal("§5§o" + getWarpText(7)));
     }
     
     /**
@@ -401,16 +401,10 @@ public class WarpEvents {
             double dot = playerLook.dot(toEntity);
             if (dot < 0.75) continue; // Not looking at entity
             
-            // Check PvP for players
-            if (entity instanceof Player targetPlayer) {
-                if (level.getServer() != null && !level.getServer().isPvpAllowed()) {
-                    continue;
-                }
-            }
             
             // Apply wither and aggro
             living.addEffect(new MobEffectInstance(MobEffects.WITHER, 80, 0));
-            living.setLastHurtByPlayer(player);
+            living.setLastHurtByPlayer(player, 300);
             
             if (living instanceof PathfinderMob mob) {
                 mob.setTarget(player);
@@ -425,7 +419,8 @@ public class WarpEvents {
         int w = PlayerEvents.getFinalWarp(player.getMainHandItem(), player);
         
         // Check armor
-        for (ItemStack armor : player.getInventory().armor) {
+        for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[]{net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET}) {
+            ItemStack armor = player.getItemBySlot(slot);
             w += PlayerEvents.getFinalWarp(armor, player);
         }
         

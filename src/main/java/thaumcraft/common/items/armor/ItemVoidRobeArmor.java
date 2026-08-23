@@ -1,13 +1,14 @@
 package thaumcraft.common.items.armor;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +34,7 @@ import net.minecraft.server.level.ServerLevel;
  * on the helmet. Causes warp when worn.
  */
 public class ItemVoidRobeArmor extends Item 
-        implements IVisDiscountGear, IGoggles, IRevealer, IWarpingGear, DyeableLeatherItem {
+        implements IVisDiscountGear, IGoggles, IRevealer, IWarpingGear {
     
     // Default color (dark purple)
     private static final int DEFAULT_COLOR = 0x6A4C00;
@@ -57,19 +58,6 @@ public class ItemVoidRobeArmor extends Item
     }
     
     @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.VOID_METAL_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        // Has overlay for dyeable layer
-        return type == null ? "thaumcraft:textures/entity/armor/void_robe_armor_overlay.png" 
-                           : "thaumcraft:textures/entity/armor/void_robe_armor.png";
-    }
-    
-    @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         super.inventoryTick(stack, level, entity, slot);
         
@@ -77,8 +65,10 @@ public class ItemVoidRobeArmor extends Item
         if (!level.isClientSide() && stack.isDamaged() && entity.tickCount % 20 == 0 
                 && entity instanceof LivingEntity living) {
             // Check if actually worn
-            for (ItemStack armorPiece : living.getArmorSlots()) {
-                if (armorPiece == stack) {
+            for (net.minecraft.world.entity.EquipmentSlot s : new net.minecraft.world.entity.EquipmentSlot[]{
+                    net.minecraft.world.entity.EquipmentSlot.FEET, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                    net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.HEAD}) {
+                if (living.getItemBySlot(s) == stack) {
                     stack.setDamageValue(stack.getDamageValue() - 1);
                     break;
                 }
@@ -97,12 +87,26 @@ public class ItemVoidRobeArmor extends Item
     
     @Override
     public boolean showNodes(ItemStack itemstack, LivingEntity player) {
-        return this.getType() == ArmorType.HELMET;
+        return getArmorType(itemstack) == ArmorType.HELMET;
     }
     
     @Override
     public boolean showIngamePopups(ItemStack itemstack, LivingEntity player) {
-        return this.getType() == ArmorType.HELMET;
+        return getArmorType(itemstack) == ArmorType.HELMET;
+    }
+    
+    private static ArmorType getArmorType(ItemStack stack) {
+        net.minecraft.world.item.equipment.Equippable equippable = stack.getOrDefault(DataComponents.EQUIPPABLE, null);
+        if (equippable == null) {
+            return null;
+        }
+        return switch (equippable.slot()) {
+            case HEAD -> ArmorType.HELMET;
+            case CHEST -> ArmorType.CHESTPLATE;
+            case LEGS -> ArmorType.LEGGINGS;
+            case FEET -> ArmorType.BOOTS;
+            default -> null;
+        };
     }
     
     // ==================== IWarpingGear ====================
@@ -114,29 +118,20 @@ public class ItemVoidRobeArmor extends Item
     
     // ==================== DyeableLeatherItem ====================
     
-    @Override
     public int getColor(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement("display");
-        return tag != null && tag.contains("color") ? tag.getIntOr("color", 0) : DEFAULT_COLOR;
+        return DyedItemColor.getOrDefault(stack, DEFAULT_COLOR);
     }
     
-    @Override
     public boolean hasCustomColor(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement("display");
-        return tag != null && tag.contains("color");
+        return stack.has(DataComponents.DYED_COLOR);
     }
     
-    @Override
     public void clearColor(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement("display");
-        if (tag != null && tag.contains("color")) {
-            tag.remove("color");
-        }
+        stack.remove(DataComponents.DYED_COLOR);
     }
     
-    @Override
     public void setColor(ItemStack stack, int color) {
-        stack.getOrCreateTagElement("display").putInt("color", color);
+        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
     }
     
     /**
@@ -155,7 +150,7 @@ public class ItemVoidRobeArmor extends Item
                     clearColor(stack);
                     LayeredCauldronBlock.lowerFillLevel(state, level, pos);
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide());
+                return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
             }
         }
         

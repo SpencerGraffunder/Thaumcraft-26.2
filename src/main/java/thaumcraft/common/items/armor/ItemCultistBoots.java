@@ -22,15 +22,4 @@ public class ItemCultistBoots extends Item {
                         .stacksTo(1)
                         .rarity(Rarity.UNCOMMON)).humanoidArmor(ArmorMaterials.IRON, ArmorType.BOOTS));
     }
-    
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(Items.IRON_INGOT) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return "thaumcraft:textures/entity/armor/cultist_boots.png";
-    }
 }

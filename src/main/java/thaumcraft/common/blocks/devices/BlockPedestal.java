@@ -6,8 +6,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.player.Player;import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -75,7 +74,30 @@ public class BlockPedestal extends BlockTC implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                  BlockHitResult hit) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof TilePedestal pedestal) {
+            if (!pedestal.getDisplayedItem().isEmpty()) {
+                // Take item from pedestal
+                ItemStack taken = pedestal.tryTakeItem(player);
+                if (!taken.isEmpty()) {
+                    if (!player.getInventory().add(taken)) {
+                        player.drop(taken, false);
+                    }
+                }
+            }
+        }
+
+        return InteractionResult.CONSUME;
+    }
+
+    @Override
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
@@ -83,8 +105,6 @@ public class BlockPedestal extends BlockTC implements EntityBlock {
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof TilePedestal pedestal) {
-            ItemStack heldItem = player.getItemInHand(hand);
-            
             if (pedestal.getDisplayedItem().isEmpty() && !heldItem.isEmpty()) {
                 // Place item on pedestal
                 pedestal.tryInsertItem(player, heldItem);
@@ -103,14 +123,14 @@ public class BlockPedestal extends BlockTC implements EntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof TilePedestal pedestal) {
                 pedestal.dropContents();
             }
-            super.onRemove(state, level, pos, newState, isMoving);
         }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Nullable

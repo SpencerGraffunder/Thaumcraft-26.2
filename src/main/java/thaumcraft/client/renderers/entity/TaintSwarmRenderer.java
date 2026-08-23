@@ -3,18 +3,18 @@ package thaumcraft.client.renderers.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
+import thaumcraft.client.renderers.entity.state.TaintSwarmRenderState;
 import thaumcraft.common.entities.monster.tainted.EntityTaintSwarm;
 
 import java.util.Random;
@@ -24,7 +24,7 @@ import java.util.Random;
  * Renders as a cluster of animated particles/sprites.
  */
 @OnlyIn(Dist.CLIENT)
-public class TaintSwarmRenderer extends EntityRenderer<EntityTaintSwarm> {
+public class TaintSwarmRenderer extends EntityRenderer<EntityTaintSwarm, TaintSwarmRenderState> {
     
     private static final Identifier TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/taint_swarm.png");
@@ -35,23 +35,28 @@ public class TaintSwarmRenderer extends EntityRenderer<EntityTaintSwarm> {
     }
     
     @Override
-    public Identifier getTextureLocation(EntityTaintSwarm entity) {
-        return TEXTURE;
+    public TaintSwarmRenderState createRenderState() {
+        return new TaintSwarmRenderState();
     }
     
     @Override
-    public void render(EntityTaintSwarm entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void extractRenderState(EntityTaintSwarm entity, TaintSwarmRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.time = entity.tickCount + partialTick;
+        state.seed = entity.getId();
+    }
+    
+    @Override
+    public void submit(TaintSwarmRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         poseStack.pushPose();
         
         // Billboard rotation
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        poseStack.mulPose(camera.orientation);
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(TEXTURE));
-        
-        Random random = new Random(entity.getId());
-        float time = entity.tickCount + partialTicks;
+        Random random = new Random(state.seed);
+        float time = state.time;
+        int light = state.lightCoords;
         
         // Render multiple swirling particles
         for (int i = 0; i < 12; i++) {
@@ -73,58 +78,52 @@ public class TaintSwarmRenderer extends EntityRenderer<EntityTaintSwarm> {
             
             float size = 0.15F + random.nextFloat() * 0.1F;
             
-            renderParticle(poseStack, vertexConsumer, size, packedLight);
+            submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(TEXTURE), (pose, buffer) -> {
+                renderParticle(pose, buffer, size, light);
+            });
             
             poseStack.popPose();
         }
         
         poseStack.popPose();
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
     
-    private void renderParticle(PoseStack poseStack, VertexConsumer vertexConsumer, 
-                               float size, int packedLight) {
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix = pose.pose();
-        Matrix3f normal = pose.normal();
-        
+    private static void renderParticle(PoseStack.Pose pose, VertexConsumer vertexConsumer, 
+                                       float size, int light) {
         // Purple taint color
         int r = 128;
         int g = 64;
         int b = 160;
         int a = 200;
         
-        vertexConsumer.vertex(matrix, -size, -size, 0.0F)
-            .color(r, g, b, a)
-            .uv(0.0F, 1.0F)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(packedLight)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
+        vertexConsumer.addVertex(pose, -size, -size, 0.0F)
+            .setColor(r, g, b, a)
+            .setUv(0.0F, 1.0F)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(pose, 0.0F, 1.0F, 0.0F);
         
-        vertexConsumer.vertex(matrix, size, -size, 0.0F)
-            .color(r, g, b, a)
-            .uv(1.0F, 1.0F)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(packedLight)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
+        vertexConsumer.addVertex(pose, size, -size, 0.0F)
+            .setColor(r, g, b, a)
+            .setUv(1.0F, 1.0F)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(pose, 0.0F, 1.0F, 0.0F);
         
-        vertexConsumer.vertex(matrix, size, size, 0.0F)
-            .color(r, g, b, a)
-            .uv(1.0F, 0.0F)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(packedLight)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
+        vertexConsumer.addVertex(pose, size, size, 0.0F)
+            .setColor(r, g, b, a)
+            .setUv(1.0F, 0.0F)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(pose, 0.0F, 1.0F, 0.0F);
         
-        vertexConsumer.vertex(matrix, -size, size, 0.0F)
-            .color(r, g, b, a)
-            .uv(0.0F, 0.0F)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(packedLight)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
+        vertexConsumer.addVertex(pose, -size, size, 0.0F)
+            .setColor(r, g, b, a)
+            .setUv(0.0F, 0.0F)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(pose, 0.0F, 1.0F, 0.0F);
     }
 }

@@ -8,7 +8,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import thaumcraft.common.items.tools.ItemHandMirror;
@@ -46,8 +46,7 @@ public class HandMirrorMenu extends AbstractContainerMenu implements ContainerLi
         
         // Create transport slot container
         this.transportSlot = new SimpleContainer(1);
-        transportSlot.addListener(this);
-        
+                
         // Slot 0: Transport slot
         addSlot(new Slot(transportSlot, 0, 80, 24));
         
@@ -64,7 +63,6 @@ public class HandMirrorMenu extends AbstractContainerMenu implements ContainerLi
         }
     }
     
-    @Override
     public void containerChanged(Container container) {
         ItemStack stackInSlot = transportSlot.getItem(0);
         
@@ -91,7 +89,7 @@ public class HandMirrorMenu extends AbstractContainerMenu implements ContainerLi
     }
     
     @Override
-    public void clicked(int slotId, int button, ClickType clickType, Player player) {
+    public void clicked(int slotId, int button, ContainerInput clickType, Player player) {
         // Prevent clicking on hand mirror in hotbar
         if (slotId >= 0) {
             Slot slot = slots.get(slotId);
@@ -164,5 +162,14 @@ public class HandMirrorMenu extends AbstractContainerMenu implements ContainerLi
                 player.drop(remaining, false);
             }
         }
+    }
+
+    @Override
+    public void slotChanged(AbstractContainerMenu menu, int slot, ItemStack stack) {
+        containerChanged(null);
+    }
+
+    @Override
+    public void dataChanged(AbstractContainerMenu menu, int slot, int value) {
     }
 }

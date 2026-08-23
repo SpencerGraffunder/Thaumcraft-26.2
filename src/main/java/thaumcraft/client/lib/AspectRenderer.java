@@ -1,15 +1,13 @@
 package thaumcraft.client.lib;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
+import net.minecraft.util.ARGB;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 
@@ -37,7 +35,7 @@ public class AspectRenderer {
      * @param y Y position
      * @param aspect the aspect to render
      */
-    public static void drawAspect(GuiGraphics graphics, int x, int y, Aspect aspect) {
+    public static void drawAspect(GuiGraphicsExtractor graphics, int x, int y, Aspect aspect) {
         drawAspect(graphics, x, y, aspect, 0, 0, 1.0f, false);
     }
     
@@ -50,7 +48,7 @@ public class AspectRenderer {
      * @param aspect the aspect to render
      * @param amount the amount to display (0 to hide)
      */
-    public static void drawAspect(GuiGraphics graphics, int x, int y, Aspect aspect, float amount) {
+    public static void drawAspect(GuiGraphicsExtractor graphics, int x, int y, Aspect aspect, float amount) {
         drawAspect(graphics, x, y, aspect, amount, 0, 1.0f, false);
     }
     
@@ -66,7 +64,7 @@ public class AspectRenderer {
      * @param alpha transparency (0.0 to 1.0)
      * @param grayscale if true, render in grayscale
      */
-    public static void drawAspect(GuiGraphics graphics, int x, int y, Aspect aspect, 
+    public static void drawAspect(GuiGraphicsExtractor graphics, int x, int y, Aspect aspect, 
             float amount, int bonus, float alpha, boolean grayscale) {
         if (aspect == null) return;
         
@@ -95,16 +93,16 @@ public class AspectRenderer {
             int textY = y + ICON_SIZE - font.lineHeight;
             
             // Draw shadow for readability
-            graphics.drawString(font, amountStr, textX + 1, textY + 1, 0x000000, false);
-            graphics.drawString(font, amountStr, textX, textY, 0xFFFFFF, false);
+            graphics.text(font, amountStr, textX + 1, textY + 1, 0x000000, false);
+            graphics.text(font, amountStr, textX, textY, 0xFFFFFF, false);
         }
         
         // Render bonus indicator
         if (bonus > 0) {
             // Draw a small star/indicator at top-left
-            graphics.drawString(font, "+", x - 2, y - 4, 0xFFFF00, false);
+            graphics.text(font, "+", x - 2, y - 4, 0xFFFF00, false);
             if (bonus > 1) {
-                graphics.drawString(font, String.valueOf(bonus), x + 4, y - 2, 0xFFFFFF, false);
+                graphics.text(font, String.valueOf(bonus), x + 4, y - 2, 0xFFFFFF, false);
             }
         }
     }
@@ -112,27 +110,11 @@ public class AspectRenderer {
     /**
      * Render a texture with color tinting using the new rendering system.
      */
-    private static void renderColoredTexture(GuiGraphics graphics, Identifier texture,
+    private static void renderColoredTexture(GuiGraphicsExtractor graphics, Identifier texture,
             int x, int y, int width, int height, float r, float g, float b, float a) {
         
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        
-        Matrix4f matrix = graphics.pose().last().pose();
-        
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        
-        builder.vertex(matrix, x, y + height, 0).uv(0, 1).color(r, g, b, a).endVertex();
-        builder.vertex(matrix, x + width, y + height, 0).uv(1, 1).color(r, g, b, a).endVertex();
-        builder.vertex(matrix, x + width, y, 0).uv(1, 0).color(r, g, b, a).endVertex();
-        builder.vertex(matrix, x, y, 0).uv(0, 0).color(r, g, b, a).endVertex();
-        
-        BufferUploader.drawWithShader(builder.end());
-        
-        RenderSystem.disableBlend();
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0.0F, 0.0F, width, height, 16, 16,
+                ARGB.colorFromFloat(a, r, g, b));
     }
     
     /**
@@ -145,7 +127,7 @@ public class AspectRenderer {
      * @param spacing horizontal spacing between icons
      * @return the ending X position
      */
-    public static int drawAspectList(GuiGraphics graphics, int x, int y, AspectList aspects, int spacing) {
+    public static int drawAspectList(GuiGraphicsExtractor graphics, int x, int y, AspectList aspects, int spacing) {
         if (aspects == null) return x;
         
         int currentX = x;
@@ -166,7 +148,7 @@ public class AspectRenderer {
      * @param aspects the aspect list to render
      * @param spacing horizontal spacing between icons
      */
-    public static void drawAspectListCentered(GuiGraphics graphics, int centerX, int y, 
+    public static void drawAspectListCentered(GuiGraphicsExtractor graphics, int centerX, int y, 
             AspectList aspects, int spacing) {
         if (aspects == null || aspects.size() == 0) return;
         
@@ -183,7 +165,7 @@ public class AspectRenderer {
      * @param y Y position
      * @param aspect the aspect to render
      */
-    public static void drawAspectSmall(GuiGraphics graphics, int x, int y, Aspect aspect) {
+    public static void drawAspectSmall(GuiGraphicsExtractor graphics, int x, int y, Aspect aspect) {
         if (aspect == null) return;
         
         int color = aspect.getColor();
@@ -261,7 +243,7 @@ public class AspectRenderer {
      * @return tooltip components if hovering, null otherwise
      */
     public static List<net.minecraft.network.chat.Component> drawAspectWithTooltip(
-            GuiGraphics graphics, int x, int y, Aspect aspect, int amount, int mouseX, int mouseY) {
+            GuiGraphicsExtractor graphics, int x, int y, Aspect aspect, int amount, int mouseX, int mouseY) {
         drawAspect(graphics, x, y, aspect, amount);
         
         if (isMouseOverAspect(x, y, mouseX, mouseY)) {

@@ -1,5 +1,6 @@
 package thaumcraft.common.blocks.world.plants;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.PlantType;
 
 /**
  * Vishroom - A mystical purple mushroom that grows in dark caves.
@@ -41,7 +41,7 @@ public class BlockVishroom extends BushBlock {
     public BlockVishroom() {
         super(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
-                .noCollission()
+                .noCollision()
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .lightLevel(state -> 5)
@@ -51,6 +51,11 @@ public class BlockVishroom extends BushBlock {
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    @Override
+    public MapCodec<BlockVishroom> codec() {
+        return simpleCodec(p -> new BlockVishroom());
     }
 
     @Override
@@ -78,16 +83,12 @@ public class BlockVishroom extends BushBlock {
     }
 
     @Override
-    public PlantType getPlantType(BlockGetter level, BlockPos pos) {
-        return PlantType.CAVE;
-    }
-
-    @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
+            net.minecraft.world.entity.InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         // Cause nausea when entities walk through
         if (!level.isClientSide() && entity instanceof LivingEntity living) {
             if (level.getRandom().nextInt(5) == 0) {
-                living.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
+                living.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0));
             }
         }
     }

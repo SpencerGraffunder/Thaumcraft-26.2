@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
@@ -134,9 +134,9 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
     private IItemHandler getItemHandler(Level level, BlockPos pos, Direction face) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
-            var cap = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, face);
-            if (cap.isPresent()) {
-                return cap.orElse(null);
+            var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, face);
+            if (handler != null) {
+                return IItemHandler.of(handler);
             }
         }
         return null;
@@ -146,7 +146,7 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
         int count = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack slotStack = handler.getStackInSlot(i);
-            if (ItemStack.isSameItemSameTags(slotStack, stack)) {
+            if (ItemStack.isSameItemSameComponents(slotStack, stack)) {
                 count += slotStack.getCount();
             }
         }
@@ -176,7 +176,7 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
             if (!filterStack.isEmpty()) {
                 boolean matches = ItemStack.isSameItem(stack, filterStack);
                 if (matches && props[1].getValue()) {
-                    matches = ItemStack.isSameItemSameTags(stack, filterStack);
+                    matches = ItemStack.isSameItemSameComponents(stack, filterStack);
                 }
                 if (matches) {
                     return !blacklist;
@@ -282,7 +282,7 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
         
         for (int slot = 0; slot < handler.getSlots() && remaining > 0; slot++) {
             ItemStack slotStack = handler.getStackInSlot(slot);
-            if (ItemStack.isSameItemSameTags(slotStack, match)) {
+            if (ItemStack.isSameItemSameComponents(slotStack, match)) {
                 ItemStack extracted = handler.extractItem(slot, remaining, false);
                 if (!extracted.isEmpty()) {
                     if (result.isEmpty()) {

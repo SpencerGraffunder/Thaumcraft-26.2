@@ -1,20 +1,19 @@
 package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 
 /**
@@ -23,7 +22,7 @@ import thaumcraft.Thaumcraft;
  * Can be configured with different textures and colors.
  */
 @OnlyIn(Dist.CLIENT)
-public class ThaumcraftProjectileRenderer<T extends Entity> extends EntityRenderer<T> {
+public class ThaumcraftProjectileRenderer<T extends Entity> extends EntityRenderer<T, EntityRenderState> {
     
     private final Identifier texture;
     private final float size;
@@ -41,28 +40,26 @@ public class ThaumcraftProjectileRenderer<T extends Entity> extends EntityRender
     }
     
     @Override
-    public Identifier getTextureLocation(T entity) {
-        return texture;
+    public EntityRenderState createRenderState() {
+        return new EntityRenderState();
     }
     
     @Override
-    public void render(T entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void submit(EntityRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         poseStack.pushPose();
         
         // Billboard rotation
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        poseStack.mulPose(camera.orientation);
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         
         // Spin animation
-        float spin = (entity.tickCount + partialTicks) * 10.0F;
+        float spin = state.ageInTicks * 10.0F;
         poseStack.mulPose(Axis.ZP.rotationDegrees(spin));
         
         // Get render type
         RenderType renderType = emissive ? 
-                RenderType.entityTranslucentEmissive(texture) : 
-                RenderType.entityTranslucent(texture);
-        VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
+                RenderTypes.entityTranslucentEmissive(texture) : 
+                RenderTypes.entityTranslucent(texture);
         
         // Extract color components
         int r = (color >> 16) & 0xFF;
@@ -70,48 +67,42 @@ public class ThaumcraftProjectileRenderer<T extends Entity> extends EntityRender
         int b = color & 0xFF;
         int a = 255;
         
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix = pose.pose();
-        Matrix3f normal = pose.normal();
-        
-        int light = emissive ? 0xF000F0 : packedLight;
+        int light = emissive ? 0xF000F0 : state.lightCoords;
         
         // Render quad
-        vertexConsumer.vertex(matrix, -size, -size, 0.0F)
-            .color(r, g, b, a)
-            .uv(0.0F, 1.0F)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
-        
-        vertexConsumer.vertex(matrix, size, -size, 0.0F)
-            .color(r, g, b, a)
-            .uv(1.0F, 1.0F)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
-        
-        vertexConsumer.vertex(matrix, size, size, 0.0F)
-            .color(r, g, b, a)
-            .uv(1.0F, 0.0F)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
-        
-        vertexConsumer.vertex(matrix, -size, size, 0.0F)
-            .color(r, g, b, a)
-            .uv(0.0F, 0.0F)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
+        submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            buffer.addVertex(pose, -size, -size, 0.0F)
+                .setColor(r, g, b, a)
+                .setUv(0.0F, 1.0F)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F);
+            
+            buffer.addVertex(pose, size, -size, 0.0F)
+                .setColor(r, g, b, a)
+                .setUv(1.0F, 1.0F)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F);
+            
+            buffer.addVertex(pose, size, size, 0.0F)
+                .setColor(r, g, b, a)
+                .setUv(1.0F, 0.0F)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F);
+            
+            buffer.addVertex(pose, -size, size, 0.0F)
+                .setColor(r, g, b, a)
+                .setUv(0.0F, 0.0F)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F);
+        });
         
         poseStack.popPose();
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
     
     /**

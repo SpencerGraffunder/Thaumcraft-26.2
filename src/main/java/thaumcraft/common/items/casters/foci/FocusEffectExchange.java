@@ -131,10 +131,10 @@ public class FocusEffectExchange extends FocusEffect {
         // Create a fake tool with enchantments
         ItemStack fakeTool = new ItemStack(net.minecraft.world.item.Items.DIAMOND_PICKAXE);
         if (silk) {
-            fakeTool.enchant(Enchantments.SILK_TOUCH, 1);
+            fakeTool.enchant(world.registryAccess().getOrThrow(Enchantments.SILK_TOUCH), 1);
         }
         if (fortune > 0) {
-            fakeTool.enchant(Enchantments.BLOCK_FORTUNE, fortune);
+            fakeTool.enchant(world.registryAccess().getOrThrow(Enchantments.FORTUNE), fortune);
         }
         
         // Drop items using the fake tool

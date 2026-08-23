@@ -92,13 +92,15 @@ public class FocusEffectAir extends FocusEffect {
                     // Knockback in the direction the spell was traveling
                     living.knockback(knockbackStrength, 
                         -trajectory.direction.x, 
-                        -trajectory.direction.z);
+                        -trajectory.direction.z,
+                        damageSource, damage);
                 } else {
                     // Fallback: knockback based on entity rotation
                     float yawRad = hitEntity.getYRot() * ((float) Math.PI / 180F);
                     living.knockback(knockbackStrength, 
                         -Mth.sin(yawRad), 
-                        Mth.cos(yawRad));
+                        Mth.cos(yawRad),
+                        damageSource, damage);
                 }
             }
             

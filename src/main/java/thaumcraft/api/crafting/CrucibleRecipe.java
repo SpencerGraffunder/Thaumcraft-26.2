@@ -1,7 +1,11 @@
 package thaumcraft.api.crafting;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
@@ -46,14 +50,15 @@ public class CrucibleRecipe implements IThaumcraftRecipe {
         StringBuilder hc = new StringBuilder(research);
         hc.append(recipeOutput.toString());
         
-        if (recipeOutput.hasTag()) {
-            hc.append(recipeOutput.getTag().toString());
+        if (recipeOutput.has(DataComponents.CUSTOM_DATA)) {
+            hc.append(recipeOutput.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().toString());
         }
         
-        for (ItemStack is : catalyst.getItems()) {
+        for (Holder<Item> holder : catalyst.items().toList()) {
+            ItemStack is = new ItemStack(holder.value());
             hc.append(is.toString());
-            if (is.hasTag()) {
-                hc.append(is.getTag().toString());
+            if (is.has(DataComponents.CUSTOM_DATA)) {
+                hc.append(is.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().toString());
             }
         }
         

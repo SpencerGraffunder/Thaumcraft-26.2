@@ -71,9 +71,9 @@ public class TileMemory extends BlockEntity {
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         // Save block state using NbtUtils
-        output.put("oldBlock", NbtUtils.writeBlockState(oldBlock));
+        output.store(NbtUtils.writeBlockState(oldBlock));
         if (tileEntityCompound != null) {
-            output.put("tileData", tileEntityCompound);
+            output.store(tileEntityCompound);
         }
     }
     
@@ -82,7 +82,7 @@ public class TileMemory extends BlockEntity {
         super.loadAdditional(input);
         // Load block state using NbtUtils
         if (input.keySet().contains("oldBlock")) {
-            oldBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), input.read("oldBlock", CompoundTag.CODEC).orElseGet(CompoundTag::new));
+            oldBlock = NbtUtils.readBlockState(input.lookup().lookupOrThrow(Registries.BLOCK), input.read("oldBlock", CompoundTag.CODEC).orElseGet(CompoundTag::new));
         } else {
             oldBlock = Blocks.AIR.defaultBlockState();
         }

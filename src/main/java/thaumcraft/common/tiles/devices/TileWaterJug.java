@@ -12,12 +12,14 @@ import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
@@ -50,8 +52,7 @@ public class TileWaterJug extends TileThaumcraft {
             return stack.getFluid() == Fluids.WATER;
         }
     };
-    private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(() -> new WaterJugFluidHandler());
-    
+
     // Scanning state
     private int zone = 0;
     private int counter = 0;
@@ -190,13 +191,8 @@ public class TileWaterJug extends TileThaumcraft {
         }
         
         // Check for fluid handler capability
-        BlockEntity te = level.getBlockEntity(targetPos);
-        if (te != null) {
-            LazyOptional<IFluidHandler> cap = te.getCapability(ForgeCapabilities.FLUID_HANDLER, Direction.UP);
-            return cap.isPresent();
-        }
-        
-        return false;
+        var handler = level.getCapability(Capabilities.Fluid.BLOCK, targetPos, targetState, null, Direction.UP);
+        return handler != null;
     }
     
     /**
@@ -232,22 +228,17 @@ public class TileWaterJug extends TileThaumcraft {
         }
         
         // Handle fluid handler capability
-        BlockEntity te = level.getBlockEntity(targetPos);
-        if (te != null) {
-            LazyOptional<IFluidHandler> cap = te.getCapability(ForgeCapabilities.FLUID_HANDLER, Direction.UP);
-            if (cap.isPresent()) {
-                IFluidHandler handler = cap.orElse(null);
-                if (handler != null) {
-                    int filled = handler.fill(new FluidStack(Fluids.WATER, 25), IFluidHandler.FluidAction.EXECUTE);
-                    if (filled > 0) {
-                        tank.drain(filled, IFluidHandler.FluidAction.EXECUTE);
-                        level.blockEvent(worldPosition, getBlockState().getBlock(), 1, zoneId);
-                        setChanged();
-                        syncTile(false);
-                    }
-                }
-                return true;
+        var handler = level.getCapability(Capabilities.Fluid.BLOCK, targetPos, targetState, null, Direction.UP);
+        if (handler != null) {
+            int filled = ResourceHandlerUtil.insertStacking(handler,
+                    FluidResource.of(new FluidStack(Fluids.WATER, 25)), 25, null);
+            if (filled > 0) {
+                tank.drain(filled, IFluidHandler.FluidAction.EXECUTE);
+                level.blockEvent(worldPosition, getBlockState().getBlock(), 1, zoneId);
+                setChanged();
+                syncTile(false);
             }
+            return true;
         }
         
         return false;
@@ -270,84 +261,57 @@ public class TileWaterJug extends TileThaumcraft {
     // ==================== Fluid Capability ====================
     
     /**
-     * Custom fluid handler that only allows draining from top.
+     * ResourceHandler view of the internal tank that only allows draining (used by the registered fluid capability).
      */
-    private class WaterJugFluidHandler implements IFluidHandler {
-        
-        @Override
-        public int getTanks() {
-            return 1;
-        }
-        
-        @Nonnull
-        @Override
-        public FluidStack getFluidInTank(int tankIndex) {
-            return tank.getFluid();
-        }
-        
-        @Override
-        public int getTankCapacity(int tankIndex) {
-            return TANK_CAPACITY;
-        }
-        
-        @Override
-        public boolean isFluidValid(int tankIndex, @Nonnull FluidStack stack) {
-            return false; // Cannot fill from outside
-        }
-        
-        @Override
-        public int fill(FluidStack resource, FluidAction action) {
-            return 0; // Cannot fill from outside
-        }
-        
-        @Nonnull
-        @Override
-        public FluidStack drain(FluidStack resource, FluidAction action) {
-            if (!resource.getFluid().isSame(Fluids.WATER)) {
-                return FluidStack.EMPTY;
+    public ResourceHandler<FluidResource> getDrainHandler() {
+        return new ResourceHandler<>() {
+            @Override
+            public int size() {
+                return 1;
             }
-            boolean wasFull = tank.getFluidAmount() >= TANK_CAPACITY;
-            FluidStack drained = tank.drain(resource, action);
             
-            if (action.execute()) {
-                setChanged();
-                if (wasFull && tank.getFluidAmount() < TANK_CAPACITY) {
-                    syncTile(false);
-                }
+            @Override
+            public FluidResource getResource(int slot) {
+                return FluidResource.of(tank.getFluid());
             }
-            return drained;
-        }
-        
-        @Nonnull
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction action) {
-            boolean wasFull = tank.getFluidAmount() >= TANK_CAPACITY;
-            FluidStack drained = tank.drain(maxDrain, action);
             
-            if (action.execute()) {
-                setChanged();
-                if (wasFull && tank.getFluidAmount() < TANK_CAPACITY) {
-                    syncTile(false);
-                }
+            @Override
+            public long getAmountAsLong(int slot) {
+                return tank.getFluidAmount();
             }
-            return drained;
-        }
-    }
-    
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        // Only expose fluid capability from top
-        if (side == Direction.UP && cap == ForgeCapabilities.FLUID_HANDLER) {
-            return fluidHandler.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-    
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        fluidHandler.invalidate();
+            
+            @Override
+            public long getCapacityAsLong(int slot, FluidResource resource) {
+                return TANK_CAPACITY;
+            }
+            
+            @Override
+            public boolean isValid(int slot, FluidResource resource) {
+                return false; // Cannot fill from outside
+            }
+            
+            @Override
+            public int insert(int slot, FluidResource resource, int amount, TransactionContext transaction) {
+                return 0; // Cannot fill from outside
+            }
+            
+            @Override
+            public int extract(int slot, FluidResource resource, int amount, TransactionContext transaction) {
+                if (!resource.toStack(1).getFluid().isSame(Fluids.WATER)) {
+                    return 0;
+                }
+                boolean wasFull = tank.getFluidAmount() >= TANK_CAPACITY;
+                FluidStack drained = tank.drain(resource.toStack(amount), IFluidHandler.FluidAction.EXECUTE);
+                
+                if (!drained.isEmpty()) {
+                    setChanged();
+                    if (wasFull && tank.getFluidAmount() < TANK_CAPACITY) {
+                        syncTile(false);
+                    }
+                }
+                return drained.getAmount();
+            }
+        };
     }
     
     // ==================== Accessors ====================

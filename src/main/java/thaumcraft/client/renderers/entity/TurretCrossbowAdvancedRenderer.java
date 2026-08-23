@@ -1,14 +1,16 @@
 package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.entity.CrossbowAdvancedModel;
+import thaumcraft.client.renderers.entity.state.TurretCrossbowRenderState;
 import thaumcraft.common.entities.construct.EntityTurretCrossbowAdvanced;
 
 /**
@@ -21,7 +23,7 @@ import thaumcraft.common.entities.construct.EntityTurretCrossbowAdvanced;
  * - Shield, box, and brain modules
  */
 @OnlyIn(Dist.CLIENT)
-public class TurretCrossbowAdvancedRenderer extends MobRenderer<EntityTurretCrossbowAdvanced, CrossbowAdvancedModel> {
+public class TurretCrossbowAdvancedRenderer extends MobRenderer<EntityTurretCrossbowAdvanced, TurretCrossbowRenderState, CrossbowAdvancedModel> {
     
     private static final Identifier TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/crossbow_advanced.png");
@@ -31,48 +33,57 @@ public class TurretCrossbowAdvancedRenderer extends MobRenderer<EntityTurretCros
     }
     
     @Override
-    public Identifier getTextureLocation(EntityTurretCrossbowAdvanced entity) {
+    public Identifier getTextureLocation(TurretCrossbowRenderState state) {
         return TEXTURE;
     }
     
     @Override
-    public void render(EntityTurretCrossbowAdvanced entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public TurretCrossbowRenderState createRenderState() {
+        return new TurretCrossbowRenderState();
+    }
+    
+    @Override
+    public void extractRenderState(EntityTurretCrossbowAdvanced entity, TurretCrossbowRenderState state, float partialTick) {
         // Update load progress for animation
-        entity.loadProgressForRender = entity.getLoadProgress(partialTicks);
+        entity.loadProgressForRender = entity.getLoadProgress(partialTick);
         
         // Reset yaw offset (turret rotates mech, not body)
         entity.yBodyRot = 0.0F;
         entity.yBodyRotO = 0.0F;
         
-        // Apply hurt color tint
-        if (entity.hurtTime > 0) {
-            // The super.render will handle the hurt overlay
-        }
+        super.extractRenderState(entity, state, partialTick);
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
-    }
-    
-    @Override
-    protected void scale(EntityTurretCrossbowAdvanced entity, PoseStack poseStack, float partialTicks) {
-        // Advanced turret is slightly larger
-        poseStack.scale(1.0F, 1.0F, 1.0F);
+        state.loadProgress = entity.getLoadProgress(partialTick);
+        state.attackAnim = entity.getAttackAnim(partialTick);
+        state.passenger = entity.isPassenger();
         
-        // Hurt jiggle effect
+        // Hurt jiggle effect - computed once per frame in extract so submit stays deterministic
         if (entity.hurtTime > 0) {
             float jiggle = entity.hurtTime / 500.0F;
-            poseStack.translate(
-                entity.getRandom().nextGaussian() * jiggle, 
-                entity.getRandom().nextGaussian() * jiggle, 
-                entity.getRandom().nextGaussian() * jiggle
-            );
+            state.jiggleX = (float) entity.getRandom().nextGaussian() * jiggle;
+            state.jiggleY = (float) entity.getRandom().nextGaussian() * jiggle;
+            state.jiggleZ = (float) entity.getRandom().nextGaussian() * jiggle;
+        } else {
+            state.jiggleX = 0.0F;
+            state.jiggleY = 0.0F;
+            state.jiggleZ = 0.0F;
         }
-        
-        super.scale(entity, poseStack, partialTicks);
     }
     
     @Override
-    protected boolean shouldShowName(EntityTurretCrossbowAdvanced entity) {
+    public void submit(TurretCrossbowRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        // Turrets have no custom render body - the model, shadow and name are handled by the base
+        super.submit(state, poseStack, submitNodeCollector, camera);
+    }
+    
+    @Override
+    protected void scale(TurretCrossbowRenderState state, PoseStack poseStack) {
+        // Hurt jiggle effect
+        poseStack.translate(state.jiggleX, state.jiggleY, state.jiggleZ);
+    }
+    
+    @Override
+    protected boolean shouldShowName(EntityTurretCrossbowAdvanced entity, double distanceToCameraSq) {
         return false; // Turrets don't show names
     }
 }

@@ -1,19 +1,17 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 /**
  * FXBlockWard - Animated ward/protection effect on block faces.
@@ -104,97 +102,23 @@ public class FXBlockWard extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        // Custom rendering for directional quad with animated texture
-        renderWard(camera, partialTicks);
-    }
-    
-    protected void renderWard(Camera camera, float partialTicks) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder builder = tesselator.getBuilder();
-        
-        // Calculate animation frame
-        float fade = (age + partialTicks) / lifetime;
-        int frame = Math.min(14, (int)(15.0f * fade));
-        
-        // Bind animated texture
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, TEXTURES[frame]);
-        
-        // Set up blending
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(770, 1); // Additive
-        RenderSystem.depthMask(false);
-        RenderSystem.disableCull();
-        
-        // Calculate position
-        Vec3 camPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        // Position on the block face (interpolated + face offset)
+        Vec3 camPos = camera.position();
         float px = (float)(Mth.lerp(partialTicks, xo, x) - camPos.x() + offsetX);
         float py = (float)(Mth.lerp(partialTicks, yo, y) - camPos.y() + offsetY);
         float pz = (float)(Mth.lerp(partialTicks, zo, z) - camPos.z() + offsetZ);
         
-        // Set up transformation
-        PoseStack poseStack = new PoseStack();
-        poseStack.pushPose();
-        poseStack.translate(px, py, pz);
-        
-        // Rotate to face the correct direction
-        poseStack.mulPose(Axis.YP.rotationDegrees(90.0f * side.getStepY()));
-        poseStack.mulPose(Axis.XN.rotationDegrees(90.0f * side.getStepX()));
-        poseStack.mulPose(Axis.YP.rotationDegrees(90.0f * side.getStepZ()));
-        
-        // Random rotation for variety
-        poseStack.mulPose(Axis.ZP.rotationDegrees(rotation));
-        
-        // Offset to face surface
-        if (side.getStepZ() > 0) {
-            poseStack.translate(0, 0, 0.505);
-            poseStack.mulPose(Axis.YN.rotationDegrees(180.0f));
-        } else if (side.getStepZ() < 0) {
-            poseStack.translate(0, 0, -0.505);
-        } else if (side.getStepX() > 0) {
-            poseStack.translate(0.505, 0, 0);
-            poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
-        } else if (side.getStepX() < 0) {
-            poseStack.translate(-0.505, 0, 0);
-            poseStack.mulPose(Axis.YN.rotationDegrees(90.0f));
-        } else if (side.getStepY() > 0) {
-            poseStack.translate(0, 0.505, 0);
-            poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
-        } else if (side.getStepY() < 0) {
-            poseStack.translate(0, -0.505, 0);
-            poseStack.mulPose(Axis.XN.rotationDegrees(90.0f));
-        }
-        
-        Matrix4f matrix = poseStack.last().pose();
-        
         float size = quadSize * 0.5f;
         float renderAlpha = alpha / 2.0f;
         
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        // Camera-facing billboard (render-state particle model)
+        Quaternionf rot = camera.rotation();
+        int color = ARGB.colorFromFloat(renderAlpha, rCol, gCol, bCol);
+        int light = 0xF000F0; // Full brightness
         
-        builder.vertex(matrix, -size, size, 0)
-                .uv(0, 1).color(rCol, gCol, bCol, renderAlpha).endVertex();
-        builder.vertex(matrix, size, size, 0)
-                .uv(1, 1).color(rCol, gCol, bCol, renderAlpha).endVertex();
-        builder.vertex(matrix, size, -size, 0)
-                .uv(1, 0).color(rCol, gCol, bCol, renderAlpha).endVertex();
-        builder.vertex(matrix, -size, -size, 0)
-                .uv(0, 0).color(rCol, gCol, bCol, renderAlpha).endVertex();
-        
-        tesselator.end();
-        
-        poseStack.popPose();
-        
-        // Restore state
-        RenderSystem.depthMask(true);
-        RenderSystem.disableBlend();
-        RenderSystem.enableCull();
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        state.add(getLayer(), px, py, pz, rot.x, rot.y, rot.z, rot.w, size,
+                0.0f, 1.0f, 0.0f, 1.0f, color, light);
     }
     
     public void setColor(float r, float g, float b) {

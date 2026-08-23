@@ -2,6 +2,7 @@ package thaumcraft.common.lib.utils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
@@ -398,8 +399,11 @@ public class Utils {
         
         // Chance to enchant books
         if (result.is(Items.BOOK)) {
-            result = EnchantmentHelper.enchantItem(rand.fork(), result, 
-                    (int) (5.0f + rarity * 0.75f * rand.nextInt(18)), false);
+            MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+            if (server != null) {
+                result = EnchantmentHelper.enchantItem(rand.fork(), result,
+                        (int) (5.0f + rarity * 0.75f * rand.nextInt(18)), server.registryAccess(), java.util.Optional.empty());
+            }
         }
         
         return result;
@@ -430,8 +434,11 @@ public class Utils {
         
         // Chance to enchant
         if (rand.nextInt(4) < rarity) {
-            result = EnchantmentHelper.enchantItem(rand.fork(), result,
-                    (int) (5.0f + rarity * 0.75f * rand.nextInt(18)), false);
+            MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+            if (server != null) {
+                result = EnchantmentHelper.enchantItem(rand.fork(), result,
+                        (int) (5.0f + rarity * 0.75f * rand.nextInt(18)), server.registryAccess(), java.util.Optional.empty());
+            }
         }
         
         return result;
@@ -584,7 +591,7 @@ public class Utils {
     public static BlockHitResult rayTrace(Level level, Entity entity, boolean useLiquids) {
         double range = 5.0;
         if (entity instanceof ServerPlayer serverPlayer) {
-            range = serverPlayer.getBlockReach();
+            range = serverPlayer.blockInteractionRange();
         }
         return rayTrace(level, entity, useLiquids, range);
     }
@@ -649,11 +656,6 @@ public class Utils {
         // Check various ore tags
         return state.is(BlockTags.GOLD_ORES) ||
                state.is(BlockTags.IRON_ORES) ||
-               state.is(BlockTags.COPPER_ORES) ||
-               state.is(BlockTags.COAL_ORES) ||
-               state.is(BlockTags.REDSTONE_ORES) ||
-               state.is(BlockTags.LAPIS_ORES) ||
-               state.is(BlockTags.DIAMOND_ORES) ||
-               state.is(BlockTags.EMERALD_ORES);
+               state.is(BlockTags.COPPER_ORES);
     }
 }

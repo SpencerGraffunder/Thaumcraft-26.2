@@ -128,7 +128,7 @@ public class EntityThaumicSlime extends Slime {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, 
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable net.minecraft.nbt.CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         // Random size based on difficulty
         int sizeIndex = random.nextInt(3);
         if (sizeIndex < 2 && random.nextFloat() < 0.5f * difficulty.getSpecialMultiplier()) {
@@ -137,7 +137,7 @@ public class EntityThaumicSlime extends Slime {
         int size = 1 << sizeIndex;
         setSize(size, true);
         
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnData);
     }
     
     @Override
@@ -229,8 +229,9 @@ public class EntityThaumicSlime extends Slime {
                 
                 EntityThaumicSlime smallSlime = new EntityThaumicSlime(ModEntities.THAUMIC_SLIME.get(), level());
                 smallSlime.setSize(1, true);
-                smallSlime.moveTo(getX() + offsetX, getY() + 0.5, getZ() + offsetZ, 
-                        random.nextFloat() * 360.0f, 0.0f);
+                smallSlime.setPos(getX() + offsetX, getY() + 0.5, getZ() + offsetZ);
+        smallSlime.setYRot(random.nextFloat() * 360.0f);
+        smallSlime.setXRot(0.0f);
                 level().addFreshEntity(smallSlime);
             }
         }
@@ -256,10 +257,9 @@ public class EntityThaumicSlime extends Slime {
         if (isAlive() && hasLineOfSight(target) && 
                 distanceToSqr(target) < 0.6 * effectiveSize * 0.6 * effectiveSize) {
             
-            if (target.hurt(damageSources().mobAttack(this), getAttackDamage())) {
+            if (target.hurtServer((ServerLevel) level(), damageSources().mobAttack(this), getAttackDamage())) {
                 playSound(SoundEvents.SLIME_ATTACK, 1.0f, 
                         (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f);
-                doEnchantDamageEffects(this, target);
             }
         }
     }
@@ -270,7 +270,7 @@ public class EntityThaumicSlime extends Slime {
         
         // Drop flux crystal if large enough
         if (getSize() > 1) {
-            this.spawnAtLocation(new ItemStack(ModItems.FLUX_CRYSTAL.get()), getBbHeight() / 2.0f);
+            this.spawnAtLocation(level, new ItemStack(ModItems.FLUX_CRYSTAL.get()), getBbHeight() / 2.0f);
         }
     }
     

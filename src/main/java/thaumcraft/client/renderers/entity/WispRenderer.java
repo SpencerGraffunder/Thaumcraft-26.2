@@ -3,20 +3,19 @@ package thaumcraft.client.renderers.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.client.renderers.entity.state.WispRenderState;
 import thaumcraft.common.entities.monster.EntityWisp;
 
 /**
@@ -29,7 +28,7 @@ import thaumcraft.common.entities.monster.EntityWisp;
  * The color is determined by the Wisp's aspect type.
  */
 @OnlyIn(Dist.CLIENT)
-public class WispRenderer extends EntityRenderer<EntityWisp> {
+public class WispRenderer extends EntityRenderer<EntityWisp, WispRenderState> {
     
     // Texture atlas with wisp particles
     private static final Identifier WISP_TEXTURE = 
@@ -42,24 +41,31 @@ public class WispRenderer extends EntityRenderer<EntityWisp> {
     }
     
     @Override
-    public Identifier getTextureLocation(EntityWisp entity) {
-        return WISP_TEXTURE;
+    public WispRenderState createRenderState() {
+        return new WispRenderState();
     }
     
     @Override
-    public void render(EntityWisp entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        if (entity.isDeadOrDying()) {
+    public void extractRenderState(EntityWisp entity, WispRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.dead = entity.isDeadOrDying();
+        state.color = 0xFFFFFF;
+        Aspect aspect = entity.getAspect();
+        if (aspect != null) {
+            state.color = aspect.getColor();
+        }
+        state.animAge = entity.tickCount + partialTick;
+        state.frame = (entity.tickCount + (int) partialTick) % 16;
+    }
+    
+    @Override
+    public void submit(WispRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.dead) {
             return;
         }
         
         // Get color from aspect type
-        int color = 0xFFFFFF;
-        Aspect aspect = entity.getAspect();
-        if (aspect != null) {
-            color = aspect.getColor();
-        }
-        
+        int color = state.color;
         float red = ((color >> 16) & 0xFF) / 255.0F;
         float green = ((color >> 8) & 0xFF) / 255.0F;
         float blue = (color & 0xFF) / 255.0F;
@@ -67,40 +73,36 @@ public class WispRenderer extends EntityRenderer<EntityWisp> {
         poseStack.pushPose();
         
         // Billboard rotation - always face camera
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        poseStack.mulPose(camera.orientation);
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         
         // Animation based on tick count
-        int animFrame = (entity.tickCount + (int)(partialTicks)) % 16;
-        float pulse = 0.8F + 0.2F * Mth.sin((entity.tickCount + partialTicks) * 0.2F);
+        int animFrame = state.frame;
+        float pulse = 0.8F + 0.2F * Mth.sin(state.animAge * 0.2F);
         
         // Render glow layers
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucentEmissive(WISP_TEXTURE));
-        
-        // Outer glow (larger, more transparent)
-        renderQuad(poseStack, vertexConsumer, 0.75F * pulse, red, green, blue, 0.25F, animFrame, packedLight);
-        
-        // Middle glow
-        renderQuad(poseStack, vertexConsumer, 0.5F * pulse, red, green, blue, 0.5F, animFrame, packedLight);
-        
-        // Core (white-ish, bright)
-        renderQuad(poseStack, vertexConsumer, 0.3F * pulse, 1.0F, 1.0F, 1.0F, 0.8F, animFrame, packedLight);
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(WISP_TEXTURE), (pose, buffer) -> {
+            // Outer glow (larger, more transparent)
+            renderQuad(pose, buffer, 0.75F * pulse, red, green, blue, 0.25F, animFrame);
+            
+            // Middle glow
+            renderQuad(pose, buffer, 0.5F * pulse, red, green, blue, 0.5F, animFrame);
+            
+            // Core (white-ish, bright)
+            renderQuad(pose, buffer, 0.3F * pulse, 1.0F, 1.0F, 1.0F, 0.8F, animFrame);
+        });
         
         poseStack.popPose();
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
     
     /**
      * Renders a billboard quad for one layer of the wisp.
      */
-    private void renderQuad(PoseStack poseStack, VertexConsumer vertexConsumer, 
-                           float size, float red, float green, float blue, float alpha,
-                           int frame, int packedLight) {
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix = pose.pose();
-        Matrix3f normal = pose.normal();
-        
+    private static void renderQuad(PoseStack.Pose pose, VertexConsumer vertexConsumer, 
+                                   float size, float red, float green, float blue, float alpha,
+                                   int frame) {
         // Calculate UV coordinates for animation frame (4x4 grid)
         int frameX = frame % 4;
         int frameY = frame / 4;
@@ -113,36 +115,32 @@ public class WispRenderer extends EntityRenderer<EntityWisp> {
         int light = 0xF000F0;
         
         // Quad vertices
-        vertexConsumer.vertex(matrix, -size, -size, 0.0F)
-            .color(red, green, blue, alpha)
-            .uv(u0, v1)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
+        vertexConsumer.addVertex(pose, -size, -size, 0.0F)
+            .setColor(red, green, blue, alpha)
+            .setUv(u0, v1)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(pose, 0.0F, 1.0F, 0.0F);
         
-        vertexConsumer.vertex(matrix, size, -size, 0.0F)
-            .color(red, green, blue, alpha)
-            .uv(u1, v1)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
+        vertexConsumer.addVertex(pose, size, -size, 0.0F)
+            .setColor(red, green, blue, alpha)
+            .setUv(u1, v1)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(pose, 0.0F, 1.0F, 0.0F);
         
-        vertexConsumer.vertex(matrix, size, size, 0.0F)
-            .color(red, green, blue, alpha)
-            .uv(u1, v0)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
+        vertexConsumer.addVertex(pose, size, size, 0.0F)
+            .setColor(red, green, blue, alpha)
+            .setUv(u1, v0)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(pose, 0.0F, 1.0F, 0.0F);
         
-        vertexConsumer.vertex(matrix, -size, size, 0.0F)
-            .color(red, green, blue, alpha)
-            .uv(u0, v0)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(light)
-            .normal(normal, 0.0F, 1.0F, 0.0F)
-            .endVertex();
+        vertexConsumer.addVertex(pose, -size, size, 0.0F)
+            .setColor(red, green, blue, alpha)
+            .setUv(u0, v0)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(pose, 0.0F, 1.0F, 0.0F);
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -17,12 +18,14 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
 
 import javax.annotation.Nullable;
@@ -43,8 +46,8 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
     
     private static final EntityDataAccessor<Byte> DATA_FLAGS = 
             SynchedEntityData.defineId(EntityOwnedConstruct.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Optional<UUID>> DATA_OWNER_UUID = 
-            SynchedEntityData.defineId(EntityOwnedConstruct.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<EntityReference<LivingEntity>>> DATA_OWNER_UUID = 
+            SynchedEntityData.defineId(EntityOwnedConstruct.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE);
     
     private static final byte FLAG_OWNED = 0x04;
     
@@ -84,13 +87,19 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
     }
     
     @Nullable
-    @Override
     public UUID getOwnerUUID() {
-        return this.entityData.get(DATA_OWNER_UUID).orElse(null);
+        EntityReference<LivingEntity> reference = this.entityData.get(DATA_OWNER_UUID).orElse(null);
+        return reference != null ? reference.getUUID() : null;
     }
     
     public void setOwnerUUID(@Nullable UUID uuid) {
-        this.entityData.set(DATA_OWNER_UUID, Optional.ofNullable(uuid));
+        this.entityData.set(DATA_OWNER_UUID, Optional.ofNullable(uuid).map(EntityReference::of));
+    }
+    
+    @Nullable
+    @Override
+    public EntityReference<LivingEntity> getOwnerReference() {
+        return this.entityData.get(DATA_OWNER_UUID).orElse(null);
     }
     
     @Nullable
@@ -112,7 +121,7 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
     
     @Nullable
     @Override
-    public Team getTeam() {
+    public PlayerTeam getTeam() {
         if (isOwned()) {
             LivingEntity owner = getOwner();
             if (owner != null) {
@@ -123,17 +132,17 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
     }
     
     @Override
-    public boolean isAlliedTo(Entity other) {
+    protected boolean considersEntityAsAlly(Entity other) {
         if (isOwned()) {
             LivingEntity owner = getOwner();
             if (other == owner) {
                 return true;
             }
-            if (owner != null) {
-                return owner.isAlliedTo(other);
+            if (owner != null && owner.isAlliedTo(other)) {
+                return true;
             }
         }
-        return super.isAlliedTo(other);
+        return super.considersEntityAsAlly(other);
     }
     
     // ==================== Valid Spawn ====================
@@ -215,7 +224,7 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
         
         // Only owner can interact
         if (!level().isClientSide() && !isOwner(player)) {
-            player.displayClientMessage(Component.translatable("tc.notowned"), true);
+            player.sendSystemMessage(Component.translatable("tc.notowned"));
             return InteractionResult.SUCCESS;
         }
         
@@ -227,7 +236,7 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
     @Override
     public void die(DamageSource source) {
         // Send death message to owner if named
-        if (!level().isClientSide() && level().getGameRules().getBooleanOr(net.minecraft.world.level.GameRules.RULE_SHOWDEATHMESSAGES, false) 
+        if (!level().isClientSide() && ((net.minecraft.server.level.ServerLevel) level()).getGameRules().get(net.minecraft.world.level.gamerules.GameRules.SHOW_DEATH_MESSAGES) 
                 && hasCustomName() && getOwner() instanceof ServerPlayer serverPlayer) {
             serverPlayer.sendSystemMessage(getCombatTracker().getDeathMessage());
         }
@@ -243,7 +252,7 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
         
         UUID uuid = getOwnerUUID();
         if (uuid != null) {
-            output.putUUID("Owner", uuid);
+            output.putString("Owner", uuid.toString());
         }
     }
     
@@ -252,10 +261,17 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
         super.readAdditionalSaveData(input);
         validSpawn = input.getBooleanOr("ValidSpawn", false);
         
-        if (input.hasUUID("Owner")) {
-            setOwnerUUID(input.getUUID("Owner"));
-            setOwned(true);
-        } else if (input.contains("OwnerUUID")) {
+        if (input.keySet().contains("Owner")) {
+            String uuidStr = input.getStringOr("Owner", "");
+            if (!uuidStr.isEmpty()) {
+                try {
+                    setOwnerUUID(UUID.fromString(uuidStr));
+                    setOwned(true);
+                } catch (Throwable e) {
+                    setOwned(false);
+                }
+            }
+        } else if (input.keySet().contains("OwnerUUID")) {
             // Legacy support
             String uuidStr = input.getStringOr("OwnerUUID", "");
             if (!uuidStr.isEmpty()) {

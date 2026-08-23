@@ -360,7 +360,7 @@ public class FXGeneric extends ThaumcraftParticle {
 
     public void setWindStrength(double windStrength) {
         // Simple wind calculation based on moon phase
-        int m = (int) ((this.level.getDayTime() / 24000L) % 8);
+        int m = (int) ((this.level.getOverworldClockTime() / 24000L) % 8);
         double angle = m * (40 + this.random.nextInt(10)) / 180.0f * Math.PI;
         this.windX = Math.cos(angle) * windStrength;
         this.windZ = Math.sin(angle) * windStrength;

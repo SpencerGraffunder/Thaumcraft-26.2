@@ -12,7 +12,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.extensions.IForgeItem;
 import thaumcraft.api.ThaumcraftMaterials;
 import thaumcraft.api.items.IWarpingGear;
 
@@ -46,24 +45,13 @@ public class ItemCultistLeaderArmor extends Item implements IWarpingGear {
         return new ItemCultistLeaderArmor(ArmorType.LEGGINGS);
     }
     
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(Items.IRON_INGOT) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return "thaumcraft:textures/entity/armor/cultist_leader_armor.png";
-    }
-    
     /**
      * Praetor armor inflicts warp on the wearer.
      * Full set gives 2 warp total.
      */
     @Override
     public int getWarp(ItemStack stack, Player player) {
-        return switch (getType()) {
+        return switch (getArmorType(stack)) {
             case HELMET -> 1;
             case CHESTPLATE -> 1;
             case LEGGINGS -> 0;
@@ -71,18 +59,17 @@ public class ItemCultistLeaderArmor extends Item implements IWarpingGear {
         };
     }
     
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            @Nonnull
-            @OnlyIn(Dist.CLIENT)
-            public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entity, ItemStack stack, 
-                    EquipmentSlot slot, HumanoidModel<?> original) {
-                // TODO: Return custom ModelLeaderArmor when implemented
-                // For now, use default armor model
-                return original;
-            }
-        });
+    private static ArmorType getArmorType(ItemStack stack) {
+        net.minecraft.world.item.equipment.Equippable equippable = stack.getOrDefault(net.minecraft.core.component.DataComponents.EQUIPPABLE, null);
+        if (equippable == null) {
+            return null;
+        }
+        return switch (equippable.slot()) {
+            case HEAD -> ArmorType.HELMET;
+            case CHEST -> ArmorType.CHESTPLATE;
+            case LEGS -> ArmorType.LEGGINGS;
+            case FEET -> ArmorType.BOOTS;
+            default -> null;
+        };
     }
 }

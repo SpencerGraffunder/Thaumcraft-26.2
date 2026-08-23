@@ -48,8 +48,7 @@ public class PechMenu extends AbstractContainerMenu implements ContainerListener
         
         // Create trade inventory (1 input + 4 outputs)
         this.tradeInventory = new SimpleContainer(5);
-        tradeInventory.addListener(this);
-        
+                
         // Slot 0: Input slot
         addSlot(new Slot(tradeInventory, 0, 36, 29));
         
@@ -83,8 +82,11 @@ public class PechMenu extends AbstractContainerMenu implements ContainerListener
     }
     
     @Override
-    public void containerChanged(Container container) {
-        broadcastChanges();
+    public void slotChanged(AbstractContainerMenu container, int slotIndex, ItemStack itemStack) {
+    }
+
+    @Override
+    public void dataChanged(AbstractContainerMenu container, int id, int value) {
     }
     
     @Override

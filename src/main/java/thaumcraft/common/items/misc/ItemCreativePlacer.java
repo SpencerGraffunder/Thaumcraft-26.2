@@ -61,7 +61,7 @@ public class ItemCreativePlacer extends Item {
         BlockState clickedState = level.getBlockState(pos);
         
         // Must click on solid block
-        if (!clickedState.isSolidRender(level, pos)) {
+        if (!clickedState.isSolidRender()) {
             return InteractionResult.FAIL;
         }
         

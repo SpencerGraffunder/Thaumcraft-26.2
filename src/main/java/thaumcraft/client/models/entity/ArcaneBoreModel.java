@@ -1,7 +1,5 @@
 package thaumcraft.client.models.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -15,7 +13,7 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
-import thaumcraft.common.entities.construct.EntityArcaneBore;
+import thaumcraft.client.renderers.entity.state.ArcaneBoreRenderState;
 
 /**
  * ArcaneBoreModel - Model for the Arcane Bore mining construct.
@@ -24,7 +22,7 @@ import thaumcraft.common.entities.construct.EntityArcaneBore;
  * Features a tripod base with a rotating mining head that points at targets.
  */
 @OnlyIn(Dist.CLIENT)
-public class ArcaneBoreModel extends EntityModel<EntityArcaneBore> {
+public class ArcaneBoreModel extends EntityModel<ArcaneBoreRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "arcane_bore"), "main");
@@ -40,6 +38,7 @@ public class ArcaneBoreModel extends EntityModel<EntityArcaneBore> {
     private final ModelPart base;
     
     public ArcaneBoreModel(ModelPart root) {
+        super(root);
         this.tripod = root.getChild("tripod");
         this.leg1 = root.getChild("leg1");
         this.leg2 = root.getChild("leg2");
@@ -133,24 +132,9 @@ public class ArcaneBoreModel extends EntityModel<EntityArcaneBore> {
     }
     
     @Override
-    public void setupAnim(EntityArcaneBore entity, float limbSwing, float limbSwingAmount, 
-                          float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(ArcaneBoreRenderState state) {
         // Base/head rotation (aims at target)
-        this.base.yRot = netHeadYaw * ((float)Math.PI / 180F);
-        this.base.xRot = headPitch * ((float)Math.PI / 180F);
-    }
-    
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        // Render legs and tripod normally
-        tripod.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leg1.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leg2.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leg3.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leg4.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        
-        // Render base (potentially with transparency in full implementation)
-        base.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        this.base.yRot = state.yRot * ((float)Math.PI / 180F);
+        this.base.xRot = state.xRot * ((float)Math.PI / 180F);
     }
 }

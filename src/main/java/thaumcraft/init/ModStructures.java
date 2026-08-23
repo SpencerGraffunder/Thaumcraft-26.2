@@ -1,6 +1,7 @@
 package thaumcraft.init;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
@@ -52,7 +53,7 @@ public class ModStructures {
      * This explicit method helps with generic type inference.
      */
     private static <S extends Structure> StructureType<S> explicitCodec(Codec<S> codec) {
-        return () -> codec;
+        return () -> MapCodec.assumeMapUnsafe(codec);
     }
     
     // ==================== Future Structures ====================

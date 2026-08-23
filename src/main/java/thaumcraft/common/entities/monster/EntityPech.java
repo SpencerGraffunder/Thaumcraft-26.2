@@ -140,7 +140,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
         
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, 
-                target -> getAnger() > 0));
+                (target, level) -> getAnger() > 0));
     }
     
     public static AttributeSupplier.Builder createAttributes() {
@@ -213,17 +213,12 @@ public class EntityPech extends Monster implements RangedAttackMob {
         this.entityData.set(DATA_TAMED, tamed);
     }
     
-    @Override
-    public float getEyeHeight(net.minecraft.world.entity.Pose pose) {
-        return getBbHeight() * 0.66f;
-    }
-    
     // ==================== Spawn / Equipment ====================
     
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
         setEquipmentBasedOnDifficulty(difficulty);
         
@@ -235,14 +230,14 @@ public class EntityPech extends Monster implements RangedAttackMob {
             if (weapon.getItem() instanceof BowItem) {
                 setPechType(TYPE_FORAGER);
             }
-            populateDefaultEquipmentEnchantments(random, difficulty);
+            populateDefaultEquipmentEnchantments(level, random, difficulty);
         }
         
         float diffFactor = difficulty.getSpecialMultiplier();
         setCanPickUpLoot(random.nextFloat() < 0.75f * diffFactor);
         setCombatTask();
         
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnData);
     }
     
     @Override
@@ -276,7 +271,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
     public void performRangedAttack(LivingEntity target, float power) {
         if (getPechType() == TYPE_FORAGER) {
             // Bow attack
-            Arrow arrow = new Arrow(level(), this);
+            Arrow arrow = new Arrow(level(), this, new ItemStack(Items.ARROW), null);
             
             double dx = target.getX() - getX();
             double dy = target.getBoundingBox().minY + target.getBbHeight() / 3.0 - arrow.getY();
@@ -295,7 +290,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
             swing(getUsedItemHand());
             // Placeholder: just do direct damage for now
             if (distanceToSqr(target) < 256) {
-                target.hurt(damageSources().indirectMagic(this, this), 4.0f + random.nextFloat() * 2.0f);
+                target.hurtServer((ServerLevel) level(), damageSources().indirectMagic(this, this), 4.0f + random.nextFloat() * 2.0f);
             }
         }
     }
@@ -319,8 +314,8 @@ public class EntityPech extends Monster implements RangedAttackMob {
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo((ServerLevel) this.level(), source)) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (isInvulnerableTo(level, source)) {
             return false;
         }
         
@@ -335,7 +330,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
             becomeAngryAt(attacker);
         }
         
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     // ==================== Update Logic ====================
@@ -412,7 +407,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
         if (isTamed()) {
             // TODO: Open trade GUI when implemented
             // player.openMenu(...)
-            return InteractionResult.sidedSuccess(level().isClientSide());
+            return level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
         }
         
         return super.mobInteract(player, hand);
@@ -518,7 +513,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         
-        if (input.contains("PechType")) {
+        if (input.keySet().contains("PechType")) {
             setPechType(input.getByteOr("PechType", (byte)0));
         }
         setAnger(input.getShortOr("Anger", (short)0));
@@ -551,7 +546,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
     }
     
     @Override
-    public boolean canBeLeashed(Player player) {
+    public boolean canBeLeashed() {
         return false;
     }
     

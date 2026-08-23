@@ -1,30 +1,31 @@
 package thaumcraft.common.lib.crafting;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.item.ItemStackHelper;
-import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.api.crafting.IArcaneWorkbench;
 import thaumcraft.init.ModRecipeTypes;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import net.neoforged.neoforge.common.util.RecipeMatcher;
 
 /**
  * ShapelessArcaneRecipe - A shapeless crafting recipe for the Arcane Workbench.
@@ -37,7 +38,6 @@ import java.util.List;
  */
 public class ShapelessArcaneRecipe implements IArcaneRecipe {
     
-    private final Identifier id;
     private final String group;
     private final NonNullList<Ingredient> ingredients;
     private final ItemStack result;
@@ -45,10 +45,9 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
     private final AspectList crystals;
     private final String research;
     
-    public ShapelessArcaneRecipe(Identifier id, String group,
+    public ShapelessArcaneRecipe(String group,
                                  NonNullList<Ingredient> ingredients, ItemStack result,
                                  int visCost, AspectList crystals, String research) {
-        this.id = id;
         this.group = group;
         this.ingredients = ingredients;
         this.result = result;
@@ -74,43 +73,51 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
     }
     
     @Override
-    public ItemStack assemble(IArcaneWorkbench container, RegistryAccess registryAccess) {
+    public ItemStack assemble(IArcaneWorkbench container) {
         return result.copy();
     }
     
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= ingredients.size();
+    public ItemStack getResultItem() {
+        return result.copy();
     }
     
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
-        return result;
+    public RecipeSerializer<? extends Recipe<IArcaneWorkbench>> getSerializer() {
+        return SERIALIZER;
     }
     
     @Override
-    public Identifier getId() {
-        return id;
-    }
-    
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return Serializer.INSTANCE;
-    }
-    
-    @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends Recipe<IArcaneWorkbench>> getType() {
         return ModRecipeTypes.ARCANE_WORKBENCH.get();
     }
     
     @Override
-    public NonNullList<Ingredient> getIngredients() {
-        return ingredients;
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
     }
     
     @Override
+    public RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+    
+    @Override
+    public boolean showNotification() {
+        return true;
+    }
+    
+    @Override
+    public String group() {
+        return group;
+    }
+    
     public String getGroup() {
         return group;
+    }
+    
+    public NonNullList<Ingredient> getIngredients() {
+        return ingredients;
     }
     
     // IArcaneRecipe implementation
@@ -130,108 +137,101 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
         return crystals;
     }
     
-    /**
-     * Serializer for ShapelessArcaneRecipe.
-     * Handles JSON parsing and network serialization.
-     */
-    public static class Serializer implements RecipeSerializer<ShapelessArcaneRecipe> {
-        
-        public static final Serializer INSTANCE = new Serializer();
-        public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "arcane_workbench_shapeless");
-        
-        @Override
-        public ShapelessArcaneRecipe fromJson(Identifier recipeId, JsonObject json) {
-            String group = GsonHelper.getAsString(json, "group", "");
-            String research = GsonHelper.getAsString(json, "research", "");
-            int visCost = GsonHelper.getAsInt(json, "vis", 0);
-            
-            // Parse crystal requirements
-            AspectList crystals = new AspectList();
-            if (json.has("crystals")) {
-                JsonObject crystalsJson = GsonHelper.getAsJsonObject(json, "crystals");
-                for (String aspectName : crystalsJson.keySet()) {
-                    Aspect aspect = Aspect.getAspect(aspectName);
-                    if (aspect != null) {
-                        crystals.add(aspect, crystalsJson.get(aspectName).getAsInt());
-                    }
+    /** Codec for an AspectList stored as { "aspectTag": amount, ... }. */
+    private static final Codec<AspectList> ASPECTS_CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT)
+            .xmap(map -> {
+                AspectList list = new AspectList();
+                map.forEach((name, amount) -> {
+                    Aspect aspect = Aspect.getAspect(name);
+                    if (aspect != null) list.add(aspect, amount);
+                });
+                return list;
+            }, list -> {
+                Map<String, Integer> map = new HashMap<>();
+                for (Aspect aspect : list.getAspects()) {
+                    map.put(aspect.getTag(), list.getAmount(aspect));
                 }
-            }
-            
-            // Parse ingredients
-            NonNullList<Ingredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(json, "ingredients"));
-            if (ingredients.isEmpty()) {
-                throw new JsonParseException("No ingredients for shapeless arcane recipe");
-            }
-            if (ingredients.size() > 9) {
-                throw new JsonParseException("Too many ingredients for shapeless arcane recipe. Max is 9");
-            }
-            
-            // Parse result
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            
-            return new ShapelessArcaneRecipe(recipeId, group, ingredients, result, visCost, crystals, research);
-        }
-        
-        private static NonNullList<Ingredient> itemsFromJson(JsonArray jsonArray) {
-            NonNullList<Ingredient> list = NonNullList.create();
-            for (int i = 0; i < jsonArray.size(); i++) {
-                Ingredient ingredient = Ingredient.fromJson(jsonArray.get(i), false);
-                if (!ingredient.isEmpty()) {
-                    list.add(ingredient);
-                }
-            }
-            return list;
-        }
-        
+                return map;
+            });
+    
+    public static final MapCodec<ShapelessArcaneRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
+            Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research),
+            Codec.INT.optionalFieldOf("vis", 0).forGetter(r -> r.visCost),
+            ASPECTS_CODEC.optionalFieldOf("crystals", new AspectList()).forGetter(r -> r.crystals),
+            ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.crystals),
+            Ingredient.CODEC.listOf().optionalFieldOf("ingredients", List.of()).forGetter(r -> r.ingredients),
+            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result)
+    ).apply(i, ShapelessArcaneRecipe::create));
+    
+    public static final StreamCodec<RegistryFriendlyByteBuf, ShapelessArcaneRecipe> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public @Nullable ShapelessArcaneRecipe fromNetwork(Identifier recipeId, FriendlyByteBuf buffer) {
+        public ShapelessArcaneRecipe decode(RegistryFriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             String research = buffer.readUtf();
             int visCost = buffer.readVarInt();
             
-            // Read crystals
-            AspectList crystals = new AspectList();
-            int crystalCount = buffer.readVarInt();
-            for (int i = 0; i < crystalCount; i++) {
-                String aspectName = buffer.readUtf();
-                int amount = buffer.readVarInt();
-                Aspect aspect = Aspect.getAspect(aspectName);
-                if (aspect != null) {
-                    crystals.add(aspect, amount);
-                }
-            }
+            AspectList crystals = readAspects(buffer);
             
             int ingredientCount = buffer.readVarInt();
-            NonNullList<Ingredient> ingredients = NonNullList.withSize(ingredientCount, Ingredient.EMPTY);
+            NonNullList<Ingredient> ingredients = NonNullList.create();
             for (int i = 0; i < ingredientCount; i++) {
-                ingredients.set(i, Ingredient.fromNetwork(buffer));
+                ingredients.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
             
-            ItemStack result = buffer.readItem();
+            ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
             
-            return new ShapelessArcaneRecipe(recipeId, group, ingredients, result, visCost, crystals, research);
+            return new ShapelessArcaneRecipe(group, ingredients, result, visCost, crystals, research);
         }
         
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, ShapelessArcaneRecipe recipe) {
+        public void encode(RegistryFriendlyByteBuf buffer, ShapelessArcaneRecipe recipe) {
             buffer.writeUtf(recipe.group);
             buffer.writeUtf(recipe.research);
             buffer.writeVarInt(recipe.visCost);
             
-            // Write crystals
-            Aspect[] aspects = recipe.crystals.getAspects();
-            buffer.writeVarInt(aspects.length);
-            for (Aspect aspect : aspects) {
-                buffer.writeUtf(aspect.getTag());
-                buffer.writeVarInt(recipe.crystals.getAmount(aspect));
-            }
+            writeAspects(buffer, recipe.crystals);
             
             buffer.writeVarInt(recipe.ingredients.size());
             for (Ingredient ingredient : recipe.ingredients) {
-                ingredient.toNetwork(buffer);
+                Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
             
-            buffer.writeItem(recipe.result);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+        }
+    };
+    
+    public static final RecipeSerializer<ShapelessArcaneRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+    
+    private static ShapelessArcaneRecipe create(String group, String research, int visCost,
+                                                AspectList crystals, AspectList aspects,
+                                                List<Ingredient> ingredients, ItemStack result) {
+        NonNullList<Ingredient> list = NonNullList.create();
+        list.addAll(ingredients);
+        return new ShapelessArcaneRecipe(group, list, result, visCost,
+                !aspects.isEmpty() ? aspects : crystals, research);
+    }
+    
+    private static AspectList readAspects(RegistryFriendlyByteBuf buffer) {
+        AspectList aspects = new AspectList();
+        int aspectCount = buffer.readVarInt();
+        for (int i = 0; i < aspectCount; i++) {
+            String aspectName = buffer.readUtf();
+            int amount = buffer.readVarInt();
+            Aspect aspect = Aspect.getAspect(aspectName);
+            if (aspect != null) {
+                aspects.add(aspect, amount);
+            }
+        }
+        return aspects;
+    }
+    
+    private static void writeAspects(RegistryFriendlyByteBuf buffer, AspectList aspects) {
+        Aspect[] aspectArray = aspects.getAspects();
+        buffer.writeVarInt(aspectArray.length);
+        for (Aspect aspect : aspectArray) {
+            buffer.writeUtf(aspect.getTag());
+            buffer.writeVarInt(aspects.getAmount(aspect));
         }
     }
 }

@@ -1,5 +1,6 @@
 package thaumcraft.common.blocks.world.plants;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.PlantType;
 
 /**
  * Shimmerleaf - A magical glowing plant that spawns near silverwood trees.
@@ -36,7 +36,7 @@ public class BlockShimmerleaf extends BushBlock {
     public BlockShimmerleaf() {
         super(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.PLANT)
-                .noCollission()
+                .noCollision()
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .lightLevel(state -> 6)
@@ -49,15 +49,15 @@ public class BlockShimmerleaf extends BushBlock {
     }
 
     @Override
+    public MapCodec<BlockShimmerleaf> codec() {
+        return simpleCodec(p -> new BlockShimmerleaf());
+    }
+
+    @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
         return state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.DIRT) || 
                state.is(Blocks.COARSE_DIRT) || state.is(Blocks.PODZOL) ||
                state.is(BlockTags.DIRT);
-    }
-
-    @Override
-    public PlantType getPlantType(BlockGetter level, BlockPos pos) {
-        return PlantType.PLAINS;
     }
 
     @Override

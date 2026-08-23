@@ -1,9 +1,8 @@
 package thaumcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -62,7 +61,7 @@ public class RecipeRenderer {
      * @return list of tooltip components if hovering over an item, null otherwise
      */
     public static List<net.minecraft.network.chat.Component> renderRecipe(
-            GuiGraphics graphics, Identifier recipeId, int x, int y, 
+            GuiGraphicsExtractor graphics, Identifier recipeId, int x, int y, 
             int mouseX, int mouseY, Font font) {
         
         // Update cycle for animated ingredients
@@ -73,12 +72,12 @@ public class RecipeRenderer {
         
         if (recipe == null) {
             // Recipe not found - draw placeholder
-            graphics.drawCenteredString(font, "Recipe not found:", x, y - 20, 0x804040);
+            graphics.centeredText(font, "Recipe not found:", x, y - 20, 0x804040);
             String idStr = recipeId.toString();
             if (idStr.length() > 30) {
                 idStr = "..." + idStr.substring(idStr.length() - 27);
             }
-            graphics.drawCenteredString(font, idStr, x, y - 8, 0x606060);
+            graphics.centeredText(font, idStr, x, y - 8, 0x606060);
             return null;
         }
         
@@ -93,7 +92,7 @@ public class RecipeRenderer {
             return renderCraftingRecipe(graphics, crafting, x, y, mouseX, mouseY, font);
         } else {
             // Unknown recipe type
-            graphics.drawCenteredString(font, "Unknown recipe type", x, y, 0x804040);
+            graphics.centeredText(font, "Unknown recipe type", x, y, 0x804040);
             return null;
         }
     }
@@ -117,9 +116,10 @@ public class RecipeRenderer {
         // Try vanilla recipe manager
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null) {
-            Optional<? extends Recipe<?>> vanillaRecipe = mc.level.getRecipeManager().byKey(id);
+            Optional<RecipeHolder<?>> vanillaRecipe = mc.level.getServer().getRecipeManager()
+                    .byKey(ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, id));
             if (vanillaRecipe.isPresent()) {
-                return vanillaRecipe.get();
+                return vanillaRecipe.get().value();
             }
         }
         
@@ -141,7 +141,10 @@ public class RecipeRenderer {
      * Get the current item from an ingredient (cycles through options).
      */
     private static ItemStack cycleIngredient(Ingredient ingredient, int slotIndex) {
-        ItemStack[] items = ingredient.getItems();
+        ItemStack[] items = ingredient.items()
+                .map(net.minecraft.core.Holder::value)
+                .map(ItemStack::new)
+                .toArray(ItemStack[]::new);
         if (items.length == 0) return ItemStack.EMPTY;
         return items[(cycleIndex + slotIndex) % items.length];
     }
@@ -149,34 +152,46 @@ public class RecipeRenderer {
     // ==================== Vanilla Crafting ====================
     
     private static List<net.minecraft.network.chat.Component> renderCraftingRecipe(
-            GuiGraphics graphics, CraftingRecipe recipe, int x, int y, 
+            GuiGraphicsExtractor graphics, CraftingRecipe recipe, int x, int y, 
             int mouseX, int mouseY, Font font) {
         
         List<net.minecraft.network.chat.Component> tooltip = null;
         
         // Draw title
         String title = recipe instanceof ShapedRecipe ? "Crafting (Shaped)" : "Crafting (Shapeless)";
-        graphics.drawCenteredString(font, title, x, y - 70, 0x505050);
+        graphics.centeredText(font, title, x, y - 70, 0x505050);
         
         // Draw crafting grid background
         graphics.fill(x - 30, y - 50, x + 30, y + 10, 0x20000000);
         
         // Draw output
-        ItemStack output = recipe.getResultItem(Minecraft.getInstance().level.registryAccess());
+        ItemStack output = ItemStack.EMPTY;
+        if (!recipe.display().isEmpty()) {
+            output = recipe.display().get(0).result()
+                    .resolveForFirstStack(net.minecraft.world.item.crafting.display.SlotDisplayContext.fromLevel(Minecraft.getInstance().level));
+        }
         renderItem(graphics, output, x - 8, y + 25);
         tooltip = checkItemTooltip(output, x - 8, y + 25, mouseX, mouseY, tooltip);
         
         // Draw arrow
-        graphics.drawString(font, "→", x + 20, y - 18, 0x404040, false);
+        graphics.text(font, "→", x + 20, y - 18, 0x404040, false);
         
         // Draw ingredients
-        NonNullList<Ingredient> ingredients = recipe.getIngredients();
-        int width = recipe instanceof ShapedRecipe shaped ? shaped.getWidth() : 3;
-        int height = recipe instanceof ShapedRecipe shaped ? shaped.getHeight() : (ingredients.size() + 2) / 3;
+        java.util.List<Optional<Ingredient>> ingredients;
+        int width = 3;
+        int height = 3;
+        if (recipe instanceof ShapedRecipe shaped) {
+            width = shaped.getWidth();
+            height = shaped.getHeight();
+            ingredients = shaped.getIngredients();
+        } else {
+            ingredients = recipe.placementInfo().ingredients().stream().map(Optional::of).toList();
+        }
         
         for (int i = 0; i < ingredients.size(); i++) {
-            Ingredient ing = ingredients.get(i);
-            if (ing.isEmpty()) continue;
+            Optional<Ingredient> oing = ingredients.get(i);
+            if (oing.isEmpty() || oing.get().isEmpty()) continue;
+            Ingredient ing = oing.get();
             
             int gridX, gridY;
             if (recipe instanceof ShapedRecipe) {
@@ -201,26 +216,26 @@ public class RecipeRenderer {
     // ==================== Arcane Crafting ====================
     
     private static List<net.minecraft.network.chat.Component> renderArcaneRecipe(
-            GuiGraphics graphics, IArcaneRecipe recipe, int x, int y, 
+            GuiGraphicsExtractor graphics, IArcaneRecipe recipe, int x, int y, 
             int mouseX, int mouseY, Font font) {
         
         List<net.minecraft.network.chat.Component> tooltip = null;
         
         // Draw title
-        graphics.drawCenteredString(font, "Arcane Crafting", x, y - 70, 0x505050);
+        graphics.centeredText(font, "Arcane Crafting", x, y - 70, 0x505050);
         
         // Draw crafting grid background
         graphics.fill(x - 30, y - 50, x + 30, y + 10, 0x20404080);
         
         // Draw output
-        ItemStack output = recipe.getResultItem(Minecraft.getInstance().level.registryAccess());
+        ItemStack output = recipe.getResultItem();
         renderItem(graphics, output, x - 8, y + 30);
         tooltip = checkItemTooltip(output, x - 8, y + 30, mouseX, mouseY, tooltip);
         
         // Draw vis cost
         int visCost = recipe.getVis();
         if (visCost > 0) {
-            graphics.drawCenteredString(font, "Vis: " + visCost, x, y + 52, 0x8080FF);
+            graphics.centeredText(font, "Vis: " + visCost, x, y + 52, 0x8080FF);
         }
         
         // Draw crystal requirements
@@ -234,13 +249,18 @@ public class RecipeRenderer {
                 int amount = crystals.getAmount(aspect);
                 // Draw small aspect icon with amount for crystals
                 AspectRenderer.drawAspectSmall(graphics, crystalX, crystalY, aspect);
-                graphics.drawString(font, "x" + amount, crystalX + 10, crystalY + 2, 0xFFFFFF, false);
+                graphics.text(font, "x" + amount, crystalX + 10, crystalY + 2, 0xFFFFFF, false);
                 crystalX += 28;
             }
         }
         
         // Draw ingredients (3x3 grid)
-        NonNullList<Ingredient> ingredients = recipe.getIngredients();
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        if (recipe instanceof thaumcraft.common.lib.crafting.ShapedArcaneRecipe sar) {
+            ingredients = sar.getIngredients();
+        } else if (recipe instanceof thaumcraft.common.lib.crafting.ShapelessArcaneRecipe slar) {
+            ingredients = slar.getIngredients();
+        }
         for (int i = 0; i < ingredients.size() && i < 9; i++) {
             Ingredient ing = ingredients.get(i);
             if (ing.isEmpty()) continue;
@@ -261,13 +281,13 @@ public class RecipeRenderer {
     // ==================== Crucible ====================
     
     private static List<net.minecraft.network.chat.Component> renderCrucibleRecipe(
-            GuiGraphics graphics, CrucibleRecipe recipe, int x, int y, 
+            GuiGraphicsExtractor graphics, CrucibleRecipe recipe, int x, int y, 
             int mouseX, int mouseY, Font font) {
         
         List<net.minecraft.network.chat.Component> tooltip = null;
         
         // Draw title
-        graphics.drawCenteredString(font, "Crucible", x, y - 70, 0x505050);
+        graphics.centeredText(font, "Crucible", x, y - 70, 0x505050);
         
         // Draw crucible shape (simplified)
         graphics.fill(x - 25, y - 30, x + 25, y + 30, 0x30804020);
@@ -282,13 +302,13 @@ public class RecipeRenderer {
         ItemStack catalyst = cycleIngredient(recipe.getCatalyst(), 0);
         renderItem(graphics, catalyst, x - 50, y - 10);
         tooltip = checkItemTooltip(catalyst, x - 50, y - 10, mouseX, mouseY, tooltip);
-        graphics.drawString(font, "→", x - 32, y - 6, 0x404040, false);
+        graphics.text(font, "→", x - 32, y - 6, 0x404040, false);
         
         // Draw aspects required
         AspectList aspects = recipe.getAspects();
         if (aspects != null && aspects.size() > 0) {
             int aspectY = y + 40;
-            graphics.drawCenteredString(font, "Essentia:", x, aspectY, 0x606060);
+            graphics.centeredText(font, "Essentia:", x, aspectY, 0x606060);
             aspectY += 12;
             
             // Center the aspects
@@ -313,13 +333,13 @@ public class RecipeRenderer {
     // ==================== Infusion ====================
     
     private static List<net.minecraft.network.chat.Component> renderInfusionRecipe(
-            GuiGraphics graphics, InfusionRecipe recipe, int x, int y, 
+            GuiGraphicsExtractor graphics, InfusionRecipe recipe, int x, int y, 
             int mouseX, int mouseY, Font font) {
         
         List<net.minecraft.network.chat.Component> tooltip = null;
         
         // Draw title
-        graphics.drawCenteredString(font, "Infusion", x, y - 70, 0x505050);
+        graphics.centeredText(font, "Infusion", x, y - 70, 0x505050);
         
         // Draw matrix shape (center circle)
         graphics.fill(x - 12, y - 12, x + 12, y + 12, 0x40800080);
@@ -355,7 +375,7 @@ public class RecipeRenderer {
         AspectList aspects = recipe.getAspects();
         if (aspects != null && aspects.size() > 0) {
             int aspectY = y + 50;
-            graphics.drawCenteredString(font, "Essentia:", x, aspectY, 0x606060);
+            graphics.centeredText(font, "Essentia:", x, aspectY, 0x606060);
             aspectY += 12;
             
             // Limit to 5 aspects, center them
@@ -366,7 +386,7 @@ public class RecipeRenderer {
             int count = 0;
             for (Aspect aspect : aspects.getAspects()) {
                 if (count >= 5) {
-                    graphics.drawString(font, "...", aspectX, aspectY + 4, 0x808080, false);
+                    graphics.text(font, "...", aspectX, aspectY + 4, 0x808080, false);
                     break;
                 }
                 int amount = aspects.getAmount(aspect);
@@ -385,7 +405,7 @@ public class RecipeRenderer {
         if (recipe.instability > 0) {
             String instText = "Instability: " + recipe.instability;
             int instColor = recipe.instability > 3 ? 0xFF6060 : (recipe.instability > 1 ? 0xFFFF60 : 0x60FF60);
-            graphics.drawCenteredString(font, instText, x, y + 80, instColor);
+            graphics.centeredText(font, instText, x, y + 80, instColor);
         }
         
         return tooltip;
@@ -396,10 +416,10 @@ public class RecipeRenderer {
     /**
      * Render an item stack at the given position.
      */
-    private static void renderItem(GuiGraphics graphics, ItemStack stack, int x, int y) {
+    private static void renderItem(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y) {
         if (stack.isEmpty()) return;
-        graphics.renderItem(stack, x, y);
-        graphics.renderItemDecorations(Minecraft.getInstance().font, stack, x, y);
+        graphics.item(stack, x, y);
+        graphics.itemDecorations(Minecraft.getInstance().font, stack, x, y);
     }
     
     /**
@@ -414,7 +434,9 @@ public class RecipeRenderer {
         
         if (mouseX >= itemX && mouseX < itemX + ITEM_SIZE && 
             mouseY >= itemY && mouseY < itemY + ITEM_SIZE) {
-            return stack.getTooltipLines(Minecraft.getInstance().player, 
+            return stack.getTooltipLines(
+                    net.minecraft.world.item.Item.TooltipContext.of(Minecraft.getInstance().player.level(), Minecraft.getInstance().player),
+                    Minecraft.getInstance().player, 
                     Minecraft.getInstance().options.advancedItemTooltips ? 
                     net.minecraft.world.item.TooltipFlag.Default.ADVANCED : 
                     net.minecraft.world.item.TooltipFlag.Default.NORMAL);

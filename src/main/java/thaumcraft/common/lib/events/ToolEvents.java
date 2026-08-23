@@ -15,7 +15,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -24,7 +23,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -115,7 +114,11 @@ public class ToolEvents {
                         
                         // Apply damage
                         DamageSource damageSource = player.damageSources().playerAttack(player);
-                        if (livingTarget.hurt(damageSource, damage)) {
+                        boolean didHurt = false;
+                        if (player.level() instanceof ServerLevel serverLevel) {
+                            didHurt = livingTarget.hurtServer(serverLevel, damageSource, damage);
+                        }
+                        if (didHurt) {
                             // Knockback
                             float yawRad = player.getYRot() * ((float) Math.PI / 180f);
                             livingTarget.push(
@@ -164,7 +167,7 @@ public class ToolEvents {
         
         // SOUNDING - Reveal ores when sneaking and right-clicking
         if (enchantments.contains(EnumInfusionEnchantment.SOUNDING) && player.isShiftKeyDown()) {
-            heldItem.hurtAndBreak(5, player, p -> p.broadcastBreakEvent(hand));
+            heldItem.hurtAndBreak(5, player, hand);
             
             BlockPos pos = event.getPos();
             event.getLevel().playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
@@ -214,7 +217,7 @@ public class ToolEvents {
      * Handle BURROWING enchantment during block break.
      */
     @SubscribeEvent
-    public static void breakBlockEvent(BlockEvent.BreakEvent event) {
+    public static void breakBlockEvent(BreakBlockEvent event) {
         if (!(event.getLevel() instanceof Level level)) return;
         
         String dimKey = level.dimension().identifier().toString();
@@ -246,7 +249,7 @@ public class ToolEvents {
                 
                 // Don't damage tool if this is the fake bore
                 if (!player.getName().getString().equals("FakeThaumcraftBore")) {
-                    heldItem.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+                    heldItem.hurtAndBreak(1, player, hand);
                 }
                 
                 // Break the furthest connected block of the same type
@@ -340,7 +343,7 @@ public class ToolEvents {
      * Drop modification should be done via loot modifiers or in break event.
      */
     @SubscribeEvent
-    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+    public static void onBlockBreak(BreakBlockEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
         if (event.getPlayer() == null) return;
         
@@ -394,7 +397,7 @@ public class ToolEvents {
                         
                         // Damage tool
                         if (!player.getName().getString().equals("FakeThaumcraftBore")) {
-                            heldItem.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+                            heldItem.hurtAndBreak(1, player, hand);
                         }
                         
                         // Break block with drops
@@ -525,11 +528,7 @@ public class ToolEvents {
         BlockState state = level.getBlockState(pos);
         
         // Check if tool is appropriate for this block
-        if (tool.getItem() instanceof DiggerItem digger) {
-            return digger.isCorrectToolForDrops(tool, state) || 
-                   tool.getDestroySpeed(state) > 1.0f;
-        }
-        
-        return tool.getDestroySpeed(state) > 1.0f;
+        return tool.isCorrectToolForDrops(state) || 
+               tool.getDestroySpeed(state) > 1.0f;
     }
 }

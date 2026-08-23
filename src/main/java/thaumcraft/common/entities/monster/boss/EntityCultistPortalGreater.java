@@ -52,7 +52,7 @@ public class EntityCultistPortalGreater extends Monster {
         super(type, level);
         this.xpReward = 30;
         this.setNoGravity(true);
-        this.bossEvent = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_6);
+        this.bossEvent = new ServerBossEvent(java.util.UUID.randomUUID(), getDisplayName(), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_6);
         this.bossEvent.setDarkenScreen(true);
     }
     
@@ -257,17 +257,15 @@ public class EntityCultistPortalGreater extends Monster {
             cultist = new EntityCultistCleric(level());
         }
         
-        cultist.moveTo(
-                getX() + random.nextFloat() - random.nextFloat(),
-                getY() + 0.25,
-                getZ() + random.nextFloat() - random.nextFloat(),
-                random.nextFloat() * 360.0f, 0.0f);
+        cultist.setPos(getX() + random.nextFloat() - random.nextFloat(), getY() + 0.25, getZ() + random.nextFloat() - random.nextFloat());
+        cultist.setYRot(random.nextFloat() * 360.0f);
+        cultist.setXRot(0.0f);
         
         cultist.finalizeSpawn(
                 (net.minecraft.world.level.ServerLevelAccessor) level(),
-                level().getCurrentDifficultyAt(new BlockPos((int) cultist.getX(), (int) cultist.getY(), (int) cultist.getZ())),
+                ((net.minecraft.world.level.ServerLevelAccessor) level()).getCurrentDifficultyAt(new BlockPos((int) cultist.getX(), (int) cultist.getY(), (int) cultist.getZ())),
                 net.minecraft.world.entity.EntitySpawnReason.SPAWNER,
-                null, null);
+                null);
         
         cultist.setHomePos(blockPosition(), 32);
         level().addFreshEntity(cultist);
@@ -276,7 +274,7 @@ public class EntityCultistPortalGreater extends Monster {
         
         // After stage 12, portal takes damage when spawning
         if (stage > 12) {
-            hurt(damageSources().magic(), 5 + random.nextInt(5));
+            hurtServer((ServerLevel) level(), damageSources().magic(), 5 + random.nextInt(5));
         }
     }
     
@@ -286,17 +284,15 @@ public class EntityCultistPortalGreater extends Monster {
     private void spawnBoss() {
         EntityCultistLeader leader = new EntityCultistLeader(level());
         
-        leader.moveTo(
-                getX() + random.nextFloat() - random.nextFloat(),
-                getY() + 0.25,
-                getZ() + random.nextFloat() - random.nextFloat(),
-                random.nextFloat() * 360.0f, 0.0f);
+        leader.setPos(getX() + random.nextFloat() - random.nextFloat(), getY() + 0.25, getZ() + random.nextFloat() - random.nextFloat());
+        leader.setYRot(random.nextFloat() * 360.0f);
+        leader.setXRot(0.0f);
         
         leader.finalizeSpawn(
                 (net.minecraft.world.level.ServerLevelAccessor) level(),
-                level().getCurrentDifficultyAt(new BlockPos((int) leader.getX(), (int) leader.getY(), (int) leader.getZ())),
+                ((net.minecraft.world.level.ServerLevelAccessor) level()).getCurrentDifficultyAt(new BlockPos((int) leader.getX(), (int) leader.getY(), (int) leader.getZ())),
                 net.minecraft.world.entity.EntitySpawnReason.SPAWNER,
-                null, null);
+                null);
         
         leader.setHomePos(blockPosition(), 32);
         level().addFreshEntity(leader);
@@ -308,8 +304,8 @@ public class EntityCultistPortalGreater extends Monster {
     
     @Override
     public void playerTouch(Player player) {
-        if (distanceToSqr(player) < 3.0) {
-            if (player.hurt(damageSources().indirectMagic(this, this), 8.0f)) {
+        if (distanceToSqr(player) < 3.0 && !level().isClientSide()) {
+            if (player.hurtServer((ServerLevel) level(), damageSources().indirectMagic(this, this), 8.0f)) {
                 playSound(SoundEvents.GENERIC_BURN, 1.0f, (random.nextFloat() - random.nextFloat()) * 0.1f + 1.0f);
             }
         }
@@ -339,7 +335,7 @@ public class EntityCultistPortalGreater extends Monster {
     
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.GENERIC_EXPLODE;
+        return SoundEvents.GENERIC_EXPLODE.value();
     }
     
     // ==================== Loot ====================
@@ -376,7 +372,7 @@ public class EntityCultistPortalGreater extends Monster {
     }
     
     @Override
-    public boolean causeFallDamage(float distance, float multiplier, DamageSource source) {
+    public boolean causeFallDamage(double distance, float multiplier, DamageSource source) {
         return false;
     }
     

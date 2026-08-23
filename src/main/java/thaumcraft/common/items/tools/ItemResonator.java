@@ -1,6 +1,7 @@
 package thaumcraft.common.items.tools;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -29,7 +30,7 @@ public class ItemResonator extends Item {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        return stack.hasTag();
+        return stack.has(DataComponents.CUSTOM_DATA);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class ItemResonator extends Item {
                 suctionType));
 
         // Play sound
-        level.playSound(null, pos, SoundEvents.SHIELD_BLOCK, SoundSource.BLOCKS,
+        level.playSound(null, pos, SoundEvents.SHIELD_BLOCK.value(), SoundSource.BLOCKS,
                 0.5f, 1.9f + level.getRandom().nextFloat() * 0.1f);
 
         return InteractionResult.SUCCESS;

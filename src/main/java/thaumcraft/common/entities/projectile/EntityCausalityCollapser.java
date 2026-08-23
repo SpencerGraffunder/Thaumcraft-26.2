@@ -24,7 +24,8 @@ public class EntityCausalityCollapser extends ThrowableProjectile {
     }
     
     public EntityCausalityCollapser(Level level, LivingEntity owner) {
-        super(ModEntities.CAUSALITY_COLLAPSER.get(), owner, level);
+        super(ModEntities.CAUSALITY_COLLAPSER.get(), level);
+        this.setOwner(owner);
     }
     
     public EntityCausalityCollapser(Level level, double x, double y, double z) {
@@ -90,7 +91,7 @@ public class EntityCausalityCollapser extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return 0.03f; // Standard throwable gravity
     }
 }

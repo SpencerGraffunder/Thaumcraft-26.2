@@ -1,9 +1,11 @@
 package thaumcraft.api.items;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.aura.AuraHelper;
 
@@ -21,7 +23,7 @@ public class RechargeHelper {
         if (stack.isEmpty() || !(stack.getItem() instanceof IRechargable)) {
             return 0;
         }
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         return tag != null ? tag.getIntOr(CHARGE_KEY, 0) : 0;
     }
     
@@ -46,7 +48,9 @@ public class RechargeHelper {
         }
         int max = rechargable.getMaxCharge(stack, entity);
         charge = Math.max(0, Math.min(charge, max));
-        stack.getOrCreateTag().putInt(CHARGE_KEY, charge);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.putInt(CHARGE_KEY, charge);
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     /**

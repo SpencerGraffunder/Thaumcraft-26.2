@@ -99,7 +99,8 @@ public class EntityCultistKnight extends EntityCultist {
         float f = difficulty.getSpecialMultiplier();
         ItemStack weapon = getMainHandItem();
         if (!weapon.isEmpty() && random.nextFloat() < 0.25f * f) {
-            EnchantmentHelper.enchantItem(random, weapon, (int)(5.0f + f * random.nextInt(18)), false);
+            EnchantmentHelper.enchantItem(random, weapon, (int)(5.0f + f * random.nextInt(18)), 
+                    level().registryAccess(), java.util.Optional.empty());
         }
     }
 }

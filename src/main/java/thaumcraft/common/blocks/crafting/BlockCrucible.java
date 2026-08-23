@@ -1,5 +1,7 @@
 package thaumcraft.common.blocks.crafting;
 
+import net.minecraft.core.Direction;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -15,9 +17,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -88,7 +88,8 @@ public class BlockCrucible extends BlockTCDevice {
     }
 
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
+            net.minecraft.world.entity.InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof TileCrucible crucible) {
@@ -114,96 +115,111 @@ public class BlockCrucible extends BlockTCDevice {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                  BlockHitResult hit) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (!(blockEntity instanceof TileCrucible crucible)) {
+            return InteractionResult.PASS;
+        }
+
+        // Shift + empty hand = dump contents
+        if (player.isShiftKeyDown()) {
+            if (crucible.aspects.visSize() > 0 || crucible.getTank().getFluidAmount() > 0) {
+                crucible.spillAll();
+                level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
+                return InteractionResult.SUCCESS;
+            }
+        }
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
-        ItemStack heldItem = player.getItemInHand(hand);
+        ItemStack heldItem = itemStack;
         BlockEntity blockEntity = level.getBlockEntity(pos);
 
         if (!(blockEntity instanceof TileCrucible crucible)) {
             return InteractionResult.PASS;
         }
 
-        // Shift + empty hand = dump contents
-        if (player.isShiftKeyDown() && heldItem.isEmpty()) {
-            if (crucible.aspects.visSize() > 0 || crucible.getTank().getFluidAmount() > 0) {
-                crucible.spillAll();
-                level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
-                return InteractionResult.SUCCESS;
-            }
+        if (heldItem.isEmpty()) {
             return InteractionResult.PASS;
         }
 
         // Handle fluid containers (buckets, etc.)
-        if (!heldItem.isEmpty()) {
-            // Try to fill crucible from held item
-            var itemFluidCap = heldItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
-            if (itemFluidCap.isPresent()) {
-                IFluidHandlerItem itemHandler = itemFluidCap.orElse(null);
-                if (itemHandler != null) {
-                    FluidStack contained = itemHandler.getFluidInTank(0);
-                    if (contained.getFluid() == Fluids.WATER && contained.getAmount() > 0) {
-                        // Fill crucible with water
-                        int filled = crucible.getTank().fill(contained, IFluidHandler.FluidAction.SIMULATE);
-                        if (filled > 0) {
-                            FluidStack drained = itemHandler.drain(filled, IFluidHandler.FluidAction.EXECUTE);
-                            crucible.getTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
-                            
-                            // Handle bucket specifically
-                            if (heldItem.is(Items.WATER_BUCKET)) {
-                                if (!player.getAbilities().instabuild) {
-                                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
-                                }
-                            } else {
-                                player.setItemInHand(hand, itemHandler.getContainer());
-                            }
-                            
-                            level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
-                            crucible.markDirtyAndSync();
-                            return InteractionResult.SUCCESS;
+        // Try to fill crucible from held item
+        net.neoforged.neoforge.transfer.ResourceHandler<net.neoforged.neoforge.transfer.fluid.FluidResource> fluidHandler =
+                heldItem.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Fluid.ITEM,
+                        net.neoforged.neoforge.transfer.access.ItemAccess.forStack(heldItem));
+        if (fluidHandler != null) {
+            IFluidHandler itemHandler = IFluidHandler.of(fluidHandler);
+            FluidStack contained = itemHandler.getFluidInTank(0);
+            if (contained.getFluid() == Fluids.WATER && contained.getAmount() > 0) {
+                // Fill crucible with water
+                int filled = crucible.getTank().fill(contained, IFluidHandler.FluidAction.SIMULATE);
+                if (filled > 0) {
+                    FluidStack drained = itemHandler.drain(filled, IFluidHandler.FluidAction.EXECUTE);
+                    crucible.getTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
+                    
+                    // Handle bucket specifically
+                    if (heldItem.is(Items.WATER_BUCKET)) {
+                        if (!player.getAbilities().instabuild) {
+                            player.setItemInHand(hand, new ItemStack(Items.BUCKET));
                         }
-                    } else if (contained.isEmpty() && crucible.getTank().getFluidAmount() > 0) {
-                        // Take water from crucible
-                        FluidStack inCrucible = crucible.getTank().getFluid();
-                        int filled = itemHandler.fill(inCrucible, IFluidHandler.FluidAction.SIMULATE);
-                        if (filled > 0) {
-                            FluidStack drained = crucible.getTank().drain(filled, IFluidHandler.FluidAction.EXECUTE);
-                            itemHandler.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-                            
-                            // Handle bucket specifically
-                            if (heldItem.is(Items.BUCKET)) {
-                                if (!player.getAbilities().instabuild) {
-                                    player.setItemInHand(hand, new ItemStack(Items.WATER_BUCKET));
-                                }
-                            } else {
-                                player.setItemInHand(hand, itemHandler.getContainer());
-                            }
-                            
-                            level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
-                            crucible.markDirtyAndSync();
-                            return InteractionResult.SUCCESS;
-                        }
+                    } else {
+                        player.setItemInHand(hand, heldItem);
                     }
-                }
-            }
-            
-            // If crucible is heated and has water, try to smelt the held item
-            if (crucible.isHeated() && crucible.getTank().getFluidAmount() > 0) {
-                ItemStack result = crucible.attemptSmelt(heldItem.copy(), player.getName().getString());
-                if (result == null || result.getCount() < heldItem.getCount()) {
-                    // Something was smelted
-                    if (!player.getAbilities().instabuild) {
-                        if (result == null || result.isEmpty()) {
-                            heldItem.shrink(1);
-                        } else {
-                            player.setItemInHand(hand, result);
-                        }
-                    }
+                    
+                    level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
+                    crucible.markDirtyAndSync();
                     return InteractionResult.SUCCESS;
                 }
+            } else if (contained.isEmpty() && crucible.getTank().getFluidAmount() > 0) {
+                // Take water from crucible
+                FluidStack inCrucible = crucible.getTank().getFluid();
+                int filled = itemHandler.fill(inCrucible, IFluidHandler.FluidAction.SIMULATE);
+                if (filled > 0) {
+                    FluidStack drained = crucible.getTank().drain(filled, IFluidHandler.FluidAction.EXECUTE);
+                    itemHandler.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+                    
+                    // Handle bucket specifically
+                    if (heldItem.is(Items.BUCKET)) {
+                        if (!player.getAbilities().instabuild) {
+                            player.setItemInHand(hand, new ItemStack(Items.WATER_BUCKET));
+                        }
+                    } else {
+                        player.setItemInHand(hand, heldItem);
+                    }
+                    
+                    level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
+                    crucible.markDirtyAndSync();
+                    return InteractionResult.SUCCESS;
+                }
+            }
+        }
+        
+        // If crucible is heated and has water, try to smelt the held item
+        if (crucible.isHeated() && crucible.getTank().getFluidAmount() > 0) {
+            ItemStack result = crucible.attemptSmelt(heldItem.copy(), player.getName().getString());
+            if (result == null || result.getCount() < heldItem.getCount()) {
+                // Something was smelted
+                if (!player.getAbilities().instabuild) {
+                    if (result == null || result.isEmpty()) {
+                        heldItem.shrink(1);
+                    } else {
+                        player.setItemInHand(hand, result);
+                    }
+                }
+                return InteractionResult.SUCCESS;
             }
         }
 
@@ -211,14 +227,14 @@ public class BlockCrucible extends BlockTCDevice {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof TileCrucible crucible) {
                 crucible.spillAll();
             }
-            super.onRemove(state, level, pos, newState, isMoving);
         }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -227,7 +243,7 @@ public class BlockCrucible extends BlockTCDevice {
     }
 
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof TileCrucible crucible) {
             float r = (float) crucible.aspects.visSize() / (float) TileCrucible.MAX_ASPECTS;

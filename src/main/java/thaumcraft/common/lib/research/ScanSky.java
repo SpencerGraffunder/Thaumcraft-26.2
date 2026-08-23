@@ -48,7 +48,7 @@ public class ScanSky implements IScanThing {
         // Calculate celestial positions
         int yaw = (int)(player.getYRot() + 90.0f) % 360;
         int pitch = (int) Math.abs(player.getXRot());
-        int celestialAngle = (int)((level.getDayTime() / 24000.0 + 0.25) * 360.0) % 360;
+        int celestialAngle = (int)((level.getOverworldClockTime() / 24000.0 + 0.25) * 360.0) % 360;
         boolean isNight = celestialAngle > 180;
         
         if (isNight) {
@@ -66,16 +66,16 @@ public class ScanSky implements IScanThing {
             inRangePitch = Math.abs(celestialAngle - pitch) < 7;
         }
         
-        long worldDay = level.getDayTime() / 24000L;
+        long worldDay = level.getOverworldClockTime() / 24000L;
         String dayPrefix = "CEL_" + worldDay + "_";
         
         if (inRangeYaw && inRangePitch) {
             // Looking at sun or moon
-            int moonPhase = (int)(level.getDayTime() / 24000L % 8L);
+            int moonPhase = (int)(level.getOverworldClockTime() / 24000L % 8L);
             String key = dayPrefix + (isNight ? ("Moon" + moonPhase) : "Sun");
             
             if (ThaumcraftCapabilities.isResearchKnown(player, key)) {
-                player.displayClientMessage(Component.translatable("tc.celestial.fail.1"), true);
+                player.sendSystemMessage(Component.translatable("tc.celestial.fail.1"));
                 return;
             }
             
@@ -91,7 +91,7 @@ public class ScanSky implements IScanThing {
             String key = dayPrefix + "Star" + starDirection;
             
             if (ThaumcraftCapabilities.isResearchKnown(player, key)) {
-                player.displayClientMessage(Component.translatable("tc.celestial.fail.1"), true);
+                player.sendSystemMessage(Component.translatable("tc.celestial.fail.1"));
                 return;
             }
             

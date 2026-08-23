@@ -2,8 +2,6 @@ package thaumcraft.common.blocks.crafting;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -56,29 +54,29 @@ public class BlockArcaneWorkbench extends BlockTCDevice {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, 
+                                  BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof TileArcaneWorkbench workbench && player instanceof ServerPlayer serverPlayer) {
-            NetworkHooks.openScreen(serverPlayer, workbench, pos);
+            serverPlayer.openMenu(workbench, buf -> buf.writeBlockPos(pos));
         }
 
         return InteractionResult.CONSUME;
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof TileArcaneWorkbench workbench) {
                 workbench.dropContents();
             }
-            super.onRemove(state, level, pos, newState, isMoving);
         }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Nullable

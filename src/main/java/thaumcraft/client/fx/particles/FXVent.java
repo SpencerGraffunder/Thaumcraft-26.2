@@ -3,13 +3,15 @@ package thaumcraft.client.fx.particles;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.client.GraphicsPreset;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.awt.Color;
 
@@ -46,7 +48,7 @@ public class FXVent extends ThaumcraftParticle {
 
         // Check distance for visibility culling
         Entity viewEntity = Minecraft.getInstance().getCameraEntity();
-        int visibleDistance = Minecraft.getInstance().options.graphicsMode().get().getId() > 0 ? 50 : 25;
+        int visibleDistance = Minecraft.getInstance().options.graphicsPreset().get() != GraphicsPreset.FAST ? 50 : 25;
         if (viewEntity != null && viewEntity.distanceToSqr(x, y, z) > visibleDistance * visibleDistance) {
             this.lifetime = 0;
         }
@@ -121,59 +123,24 @@ public class FXVent extends ThaumcraftParticle {
     }
 
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 cameraPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 cameraPos = camera.position();
         float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
 
-        // Animated sprite based on scale progress
-        int spriteIndex = (int) (1.0f + this.quadSize / this.targetScale * 4.0f);
-        float u0 = (spriteIndex % 16) / 64.0f;
-        float u1 = u0 + 0.015625f;
-        float v0 = (spriteIndex / 16) / 64.0f;
-        float v1 = v0 + 0.015625f;
-
         float size = 0.3f * this.quadSize;
-        
+
         // Alpha fades as it grows
         float displayAlpha = this.alpha * ((this.targetScale - this.quadSize) / this.targetScale);
 
+        int color = ARGB.colorFromFloat(displayAlpha, this.rCol, this.gCol, this.bCol);
         int light = this.getLightCoords(partialTicks);
 
-        Quaternionf quaternion = camera.rotation();
+        Quaternionf rot = camera.rotation();
 
-        Vector3f[] vertices = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-    }
-
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_LIT;
+        state.add(getLayer(), x, y, z, rot.x, rot.y, rot.z, rot.w, size,
+                0.0f, 1.0f, 0.0f, 1.0f, color, light);
     }
 
     // ==================== Configuration Methods ====================

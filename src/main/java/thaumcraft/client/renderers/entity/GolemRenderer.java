@@ -1,16 +1,17 @@
 package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.parts.GolemMaterial;
 import thaumcraft.client.models.entity.GolemModel;
+import thaumcraft.client.renderers.entity.state.GolemRenderState;
 import thaumcraft.common.golems.EntityThaumcraftGolem;
 
 /**
@@ -25,7 +26,7 @@ import thaumcraft.common.golems.EntityThaumcraftGolem;
  * with swappable parts for heads, arms, legs, and addons.
  */
 @OnlyIn(Dist.CLIENT)
-public class GolemRenderer extends MobRenderer<EntityThaumcraftGolem, GolemModel> {
+public class GolemRenderer extends MobRenderer<EntityThaumcraftGolem, GolemRenderState, GolemModel> {
     
     // Default texture for golems without material
     private static final Identifier DEFAULT_TEXTURE = 
@@ -35,51 +36,51 @@ public class GolemRenderer extends MobRenderer<EntityThaumcraftGolem, GolemModel
         super(context, new GolemModel(context.bakeLayer(GolemModel.LAYER_LOCATION)), 0.3F);
         
         // Add layer for held items
-        this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
+        this.addLayer(new ItemInHandLayer<>(this));
     }
     
     @Override
-    public Identifier getTextureLocation(EntityThaumcraftGolem entity) {
+    public Identifier getTextureLocation(GolemRenderState state) {
+        return state.texture;
+    }
+    
+    @Override
+    public GolemRenderState createRenderState() {
+        return new GolemRenderState();
+    }
+    
+    @Override
+    public void extractRenderState(EntityThaumcraftGolem entity, GolemRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        ArmedEntityRenderState.extractArmedEntityRenderState(entity, state, this.itemModelResolver, partialTick);
+        
         // Get texture based on material
         if (entity.getProperties() != null && entity.getProperties().getMaterial() != null) {
             GolemMaterial material = entity.getProperties().getMaterial();
             if (material.texture != null) {
-                return material.texture;
+                state.texture = material.texture;
+            } else {
+                state.texture = DEFAULT_TEXTURE;
             }
+        } else {
+            state.texture = DEFAULT_TEXTURE;
         }
         
-        return DEFAULT_TEXTURE;
+        // Animation data used by the model
+        state.holdingItem = !entity.getMainHandItem().isEmpty();
+        state.swinging = entity.swinging;
+        state.attackAnim = entity.getAttackAnim(partialTick);
     }
     
     @Override
-    public void render(EntityThaumcraftGolem entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        // Scale based on golem properties
-        // Default golems are small, some materials make them bigger
-        float scale = 0.6F; // Base scale (golems are small)
-        
-        if (entity.getProperties() != null && entity.getProperties().getMaterial() != null) {
-            // Adjust scale based on material or traits
-            // For now, use base scale
-        }
-        
-        poseStack.pushPose();
-        poseStack.scale(scale, scale, scale);
-        
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
-        
-        poseStack.popPose();
+    protected void scale(GolemRenderState state, PoseStack poseStack) {
+        // Base scale (golems are small)
+        poseStack.scale(0.6F, 0.6F, 0.6F);
     }
     
     @Override
-    protected void scale(EntityThaumcraftGolem entity, PoseStack poseStack, float partialTicks) {
-        // Additional scaling can be done here based on entity state
-        super.scale(entity, poseStack, partialTicks);
-    }
-    
-    @Override
-    protected boolean shouldShowName(EntityThaumcraftGolem entity) {
+    protected boolean shouldShowName(EntityThaumcraftGolem entity, double distanceToCameraSq) {
         // Show name if golem is looked at while sneaking
-        return super.shouldShowName(entity);
+        return super.shouldShowName(entity, distanceToCameraSq);
     }
 }

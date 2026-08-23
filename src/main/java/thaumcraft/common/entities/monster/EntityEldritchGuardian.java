@@ -6,6 +6,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -14,7 +15,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -108,12 +108,12 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(net.minecraft.server.level.ServerLevel level, DamageSource source, float amount) {
         // Resistant to magic damage
         if (source.is(net.minecraft.tags.DamageTypeTags.WITCH_RESISTANT_TO)) {
             amount /= 2.0f;
         }
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     @Override
@@ -140,7 +140,7 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
             // Chance to set target on fire
             int difficulty = level().getDifficulty().getId();
             if (getMainHandItem().isEmpty() && isOnFire() && random.nextFloat() < difficulty * 0.3f) {
-                target.setSecondsOnFire(2 * difficulty);
+                target.igniteForSeconds(2 * difficulty);
             }
         }
         return hit;
@@ -217,22 +217,13 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
         return 1.5f;
     }
     
-    @Override
-    public MobType getMobType() {
-        return MobType.UNDEAD;
-    }
-    
-    @Override
-    public float getEyeHeight(net.minecraft.world.entity.Pose pose) {
-        return 2.1f;
-    }
     
     // ==================== Home Position ====================
     
     public void setHomePos(BlockPos pos, int distance) {
         this.homePos = pos;
         this.homeDistance = distance;
-        restrictTo(pos, distance);
+        setHomeTo(pos, distance);
     }
     
     public boolean hasHome() {
@@ -258,9 +249,9 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
-        spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
+        spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData);
         
         // TODO: In eldritch dimension, add absorption hearts
         // if (level.dimensionType() == ModDimensions.ELDRITCH) {
@@ -274,12 +265,12 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
     // ==================== Team Logic ====================
     
     @Override
-    public boolean isAlliedTo(Entity entity) {
+    protected boolean considersEntityAsAlly(Entity entity) {
         // Allied with other eldritch mobs
         if (entity instanceof IEldritchMob) {
             return true;
         }
-        return super.isAlliedTo(entity);
+        return super.considersEntityAsAlly(entity);
     }
     
     // ==================== NBT ====================
@@ -298,7 +289,7 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        if (input.contains("HomeD")) {
+        if (input.keySet().contains("HomeD")) {
             setHomePos(new BlockPos(
                     input.getIntOr("HomeX", 0),
                     input.getIntOr("HomeY", 0),

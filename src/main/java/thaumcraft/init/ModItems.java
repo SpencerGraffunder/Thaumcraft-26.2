@@ -311,39 +311,35 @@ public class ModItems {
             () -> new Item(new Item.Properties()
                     .food(new net.minecraft.world.food.FoodProperties.Builder()
                             .nutrition(8)
-                            .saturationMod(1.0f)
-                            .meat()
+                            .saturationModifier(1.0f)
                             .build())));
 
     public static final DeferredHolder<Item, Item> CHUNKS_BEEF = ITEMS.register("chunks_beef",
             () -> new Item(new Item.Properties()
                     .food(new net.minecraft.world.food.FoodProperties.Builder()
                             .nutrition(4)
-                            .saturationMod(0.5f)
-                            .meat()
+                            .saturationModifier(0.5f)
                             .build())));
 
     public static final DeferredHolder<Item, Item> CHUNKS_CHICKEN = ITEMS.register("chunks_chicken",
             () -> new Item(new Item.Properties()
                     .food(new net.minecraft.world.food.FoodProperties.Builder()
                             .nutrition(4)
-                            .saturationMod(0.5f)
-                            .meat()
+                            .saturationModifier(0.5f)
                             .build())));
 
     public static final DeferredHolder<Item, Item> CHUNKS_PORK = ITEMS.register("chunks_pork",
             () -> new Item(new Item.Properties()
                     .food(new net.minecraft.world.food.FoodProperties.Builder()
                             .nutrition(4)
-                            .saturationMod(0.5f)
-                            .meat()
+                            .saturationModifier(0.5f)
                             .build())));
 
     public static final DeferredHolder<Item, Item> CHUNKS_FISH = ITEMS.register("chunks_fish",
             () -> new Item(new Item.Properties()
                     .food(new net.minecraft.world.food.FoodProperties.Builder()
                             .nutrition(4)
-                            .saturationMod(0.4f)
+                            .saturationModifier(0.4f)
                             .build())));
 
     // ==================== Armor - Goggles ====================
@@ -715,7 +711,7 @@ public class ModItems {
     // ==================== Crystal Essence ====================
 
     public static final DeferredHolder<Item, Item> CRYSTAL_ESSENCE = ITEMS.register("crystal_essence",
-            ItemCrystalEssence::new);
+            () -> new ItemCrystalEssence());
 
     // ==================== Turret Placers ====================
 

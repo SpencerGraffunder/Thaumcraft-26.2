@@ -3,6 +3,8 @@ package thaumcraft.common.golems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -11,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -75,11 +78,13 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
 
         // Spawn the golem
         ServerLevel serverLevel = (ServerLevel) level;
-        EntityThaumcraftGolem golem = ModEntities.THAUMCRAFT_GOLEM.get().create(serverLevel);
+        EntityThaumcraftGolem golem = ModEntities.THAUMCRAFT_GOLEM.get().create(serverLevel, EntitySpawnReason.SPAWN_ITEM_USE);
         
         if (golem != null) {
             // Position the golem
-            golem.moveTo(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, 0.0f, 0.0f);
+            golem.setPos(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5);
+        golem.setYRot(0.0f);
+        golem.setXRot(0.0f);
             
             // Mark as valid spawn (prevents instant despawn)
             golem.setValidSpawn();
@@ -89,22 +94,23 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
             golem.setOwnerUUID(player.getUUID());
             
             // Load properties from NBT
-            if (stack.hasTag() && stack.getTag().contains("props")) {
-                IGolemProperties props = GolemProperties.fromLong(stack.getTag().getLongOr("props", 0L));
+            CompoundTag stackTag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+            if (stackTag != null && stackTag.contains("props")) {
+                IGolemProperties props = GolemProperties.fromLong(stackTag.getLongOr("props", 0L));
                 golem.setProperties(props);
             }
             
             // Load XP for smart golems
-            if (stack.hasTag() && stack.getTag().contains("xp")) {
-                golem.setRankXp(stack.getTag().getIntOr("xp", 0));
+            if (stackTag != null && stackTag.contains("xp")) {
+                golem.setRankXp(stackTag.getIntOr("xp", 0));
             }
             
             // Set home position
-            golem.restrictTo(spawnPos, 32);
+            golem.setHomeTo(spawnPos, 32);
             
             // Finalize spawn
             golem.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(spawnPos), 
-                    EntitySpawnReason.SPAWN_EGG, null, null);
+                    EntitySpawnReason.SPAWN_ITEM_USE, null);
             
             // Add to world
             if (serverLevel.addFreshEntity(golem)) {
@@ -122,8 +128,9 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        if (stack.hasTag() && stack.getTag().contains("props")) {
-            IGolemProperties props = GolemProperties.fromLong(stack.getTag().getLongOr("props", 0L));
+        CompoundTag stackTag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (stackTag != null && stackTag.contains("props")) {
+            IGolemProperties props = GolemProperties.fromLong(stackTag.getLongOr("props", 0L));
             
             // Show rank for smart golems
             if (props.hasTrait(EnumGolemTrait.SMART)) {
@@ -133,7 +140,7 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
                             .append(" " + rank)
                             .withStyle(ChatFormatting.GOLD));
                 } else {
-                    int xp = stack.getTag().contains("xp") ? stack.getTag().getIntOr("xp", 0) : 0;
+                    int xp = stackTag.contains("xp") ? stackTag.getIntOr("xp", 0) : 0;
                     int xpNeeded = (rank + 1) * (rank + 1) * EntityThaumcraftGolem.XP_MULTIPLIER;
                     builder.accept(Component.translatable("golem.rank")
                             .append(" " + rank + " ")
@@ -162,10 +169,12 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
      */
     public static ItemStack createGolemStack(Item item, IGolemProperties props, int xp) {
         ItemStack stack = new ItemStack(item);
-        stack.getOrCreateTag().putLong("props", props.toLong());
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.putLong("props", props.toLong());
         if (xp > 0) {
-            stack.getTag().putInt("xp", xp);
+            tag.putInt("xp", xp);
         }
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
         return stack;
     }
 

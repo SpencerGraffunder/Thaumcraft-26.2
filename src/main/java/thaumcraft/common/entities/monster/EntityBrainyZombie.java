@@ -39,7 +39,7 @@ public class EntityBrainyZombie extends Zombie {
         
         // Drop zombie brain with chance affected by 0
         if (random.nextInt(10) - 0 <= 4) {
-            this.spawnAtLocation(new ItemStack(ModItems.ZOMBIE_BRAIN.get()), 1.5f);
+            this.spawnAtLocation(level, new ItemStack(ModItems.ZOMBIE_BRAIN.get()), 1.5f);
         }
     }
     

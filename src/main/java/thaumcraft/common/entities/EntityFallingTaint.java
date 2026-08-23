@@ -7,7 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -18,7 +17,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.syncher.AdditionalSpawnData;
 import thaumcraft.init.ModEntities;
 import net.minecraft.core.registries.Registries;
 
@@ -26,7 +24,7 @@ import net.minecraft.core.registries.Registries;
  * EntityFallingTaint - A falling taint block entity.
  * Similar to FallingBlockEntity but for taint blocks.
  */
-public class EntityFallingTaint extends Entity implements IEntityAdditionalSpawnData {
+public class EntityFallingTaint extends Entity {
     
     public BlockState fallTile;
     private BlockPos oldPos;
@@ -41,6 +39,11 @@ public class EntityFallingTaint extends Entity implements IEntityAdditionalSpawn
     
     public EntityFallingTaint(Level level) {
         this(ModEntities.FALLING_TAINT.get(), level);
+    }
+    
+    @Override
+    public boolean hurtServer(net.minecraft.server.level.ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount) {
+        return false;
     }
     
     public EntityFallingTaint(Level level, double x, double y, double z, BlockState state, BlockPos originalPos) {
@@ -121,8 +124,8 @@ public class EntityFallingTaint extends Entity implements IEntityAdditionalSpawn
                 } else {
                     discard();
                 }
-            } else if ((fallTime > 100 && (currentPos.getY() < level().getMinBuildHeight() || 
-                    currentPos.getY() > level().getMaxBuildHeight())) || fallTime > 600) {
+            } else if ((fallTime > 100 && (currentPos.getY() < level().getMinY() || 
+                    currentPos.getY() > level().getMaxY())) || fallTime > 600) {
                 discard();
             }
         } else {
@@ -149,14 +152,14 @@ public class EntityFallingTaint extends Entity implements IEntityAdditionalSpawn
     }
     
     @Override
-    public boolean causeFallDamage(float distance, float multiplier, net.minecraft.world.damagesource.DamageSource source) {
+    public boolean causeFallDamage(double distance, float multiplier, net.minecraft.world.damagesource.DamageSource source) {
         return false;
     }
     
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
         if (fallTile != null) {
-            output.put("BlockState", NbtUtils.writeBlockState(fallTile));
+            output.store(NbtUtils.writeBlockState(fallTile));
         }
         output.putInt("Time", fallTime);
         output.putFloat("FallHurtAmount", fallHurtAmount);
@@ -168,35 +171,18 @@ public class EntityFallingTaint extends Entity implements IEntityAdditionalSpawn
     
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
-        if (input.contains("BlockState")) {
-            fallTile = NbtUtils.readBlockState(level().holderLookup(net.minecraft.core.registries.Registries.BLOCK), input.getCompoundOrEmpty("BlockState"));
+        if (input.keySet().contains("BlockState")) {
+            fallTile = input.read("BlockState", net.minecraft.world.level.block.state.BlockState.CODEC).orElse(Blocks.SAND.defaultBlockState());
         } else {
             fallTile = Blocks.SAND.defaultBlockState();
         }
         fallTime = input.getIntOr("Time", 0);
-        if (input.contains("FallHurtAmount")) {
+        if (input.keySet().contains("FallHurtAmount")) {
             fallHurtAmount = input.getFloatOr("FallHurtAmount", 0.0F);
             fallHurtMax = input.getIntOr("FallHurtMax", 0);
         }
-        if (input.contains("Old")) {
+        if (input.keySet().contains("Old")) {
             oldPos = BlockPos.of(input.getLongOr("Old", 0L));
-        }
-    }
-    
-    @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        if (fallTile != null) {
-            buffer.writeInt(Block.getId(fallTile));
-        } else {
-            buffer.writeInt(0);
-        }
-    }
-    
-    @Override
-    public void readSpawnData(FriendlyByteBuf buffer) {
-        int stateId = buffer.readInt();
-        if (stateId > 0) {
-            fallTile = Block.stateById(stateId);
         }
     }
     

@@ -19,11 +19,16 @@ public class EntityGolemDart extends AbstractArrow {
     }
     
     public EntityGolemDart(Level level, double x, double y, double z) {
-        super(ModEntities.GOLEM_DART.get(), x, y, z, level);
+        super(ModEntities.GOLEM_DART.get(), x, y, z, level, new ItemStack(Items.ARROW), null);
     }
     
     public EntityGolemDart(Level level, LivingEntity owner) {
-        super(ModEntities.GOLEM_DART.get(), owner, level);
+        super(ModEntities.GOLEM_DART.get(), owner, level, new ItemStack(Items.ARROW), null);
+    }
+    
+    @Override
+    protected ItemStack getDefaultPickupItem() {
+        return new ItemStack(Items.ARROW);
     }
     
     @Override

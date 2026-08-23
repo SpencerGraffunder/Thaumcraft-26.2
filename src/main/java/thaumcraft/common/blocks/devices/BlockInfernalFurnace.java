@@ -89,7 +89,7 @@ public class BlockInfernalFurnace extends Block implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
@@ -97,7 +97,6 @@ public class BlockInfernalFurnace extends Block implements EntityBlock {
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof TileInfernalFurnace furnace) {
-            ItemStack heldItem = player.getItemInHand(hand);
             if (!heldItem.isEmpty()) {
                 // Try to add item to furnace
                 ItemStack remaining = furnace.addItemsToInventory(heldItem.copy());
@@ -114,8 +113,8 @@ public class BlockInfernalFurnace extends Block implements EntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof TileInfernalFurnace furnace) {
                 // Drop all items in furnace
@@ -126,8 +125,8 @@ public class BlockInfernalFurnace extends Block implements EntityBlock {
                     }
                 }
             }
-            super.onRemove(state, level, pos, newState, isMoving);
         }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -172,7 +171,9 @@ public class BlockInfernalFurnace extends Block implements EntityBlock {
     /**
      * Handle items thrown into the furnace by picking them up from nearby.
      */
-    public void entityInside(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.Entity entity) {
+    @Override
+    public void entityInside(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.Entity entity,
+            net.minecraft.world.entity.InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         if (!level.isClientSide() && entity instanceof ItemEntity itemEntity) {
             if (itemEntity.isAlive() && !itemEntity.getItem().isEmpty()) {
                 BlockEntity blockEntity = level.getBlockEntity(pos);

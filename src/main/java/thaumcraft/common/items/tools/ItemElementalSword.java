@@ -40,11 +40,6 @@ public class ItemElementalSword extends Item {
     }
 
     @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.THAUMIUM_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-
-    @Override
     public ItemUseAnimation getUseAnimation(ItemStack stack) {
         return ItemUseAnimation.NONE;
     }
@@ -63,7 +58,7 @@ public class ItemElementalSword extends Item {
     public void onUseTick(Level level, LivingEntity player, ItemStack stack, int remainingUseDuration) {
         super.onUseTick(level, player, stack, remainingUseDuration);
         
-        int ticksUsed = getUseDuration(stack) - remainingUseDuration;
+        int ticksUsed = getUseDuration(stack, player) - remainingUseDuration;
 
         // Float effect - reduce falling and add upward momentum
         Vec3 motion = player.getDeltaMovement();
@@ -114,7 +109,7 @@ public class ItemElementalSword extends Item {
 
         // Damage the item periodically
         if (ticksUsed % 20 == 0) {
-            stack.hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(player.getUsedItemHand()));
+            stack.hurtAndBreak(1, player, player.getUsedItemHand());
         }
 
         // TODO: Add wind spiral particle effects on client

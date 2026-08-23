@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -59,28 +58,15 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
     }
     
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                  BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof TileRechargePedestal pedestal) {
-            ItemStack heldItem = player.getItemInHand(hand);
             ItemStack pedestalItem = pedestal.getItem(0);
-            
-            // If pedestal is empty and player holds rechargeable item, place it
-            if (pedestalItem.isEmpty() && heldItem.getItem() instanceof IRechargable) {
-                ItemStack toPlace = heldItem.copy();
-                toPlace.setCount(1);
-                pedestal.setItem(0, toPlace);
-                heldItem.shrink(1);
-                player.getInventory().setChanged();
-                level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
-                        0.2f, ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7f + 1.0f) * 1.6f);
-                return InteractionResult.SUCCESS;
-            }
             
             // If pedestal has item, give it to player
             if (!pedestalItem.isEmpty()) {
@@ -96,10 +82,48 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
         
         return InteractionResult.PASS;
     }
+
+    @Override
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player,
+                                  InteractionHand hand, BlockHitResult hit) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof TileRechargePedestal pedestal) {
+            ItemStack pedestalItem = pedestal.getItem(0);
+            
+            // If pedestal has item, give it to player
+            if (!pedestalItem.isEmpty()) {
+                if (!player.getInventory().add(pedestalItem)) {
+                    player.drop(pedestalItem, false);
+                }
+                pedestal.setItem(0, ItemStack.EMPTY);
+                level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
+                        0.2f, ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7f + 1.0f) * 1.5f);
+                return InteractionResult.SUCCESS;
+            }
+            
+            // If pedestal is empty and player holds rechargeable item, place it
+            if (heldItem.getItem() instanceof IRechargable) {
+                ItemStack toPlace = heldItem.copy();
+                toPlace.setCount(1);
+                pedestal.setItem(0, toPlace);
+                heldItem.shrink(1);
+                player.getInventory().setChanged();
+                level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
+                        0.2f, ((level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.7f + 1.0f) * 1.6f);
+                return InteractionResult.SUCCESS;
+            }
+        }
+        
+        return InteractionResult.PASS;
+    }
     
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof TileRechargePedestal pedestal) {
                 ItemStack stack = pedestal.getItem(0);
@@ -108,7 +132,7 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
                 }
             }
         }
-        super.onRemove(state, level, pos, newState, isMoving);
+        return super.playerWillDestroy(level, pos, state, player);
     }
     
     @Nullable

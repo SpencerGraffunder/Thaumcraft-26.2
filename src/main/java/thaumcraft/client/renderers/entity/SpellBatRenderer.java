@@ -2,18 +2,18 @@ package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import com.mojang.math.Axis;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
+import thaumcraft.client.renderers.entity.state.SpellBatRenderState;
 import thaumcraft.common.entities.monster.EntitySpellBat;
 
 /**
@@ -22,7 +22,7 @@ import thaumcraft.common.entities.monster.EntitySpellBat;
  * work well with our custom SpellBat entity.
  */
 @OnlyIn(Dist.CLIENT)
-public class SpellBatRenderer extends EntityRenderer<EntitySpellBat> {
+public class SpellBatRenderer extends EntityRenderer<EntitySpellBat, SpellBatRenderState> {
     
     private static final Identifier TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/spellbat.png");
@@ -33,17 +33,23 @@ public class SpellBatRenderer extends EntityRenderer<EntitySpellBat> {
     }
     
     @Override
-    public Identifier getTextureLocation(EntitySpellBat entity) {
-        return TEXTURE;
+    public SpellBatRenderState createRenderState() {
+        return new SpellBatRenderState();
     }
     
     @Override
-    public void render(EntitySpellBat entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void extractRenderState(EntitySpellBat entity, SpellBatRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        // Get color from entity
+        state.color = entity.color;
+        state.animAge = entity.tickCount + partialTick;
+    }
+    
+    @Override
+    public void submit(SpellBatRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         poseStack.pushPose();
         
-        // Get color from entity
-        int color = entity.color;
+        int color = state.color;
         float r = ((color >> 16) & 0xFF) / 255.0F;
         float g = ((color >> 8) & 0xFF) / 255.0F;
         float b = (color & 0xFF) / 255.0F;
@@ -53,42 +59,33 @@ public class SpellBatRenderer extends EntityRenderer<EntitySpellBat> {
         poseStack.scale(0.35F, 0.35F, 0.35F);
         
         // Billboard - face the camera
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(180.0F));
-        
-        // Wing flap animation
-        float flapAmount = Mth.sin((entity.tickCount + partialTicks) * 0.7F) * 0.3F;
-        
-        // Render as quad
-        RenderType renderType = RenderType.entityTranslucent(TEXTURE);
-        VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
-        
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix = pose.pose();
-        Matrix3f normal = pose.normal();
+        poseStack.mulPose(camera.orientation);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         
         float size = 1.0F;
+        int light = state.lightCoords;
         
         // Simple quad for the bat
-        vertex(vertexConsumer, matrix, normal, -size, -size, 0, 0, 0, r, g, b, alpha, packedLight);
-        vertex(vertexConsumer, matrix, normal, -size, size, 0, 0, 1, r, g, b, alpha, packedLight);
-        vertex(vertexConsumer, matrix, normal, size, size, 0, 1, 1, r, g, b, alpha, packedLight);
-        vertex(vertexConsumer, matrix, normal, size, -size, 0, 1, 0, r, g, b, alpha, packedLight);
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(TEXTURE), (pose, buffer) -> {
+            vertex(buffer, pose, -size, -size, 0, 0, 0, r, g, b, alpha, light);
+            vertex(buffer, pose, -size, size, 0, 0, 1, r, g, b, alpha, light);
+            vertex(buffer, pose, size, size, 0, 1, 1, r, g, b, alpha, light);
+            vertex(buffer, pose, size, -size, 0, 1, 0, r, g, b, alpha, light);
+        });
         
         poseStack.popPose();
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
     
-    private void vertex(VertexConsumer consumer, Matrix4f matrix, Matrix3f normal,
+    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose,
                         float x, float y, float z, float u, float v, 
                         float r, float g, float b, float alpha, int light) {
-        consumer.vertex(matrix, x, y, z)
-                .color(r, g, b, alpha)
-                .uv(u, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(light)
-                .normal(normal, 0.0F, 0.0F, -1.0F)
-                .endVertex();
+        consumer.addVertex(pose, x, y, z)
+                .setColor(r, g, b, alpha)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(pose, 0.0F, 0.0F, -1.0F);
     }
 }

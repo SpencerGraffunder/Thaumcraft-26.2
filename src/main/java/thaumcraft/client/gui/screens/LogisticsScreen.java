@@ -1,16 +1,18 @@
 package thaumcraft.client.gui.screens;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -65,9 +67,7 @@ public class LogisticsScreen extends AbstractContainerScreen<LogisticsMenu> {
     private Button increaseButton;
     
     public LogisticsScreen(LogisticsMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
-        this.imageWidth = 215;
-        this.imageHeight = 215;
+        super(menu, playerInventory, title, 215, 215);
     }
     
     @Override
@@ -158,29 +158,25 @@ public class LogisticsScreen extends AbstractContainerScreen<LogisticsMenu> {
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        this.renderTooltip(graphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
     
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         // Draw main background
-        graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0.0F, 0.0F, imageWidth, imageHeight, 256, 256);
         
         // Draw selection highlight
         if (selectedSlot >= 0 && selectedSlot < 81) {
             int selX = selectedSlot % 9;
             int selY = selectedSlot / 9;
-            graphics.blit(TEXTURE, leftPos + 17 + selX * 19, topPos + 17 + selY * 19, 222, 46, 20, 20);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + 17 + selX * 19, topPos + 17 + selY * 19, 222.0F, 46.0F, 20, 20, 256, 256);
         }
     }
     
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Periodic refresh
         long currentTime = System.currentTimeMillis();
         if (currentTime > lastUpdateTime) {
@@ -203,12 +199,12 @@ public class LogisticsScreen extends AbstractContainerScreen<LogisticsMenu> {
             if (slot == null || !slot.hasItem()) {
                 selectedSlot = -1;
                 selectedStack = ItemStack.EMPTY;
-            } else if (!ItemStack.isSameItemSameTags(selectedStack, slot.getItem())) {
+            } else if (!ItemStack.isSameItemSameComponents(selectedStack, slot.getItem())) {
                 // Item changed, try to find it again
                 selectedSlot = -1;
                 for (int i = 0; i < 81; i++) {
                     Slot s = menu.getSlot(i);
-                    if (s != null && ItemStack.isSameItemSameTags(selectedStack, s.getItem())) {
+                    if (s != null && ItemStack.isSameItemSameComponents(selectedStack, s.getItem())) {
                         selectedSlot = i;
                         break;
                     }
@@ -225,18 +221,18 @@ public class LogisticsScreen extends AbstractContainerScreen<LogisticsMenu> {
         if (selectedSlot >= 0 && !selectedStack.isEmpty()) {
             String sizeText = String.valueOf(stackSize);
             int textWidth = font.width(sizeText);
-            graphics.drawString(font, sizeText, 83 - textWidth / 2, 196, 0x333333, false);
+            graphics.text(font, sizeText, 83 - textWidth / 2, 196, 0x333333, false);
         }
         
         // Draw search hint
         if (!searchField.isFocused() && searchField.getValue().isEmpty()) {
-            graphics.drawString(font, Component.translatable("tc.logistics.search"), 
+            graphics.text(font, Component.translatable("tc.logistics.search"), 
                     143 - leftPos, 197 - topPos, 0x222222, false);
         }
     }
     
     @Override
-    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+    protected void slotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput) {
         // Handle slot click for selection
         if (slot != null && slotId >= 0 && slotId < 81 && slot.hasItem()) {
             if (minecraft != null) {
@@ -252,28 +248,28 @@ public class LogisticsScreen extends AbstractContainerScreen<LogisticsMenu> {
     }
     
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (delta < 0) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (scrollY < 0) {
             scroll(1); // Scroll down
-        } else if (delta > 0) {
+        } else if (scrollY > 0) {
             scroll(-1); // Scroll up
         }
         return true;
     }
     
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         if (searchField.isFocused()) {
-            return searchField.keyPressed(keyCode, scanCode, modifiers);
+            return searchField.keyPressed(event);
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
     
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         if (searchField.isFocused()) {
-            return searchField.charTyped(codePoint, modifiers);
+            return searchField.charTyped(event);
         }
-        return super.charTyped(codePoint, modifiers);
+        return super.charTyped(event);
     }
 }

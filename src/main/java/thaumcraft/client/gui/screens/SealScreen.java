@@ -1,16 +1,17 @@
 package thaumcraft.client.gui.screens;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -53,9 +54,7 @@ public class SealScreen extends AbstractContainerScreen<SealMenu> {
     private final List<CategoryButton> categoryButtons = new ArrayList<>();
     
     public SealScreen(SealMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
-        this.imageWidth = 176;
-        this.imageHeight = 232;
+        super(menu, playerInventory, title, 176, 232);
         this.middleX = imageWidth / 2;
         this.middleY = (imageHeight - 72) / 2 - 8;
         this.categories = menu.getAvailableCategories();
@@ -262,12 +261,12 @@ public class SealScreen extends AbstractContainerScreen<SealMenu> {
     }
     
     @Override
-    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+    protected void slotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput) {
         // Handle ghost slot clicks
         if (slot instanceof GhostSlot ghostSlot) {
             ItemStack carried = menu.getCarried();
             
-            if (mouseButton == 1) {
+            if (buttonNum == 1) {
                 // Right click - clear
                 ghostSlot.clearGhost();
             } else if (!carried.isEmpty()) {
@@ -281,29 +280,25 @@ public class SealScreen extends AbstractContainerScreen<SealMenu> {
             }
             return;
         }
-        super.slotClicked(slot, slotId, mouseButton, type);
+        super.slotClicked(slot, slotId, buttonNum, containerInput);
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
-        super.render(graphics, mouseX, mouseY, partialTick);
-        this.renderTooltip(graphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
     
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         // Draw circular background
-        graphics.blit(TEXTURE, leftPos + middleX - 80, topPos + middleY - 80, 96, 0, 160, 160);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + middleX - 80, topPos + middleY - 80, 96.0F, 0.0F, 160, 160, 256, 256);
         
         // Draw player inventory section
-        graphics.blit(TEXTURE, leftPos, topPos + 143, 0, 167, 176, 89);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos + 143, 0.0F, 167.0F, 176, 89, 256, 256);
         
         // Draw category title
         String categoryName = getCategoryName(currentCategory);
-        graphics.drawCenteredString(font, categoryName, leftPos + middleX, topPos + middleY - 64, 0xFFFFFF);
+        graphics.centeredText(font, categoryName, leftPos + middleX, topPos + middleY - 64, 0xFFFFFF);
         
         // Draw category-specific content
         switch (currentCategory) {
@@ -314,32 +309,31 @@ public class SealScreen extends AbstractContainerScreen<SealMenu> {
         }
     }
     
-    private void renderPriorityCategory(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void renderPriorityCategory(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Color indicator
-        graphics.blit(TEXTURE, leftPos + middleX + 17, topPos + middleY + 3, 2, 18, 12, 12);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + middleX + 17, topPos + middleY + 3, 2.0F, 18.0F, 12, 12, 256, 256);
         int color = menu.getColor();
         if (color >= 1 && color <= 16) {
             DyeColor dye = DyeColor.byId(color - 1);
             Color c = new Color(dye.getFireworkColor());
-            RenderSystem.setShaderColor(c.getRed() / 255.0f, c.getGreen() / 255.0f, c.getBlue() / 255.0f, 1.0f);
-            graphics.blit(TEXTURE, leftPos + middleX + 20, topPos + middleY + 6, 74, 31, 6, 6);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + middleX + 20, topPos + middleY + 6, 74.0F, 31.0F, 6, 6, 256, 256,
+                    ARGB.colorFromFloat(1.0f, c.getRed() / 255.0f, c.getGreen() / 255.0f, c.getBlue() / 255.0f));
         }
         
         // Priority label and value
-        graphics.drawCenteredString(font, Component.translatable("golem.prop.priority"), 
+        graphics.centeredText(font, Component.translatable("golem.prop.priority"), 
                 leftPos + middleX, topPos + middleY - 28, 0xBBCC9F);
-        graphics.drawCenteredString(font, String.valueOf(menu.getPriority()), 
+        graphics.centeredText(font, String.valueOf(menu.getPriority()), 
                 leftPos + middleX, topPos + middleY - 16, 0xFFFFFF);
         
         // Owner label
         if (menu.getSeal().getOwner().equals(minecraft.player.getUUID().toString())) {
-            graphics.drawCenteredString(font, Component.translatable("golem.prop.owner"), 
+            graphics.centeredText(font, Component.translatable("golem.prop.owner"), 
                     leftPos + middleX, topPos + middleY + 32, 0xBBCC9F);
         }
     }
     
-    private void renderFilterCategory(GuiGraphics graphics) {
+    private void renderFilterCategory(GuiGraphicsExtractor graphics) {
         ISealEntity seal = menu.getSeal();
         if (seal.getSeal() instanceof ISealConfigFilter filter) {
             int size = filter.getFilterSize();
@@ -350,40 +344,40 @@ public class SealScreen extends AbstractContainerScreen<SealMenu> {
             for (int i = 0; i < size; i++) {
                 int x = i % 3;
                 int y = i / 3;
-                graphics.blit(TEXTURE, 
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 
                         leftPos + middleX + x * 24 - sx, 
                         topPos + middleY + y * 24 - sy, 
-                        0, 56, 32, 32);
+                        0.0F, 56.0F, 32, 32, 256, 256);
             }
         }
     }
     
-    private void renderAreaCategory(GuiGraphics graphics) {
+    private void renderAreaCategory(GuiGraphicsExtractor graphics) {
         BlockPos area = menu.getArea();
         
         // Labels
-        graphics.drawCenteredString(font, Component.translatable("button.caption.y"), 
+        graphics.centeredText(font, Component.translatable("button.caption.y"), 
                 leftPos + middleX, topPos + middleY - 33, 0xDDDDDD);
-        graphics.drawCenteredString(font, Component.translatable("button.caption.x"), 
+        graphics.centeredText(font, Component.translatable("button.caption.x"), 
                 leftPos + middleX, topPos + middleY - 9, 0xDDDDDD);
-        graphics.drawCenteredString(font, Component.translatable("button.caption.z"), 
+        graphics.centeredText(font, Component.translatable("button.caption.z"), 
                 leftPos + middleX, topPos + middleY + 15, 0xDDDDDD);
         
         // Values
-        graphics.drawCenteredString(font, String.valueOf(area.getY()), 
+        graphics.centeredText(font, String.valueOf(area.getY()), 
                 leftPos + middleX, topPos + middleY - 24, 0xFFFFFF);
-        graphics.drawCenteredString(font, String.valueOf(area.getX()), 
+        graphics.centeredText(font, String.valueOf(area.getX()), 
                 leftPos + middleX, topPos + middleY, 0xFFFFFF);
-        graphics.drawCenteredString(font, String.valueOf(area.getZ()), 
+        graphics.centeredText(font, String.valueOf(area.getZ()), 
                 leftPos + middleX, topPos + middleY + 24, 0xFFFFFF);
     }
     
-    private void renderTagsCategory(GuiGraphics graphics) {
+    private void renderTagsCategory(GuiGraphicsExtractor graphics) {
         ISealEntity seal = menu.getSeal();
         
-        graphics.drawCenteredString(font, Component.translatable("button.caption.required"), 
+        graphics.centeredText(font, Component.translatable("button.caption.required"), 
                 leftPos + middleX, topPos + middleY - 26, 0xDDDDDD);
-        graphics.drawCenteredString(font, Component.translatable("button.caption.forbidden"), 
+        graphics.centeredText(font, Component.translatable("button.caption.forbidden"), 
                 leftPos + middleX, topPos + middleY + 6, 0xDDDDDD);
         
         // Draw required tags
@@ -392,7 +386,7 @@ public class SealScreen extends AbstractContainerScreen<SealMenu> {
             int startX = leftPos + middleX - (required.length - 1) * 9;
             for (int i = 0; i < required.length; i++) {
                 // Draw trait icon (placeholder - would need trait icons)
-                graphics.drawString(font, required[i].name().substring(0, 1), 
+                graphics.text(font, required[i].name().substring(0, 1), 
                         startX + i * 18, topPos + middleY - 12, 0x00FF00);
             }
         }
@@ -402,14 +396,14 @@ public class SealScreen extends AbstractContainerScreen<SealMenu> {
         if (forbidden != null && forbidden.length > 0) {
             int startX = leftPos + middleX - (forbidden.length - 1) * 9;
             for (int i = 0; i < forbidden.length; i++) {
-                graphics.drawString(font, forbidden[i].name().substring(0, 1), 
+                graphics.text(font, forbidden[i].name().substring(0, 1), 
                         startX + i * 18, topPos + middleY + 20, 0xFF0000);
             }
         }
     }
     
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Don't draw default labels
     }
     
@@ -438,11 +432,11 @@ public class SealScreen extends AbstractContainerScreen<SealMenu> {
         }
         
         @Override
-        public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
             // Draw category button background
             int color = active ? 0xFFFFFF : 0x808080;
             graphics.fill(getX(), getY(), getX() + width, getY() + height, color | 0x80000000);
-            graphics.drawString(Minecraft.getInstance().font, 
+            graphics.text(Minecraft.getInstance().font, 
                     String.valueOf(category), getX() + 4, getY() + 4, color);
         }
     }

@@ -1,11 +1,8 @@
 package thaumcraft.client.renderers.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.common.entities.projectile.EntityFocusCloud;
@@ -15,7 +12,7 @@ import thaumcraft.common.entities.projectile.EntityFocusCloud;
  * The cloud effect is rendered purely through particles, so this renderer does nothing.
  */
 @OnlyIn(Dist.CLIENT)
-public class FocusCloudRenderer extends EntityRenderer<EntityFocusCloud> {
+public class FocusCloudRenderer extends EntityRenderer<EntityFocusCloud, EntityRenderState> {
     
     public FocusCloudRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -23,13 +20,7 @@ public class FocusCloudRenderer extends EntityRenderer<EntityFocusCloud> {
     }
     
     @Override
-    public Identifier getTextureLocation(EntityFocusCloud entity) {
-        return TextureAtlas.LOCATION_BLOCKS;
-    }
-    
-    @Override
-    public void render(EntityFocusCloud entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        // Cloud effect is rendered through particles, no model rendering needed
+    public EntityRenderState createRenderState() {
+        return new EntityRenderState();
     }
 }

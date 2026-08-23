@@ -1,7 +1,8 @@
 package thaumcraft.common.blocks.essentia;
 
+import net.minecraft.core.Direction;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -46,8 +47,8 @@ public class BlockAlembic extends Block implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                  BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
@@ -63,12 +64,12 @@ public class BlockAlembic extends Block implements EntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             // TODO: Release essentia as flux when TileAlembic is implemented
-            super.onRemove(state, level, pos, newState, isMoving);
         }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class BlockAlembic extends Block implements EntityBlock {
     }
 
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         // TODO: Return fill level when TileAlembic is implemented
         return 0;
     }

@@ -1,7 +1,7 @@
 package thaumcraft.common.lib.crafting;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -122,7 +122,7 @@ public class ArcaneWorkbenchCraftingContainer implements CraftingContainer, IArc
     }
     
     @Override
-    public void fillStackedContents(StackedContents contents) {
+    public void fillStackedContents(StackedItemContents contents) {
         // Only fill from the 3x3 crafting grid, not the crystal slots
         for (int i = 0; i < TileArcaneWorkbench.GRID_SIZE; i++) {
             contents.accountStack(getItem(i));

@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
 
@@ -77,15 +77,13 @@ public class ScanningManager {
 
         if (!suppress) {
             if (!found) {
-                player.displayClientMessage(
+                player.sendSystemMessage(
                     Component.literal("\u00a75\u00a7o")
-                        .append(Component.translatable("tc.unknownobject")), 
-                    true);
+                        .append(Component.translatable("tc.unknownobject")));
             } else {
-                player.displayClientMessage(
+                player.sendSystemMessage(
                     Component.literal("\u00a7a\u00a7o")
-                        .append(Component.translatable("tc.knownobject")), 
-                    true);
+                        .append(Component.translatable("tc.knownobject")));
             }
         }
 
@@ -97,23 +95,24 @@ public class ScanningManager {
             // Try to get item handler capability
             var blockEntity = level.getBlockEntity(pos);
             if (blockEntity != null) {
-                blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).ifPresent(handler -> {
+                var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, Direction.UP);
+                if (handler != null) {
+                    IItemHandler itemHandler = IItemHandler.of(handler);
                     int scanned = 0;
-                    for (int slot = 0; slot < handler.getSlots(); slot++) {
-                        ItemStack stack = handler.getStackInSlot(slot);
+                    for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
+                        ItemStack stack = itemHandler.getStackInSlot(slot);
                         if (!stack.isEmpty()) {
                             scanTheThing(player, stack);
                             scanned++;
                         }
                         if (scanned >= 100) {
-                            player.displayClientMessage(
+                            player.sendSystemMessage(
                                 Component.literal("\u00a75\u00a7o")
-                                    .append(Component.translatable("tc.invtoolarge")), 
-                                true);
+                                    .append(Component.translatable("tc.invtoolarge")));
                             break; // Prevent lag with massive inventories
                         }
                     }
-                });
+                }
             }
         }
     }
@@ -159,7 +158,7 @@ public class ScanningManager {
             BlockState state = level.getBlockState(pos);
             
             // Try to get the item form of the block
-            result = state.getBlock().getCloneItemStack(level, pos, state);
+            result = state.getBlock().getCloneItemStack(level, pos, state, true, player);
             
             // Handle water and lava (can't be registered as regular item stacks)
             if (result.isEmpty()) {

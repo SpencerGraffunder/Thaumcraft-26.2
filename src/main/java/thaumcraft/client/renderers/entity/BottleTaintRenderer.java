@@ -2,18 +2,18 @@ package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.state.ThrownItemRenderState;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import thaumcraft.client.renderers.entity.state.BottleTaintRenderState;
 import thaumcraft.common.entities.projectile.EntityBottleTaint;
 import thaumcraft.init.ModItems;
 
@@ -21,14 +21,14 @@ import thaumcraft.init.ModItems;
  * Renderer for thrown taint bottles - renders as a spinning item.
  */
 @OnlyIn(Dist.CLIENT)
-public class BottleTaintRenderer extends EntityRenderer<EntityBottleTaint> {
+public class BottleTaintRenderer extends EntityRenderer<EntityBottleTaint, BottleTaintRenderState> {
     
-    private final ItemRenderer itemRenderer;
+    private final ItemModelResolver itemModelResolver;
     private ItemStack cachedItem;
     
     public BottleTaintRenderer(EntityRendererProvider.Context context) {
         super(context);
-        this.itemRenderer = Minecraft.getInstance().getItemRenderer();
+        this.itemModelResolver = context.getItemModelResolver();
         this.shadowRadius = 0.15F;
         this.shadowStrength = 0.75F;
     }
@@ -41,38 +41,35 @@ public class BottleTaintRenderer extends EntityRenderer<EntityBottleTaint> {
     }
     
     @Override
-    public Identifier getTextureLocation(EntityBottleTaint entity) {
-        return TextureAtlas.LOCATION_BLOCKS;
+    public BottleTaintRenderState createRenderState() {
+        return new BottleTaintRenderState();
     }
     
     @Override
-    public void render(EntityBottleTaint entity, float entityYaw, float partialTicks,
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void extractRenderState(EntityBottleTaint entity, BottleTaintRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        this.itemModelResolver.updateForNonLiving(state.item, getItemStack(), ItemDisplayContext.GROUND, entity);
+        state.yRot = entity.getYRot(partialTick);
+        state.spinAge = entity.tickCount + partialTick;
+    }
+    
+    @Override
+    public void submit(BottleTaintRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         
         poseStack.pushPose();
         
         // Spinning motion
-        poseStack.mulPose(Axis.YP.rotationDegrees(-90.0F - entityYaw));
-        float spin = (entity.tickCount + partialTicks) * 20.0F;
-        poseStack.mulPose(Axis.ZP.rotationDegrees(spin));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-90.0F - state.yRot));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(state.spinAge * 20.0F));
         
         // Scale down slightly
         poseStack.scale(0.5F, 0.5F, 0.5F);
         
         // Render the bottle taint item
-        itemRenderer.renderStatic(
-                getItemStack(),
-                ItemDisplayContext.GROUND,
-                packedLight,
-                OverlayTexture.NO_OVERLAY,
-                poseStack,
-                buffer,
-                entity.level(),
-                entity.getId()
-        );
+        state.item.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
         
         poseStack.popPose();
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, collector, camera);
     }
 }

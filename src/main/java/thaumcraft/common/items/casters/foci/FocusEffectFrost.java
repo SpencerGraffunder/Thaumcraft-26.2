@@ -91,7 +91,7 @@ public class FocusEffectFrost extends FocusEffect {
             
             // Apply slowness effect to living entities
             if (hitEntity instanceof LivingEntity living) {
-                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, potency));
+                living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, duration, potency));
             }
             
             return true;

@@ -3,18 +3,18 @@ package thaumcraft.client.renderers.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
+import thaumcraft.client.renderers.entity.state.EldritchOrbRenderState;
 import thaumcraft.common.entities.projectile.EntityEldritchOrb;
 
 /**
@@ -22,7 +22,7 @@ import thaumcraft.common.entities.projectile.EntityEldritchOrb;
  * Renders as a dark, chaotic sphere with radiating tendrils.
  */
 @OnlyIn(Dist.CLIENT)
-public class EldritchOrbRenderer extends EntityRenderer<EntityEldritchOrb> {
+public class EldritchOrbRenderer extends EntityRenderer<EntityEldritchOrb, EldritchOrbRenderState> {
     
     private static final Identifier TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/particles.png");
@@ -35,35 +35,40 @@ public class EldritchOrbRenderer extends EntityRenderer<EntityEldritchOrb> {
     }
     
     @Override
-    public Identifier getTextureLocation(EntityEldritchOrb entity) {
-        return TEXTURE;
+    public EldritchOrbRenderState createRenderState() {
+        return new EldritchOrbRenderState();
     }
     
     @Override
-    public void render(EntityEldritchOrb entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void extractRenderState(EntityEldritchOrb entity, EldritchOrbRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.age = entity.tickCount + partialTick;
+        state.scale = Math.min(entity.tickCount, 10) / 10.0f;
+        state.frame = entity.tickCount % 13;
+    }
+    
+    @Override
+    public void submit(EldritchOrbRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         random.setSeed(187L);
         
         poseStack.pushPose();
         
-        float age = entity.tickCount + partialTicks;
-        float scale = Math.min(entity.tickCount, 10) / 10.0f;
+        float age = state.age;
+        float scale = state.scale;
         
         // Render dark energy tendrils
-        renderTendrils(poseStack, buffer, age, scale);
+        renderTendrils(poseStack, submitNodeCollector, age, scale);
         
         // Render central orb sprite
-        renderOrbSprite(entity, poseStack, buffer, age);
+        renderOrbSprite(state, poseStack, submitNodeCollector, camera);
         
         poseStack.popPose();
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
     
-    private void renderTendrils(PoseStack poseStack, MultiBufferSource buffer, 
-                                float age, float scale) {
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.lightning());
-        
+    private void renderTendrils(PoseStack poseStack, 
+                                SubmitNodeCollector submitNodeCollector, float age, float scale) {
         for (int i = 0; i < 12; i++) {
             poseStack.pushPose();
             
@@ -76,42 +81,39 @@ public class EldritchOrbRenderer extends EntityRenderer<EntityEldritchOrb> {
             float length = (random.nextFloat() * 20.0f + 5.0f) / 30.0f * scale;
             float width = (random.nextFloat() * 2.0f + 1.0f) / 30.0f * scale;
             
-            Matrix4f matrix = poseStack.last().pose();
-            
             // Draw tendril as a triangle fan
-            // Center vertex (white/bright)
-            vertexConsumer.vertex(matrix, 0, 0, 0).color(255, 255, 255, 255).endVertex();
-            
-            // Outer vertices (dark purple/black)
             float x1 = (float)(-0.866 * width);
             float z1 = -0.5f * width;
             float x2 = (float)(0.866 * width);
             float z2 = -0.5f * width;
             float z3 = 1.0f * width;
             
-            vertexConsumer.vertex(matrix, x1, length, z1).color(64, 0, 64, 0).endVertex();
-            vertexConsumer.vertex(matrix, x2, length, z2).color(64, 0, 64, 0).endVertex();
-            vertexConsumer.vertex(matrix, 0, length, z3).color(64, 0, 64, 0).endVertex();
-            vertexConsumer.vertex(matrix, x1, length, z1).color(64, 0, 64, 0).endVertex();
+            submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.lightning(), (pose, buffer) -> {
+                // Center vertex (white/bright)
+                buffer.addVertex(pose, 0, 0, 0).setColor(255, 255, 255, 255);
+                
+                // Outer vertices (dark purple/black)
+                buffer.addVertex(pose, x1, length, z1).setColor(64, 0, 64, 0);
+                buffer.addVertex(pose, x2, length, z2).setColor(64, 0, 64, 0);
+                buffer.addVertex(pose, 0, length, z3).setColor(64, 0, 64, 0);
+                buffer.addVertex(pose, x1, length, z1).setColor(64, 0, 64, 0);
+            });
             
             poseStack.popPose();
         }
     }
     
-    private void renderOrbSprite(EntityEldritchOrb entity, PoseStack poseStack, 
-                                 MultiBufferSource buffer, float age) {
+    private void renderOrbSprite(EldritchOrbRenderState state, PoseStack poseStack, 
+                                 SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         poseStack.pushPose();
         
         // Billboard rotation
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        poseStack.mulPose(camera.orientation);
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         poseStack.scale(0.75f, 0.75f, 0.75f);
         
-        VertexConsumer vertexConsumer = buffer.getBuffer(
-                RenderType.entityTranslucentEmissive(TEXTURE));
-        
         // Animate through particle texture frames
-        int frame = entity.tickCount % 13;
+        int frame = state.frame;
         float u0 = frame / 64.0f;
         float u1 = u0 + 1.0f / 64.0f;
         float v0 = 3.0f / 64.0f;  // Row 3 in particle texture
@@ -119,42 +121,36 @@ public class EldritchOrbRenderer extends EntityRenderer<EntityEldritchOrb> {
         
         float size = 0.5f;
         
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix = pose.pose();
-        Matrix3f normal = pose.normal();
-        
         // Render quad
-        vertexConsumer.vertex(matrix, -size, -size, 0)
-            .color(255, 255, 255, 255)
-            .uv(u0, v1)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(0xF000F0)
-            .normal(normal, 0, 1, 0)
-            .endVertex();
-        
-        vertexConsumer.vertex(matrix, size, -size, 0)
-            .color(255, 255, 255, 255)
-            .uv(u1, v1)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(0xF000F0)
-            .normal(normal, 0, 1, 0)
-            .endVertex();
-        
-        vertexConsumer.vertex(matrix, size, size, 0)
-            .color(255, 255, 255, 255)
-            .uv(u1, v0)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(0xF000F0)
-            .normal(normal, 0, 1, 0)
-            .endVertex();
-        
-        vertexConsumer.vertex(matrix, -size, size, 0)
-            .color(255, 255, 255, 255)
-            .uv(u0, v0)
-            .overlayCoords(OverlayTexture.NO_OVERLAY)
-            .uv2(0xF000F0)
-            .normal(normal, 0, 1, 0)
-            .endVertex();
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(TEXTURE), (pose, buffer) -> {
+            buffer.addVertex(pose, -size, -size, 0)
+                .setColor(255, 255, 255, 255)
+                .setUv(u0, v1)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(0xF000F0)
+                .setNormal(pose, 0, 1, 0);
+            
+            buffer.addVertex(pose, size, -size, 0)
+                .setColor(255, 255, 255, 255)
+                .setUv(u1, v1)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(0xF000F0)
+                .setNormal(pose, 0, 1, 0);
+            
+            buffer.addVertex(pose, size, size, 0)
+                .setColor(255, 255, 255, 255)
+                .setUv(u1, v0)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(0xF000F0)
+                .setNormal(pose, 0, 1, 0);
+            
+            buffer.addVertex(pose, -size, size, 0)
+                .setColor(255, 255, 255, 255)
+                .setUv(u0, v0)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(0xF000F0)
+                .setNormal(pose, 0, 1, 0);
+        });
         
         poseStack.popPose();
     }

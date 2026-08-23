@@ -41,11 +41,11 @@ public class AIGotoHome extends Goal {
         idleCounter = 50;
         
         // Must have a home position
-        if (!golem.hasRestriction()) {
+        if (!golem.hasHome()) {
             return false;
         }
         
-        BlockPos homePos = golem.getRestrictCenter();
+        BlockPos homePos = golem.getHomePosition();
         double distSq = golem.distanceToSqr(Vec3.atCenterOf(homePos));
         
         // Already close enough to home
@@ -89,11 +89,11 @@ public class AIGotoHome extends Goal {
         if (golem.getNavigation().isDone()) {
             return false;
         }
-        if (!golem.hasRestriction()) {
+        if (!golem.hasHome()) {
             return false;
         }
         
-        BlockPos homePos = golem.getRestrictCenter();
+        BlockPos homePos = golem.getHomePosition();
         double distSq = golem.distanceToSqr(Vec3.atCenterOf(homePos));
         return distSq > 3.0;
     }

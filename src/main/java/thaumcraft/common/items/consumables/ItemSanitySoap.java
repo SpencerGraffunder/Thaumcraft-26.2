@@ -44,7 +44,7 @@ public class ItemSanitySoap extends Item {
 
     @Override
     public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int remainingUseDuration) {
-        int ticksUsed = getUseDuration(stack) - remainingUseDuration;
+        int ticksUsed = getUseDuration(stack, entity) - remainingUseDuration;
 
         // Stop after 95 ticks
         if (ticksUsed > 95) {
@@ -64,7 +64,7 @@ public class ItemSanitySoap extends Item {
 
     @Override
     public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
-        int ticksUsed = getUseDuration(stack) - timeLeft;
+        int ticksUsed = getUseDuration(stack, entity) - timeLeft;
 
         // Only apply effect if used long enough
         if (ticksUsed > 95 && entity instanceof Player player) {
@@ -106,6 +106,7 @@ public class ItemSanitySoap extends Item {
                 // TODO: Add more bubble particles
             }
         }
+        return false;
     }
 
     @Override

@@ -159,18 +159,19 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
         float diff = difficulty.getSpecialMultiplier();
         ItemStack weapon = getMainHandItem();
         if (!weapon.isEmpty() && random.nextFloat() < 0.5f * diff) {
-            EnchantmentHelper.enchantItem(random, weapon, (int)(7.0f + diff * random.nextInt(22)), false);
+            EnchantmentHelper.enchantItem(random, weapon, (int)(7.0f + diff * random.nextInt(22)), 
+                    level().registryAccess(), java.util.Optional.empty());
         }
     }
     
     // ==================== Team Logic ====================
     
     @Override
-    public boolean isAlliedTo(Entity entity) {
+    protected boolean considersEntityAsAlly(Entity entity) {
         if (entity instanceof EntityCultist || entity instanceof EntityCultistLeader) {
             return true;
         }
-        return super.isAlliedTo(entity);
+        return super.considersEntityAsAlly(entity);
     }
     
     @Override
@@ -186,12 +187,12 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
         setLoot(difficulty);
         setEnchantmentBasedOnDifficulty(difficulty);
         setTitle(random.nextInt(TITLES.length));
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnData);
     }
     
     // ==================== AI Updates ====================

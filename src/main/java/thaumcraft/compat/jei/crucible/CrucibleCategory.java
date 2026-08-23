@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -59,9 +59,15 @@ public class CrucibleCategory implements IRecipeCategory<CrucibleRecipeType> {
     }
 
     @Override
-    public IDrawable getBackground() {
-        return background;
+    public int getWidth() {
+        return 150;
     }
+
+    @Override
+    public int getHeight() {
+        return 80;
+    }
+
 
     @Override
     public IDrawable getIcon() {
@@ -78,17 +84,17 @@ public class CrucibleCategory implements IRecipeCategory<CrucibleRecipeType> {
         RegistryAccess registryAccess = Minecraft.getInstance().level != null 
                 ? Minecraft.getInstance().level.registryAccess() 
                 : RegistryAccess.EMPTY;
-        ItemStack output = recipe.getResultItem(registryAccess);
+        ItemStack output = recipe.getResultItem();
         builder.addSlot(RecipeIngredientRole.OUTPUT, 120, 30)
                 .addItemStack(output);
     }
 
     @Override
-    public void draw(CrucibleRecipeType recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(CrucibleRecipeType recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
         Font font = Minecraft.getInstance().font;
         
         // Draw arrow
-        guiGraphics.drawString(font, "→", 65, 33, 0x404040, false);
+        guiGraphics.text(font, "→", 65, 33, 0x404040, false);
         
         // Draw aspect requirements
         AspectList aspects = recipe.getAspects();
@@ -109,13 +115,13 @@ public class CrucibleCategory implements IRecipeCategory<CrucibleRecipeType> {
             if (text.length() > 40) {
                 text = text.substring(0, 37) + "...";
             }
-            guiGraphics.drawString(font, text, 5, yOffset, 0x404040, false);
+            guiGraphics.text(font, text, 5, yOffset, 0x404040, false);
         }
         
         // Draw research requirement at top
         String research = recipe.getResearch();
         if (research != null && !research.isEmpty()) {
-            guiGraphics.drawString(font, "Research: " + research, 5, 5, 0x808080, false);
+            guiGraphics.text(font, "Research: " + research, 5, 5, 0x808080, false);
         }
     }
 }

@@ -73,8 +73,8 @@ public class ItemCloudRing extends Item {
             
             // Apply upward boost
             double boost = 0.75;
-            if (player.hasEffect(MobEffects.JUMP)) {
-                boost += (player.getEffect(MobEffects.JUMP).getAmplifier() + 1) * 0.1;
+            if (player.hasEffect(MobEffects.JUMP_BOOST)) {
+                boost += (player.getEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1;
             }
             
             Vec3 motion = player.getDeltaMovement();
@@ -93,7 +93,6 @@ public class ItemCloudRing extends Item {
             }
             
             player.fallDistance = 0.0f;
-            player.hasImpulse = true;
             
             return true;
         }

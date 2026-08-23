@@ -1,11 +1,13 @@
 package thaumcraft.common.items.armor;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -33,17 +35,6 @@ public class ItemBootsTraveller extends Item implements IRechargable {
     }
     
     @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(Items.LEATHER) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return "thaumcraft:textures/entity/armor/bootstraveler.png";
-    }
-    
-    @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         super.inventoryTick(stack, level, entity, slot);
         
@@ -58,7 +49,7 @@ public class ItemBootsTraveller extends Item implements IRechargable {
         
         // Energy management - consume charge periodically
         if (!level.isClientSide() && player.tickCount % 20 == 0) {
-            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
             int energy = tag.getIntOr("energy", 0);
             
             if (energy > 0) {
@@ -68,6 +59,7 @@ public class ItemBootsTraveller extends Item implements IRechargable {
             }
             
             tag.putInt("energy", energy);
+            CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
         }
         
         // Apply movement bonuses if we have charge and player is moving forward

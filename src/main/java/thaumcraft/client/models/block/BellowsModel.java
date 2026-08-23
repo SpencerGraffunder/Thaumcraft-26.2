@@ -7,18 +7,19 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
+import thaumcraft.client.renderers.tile.state.BellowsRenderState;
 
 /**
  * Model for the Bellows block entity.
  * Features animated accordion-style bag that compresses/expands.
  */
 @OnlyIn(Dist.CLIENT)
-public class BellowsModel extends Model {
+public class BellowsModel extends Model<BellowsRenderState> {
 
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "bellows"), "main");
@@ -30,7 +31,7 @@ public class BellowsModel extends Model {
     private final ModelPart nozzle;
 
     public BellowsModel(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
+        super(root, RenderTypes::entityCutoutCull);
         this.bottomPlank = root.getChild("bottom_plank");
         this.middlePlank = root.getChild("middle_plank");
         this.topPlank = root.getChild("top_plank");
@@ -76,13 +77,9 @@ public class BellowsModel extends Model {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        bottomPlank.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        middlePlank.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        topPlank.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        bag.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        nozzle.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void setupAnim(BellowsRenderState state) {
+        super.setupAnim(state);
+        setInflation(state.inflation);
     }
 
     /**

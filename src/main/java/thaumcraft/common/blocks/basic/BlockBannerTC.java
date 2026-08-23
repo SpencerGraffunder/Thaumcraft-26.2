@@ -2,6 +2,8 @@ package thaumcraft.common.blocks.basic;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.CustomData;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -74,7 +76,7 @@ public class BlockBannerTC extends Block implements EntityBlock {
                 .strength(1.0f)
                 .sound(SoundType.WOOD)
                 .noOcclusion()
-                .noCollission());
+                .noCollision());
         this.dyeColor = color;
         registerDefaultState(stateDefinition.any().setValue(ROTATION, 0));
     }
@@ -129,7 +131,7 @@ public class BlockBannerTC extends Block implements EntityBlock {
     
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.INVISIBLE;
     }
     
     // ==================== Block Entity ====================
@@ -142,18 +144,34 @@ public class BlockBannerTC extends Block implements EntityBlock {
     // ==================== Interaction ====================
     
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
-            InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, 
+            BlockHitResult hit) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof TileBanner banner && dyeColor != null) {
-                ItemStack heldItem = player.getItemInHand(hand);
-                
                 if (player.isShiftKeyDown()) {
                     // Clear aspect
                     banner.setAspect(null);
                     syncBanner(level, pos, state, banner);
-                    level.playSound(null, pos, SoundEvents.WOOL_HIT, SoundSource.BLOCKS, 1.0f, 1.0f);
+                    level.playSound(null, pos, SoundType.WOOL.getHitSound(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                    return InteractionResult.SUCCESS;
+                }
+            }
+        }
+        return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.PASS;
+    }
+
+    @Override
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, 
+            InteractionHand hand, BlockHitResult hit) {
+        if (!level.isClientSide()) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof TileBanner banner && dyeColor != null) {
+                if (player.isShiftKeyDown()) {
+                    // Clear aspect
+                    banner.setAspect(null);
+                    syncBanner(level, pos, state, banner);
+                    level.playSound(null, pos, SoundType.WOOL.getHitSound(), SoundSource.BLOCKS, 1.0f, 1.0f);
                     return InteractionResult.SUCCESS;
                 } else if (heldItem.getItem() instanceof IEssentiaContainerItem container) {
                     // Apply aspect from phial
@@ -164,13 +182,13 @@ public class BlockBannerTC extends Block implements EntityBlock {
                             heldItem.shrink(1);
                         }
                         syncBanner(level, pos, state, banner);
-                        level.playSound(null, pos, SoundEvents.WOOL_HIT, SoundSource.BLOCKS, 1.0f, 1.0f);
+                        level.playSound(null, pos, SoundType.WOOL.getHitSound(), SoundSource.BLOCKS, 1.0f, 1.0f);
                         return InteractionResult.SUCCESS;
                     }
                 }
             }
         }
-        return InteractionResult.sidedSuccess(level.isClientSide());
+        return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
     
     private void syncBanner(Level level, BlockPos pos, BlockState state, TileBanner banner) {
@@ -186,21 +204,23 @@ public class BlockBannerTC extends Block implements EntityBlock {
         ItemStack drop = new ItemStack(this);
         
         if (be instanceof TileBanner banner && banner.getAspect() != null) {
-            CompoundTag tag = drop.getOrCreateTag();
+            CompoundTag tag = drop.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
             tag.putString("aspect", banner.getAspect().getTag());
+            CustomData.set(DataComponents.CUSTOM_DATA, drop, tag);
         }
         
         return Collections.singletonList(drop);
     }
     
     @Override
-    public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
         ItemStack stack = new ItemStack(this);
         BlockEntity be = level.getBlockEntity(pos);
         
         if (be instanceof TileBanner banner && banner.getAspect() != null) {
-            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
             tag.putString("aspect", banner.getAspect().getTag());
+            CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
         }
         
         return stack;

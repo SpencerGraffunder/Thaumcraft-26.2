@@ -71,17 +71,13 @@ public class ArcaneWorkbenchResultSlot extends Slot {
     @Override
     protected void checkTakeAchievements(ItemStack stack) {
         if (amountCrafted > 0) {
-            stack.onCraftedBy(player.level(), player, amountCrafted);
-            net.neoforged.neoforge.event.NeoForgeEventFactory.firePlayerCraftingEvent(player, stack, craftMatrix);
+            stack.onCraftedBy(player, amountCrafted);
+            net.neoforged.neoforge.event.EventHooks.firePlayerCraftingEvent(player, stack, craftMatrix);
         }
         
         Container container = this.container;
-        if (container instanceof RecipeHolder recipeHolder) {
-            var recipe = recipeHolder.getRecipeUsed();
-            if (recipe != null && !recipe.isSpecial()) {
-                player.awardRecipes(java.util.Collections.singleton(recipe));
-                recipeHolder.setRecipeUsed(null);
-            }
+        if (container instanceof net.minecraft.world.inventory.RecipeCraftingHolder recipeCraftingHolder) {
+            recipeCraftingHolder.awardUsedRecipes(player, craftMatrix.getItems());
         }
         
         amountCrafted = 0;
@@ -94,13 +90,12 @@ public class ArcaneWorkbenchResultSlot extends Slot {
         // Find the matching recipe
         IArcaneRecipe arcaneRecipe = ThaumcraftCraftingManager.findMatchingArcaneRecipe(craftMatrix, thePlayer);
         
-        ForgeHooks.setCraftingPlayer(thePlayer);
+        net.neoforged.neoforge.common.CommonHooks.setCraftingPlayer(thePlayer);
         
-        NonNullList<ItemStack> remainingItems;
-        if (arcaneRecipe != null && craftMatrix instanceof IArcaneWorkbench workbench) {
-            // Get remaining items from arcane recipe
-            remainingItems = arcaneRecipe.getRemainingItems(workbench);
-            
+        net.minecraft.world.item.crafting.CraftingInput.Positioned positioned = craftMatrix.asPositionedCraftInput();
+        net.minecraft.world.item.crafting.CraftingInput input = positioned.input();
+        NonNullList<ItemStack> remainingItems = net.minecraft.world.item.crafting.CraftingRecipe.defaultCraftingReminder(input);
+        if (arcaneRecipe != null) {
             // Consume vis from aura
             int visCost = arcaneRecipe.getVis();
             // TODO: Apply vis discount from player's gear
@@ -115,43 +110,33 @@ public class ArcaneWorkbenchResultSlot extends Slot {
             if (crystals != null && crystals.size() > 0) {
                 consumeCrystals(crystals);
             }
-        } else if (arcaneRecipe != null) {
-            // Fallback - shouldn't happen but safety check
-            remainingItems = NonNullList.withSize(craftMatrix.getContainerSize(), ItemStack.EMPTY);
-        } else {
-            // Check for vanilla recipe
-            var level = thePlayer.level();
-            var recipeOpt = level.getRecipeManager()
-                    .getRecipeFor(RecipeType.CRAFTING, craftMatrix, level);
-            
-            if (recipeOpt.isPresent()) {
-                CraftingRecipe vanillaRecipe = recipeOpt.get();
-                remainingItems = vanillaRecipe.getRemainingItems(craftMatrix);
-            } else {
-                remainingItems = NonNullList.withSize(craftMatrix.getContainerSize(), ItemStack.EMPTY);
-            }
         }
         
-        ForgeHooks.setCraftingPlayer(null);
+        net.neoforged.neoforge.common.CommonHooks.setCraftingPlayer(null);
         
         // Consume ingredients and handle remaining items (buckets, etc.)
-        for (int i = 0; i < Math.min(9, remainingItems.size()); i++) {
-            ItemStack slotStack = craftMatrix.getItem(i);
-            ItemStack remaining = remainingItems.get(i);
-            
-            if (!slotStack.isEmpty()) {
-                craftMatrix.removeItem(i, 1);
-                slotStack = craftMatrix.getItem(i);
-            }
-            
-            if (!remaining.isEmpty()) {
-                if (slotStack.isEmpty()) {
-                    craftMatrix.setItem(i, remaining);
-                } else if (ItemStack.isSameItemSameTags(slotStack, remaining)) {
-                    remaining.grow(slotStack.getCount());
-                    craftMatrix.setItem(i, remaining);
-                } else if (!player.getInventory().add(remaining)) {
-                    player.drop(remaining, false);
+        int recipeLeft = positioned.left();
+        int recipeTop = positioned.top();
+        for (int y = 0; y < input.height(); y++) {
+            for (int x = 0; x < input.width(); x++) {
+                int i = x + recipeLeft + (y + recipeTop) * craftMatrix.getWidth();
+                ItemStack slotStack = craftMatrix.getItem(i);
+                ItemStack remaining = remainingItems.get(x + y * input.width());
+                
+                if (!slotStack.isEmpty()) {
+                    craftMatrix.removeItem(i, 1);
+                    slotStack = craftMatrix.getItem(i);
+                }
+                
+                if (!remaining.isEmpty()) {
+                    if (slotStack.isEmpty()) {
+                        craftMatrix.setItem(i, remaining);
+                    } else if (ItemStack.isSameItemSameComponents(slotStack, remaining)) {
+                        remaining.grow(slotStack.getCount());
+                        craftMatrix.setItem(i, remaining);
+                    } else if (!player.getInventory().add(remaining)) {
+                        player.drop(remaining, false);
+                    }
                 }
             }
         }
@@ -168,7 +153,7 @@ public class ArcaneWorkbenchResultSlot extends Slot {
             // Search crystal slots (9-14)
             for (int slot = 9; slot < 15; slot++) {
                 ItemStack slotStack = craftMatrix.getItem(slot);
-                if (!slotStack.isEmpty() && ItemStack.isSameItemSameTags(targetCrystal, slotStack)) {
+                if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(targetCrystal, slotStack)) {
                     int toRemove = Math.min(required, slotStack.getCount());
                     craftMatrix.removeItem(slot, toRemove);
                     required -= toRemove;

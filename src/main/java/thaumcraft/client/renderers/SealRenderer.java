@@ -1,15 +1,10 @@
 package thaumcraft.client.renderers;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
@@ -17,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.seals.ISealEntity;
 import thaumcraft.api.golems.seals.SealPos;
@@ -34,8 +28,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * - Seal working area (for seals with ISealConfigArea)
  * - Inactive state indicator (when stopped by redstone)
  * 
- * Ported from 1.12.2 to 1.20.1 modern rendering.
- * Uses PoseStack and modern vertex buffer API instead of GL11 immediate mode.
+ * Ported to the 26.2 render-state model: geometry is submitted through a
+ * SubmitNodeCollector (call this from SubmitCustomGeometryEvent with the event's
+ * collector and pose stack) instead of immediate-mode rendering.
  */
 @OnlyIn(Dist.CLIENT)
 public class SealRenderer {
@@ -48,14 +43,14 @@ public class SealRenderer {
     private static final double MAX_RENDER_DIST_SQ = 256.0;
     
     /**
-     * Render all seals visible to the player.
-     * Called from RenderLevelStageEvent.
+     * Submit all seals visible to the player.
+     * Called from SubmitCustomGeometryEvent with its pose stack and collector.
      * 
-     * @param poseStack The pose stack for transformations
-     * @param partialTick Partial tick for smooth interpolation
+     * @param poseStack The pose stack for transformations (camera-relative)
+     * @param submitNodeCollector The collector to submit geometry to
      * @param player The local player
      */
-    public static void renderSeals(PoseStack poseStack, float partialTick, Player player) {
+    public static void renderSeals(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, Player player) {
         if (player == null || player.level() == null) return;
         
         // Get seals in player's dimension
@@ -65,18 +60,7 @@ public class SealRenderer {
         if (seals == null || seals.isEmpty()) return;
         
         // Get camera position for distance calculations
-        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        
-        // Setup render state
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableCull();
-        
-        // If sneaking, disable depth test to see seals through blocks
-        boolean sneaking = player.isShiftKeyDown();
-        if (sneaking) {
-            RenderSystem.disableDepthTest();
-        }
+        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.mainCamera().position();
         
         poseStack.pushPose();
         
@@ -91,24 +75,18 @@ public class SealRenderer {
                 float alpha = 1.0f - (float)(distSq / MAX_RENDER_DIST_SQ);
                 boolean inactive = seal.isStoppedByRedstone(player.level());
                 
-                renderSeal(poseStack, seal, cameraPos, alpha, inactive);
+                renderSeal(poseStack, submitNodeCollector, seal, cameraPos, alpha, inactive);
             }
         }
         
         poseStack.popPose();
-        
-        // Restore render state
-        if (sneaking) {
-            RenderSystem.enableDepthTest();
-        }
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
     }
     
     /**
      * Render a single seal.
      */
-    private static void renderSeal(PoseStack poseStack, ISealEntity seal, Vec3 cameraPos, 
+    private static void renderSeal(PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                                   ISealEntity seal, Vec3 cameraPos, 
                                    float alpha, boolean inactive) {
         SealPos sealPos = seal.getSealPos();
         BlockPos pos = sealPos.pos;
@@ -134,7 +112,7 @@ public class SealRenderer {
         
         // Render the seal quad
         float brightness = inactive ? 0.5f : 1.0f;
-        renderSealQuad(poseStack, seal.getSeal().getSealIcon(), brightness, brightness, brightness, alpha);
+        renderSealQuad(poseStack, submitNodeCollector, seal.getSeal().getSealIcon(), brightness, brightness, brightness, alpha);
         
         poseStack.popPose();
     }
@@ -154,9 +132,10 @@ public class SealRenderer {
     }
     
     /**
-     * Render a textured quad for the seal icon.
+     * Submit a textured quad for the seal icon.
      */
-    private static void renderSealQuad(PoseStack poseStack, Identifier texture, 
+    private static void renderSealQuad(PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                                       Identifier texture, 
                                        float r, float g, float b, float a) {
         Identifier actualTexture;
         if (texture == null) {
@@ -170,28 +149,40 @@ public class SealRenderer {
             if (!path.endsWith(".png")) {
                 path = path + ".png";
             }
-            actualTexture = Identifier.withDefaultNamespace(texture.getNamespace(), path);
+            actualTexture = Identifier.fromNamespaceAndPath(texture.getNamespace(), path);
         }
-        
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, actualTexture);
-        
-        Matrix4f matrix = poseStack.last().pose();
-        
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-        
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         
         // Render a centered quad
         float size = 0.5f;
-        int color = ((int)(a * 255) << 24) | ((int)(r * 255) << 16) | ((int)(g * 255) << 8) | (int)(b * 255);
         
-        buffer.vertex(matrix, -size, -size, 0).uv(0, 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, size, -size, 0).uv(1, 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, size, size, 0).uv(1, 0).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, -size, size, 0).uv(0, 0).color(r, g, b, a).endVertex();
-        
-        tesselator.end();
+        submitNodeCollector.submitCustomGeometry(
+            poseStack, RenderTypes.entityTranslucent(actualTexture),
+            (pose, buffer) -> {
+                buffer.addVertex(pose, -size, -size, 0.0F)
+                    .setColor(r, g, b, a)
+                    .setUv(0.0F, 1.0F)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(0xF000F0)
+                    .setNormal(pose, 0.0F, 0.0F, 1.0F);
+                buffer.addVertex(pose, size, -size, 0.0F)
+                    .setColor(r, g, b, a)
+                    .setUv(1.0F, 1.0F)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(0xF000F0)
+                    .setNormal(pose, 0.0F, 0.0F, 1.0F);
+                buffer.addVertex(pose, size, size, 0.0F)
+                    .setColor(r, g, b, a)
+                    .setUv(1.0F, 0.0F)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(0xF000F0)
+                    .setNormal(pose, 0.0F, 0.0F, 1.0F);
+                buffer.addVertex(pose, -size, size, 0.0F)
+                    .setColor(r, g, b, a)
+                    .setUv(0.0F, 0.0F)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(0xF000F0)
+                    .setNormal(pose, 0.0F, 0.0F, 1.0F);
+            }
+        );
     }
 }

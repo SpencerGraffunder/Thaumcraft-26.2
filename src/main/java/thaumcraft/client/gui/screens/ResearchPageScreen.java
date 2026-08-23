@@ -1,11 +1,13 @@
 package thaumcraft.client.gui.screens;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -252,8 +254,8 @@ public class ResearchPageScreen extends Screen {
      */
     private boolean playerHasItem(ItemStack required) {
         int count = 0;
-        for (ItemStack stack : player.getInventory().getItems()) {
-            if (ItemStack.isSameItemSameTags(stack, required)) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+            if (ItemStack.isSameItemSameComponents(stack, required)) {
                 count += stack.getCount();
                 if (count >= required.getCount()) {
                     return true;
@@ -306,35 +308,31 @@ public class ResearchPageScreen extends Screen {
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
-        
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int sw = (width - PANE_WIDTH) / 2;
         int sh = (height - PANE_HEIGHT) / 2;
         
         // Draw book background
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        
         // Scale and draw background
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         float scale = 1.3f;
         float offsetX = (width - PANE_WIDTH * scale) / 2.0f;
         float offsetY = (height - PANE_HEIGHT * scale) / 2.0f;
-        graphics.pose().translate(offsetX, offsetY, 0);
-        graphics.pose().scale(scale, scale, 1.0f);
-        graphics.blit(TEXTURE, 0, 0, 0, 0, PANE_WIDTH, PANE_HEIGHT);
-        graphics.pose().popPose();
+        graphics.pose().translate(offsetX, offsetY);
+        graphics.pose().scale(scale);
+        graphics.blit(RenderPipelines.GUI_TEXTURED);
+        graphics.pose().popMatrix();
         
         // Draw title on first page
         if (page == 0) {
             String title = research.getLocalizedName().getString();
             int titleWidth = font.width(title);
             int titleX = sw + 70 - titleWidth / 2;
-            graphics.drawString(font, title, titleX, sh + 8, 0x202020, false);
+            graphics.text(font, title, titleX, sh + 8, 0x202020, false);
             
             // Draw separator line
-            graphics.blit(TEXTURE, sw + 4, sh + 3, 24, 184, 96, 4);
-            graphics.blit(TEXTURE, sw + 4, sh + 20, 24, 184, 96, 4);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh + 3, 24.0F, 184.0F, 96, 4, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh + 20, 24.0F, 184.0F, 96, 4, 256, 256);
         }
         
         // Draw page content
@@ -354,16 +352,13 @@ public class ResearchPageScreen extends Screen {
         
         // Draw navigation arrows
         float bob = (float) Math.sin(System.currentTimeMillis() / 300.0) * 0.2f + 0.1f;
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.8f + bob);
         
         if (page > 0) {
-            graphics.blit(TEXTURE, sw - 16, sh + 190, 0, 184, 12, 8);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw - 16, sh + 190, 0.0F, 184.0F, 12, 8, 256, 256, ARGB.white(0.8f + bob));
         }
         if (page < maxPages - 2) {
-            graphics.blit(TEXTURE, sw + 262, sh + 190, 12, 184, 12, 8);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 262, sh + 190, 12.0F, 184.0F, 12, 8, 256, 256, ARGB.white(0.8f + bob));
         }
-        
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         
         // Draw requirements if not complete (on first page)
         if (!isComplete && page == 0 && research.getStages() != null && currentStage > 0 && currentStage <= research.getStages().length) {
@@ -377,13 +372,13 @@ public class ResearchPageScreen extends Screen {
         
         // Draw page numbers
         String pageNum = (page / 2 + 1) + " / " + ((maxPages + 1) / 2);
-        graphics.drawCenteredString(font, pageNum, sw + PANE_WIDTH / 2, sh + PANE_HEIGHT + 5, 0x808080);
+        graphics.centeredText(font, pageNum, sw + PANE_WIDTH / 2, sh + PANE_HEIGHT + 5, 0x808080);
         
-        super.render(graphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         
         // Draw tooltip last (on top of everything)
         if (tooltip != null && !tooltip.isEmpty()) {
-            graphics.renderTooltip(font, tooltip, java.util.Optional.empty(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(font, tooltip, java.util.Optional.empty(), mouseX, mouseY);
         }
     }
     
@@ -391,7 +386,7 @@ public class ResearchPageScreen extends Screen {
      * Draw the content of a single page.
      * Returns tooltip to display if hovering over an item.
      */
-    private List<net.minecraft.network.chat.Component> drawPageContent(GuiGraphics graphics, Page page, int x, int y, int mouseX, int mouseY, boolean rightSide) {
+    private List<net.minecraft.network.chat.Component> drawPageContent(GuiGraphicsExtractor graphics, Page page, int x, int y, int mouseX, int mouseY, boolean rightSide) {
         if (page.isRecipePage) {
             return drawRecipe(graphics, x, y, page.recipeId, mouseX, mouseY);
         }
@@ -400,14 +395,14 @@ public class ResearchPageScreen extends Screen {
         int lineY = y;
         for (Object content : page.contents) {
             if (content instanceof String text) {
-                graphics.drawString(font, text, x, lineY, 0x202020, false);
+                graphics.text(font, text, x, lineY, 0x202020, false);
                 lineY += font.lineHeight + 2;
             }
         }
         
         // Mark addendum pages
         if (page.isAddendum) {
-            graphics.drawString(font, "§o[Addendum]", x, y - 12, 0x606060, false);
+            graphics.text(font, "§o[Addendum]", x, y - 12, 0x606060, false);
         }
         
         return null;
@@ -416,9 +411,9 @@ public class ResearchPageScreen extends Screen {
     /**
      * Draw recipe using the RecipeRenderer.
      */
-    private List<net.minecraft.network.chat.Component> drawRecipe(GuiGraphics graphics, int x, int y, Identifier recipeId, int mouseX, int mouseY) {
+    private List<net.minecraft.network.chat.Component> drawRecipe(GuiGraphicsExtractor graphics, int x, int y, Identifier recipeId, int mouseX, int mouseY) {
         if (recipeId == null) {
-            graphics.drawString(font, "No recipe", x + 40, y + 40, 0x808080, false);
+            graphics.text(font, "No recipe", x + 40, y + 40, 0x808080, false);
             return null;
         }
         
@@ -429,44 +424,44 @@ public class ResearchPageScreen extends Screen {
     /**
      * Draw current stage requirements at the bottom of the page.
      */
-    private void drawRequirements(GuiGraphics graphics, int sw, int sh, int mx, int my, ResearchStage stage) {
+    private void drawRequirements(GuiGraphicsExtractor graphics, int sw, int sh, int mx, int my, ResearchStage stage) {
         int y = sh + PANE_HEIGHT - 30;
         int x = sw + 12;
         
         // Draw requirement sections
         if (stage.getResearch() != null && stage.getResearch().length > 0) {
-            graphics.drawString(font, "§7Required Research:", x, y, 0xFFFFFF, false);
+            graphics.text(font, "§7Required Research:", x, y, 0xFFFFFF, false);
             y += 10;
             for (int i = 0; i < stage.getResearch().length; i++) {
                 String reqKey = stage.getResearch()[i];
                 ResearchEntry reqEntry = ResearchCategories.getResearch(reqKey);
                 String reqName = reqEntry != null ? reqEntry.getLocalizedName().getString() : reqKey;
                 String checkmark = (hasResearch != null && hasResearch[i]) ? "§a✓ " : "§c✗ ";
-                graphics.drawString(font, checkmark + reqName, x + 5, y, 0xFFFFFF, false);
+                graphics.text(font, checkmark + reqName, x + 5, y, 0xFFFFFF, false);
                 y += 10;
             }
         }
         
         if (stage.getObtain() != null && stage.getObtain().length > 0) {
-            graphics.drawString(font, "§7Items to Obtain:", x, y, 0xFFFFFF, false);
+            graphics.text(font, "§7Items to Obtain:", x, y, 0xFFFFFF, false);
             y += 10;
             for (int i = 0; i < stage.getObtain().length; i++) {
                 Object o = stage.getObtain()[i];
                 String itemName = o instanceof ItemStack ? ((ItemStack) o).getHoverName().getString() : "Item";
                 String checkmark = (hasItem != null && hasItem[i]) ? "§a✓ " : "§c✗ ";
-                graphics.drawString(font, checkmark + itemName, x + 5, y, 0xFFFFFF, false);
+                graphics.text(font, checkmark + itemName, x + 5, y, 0xFFFFFF, false);
                 y += 10;
             }
         }
         
         if (stage.getKnow() != null && stage.getKnow().length > 0) {
-            graphics.drawString(font, "§7Knowledge Required:", x, y, 0xFFFFFF, false);
+            graphics.text(font, "§7Knowledge Required:", x, y, 0xFFFFFF, false);
             y += 10;
             for (int i = 0; i < stage.getKnow().length; i++) {
                 ResearchStage.Knowledge k = stage.getKnow()[i];
                 String knowName = k.type.name() + (k.category != null ? " (" + k.category.key + ")" : "") + ": " + k.amount;
                 String checkmark = (hasKnow != null && hasKnow[i]) ? "§a✓ " : "§c✗ ";
-                graphics.drawString(font, checkmark + knowName, x + 5, y, 0xFFFFFF, false);
+                graphics.text(font, checkmark + knowName, x + 5, y, 0xFFFFFF, false);
                 y += 10;
             }
         }
@@ -494,7 +489,7 @@ public class ResearchPageScreen extends Screen {
     /**
      * Draw the complete/progress button.
      */
-    private void drawCompleteButton(GuiGraphics graphics, int sw, int sh, int mx, int my) {
+    private void drawCompleteButton(GuiGraphicsExtractor graphics, int sw, int sh, int mx, int my) {
         int buttonX = sw + PANE_WIDTH / 2 - 40;
         int buttonY = sh + PANE_HEIGHT - 15;
         int buttonW = 80;
@@ -506,11 +501,13 @@ public class ResearchPageScreen extends Screen {
         graphics.fill(buttonX, buttonY, buttonX + buttonW, buttonY + buttonH, color);
         
         String text = "Complete Stage";
-        graphics.drawCenteredString(font, text, buttonX + buttonW / 2, buttonY + 2, hover ? 0xFFFFFF : 0xC0C0C0);
+        graphics.centeredText(font, text, buttonX + buttonW / 2, buttonY + 2, hover ? 0xFFFFFF : 0xC0C0C0);
     }
     
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         int sw = (width - PANE_WIDTH) / 2;
         int sh = (height - PANE_HEIGHT) / 2;
         
@@ -543,26 +540,26 @@ public class ResearchPageScreen extends Screen {
             }
         }
         
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
     
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (delta < 0 && page < maxPages - 2) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (scrollY < 0 && page < maxPages - 2) {
             page += 2;
             return true;
-        } else if (delta > 0 && page > 0) {
+        } else if (scrollY > 0 && page > 0) {
             page -= 2;
             if (page < 0) page = 0;
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
     
     @Override
     public void onClose() {
         // Return to research browser at saved position
-        minecraft.setScreen(new ResearchBrowserScreen(returnX, returnY));
+        minecraft.gui.setScreen(new ResearchBrowserScreen(returnX, returnY));
     }
     
     @Override

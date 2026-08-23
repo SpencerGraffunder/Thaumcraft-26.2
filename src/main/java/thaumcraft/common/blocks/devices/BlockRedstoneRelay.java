@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -56,7 +55,7 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
                 .strength(0.0f)
                 .sound(SoundType.WOOD)
                 .noOcclusion()
-                .noCollission());
+                .noCollision());
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(ENABLED, false));
@@ -167,13 +166,13 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
     private void notifyNeighbors(Level level, BlockPos pos, BlockState state) {
         Direction facing = state.getValue(FACING);
         BlockPos outputPos = pos.relative(facing.getOpposite());
-        level.neighborChanged(outputPos, this, pos);
-        level.updateNeighborsAtExceptFromFacing(outputPos, this, facing);
+        level.neighborChanged(outputPos, this, null);
+        level.updateNeighborsAtExceptFromFacing(outputPos, this, facing, null);
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                  BlockHitResult hit) {
         if (!player.getAbilities().mayBuild) {
             return InteractionResult.PASS;
         }
@@ -190,19 +189,19 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
             if (clickedOutput) {
                 if (!level.isClientSide()) {
                     relay.increaseOutput();
-                    level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.5f, 1.0f);
+                    level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
                     updateState(level, pos, state);
                     notifyNeighbors(level, pos, state);
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide());
+                return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
             } else if (clickedInput) {
                 if (!level.isClientSide()) {
                     relay.increaseInput();
-                    level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.5f, 1.0f);
+                    level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
                     updateState(level, pos, state);
                     notifyNeighbors(level, pos, state);
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide());
+                return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
             }
         }
         return InteractionResult.PASS;
@@ -231,13 +230,10 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!isMoving && !state.is(newState.getBlock())) {
-            super.onRemove(state, level, pos, newState, isMoving);
-            if (state.getValue(ENABLED)) {
-                for (Direction dir : Direction.values()) {
-                    level.updateNeighborsAt(pos.relative(dir), this);
-                }
+    public void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean isMoving) {
+        if (state.getValue(ENABLED)) {
+            for (Direction dir : Direction.values()) {
+                level.updateNeighborsAt(pos.relative(dir), this);
             }
         }
     }

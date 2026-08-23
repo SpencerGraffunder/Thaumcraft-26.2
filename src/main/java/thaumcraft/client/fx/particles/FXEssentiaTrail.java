@@ -2,13 +2,13 @@ package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import thaumcraft.client.fx.FXDispatcher;
 
 import java.util.ArrayList;
@@ -205,29 +205,37 @@ public class FXEssentiaTrail extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         if (trailPoints.size() < 3) return;
-        
-        Vec3 camPos = camera.getPosition();
-        Quaternionf rotation = camera.rotation();
-        
+
+        Vec3 camPos = camera.position();
+        Quaternionf rot = camera.rotation();
+
+        // UV from particle sheet
+        float u0 = (PARTICLE_INDEX % 64) / 64.0f;
+        float u1 = u0 + 0.015625f;
+        float v0 = (PARTICLE_INDEX / 64) / 64.0f;
+        float v1 = v0 + 0.015625f;
+
+        int light = 0xF000F0;  // Full brightness
+
         // Render each trail segment as a billboarded quad
         for (int i = 0; i < trailPoints.size(); i++) {
             Vec3 point = trailPoints.get(i);
             float radius = trailRadii.get(i);
-            
+
             // Add wobble animation
             float variance = 1.0f + Mth.sin((i + age) / 3.0f) * 0.2f;
             float wobbleX = Mth.sin((i + age) / 6.0f) * 0.03f;
             float wobbleY = Mth.sin((i + age) / 7.0f) * 0.03f;
             float wobbleZ = Mth.sin((i + age) / 8.0f) * 0.03f;
-            
+
             float px = (float)(startX + point.x + wobbleX - camPos.x());
             float py = (float)(startY + point.y + wobbleY - camPos.y());
             float pz = (float)(startZ + point.z + wobbleZ - camPos.z());
-            
+
             float size = radius * variance;
-            
+
             // Taper ends
             if (i > trailPoints.size() - 10) {
                 size *= Mth.cos((float)((i - (trailPoints.size() - 12)) / 10.0f * Math.PI / 2.0));
@@ -235,51 +243,16 @@ public class FXEssentiaTrail extends ThaumcraftParticle {
             if (i < 5) {
                 size *= i / 5.0f;
             }
-            
+
             if (size < 0.001f) continue;
-            
-            // Billboard quad
-            Vector3f[] vertices = new Vector3f[] {
-                new Vector3f(-1.0f, -1.0f, 0.0f),
-                new Vector3f(-1.0f, 1.0f, 0.0f),
-                new Vector3f(1.0f, 1.0f, 0.0f),
-                new Vector3f(1.0f, -1.0f, 0.0f)
-            };
-            
-            for (Vector3f vertex : vertices) {
-                vertex.rotate(rotation);
-                vertex.mul(size * 0.1f);
-                vertex.add(px, py, pz);
-            }
-            
-            // UV from particle sheet
-            float u0 = (PARTICLE_INDEX % 64) / 64.0f;
-            float u1 = u0 + 0.015625f;
-            float v0 = (PARTICLE_INDEX / 64) / 64.0f;
-            float v1 = v0 + 0.015625f;
-            
+
             // Color variation along stream
             float colorVar = 1.0f - Mth.sin((i + age) / 2.0f) * 0.1f;
-            
-            int light = 0xF000F0;  // Full brightness
-            
-            buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                    .uv(u1, v1).color(rCol * colorVar, gCol * colorVar, bCol * colorVar, 1.0f)
-                    .uv2(light).endVertex();
-            buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                    .uv(u1, v0).color(rCol * colorVar, gCol * colorVar, bCol * colorVar, 1.0f)
-                    .uv2(light).endVertex();
-            buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                    .uv(u0, v0).color(rCol * colorVar, gCol * colorVar, bCol * colorVar, 1.0f)
-                    .uv2(light).endVertex();
-            buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                    .uv(u0, v1).color(rCol * colorVar, gCol * colorVar, bCol * colorVar, 1.0f)
-                    .uv2(light).endVertex();
+            int color = ARGB.colorFromFloat(1.0f, rCol * colorVar, gCol * colorVar, bCol * colorVar);
+
+            // Billboard quad (half-extent preserved from original size * 0.1)
+            state.add(getLayer(), px, py, pz, rot.x, rot.y, rot.z, rot.w, size * 0.1f,
+                    u0, u1, v0, v1, color, light);
         }
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_LIT;
     }
 }

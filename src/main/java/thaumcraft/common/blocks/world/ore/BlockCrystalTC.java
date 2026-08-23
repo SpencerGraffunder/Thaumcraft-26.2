@@ -10,8 +10,8 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -58,7 +58,7 @@ public class BlockCrystalTC extends Block {
                 .sound(SoundType.GLASS)
                 .lightLevel(state -> 1)
                 .noOcclusion()
-                .noCollission()
+                .noCollision()
                 .randomTicks());
         this.aspect = aspect;
         this.registerDefaultState(this.stateDefinition.any()
@@ -121,12 +121,12 @@ public class BlockCrystalTC extends Block {
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
-                                   LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+                                   BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
         if (!canSurvive(state, level, pos)) {
             return Blocks.AIR.defaultBlockState();
         }
-        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+        return super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
     }
 
     @Override
@@ -253,14 +253,14 @@ public class BlockCrystalTC extends Block {
         List<ItemStack> drops = new ArrayList<>();
         
         ItemStack tool = builder.getOptionalParameter(LootContextParams.TOOL);
-        boolean silkTouch = tool != null && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, tool) > 0;
+        boolean silkTouch = tool != null && getEnchantmentLevel(builder.getLevel(), Enchantments.SILK_TOUCH, tool) > 0;
         
         if (silkTouch) {
             // Silk touch - drop the block itself
             drops.add(new ItemStack(this));
         } else {
             // Normal drop - vis crystals based on block's aspect
-            int fortune = tool != null ? EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool) : 0;
+            int fortune = tool != null ? getEnchantmentLevel(builder.getLevel(), Enchantments.FORTUNE, tool) : 0;
             int baseCount = 1 + state.getValue(SIZE);
             int count = baseCount + (fortune > 0 ? builder.getLevel().getRandom().nextInt(fortune + 1) : 0);
             
@@ -287,5 +287,16 @@ public class BlockCrystalTC extends Block {
         // Flux crystals don't drop vis crystals - they might drop flux_crystal item
         if (aspect == Aspect.FLUX) return ModItems.FLUX_CRYSTAL.get();
         return null;
+    }
+
+    /**
+     * Get the gameplay level of an enchantment on a tool.
+     */
+    private static int getEnchantmentLevel(net.minecraft.server.level.ServerLevel level,
+                                           net.minecraft.resources.ResourceKey<net.minecraft.world.item.enchantment.Enchantment> enchantment,
+                                           ItemStack tool) {
+        net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment> holder =
+                level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(enchantment);
+        return tool.getEnchantments().getLevel(holder);
     }
 }

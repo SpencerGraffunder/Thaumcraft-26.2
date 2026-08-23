@@ -2,6 +2,7 @@ package thaumcraft.common.menu;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -14,7 +15,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import thaumcraft.api.golems.GolemHelper;
 import thaumcraft.api.golems.seals.ISealEntity;
@@ -142,7 +143,7 @@ public class LogisticsMenu extends AbstractContainerMenu {
                             // Create unique key for item type
                             String key = stack.getHoverName().getString() + 
                                         "_" + stack.getDamageValue() + 
-                                        "_" + (stack.hasTag() ? stack.getTag().hashCode() : 0);
+                                        "_" + (stack.has(DataComponents.CUSTOM_DATA) ? stack.get(DataComponents.CUSTOM_DATA).hashCode() : 0);
                             
                             if (tempItems.containsKey(key)) {
                                 ItemStack existing = tempItems.get(key);
@@ -188,9 +189,9 @@ public class LogisticsMenu extends AbstractContainerMenu {
     private IItemHandler getItemHandler(Level level, BlockPos pos, Direction face) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
-            var cap = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, face);
-            if (cap.isPresent()) {
-                return cap.orElse(null);
+            var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, face);
+            if (handler != null) {
+                return IItemHandler.of(handler);
             }
         }
         return null;
@@ -288,7 +289,7 @@ public class LogisticsMenu extends AbstractContainerMenu {
                 
                 for (int slot = 0; slot < handler.getSlots(); slot++) {
                     ItemStack slotStack = handler.getStackInSlot(slot);
-                    if (ItemStack.isSameItemSameTags(slotStack, stack)) {
+                    if (ItemStack.isSameItemSameComponents(slotStack, stack)) {
                         // Create provision request to deliver to player
                         GolemHelper.requestProvisioning(
                             level, 

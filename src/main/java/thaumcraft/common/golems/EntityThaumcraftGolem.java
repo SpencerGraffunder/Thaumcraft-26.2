@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -87,6 +89,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     private boolean firstRun = true;
     protected Task task = null;
     protected int taskID = Integer.MAX_VALUE;
+    private int homeRange = 32;
 
     public EntityThaumcraftGolem(EntityType<? extends EntityThaumcraftGolem> type, Level level) {
         super(type, level);
@@ -122,7 +125,8 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         ByteBuffer bb = ByteBuffer.allocate(8);
         bb.putInt(this.entityData.get(DATA_PROPS1));
         bb.putInt(this.entityData.get(DATA_PROPS2));
-        return GolemProperties.fromLong(bb.getLongOr(0, 0L));
+        bb.rewind();
+        return GolemProperties.fromLong(bb.getLong());
     }
 
     @Override
@@ -171,11 +175,13 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         getAttribute(Attributes.MAX_HEALTH).setBaseValue(maxHealth);
         
         // Step height
-        this.setMaxUpStep(props.hasTrait(EnumGolemTrait.WHEELED) ? 0.5f : 0.6f);
+        if (getAttribute(Attributes.STEP_HEIGHT) != null) {
+            getAttribute(Attributes.STEP_HEIGHT).setBaseValue(props.hasTrait(EnumGolemTrait.WHEELED) ? 0.5f : 0.6f);
+        }
         
         // Home distance
-        int homeRange = props.hasTrait(EnumGolemTrait.SCOUT) ? 48 : 32;
-        restrictTo(getRestrictCenter().equals(BlockPos.ZERO) ? blockPosition() : getRestrictCenter(), homeRange);
+        homeRange = props.hasTrait(EnumGolemTrait.SCOUT) ? 48 : 32;
+        setHomeTo(getHomePosition().equals(BlockPos.ZERO) ? blockPosition() : getHomePosition(), homeRange);
         
         // Follow range
         double followRange = props.hasTrait(EnumGolemTrait.SCOUT) ? 56.0 : 40.0;
@@ -273,7 +279,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         if (!level().isClientSide()) {
             if (firstRun) {
                 firstRun = false;
-                if (hasRestriction() && !blockPosition().equals(getRestrictCenter())) {
+                if (hasHome() && !blockPosition().equals(getHomePosition())) {
                     teleportToHome();
                 }
             }
@@ -362,7 +368,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     }
 
     @Override
-    public boolean causeFallDamage(float distance, float multiplier, DamageSource source) {
+    public boolean causeFallDamage(double distance, float multiplier, DamageSource source) {
         if (getProperties().hasTrait(EnumGolemTrait.FLYER) || getProperties().hasTrait(EnumGolemTrait.CLIMBER)) {
             return false;
         }
@@ -370,9 +376,9 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     }
 
     private void teleportToHome() {
-        if (!hasRestriction()) return;
+        if (!hasHome()) return;
         
-        BlockPos home = getRestrictCenter();
+        BlockPos home = getHomePosition();
         double oldX = getX();
         double oldY = getY();
         double oldZ = getZ();
@@ -381,7 +387,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         
         // Find valid position above
         BlockPos checkPos = blockPosition();
-        while (checkPos.getY() < level().getMaxBuildHeight()) {
+        while (checkPos.getY() < level().getMaxY()) {
             if (level().getBlockState(checkPos.above()).blocksMotion()) {
                 break;
             }
@@ -397,10 +403,17 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         }
     }
 
+    /**
+     * Check if a position is within the golem's home restriction range.
+     */
+    public boolean isWithinRestriction(BlockPos pos) {
+        return hasHome() && getHomePosition().closerThan(pos, homeRange);
+    }
+
     // ==================== Damage ====================
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE) && getProperties().hasTrait(EnumGolemTrait.FIREPROOF)) {
             return false;
         }
@@ -410,10 +423,10 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         if (source == damageSources().cactus()) {
             return false;
         }
-        if (hasRestriction() && (source == damageSources().inWall() || source == damageSources().fellOutOfWorld())) {
+        if (hasHome() && (source == damageSources().inWall() || source == damageSources().fellOutOfWorld())) {
             teleportToHome();
         }
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
 
     @Override
@@ -436,7 +449,6 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         setInCombat(getTarget() != null);
     }
 
-    @Override
     public boolean isInCombat() {
         return (getFlags() & FLAG_COMBAT) != 0;
     }
@@ -455,14 +467,11 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     public boolean doHurtTarget(ServerLevel level, Entity target) {
         float damage = (float) getAttribute(Attributes.ATTACK_DAMAGE).getValue();
         
-        boolean hit = target.hurt(damageSources().mobAttack(this), damage);
+        boolean hit = target.hurtServer(level, damageSources().mobAttack(this), damage);
         if (hit) {
             if (target instanceof LivingEntity living && getProperties().hasTrait(EnumGolemTrait.DEFT)) {
                 living.setLastHurtByMob(this);
             }
-            
-            // Apply enchantments
-            doEnchantDamageEffects(this, target);
             
             // Call arm function
             if (getProperties().getArms().function != null) {
@@ -572,7 +581,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
                 return ItemStack.EMPTY;
             }
             
-            if (ItemStack.isSameItemSameTags(current, stack) && current.getCount() < current.getMaxStackSize()) {
+            if (ItemStack.isSameItemSameComponents(current, stack) && current.getCount() < current.getMaxStackSize()) {
                 int space = current.getMaxStackSize() - current.getCount();
                 int toAdd = Math.min(stack.getCount(), space);
                 current.grow(toAdd);
@@ -599,7 +608,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
                     result = current.copy();
                     setItemSlot(slot, ItemStack.EMPTY);
                     break;
-                } else if (ItemStack.isSameItemSameTags(current, stack)) {
+                } else if (ItemStack.isSameItemSameComponents(current, stack)) {
                     int toDrop = Math.min(stack.getCount(), current.getCount());
                     result = current.copy();
                     result.setCount(toDrop);
@@ -634,7 +643,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
             ItemStack current = getItemBySlot(EquipmentSlot.values()[i]);
             if (current.isEmpty()) {
                 total += stack.getMaxStackSize();
-            } else if (ItemStack.isSameItemSameTags(current, stack)) {
+            } else if (ItemStack.isSameItemSameComponents(current, stack)) {
                 total += stack.getMaxStackSize() - current.getCount();
             }
         }
@@ -657,7 +666,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         int slots = getProperties().hasTrait(EnumGolemTrait.HAULER) ? 2 : 1;
         for (int i = 0; i < slots; i++) {
             ItemStack current = getItemBySlot(EquipmentSlot.values()[i]);
-            if (!current.isEmpty() && ItemStack.isSameItemSameTags(current, stack)) {
+            if (!current.isEmpty() && ItemStack.isSameItemSameComponents(current, stack)) {
                 return true;
             }
         }
@@ -717,8 +726,10 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
                 
                 // Create golem placer item with saved data
                 ItemStack placer = new ItemStack(ModItems.GOLEM_PLACER.get());
-                placer.getOrCreateTag().putLong("props", getProperties().toLong());
-                placer.getTag().putInt("xp", rankXp);
+                CompoundTag placerTag = placer.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+                placerTag.putLong("props", getProperties().toLong());
+                placerTag.putInt("xp", rankXp);
+                CustomData.set(DataComponents.CUSTOM_DATA, placer, placerTag);
                 spawnAtLocation((ServerLevel) this.level(), placer, 0.5f);
                 
                 discard();
@@ -727,8 +738,8 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
             }
             
             // Dye coloring
-            if (heldItem.getItem() instanceof DyeItem dyeItem) {
-                DyeColor color = dyeItem.getDyeColor();
+            if (heldItem.getItem() instanceof DyeItem) {
+                DyeColor color = heldItem.get(DataComponents.DYE);
                 setGolemColor((byte) (16 - color.getId()));
                 heldItem.shrink(1);
                 playSound(ModSounds.ZAP.get(), 1.0f, 1.5f);
@@ -797,7 +808,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     public void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
         output.putLong("props", getProperties().toLong());
-        output.putLong("homepos", getRestrictCenter().asLong());
+        output.putLong("homepos", getHomePosition().asLong());
         output.putByte("gflags", getFlags());
         output.putInt("rankXP", rankXp);
         output.putByte("color", getGolemColor());
@@ -807,7 +818,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         setProperties(GolemProperties.fromLong(input.getLongOr("props", 0L)));
-        restrictTo(BlockPos.of(input.getLongOr("homepos", 0L)), 32);
+        setHomeTo(BlockPos.of(input.getLongOr("homepos", 0L)), 32);
         setFlags(input.getByteOr("gflags", (byte)0));
         rankXp = input.getIntOr("rankXP", 0);
         setGolemColor(input.getByteOr("color", (byte)0));
@@ -815,11 +826,6 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     }
 
     // ==================== Properties ====================
-
-    @Override
-    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
-        return 0.7f;
-    }
 
     // ==================== Inner Classes ====================
 

@@ -1,13 +1,15 @@
 package thaumcraft.client.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -67,7 +69,7 @@ public class ImageButton extends AbstractWidget {
     }
     
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         Font font = Minecraft.getInstance().font;
         
         // Calculate hover state
@@ -87,22 +89,11 @@ public class ImageButton extends AbstractWidget {
             alpha = 0.9f;
         }
         
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(
-            brightness * (c.getRed() / 255.0f),
-            brightness * (c.getGreen() / 255.0f),
-            brightness * (c.getBlue() / 255.0f),
-            alpha
-        );
-        
         // Draw centered on position
         int drawX = getX() - texWidth / 2;
         int drawY = getY() - texHeight / 2;
-        graphics.blit(texture, drawX, drawY, texX, texY, texWidth, texHeight);
-        
-        // Reset color
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, drawX, drawY, texX, texY, texWidth, texHeight, 256, 256,
+                ARGB.colorFromFloat(alpha, brightness * (c.getRed() / 255.0f), brightness * (c.getGreen() / 255.0f), brightness * (c.getBlue() / 255.0f)));
         
         // Draw text if present
         String text = getMessage().getString();
@@ -114,11 +105,11 @@ public class ImageButton extends AbstractWidget {
                 textColor = 0xFFFFA0;
             }
             
-            graphics.pose().pushPose();
-            graphics.pose().translate(getX(), getY(), 0);
-            graphics.pose().scale(0.5f, 0.5f, 1.0f);
-            graphics.drawCenteredString(font, Component.translatable(text), 0, -4, textColor);
-            graphics.pose().popPose();
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(getX(), getY());
+            graphics.pose().scale(0.5f);
+            graphics.centeredText(font, Component.translatable(text), 0, -4, textColor);
+            graphics.pose().popMatrix();
         }
     }
     
@@ -130,8 +121,8 @@ public class ImageButton extends AbstractWidget {
     }
     
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (buttonActive && active && visible && isMouseOver(mouseX, mouseY)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (buttonActive && active && visible && isMouseOver(event.x(), event.y())) {
             if (onPress != null) {
                 onPress.accept(this);
             }

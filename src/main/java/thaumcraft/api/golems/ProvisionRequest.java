@@ -2,8 +2,10 @@ package thaumcraft.api.golems;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import thaumcraft.api.golems.seals.ISealEntity;
 import thaumcraft.api.golems.tasks.Task;
 
@@ -31,7 +33,7 @@ public class ProvisionRequest {
         this.seal = seal;
         this.stack = stack.copy();
         String s = seal.getSealPos().pos.toString() + seal.getSealPos().face.name() + stack.toString();
-        if (stack.hasTag()) s += stack.getTag().toString();
+        if (stack.has(DataComponents.CUSTOM_DATA)) s += stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().toString();
         id = s.hashCode();
         timeout = System.currentTimeMillis() + 10000;
     }
@@ -44,7 +46,7 @@ public class ProvisionRequest {
         this.side = side;
         this.stack = stack.copy();
         String s = pos.toString() + side.name() + stack.toString();
-        if (stack.hasTag()) s += stack.getTag().toString();
+        if (stack.has(DataComponents.CUSTOM_DATA)) s += stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().toString();
         id = s.hashCode();
         timeout = System.currentTimeMillis() + 10000;
     }
@@ -56,7 +58,7 @@ public class ProvisionRequest {
         this.entity = entity;
         this.stack = stack.copy();
         String s = entity.getId() + stack.toString();
-        if (stack.hasTag()) s += stack.getTag().toString();
+        if (stack.has(DataComponents.CUSTOM_DATA)) s += stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().toString();
         id = s.hashCode();
         timeout = System.currentTimeMillis() + 10000;
     }
@@ -142,7 +144,7 @@ public class ProvisionRequest {
         if (first.getCount() != other.getCount()) return false;
         if (first.getItem() != other.getItem()) return false;
         if (first.getDamageValue() != other.getDamageValue()) return false;
-        if (first.getTag() == null && other.getTag() != null) return false;
-        return first.getTag() == null || first.getTag().equals(other.getTag());
+        if (first.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag() == null && other.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag() != null) return false;
+        return first.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag() == null || first.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().equals(other.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag());
     }
 }

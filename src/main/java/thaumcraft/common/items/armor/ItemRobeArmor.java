@@ -1,13 +1,14 @@
 package thaumcraft.common.items.armor;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.equipment.ArmorMaterial;
-import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +28,7 @@ import javax.annotation.Nullable;
  * Thaumaturge's Robe Armor - Cloth armor that provides vis discounts.
  * Can be dyed like leather armor.
  */
-public class ItemRobeArmor extends Item implements IVisDiscountGear, DyeableLeatherItem {
+public class ItemRobeArmor extends Item implements IVisDiscountGear {
     
     // Default robe color (brown-ish purple)
     private static final int DEFAULT_COLOR = 0x6A4C00;
@@ -53,51 +54,39 @@ public class ItemRobeArmor extends Item implements IVisDiscountGear, DyeableLeat
     @Override
     public int getVisDiscount(ItemStack stack, Player player) {
         // Boots give 2%, other pieces give 3%
-        return this.getType() == ArmorType.BOOTS ? 2 : 3;
+        return getArmorType(stack) == ArmorType.BOOTS ? 2 : 3;
     }
     
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.ENCHANTED_FABRIC.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        // Use layer 1 for chest/boots, layer 2 for legs
-        if (slot == EquipmentSlot.LEGS) {
-            return type == null ? "thaumcraft:textures/entity/armor/robes_2.png" 
-                               : "thaumcraft:textures/entity/armor/robes_2_overlay.png";
+    private static ArmorType getArmorType(ItemStack stack) {
+        net.minecraft.world.item.equipment.Equippable equippable = stack.getOrDefault(DataComponents.EQUIPPABLE, null);
+        if (equippable == null) {
+            return null;
         }
-        return type == null ? "thaumcraft:textures/entity/armor/robes_1.png" 
-                           : "thaumcraft:textures/entity/armor/robes_1_overlay.png";
+        return switch (equippable.slot()) {
+            case HEAD -> ArmorType.HELMET;
+            case CHEST -> ArmorType.CHESTPLATE;
+            case LEGS -> ArmorType.LEGGINGS;
+            case FEET -> ArmorType.BOOTS;
+            default -> null;
+        };
     }
     
     // ==================== Dyeable Implementation ====================
     
-    @Override
     public int getColor(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement("display");
-        return tag != null && tag.contains("color") ? tag.getIntOr("color", 0) : DEFAULT_COLOR;
+        return DyedItemColor.getOrDefault(stack, DEFAULT_COLOR);
     }
     
-    @Override
     public boolean hasCustomColor(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement("display");
-        return tag != null && tag.contains("color");
+        return stack.has(DataComponents.DYED_COLOR);
     }
     
-    @Override
     public void clearColor(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement("display");
-        if (tag != null && tag.contains("color")) {
-            tag.remove("color");
-        }
+        stack.remove(DataComponents.DYED_COLOR);
     }
     
-    @Override
     public void setColor(ItemStack stack, int color) {
-        stack.getOrCreateTagElement("display").putInt("color", color);
+        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
     }
     
     /**
@@ -118,7 +107,7 @@ public class ItemRobeArmor extends Item implements IVisDiscountGear, DyeableLeat
                     // Decrease water level
                     LayeredCauldronBlock.lowerFillLevel(state, level, pos);
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide());
+                return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
             }
         }
         

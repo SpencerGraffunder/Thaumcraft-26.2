@@ -11,6 +11,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.crafting.IArcaneRecipe;
@@ -72,12 +73,16 @@ public class ThaumcraftJEIPlugin implements IModPlugin {
             return;
         }
         
-        RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.level.getServer() == null) {
+            return;
+        }
+        RecipeManager recipeManager = mc.level.getServer().getRecipeManager();
 
         // Get all arcane recipes (both shaped and shapeless use same recipe type)
-        List<IArcaneRecipe> arcaneRecipes = recipeManager
-                .getAllRecipesFor(ModRecipeTypes.ARCANE_WORKBENCH.get())
+        List<IArcaneRecipe> arcaneRecipes = recipeManager.recipeMap().byType(ModRecipeTypes.ARCANE_WORKBENCH.get())
                 .stream()
+                .map(RecipeHolder::value)
                 .filter(r -> r instanceof IArcaneRecipe)
                 .map(r -> (IArcaneRecipe) r)
                 .toList();
@@ -85,9 +90,9 @@ public class ThaumcraftJEIPlugin implements IModPlugin {
         registration.addRecipes(ARCANE_TYPE, arcaneRecipes);
 
         // Get all crucible recipes
-        List<CrucibleRecipeType> crucibleRecipes = recipeManager
-                .getAllRecipesFor(ModRecipeTypes.CRUCIBLE.get())
+        List<CrucibleRecipeType> crucibleRecipes = recipeManager.recipeMap().byType(ModRecipeTypes.CRUCIBLE.get())
                 .stream()
+                .map(RecipeHolder::value)
                 .filter(r -> r instanceof CrucibleRecipeType)
                 .map(r -> (CrucibleRecipeType) r)
                 .toList();
@@ -95,9 +100,9 @@ public class ThaumcraftJEIPlugin implements IModPlugin {
         registration.addRecipes(CRUCIBLE_TYPE, crucibleRecipes);
 
         // Get all infusion recipes
-        List<InfusionRecipeType> infusionRecipes = recipeManager
-                .getAllRecipesFor(ModRecipeTypes.INFUSION.get())
+        List<InfusionRecipeType> infusionRecipes = recipeManager.recipeMap().byType(ModRecipeTypes.INFUSION.get())
                 .stream()
+                .map(RecipeHolder::value)
                 .filter(r -> r instanceof InfusionRecipeType)
                 .map(r -> (InfusionRecipeType) r)
                 .toList();

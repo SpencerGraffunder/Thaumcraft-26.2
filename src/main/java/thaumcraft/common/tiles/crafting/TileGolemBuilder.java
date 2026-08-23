@@ -1,6 +1,7 @@
 package thaumcraft.common.tiles.crafting;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -129,7 +131,7 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
         
         if (!output.isEmpty()) {
             if (output.getCount() >= output.getMaxStackSize()) return false;
-            if (!ItemStack.isSameItemSameTags(output, result)) return false;
+            if (!ItemStack.isSameItemSameComponents(output, result)) return false;
         }
         
         // Calculate crafting cost based on traits and components
@@ -160,7 +162,7 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
         ItemStack output = getItem(0);
         if (output.isEmpty()) {
             setItem(0, result);
-        } else if (ItemStack.isSameItemSameTags(output, result) && output.getCount() < output.getMaxStackSize()) {
+        } else if (ItemStack.isSameItemSameComponents(output, result) && output.getCount() < output.getMaxStackSize()) {
             output.grow(1);
         }
         
@@ -180,7 +182,9 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
     
     private ItemStack createGolemStack(IGolemProperties props) {
         ItemStack stack = new ItemStack(ModItems.GOLEM_PLACER.get());
-        stack.getOrCreateTag().putLong("props", props.toLong());
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.putLong("props", props.toLong());
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
         return stack;
     }
     
@@ -372,8 +376,8 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
     
     // ==================== Rendering ====================
     
-    @Override
     public AABB getRenderBoundingBox() {
-        return new AABB(worldPosition.offset(-1, 0, -1), worldPosition.offset(2, 2, 2));
+        return new AABB(worldPosition.getX() - 1, worldPosition.getY(), worldPosition.getZ() - 1,
+                worldPosition.getX() + 2, worldPosition.getY() + 2, worldPosition.getZ() + 2);
     }
 }

@@ -1,27 +1,28 @@
 package thaumcraft.common.lib.crafting;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.IThaumcraftRecipe;
 import thaumcraft.init.ModRecipeTypes;
 
-import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * CrucibleRecipeType - A Recipe implementation for crucible alchemy.
@@ -34,18 +35,16 @@ import javax.annotation.Nullable;
  * The catalyst is consumed and the aspects are removed from the crucible
  * to produce the output item.
  */
-public class CrucibleRecipeType implements Recipe<Container>, IThaumcraftRecipe {
+public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecipe {
     
-    private final Identifier id;
     private final String group;
     private final Ingredient catalyst;
     private final AspectList aspects;
     private final ItemStack result;
     private final String research;
     
-    public CrucibleRecipeType(Identifier id, String group, Ingredient catalyst,
+    public CrucibleRecipeType(String group, Ingredient catalyst,
                               AspectList aspects, ItemStack result, String research) {
-        this.id = id;
         this.group = group;
         this.catalyst = catalyst;
         this.aspects = aspects;
@@ -58,7 +57,7 @@ public class CrucibleRecipeType implements Recipe<Container>, IThaumcraftRecipe 
      * since they don't use a standard crafting grid.
      */
     @Override
-    public boolean matches(Container container, Level level) {
+    public boolean matches(RecipeInput input, Level level) {
         // Crucible matching is handled differently - via matchesCrucible()
         return false;
     }
@@ -102,18 +101,8 @@ public class CrucibleRecipeType implements Recipe<Container>, IThaumcraftRecipe 
     }
     
     @Override
-    public ItemStack assemble(Container container, RegistryAccess registryAccess) {
+    public ItemStack assemble(RecipeInput input) {
         return result.copy();
-    }
-    
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return true; // Crucible doesn't use dimensions
-    }
-    
-    @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
-        return result;
     }
     
     public ItemStack getResultItem() {
@@ -121,28 +110,41 @@ public class CrucibleRecipeType implements Recipe<Container>, IThaumcraftRecipe 
     }
     
     @Override
-    public Identifier getId() {
-        return id;
+    public RecipeSerializer<? extends Recipe<RecipeInput>> getSerializer() {
+        return SERIALIZER;
     }
     
     @Override
-    public RecipeSerializer<?> getSerializer() {
-        return Serializer.INSTANCE;
-    }
-    
-    @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends Recipe<RecipeInput>> getType() {
         return ModRecipeTypes.CRUCIBLE.get();
     }
     
     @Override
-    public NonNullList<Ingredient> getIngredients() {
-        return NonNullList.of(Ingredient.EMPTY, catalyst);
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
     }
     
     @Override
+    public RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+    
+    @Override
+    public boolean showNotification() {
+        return true;
+    }
+    
+    @Override
+    public String group() {
+        return group;
+    }
+    
     public String getGroup() {
         return group;
+    }
+    
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(Ingredient.of(), catalyst);
     }
     
     @Override
@@ -158,81 +160,88 @@ public class CrucibleRecipeType implements Recipe<Container>, IThaumcraftRecipe 
         return aspects;
     }
     
-    /**
-     * Serializer for CrucibleRecipeType.
-     */
-    public static class Serializer implements RecipeSerializer<CrucibleRecipeType> {
-        
-        public static final Serializer INSTANCE = new Serializer();
-        public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "crucible");
-        
-        @Override
-        public CrucibleRecipeType fromJson(Identifier recipeId, JsonObject json) {
-            String group = GsonHelper.getAsString(json, "group", "");
-            String research = GsonHelper.getAsString(json, "research", "");
-            
-            // Parse catalyst (accept both "catalyst" and "ingredient" for compatibility)
-            JsonElement catalystJson = json.has("catalyst") ? json.get("catalyst") : json.get("ingredient");
-            Ingredient catalyst = catalystJson != null ? Ingredient.fromJson(catalystJson, false) : Ingredient.EMPTY;
-            
-            // Parse aspects
-            AspectList aspects = new AspectList();
-            if (json.has("aspects")) {
-                JsonObject aspectsJson = GsonHelper.getAsJsonObject(json, "aspects");
-                for (String aspectName : aspectsJson.keySet()) {
-                    Aspect aspect = Aspect.getAspect(aspectName);
-                    if (aspect != null) {
-                        aspects.add(aspect, aspectsJson.get(aspectName).getAsInt());
-                    }
+    /** Codec for an AspectList stored as { "aspectTag": amount, ... }. */
+    private static final Codec<AspectList> ASPECTS_CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT)
+            .xmap(map -> {
+                AspectList list = new AspectList();
+                map.forEach((name, amount) -> {
+                    Aspect aspect = Aspect.getAspect(name);
+                    if (aspect != null) list.add(aspect, amount);
+                });
+                return list;
+            }, list -> {
+                Map<String, Integer> map = new HashMap<>();
+                for (Aspect aspect : list.getAspects()) {
+                    map.put(aspect.getTag(), list.getAmount(aspect));
                 }
-            }
-            
-            // Parse result
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            
-            return new CrucibleRecipeType(recipeId, group, catalyst, aspects, result, research);
-        }
-        
+                return map;
+            });
+    
+    public static final MapCodec<CrucibleRecipeType> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
+            Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research),
+            Ingredient.CODEC.optionalFieldOf("catalyst", Ingredient.of()).forGetter(r -> r.catalyst),
+            Ingredient.CODEC.optionalFieldOf("ingredient", Ingredient.of()).forGetter(r -> r.catalyst),
+            ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.aspects),
+            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result)
+    ).apply(i, CrucibleRecipeType::create));
+    
+    public static final StreamCodec<RegistryFriendlyByteBuf, CrucibleRecipeType> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public @Nullable CrucibleRecipeType fromNetwork(Identifier recipeId, FriendlyByteBuf buffer) {
+        public CrucibleRecipeType decode(RegistryFriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             String research = buffer.readUtf();
             
-            Ingredient catalyst = Ingredient.fromNetwork(buffer);
+            Ingredient catalyst = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
             
-            // Read aspects
-            AspectList aspects = new AspectList();
-            int aspectCount = buffer.readVarInt();
-            for (int i = 0; i < aspectCount; i++) {
-                String aspectName = buffer.readUtf();
-                int amount = buffer.readVarInt();
-                Aspect aspect = Aspect.getAspect(aspectName);
-                if (aspect != null) {
-                    aspects.add(aspect, amount);
-                }
-            }
+            AspectList aspects = readAspects(buffer);
             
-            ItemStack result = buffer.readItem();
+            ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
             
-            return new CrucibleRecipeType(recipeId, group, catalyst, aspects, result, research);
+            return new CrucibleRecipeType(group, catalyst, aspects, result, research);
         }
         
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, CrucibleRecipeType recipe) {
+        public void encode(RegistryFriendlyByteBuf buffer, CrucibleRecipeType recipe) {
             buffer.writeUtf(recipe.group);
             buffer.writeUtf(recipe.research);
             
-            recipe.catalyst.toNetwork(buffer);
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.catalyst);
             
-            // Write aspects
-            Aspect[] aspectArray = recipe.aspects.getAspects();
-            buffer.writeVarInt(aspectArray.length);
-            for (Aspect aspect : aspectArray) {
-                buffer.writeUtf(aspect.getTag());
-                buffer.writeVarInt(recipe.aspects.getAmount(aspect));
+            writeAspects(buffer, recipe.aspects);
+            
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+        }
+    };
+    
+    public static final RecipeSerializer<CrucibleRecipeType> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+    
+    private static CrucibleRecipeType create(String group, String research,
+                                             Ingredient catalyst, Ingredient ingredient,
+                                             AspectList aspects, ItemStack result) {
+        return new CrucibleRecipeType(group, !catalyst.isEmpty() ? catalyst : ingredient, aspects, result, research);
+    }
+    
+    private static AspectList readAspects(RegistryFriendlyByteBuf buffer) {
+        AspectList aspects = new AspectList();
+        int aspectCount = buffer.readVarInt();
+        for (int i = 0; i < aspectCount; i++) {
+            String aspectName = buffer.readUtf();
+            int amount = buffer.readVarInt();
+            Aspect aspect = Aspect.getAspect(aspectName);
+            if (aspect != null) {
+                aspects.add(aspect, amount);
             }
-            
-            buffer.writeItem(recipe.result);
+        }
+        return aspects;
+    }
+    
+    private static void writeAspects(RegistryFriendlyByteBuf buffer, AspectList aspects) {
+        Aspect[] aspectArray = aspects.getAspects();
+        buffer.writeVarInt(aspectArray.length);
+        for (Aspect aspect : aspectArray) {
+            buffer.writeUtf(aspect.getTag());
+            buffer.writeVarInt(aspects.getAmount(aspect));
         }
     }
 }

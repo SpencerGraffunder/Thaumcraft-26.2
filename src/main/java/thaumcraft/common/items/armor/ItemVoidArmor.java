@@ -44,33 +44,20 @@ public class ItemVoidArmor extends Item implements IWarpingGear {
     }
     
     @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.VOID_METAL_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         super.inventoryTick(stack, level, entity, slot);
         // Self-repair: repair 1 durability every second (20 ticks) while worn
         if (stack.isDamaged() && entity != null && entity.tickCount % 20 == 0 && entity instanceof LivingEntity living) {
             // Only repair if actually worn
-            for (ItemStack armorPiece : living.getArmorSlots()) {
-                if (armorPiece == stack) {
+            for (net.minecraft.world.entity.EquipmentSlot s : new net.minecraft.world.entity.EquipmentSlot[]{
+                    net.minecraft.world.entity.EquipmentSlot.FEET, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                    net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.HEAD}) {
+                if (living.getItemBySlot(s) == stack) {
                     stack.setDamageValue(stack.getDamageValue() - 1);
                     break;
                 }
             }
         }
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        // Use layer 1 for helmet/chest/boots, layer 2 for legs
-        if (slot == EquipmentSlot.LEGS) {
-            return "thaumcraft:textures/entity/armor/void_2.png";
-        }
-        return "thaumcraft:textures/entity/armor/void_1.png";
     }
     
     @Override

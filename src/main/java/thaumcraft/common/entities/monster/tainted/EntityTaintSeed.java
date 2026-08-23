@@ -101,11 +101,11 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
     }
     
     @Override
-    public boolean isAlliedTo(Entity entity) {
+    protected boolean considersEntityAsAlly(Entity entity) {
         if (entity instanceof ITaintedMob) {
             return true;
         }
-        return super.isAlliedTo(entity);
+        return super.considersEntityAsAlly(entity);
     }
     
     @Override
@@ -146,7 +146,7 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
                     
                     if (mod <= 0.0f) {
                         // Starve without flux
-                        hurt(damageSources().starve(), 0.5f);
+                        hurtServer((ServerLevel) level(), damageSources().starve(), 0.5f);
                         // Add small amount of flux
                     } else {
                         // Spread taint fibers
@@ -204,11 +204,9 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
     protected void spawnTentacles(Entity target) {
         // Spawn small tentacles near the target
         EntityTaintacleSmall tentacle = new EntityTaintacleSmall(level());
-        tentacle.moveTo(
-                target.getX() + random.nextFloat() - random.nextFloat(),
-                target.getY(),
-                target.getZ() + random.nextFloat() - random.nextFloat(),
-                0.0f, 0.0f);
+        tentacle.setPos(target.getX() + random.nextFloat() - random.nextFloat(), target.getY(), target.getZ() + random.nextFloat() - random.nextFloat());
+        tentacle.setYRot(0.0f);
+        tentacle.setXRot(0.0f);
         level().addFreshEntity(tentacle);
         
         playSound(ModSounds.TENTACLE.get(), getSoundVolume(), getVoicePitch());

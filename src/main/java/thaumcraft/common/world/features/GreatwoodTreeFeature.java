@@ -362,7 +362,7 @@ public class GreatwoodTreeFeature extends Feature<NoneFeatureConfiguration> {
         level.setBlock(spawnerPos, Blocks.SPAWNER.defaultBlockState(), 2);
         
         if (level.getBlockEntity(spawnerPos) instanceof SpawnerBlockEntity spawner) {
-            spawner.setEntityId(EntityType.CAVE_SPIDER, random);
+            spawner.setEntityId(net.minecraft.world.entity.EntityTypes.CAVE_SPIDER, random);
         }
         
         // Add cobwebs around the tree

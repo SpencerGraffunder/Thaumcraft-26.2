@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -137,7 +138,7 @@ public class TileHungryChest extends TileThaumcraft implements Container {
         // First, try to stack with existing items
         for (int i = 0; i < SIZE; i++) {
             ItemStack slot = items.get(i);
-            if (!slot.isEmpty() && ItemStack.isSameItemSameTags(slot, toInsert)) {
+            if (!slot.isEmpty() && ItemStack.isSameItemSameComponents(slot, toInsert)) {
                 int space = slot.getMaxStackSize() - slot.getCount();
                 if (space > 0) {
                     int toAdd = Math.min(space, toInsert.getCount());
@@ -231,8 +232,8 @@ public class TileHungryChest extends TileThaumcraft implements Container {
     // ==================== Open/Close ====================
 
     @Override
-    public void startOpen(Player player) {
-        if (!player.isSpectator()) {
+    public void startOpen(ContainerUser containerUser) {
+        if (containerUser instanceof Player player && !player.isSpectator()) {
             if (numPlayersUsing < 0) numPlayersUsing = 0;
             numPlayersUsing++;
             level.blockEvent(worldPosition, getBlockState().getBlock(), 1, numPlayersUsing);
@@ -242,8 +243,8 @@ public class TileHungryChest extends TileThaumcraft implements Container {
     }
 
     @Override
-    public void stopOpen(Player player) {
-        if (!player.isSpectator()) {
+    public void stopOpen(ContainerUser containerUser) {
+        if (containerUser instanceof Player player && !player.isSpectator()) {
             numPlayersUsing--;
             level.blockEvent(worldPosition, getBlockState().getBlock(), 1, numPlayersUsing);
             level.updateNeighborsAt(worldPosition, getBlockState().getBlock());

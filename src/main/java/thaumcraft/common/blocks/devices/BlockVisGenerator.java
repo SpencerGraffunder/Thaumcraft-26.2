@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import thaumcraft.common.tiles.devices.TileVisGenerator;
 import thaumcraft.init.ModBlockEntities;
 
@@ -61,16 +61,12 @@ public class BlockVisGenerator extends Block implements EntityBlock {
         
         // Try to find an adjacent energy receiver
         for (Direction face : Direction.values()) {
-            BlockEntity te = level.getBlockEntity(pos.relative(face));
-            if (te != null) {
-                te.getCapability(ForgeCapabilities.ENERGY, face.getOpposite()).ifPresent(handler -> {
-                    // Found a receiver - we'll set facing toward it
-                });
-                if (te.getCapability(ForgeCapabilities.ENERGY, face.getOpposite()).isPresent()) {
-                    return this.defaultBlockState()
-                            .setValue(FACING, face)
-                            .setValue(ENABLED, true);
-                }
+            BlockPos relative = pos.relative(face);
+            var handler = level.getCapability(Capabilities.Energy.BLOCK, relative, level.getBlockState(relative), null, face.getOpposite());
+            if (handler != null) {
+                return this.defaultBlockState()
+                        .setValue(FACING, face)
+                        .setValue(ENABLED, true);
             }
         }
         

@@ -2,10 +2,13 @@ package thaumcraft.common.items.consumables;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -38,8 +41,9 @@ public class ItemLabel extends Item {
      * Gets the aspect stored on this label, if any.
      */
     public Aspect getAspect(ItemStack stack) {
-        if (isFilled && stack.hasTag() && stack.getTag().contains("aspect")) {
-            return Aspect.getAspect(stack.getTag().getStringOr("aspect", ""));
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (isFilled && tag != null && tag.contains("aspect")) {
+            return Aspect.getAspect(tag.getStringOr("aspect", ""));
         }
         return null;
     }
@@ -49,7 +53,9 @@ public class ItemLabel extends Item {
      */
     public void setAspect(ItemStack stack, Aspect aspect) {
         if (aspect != null) {
-            stack.getOrCreateTag().putString("aspect", aspect.getTag());
+            CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+            tag.putString("aspect", aspect.getTag());
+            CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
         }
     }
 

@@ -128,7 +128,7 @@ public class SealPickup extends SealFiltered implements ISealConfigArea, ISealCo
                 
                 // Check NBT if enabled
                 if (matches && props[1].getValue()) {
-                    matches = ItemStack.isSameItemSameTags(stack, filterStack);
+                    matches = ItemStack.isSameItemSameComponents(stack, filterStack);
                 }
                 
                 if (matches) {

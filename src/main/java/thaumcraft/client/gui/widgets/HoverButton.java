@@ -1,13 +1,15 @@
 package thaumcraft.client.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -50,7 +52,7 @@ public class HoverButton extends AbstractWidget {
     }
     
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
         
         // Calculate hover state
@@ -61,9 +63,6 @@ public class HoverButton extends AbstractWidget {
         float brightness = hovered ? 1.0f : 0.9f;
         float alpha = hovered ? 1.0f : 0.9f;
         
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        
         // Draw content centered at position
         int drawX = getX() - width / 2;
         int drawY = getY() - height / 2;
@@ -72,54 +71,39 @@ public class HoverButton extends AbstractWidget {
             // Draw aspect icon
             Color aspectColor = new Color(aspect.getColor());
             if (hovered) {
-                RenderSystem.setShaderColor(
-                    aspectColor.getRed() / 255.0f,
-                    aspectColor.getGreen() / 255.0f,
-                    aspectColor.getBlue() / 255.0f,
-                    1.0f
-                );
+                graphics.blit(RenderPipelines.GUI_TEXTURED, aspect.getImage(), drawX, drawY, 0.0F, 0.0F, 16, 16, 16, 16,
+                        ARGB.colorFromFloat(1.0f, aspectColor.getRed() / 255.0f, aspectColor.getGreen() / 255.0f, aspectColor.getBlue() / 255.0f));
             } else {
-                RenderSystem.setShaderColor(
-                    aspectColor.getRed() / 290.0f,
-                    aspectColor.getGreen() / 290.0f,
-                    aspectColor.getBlue() / 290.0f,
-                    0.9f
-                );
+                graphics.blit(RenderPipelines.GUI_TEXTURED, aspect.getImage(), drawX, drawY, 0.0F, 0.0F, 16, 16, 16, 16,
+                        ARGB.colorFromFloat(0.9f, aspectColor.getRed() / 290.0f, aspectColor.getGreen() / 290.0f, aspectColor.getBlue() / 290.0f));
             }
-            graphics.blit(aspect.getImage(), drawX, drawY, 0, 0, 16, 16, 16, 16);
         } else if (content instanceof Identifier texture) {
             // Draw texture
-            RenderSystem.setShaderColor(
-                brightness * (c.getRed() / 255.0f),
-                brightness * (c.getGreen() / 255.0f),
-                brightness * (c.getBlue() / 255.0f),
-                alpha
-            );
-            graphics.blit(texture, drawX, drawY, 0, 0, 16, 16, 16, 16);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, texture, drawX, drawY, 0.0F, 0.0F, 16, 16, 16, 16,
+                    ARGB.colorFromFloat(alpha, brightness * (c.getRed() / 255.0f), brightness * (c.getGreen() / 255.0f), brightness * (c.getBlue() / 255.0f)));
         } else if (content instanceof ItemStack stack) {
             // Draw item
             int yOffset = hovered ? -1 : 0;
-            graphics.renderItem(stack, drawX, drawY + yOffset);
+            graphics.item(stack, drawX, drawY + yOffset);
         }
-        
-        // Reset color
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
     
     /**
      * Render the tooltip for this button.
      * Call this from the parent screen's render method after rendering all widgets.
      */
-    public void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+    public void renderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (!isMouseOver(mouseX, mouseY)) return;
         
         List<Component> tooltip = new ArrayList<>();
         
         if (content instanceof ItemStack stack) {
-            tooltip.addAll(stack.getTooltipLines(Minecraft.getInstance().player, 
-                Minecraft.getInstance().options.advancedItemTooltips 
-                    ? net.minecraft.world.item.TooltipFlag.Default.ADVANCED 
-                    : net.minecraft.world.item.TooltipFlag.Default.NORMAL));
+            tooltip.addAll(stack.getTooltipLines(
+                    net.minecraft.world.item.Item.TooltipContext.of(Minecraft.getInstance().player.level(), Minecraft.getInstance().player),
+                    Minecraft.getInstance().player, 
+                    Minecraft.getInstance().options.advancedItemTooltips 
+                        ? net.minecraft.world.item.TooltipFlag.Default.ADVANCED 
+                        : net.minecraft.world.item.TooltipFlag.Default.NORMAL));
         } else {
             String text = getMessage().getString();
             if (text != null && !text.isEmpty()) {
@@ -132,7 +116,7 @@ public class HoverButton extends AbstractWidget {
         }
         
         if (!tooltip.isEmpty()) {
-            graphics.renderComponentTooltip(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
+            graphics.setTooltipForNextFrame(Minecraft.getInstance().font, tooltip, java.util.Optional.empty(), mouseX, mouseY);
         }
     }
     
@@ -144,7 +128,7 @@ public class HoverButton extends AbstractWidget {
     }
     
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         // HoverButton doesn't respond to clicks by default (display only)
         return false;
     }

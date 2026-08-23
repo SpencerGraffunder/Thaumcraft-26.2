@@ -15,9 +15,4 @@ public class ItemThaumiumHoe extends HoeItem {
         super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, -2, -1.0F, 
                 new Item.Properties());
     }
-    
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.THAUMIUM_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
 }

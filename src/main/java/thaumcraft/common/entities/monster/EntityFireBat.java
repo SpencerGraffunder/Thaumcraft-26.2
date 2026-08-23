@@ -131,8 +131,8 @@ public class EntityFireBat extends Monster {
     @Override
     public void aiStep() {
         // Take damage from water
-        if (isInWaterOrRain()) {
-            hurt(damageSources().drown(), 1.0f);
+        if (isInWaterOrRain() && !level().isClientSide()) {
+            hurtServer((ServerLevel) level(), damageSources().drown(), 1.0f);
         }
         super.aiStep();
     }
@@ -258,12 +258,7 @@ public class EntityFireBat extends Monster {
     }
     
     @Override
-    protected boolean shouldDespawnInPeaceful() {
-        return true;
-    }
-    
-    @Override
-    public boolean causeFallDamage(float distance, float multiplier, DamageSource source) {
+    public boolean causeFallDamage(double distance, float multiplier, DamageSource source) {
         return false; // Flying mob doesn't take fall damage
     }
     
@@ -273,17 +268,17 @@ public class EntityFireBat extends Monster {
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo((ServerLevel) this.level(), source) || source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE) || 
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (isInvulnerableTo(level, source) || source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE) || 
                 source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION)) {
             return false;
         }
         
-        if (!level().isClientSide() && getIsBatHanging()) {
+        if (getIsBatHanging()) {
             setIsBatHanging(false);
         }
         
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     @Override

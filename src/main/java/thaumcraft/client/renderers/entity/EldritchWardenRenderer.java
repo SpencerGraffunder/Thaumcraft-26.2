@@ -5,7 +5,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
-import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -17,23 +17,27 @@ import thaumcraft.common.entities.monster.boss.EntityEldritchWarden;
  * Uses the same humanoid model but with different texture and slightly larger scale.
  */
 @OnlyIn(Dist.CLIENT)
-public class EldritchWardenRenderer extends HumanoidMobRenderer<EntityEldritchWarden, HumanoidModel<EntityEldritchWarden>> {
+public class EldritchWardenRenderer extends HumanoidMobRenderer<EntityEldritchWarden, HumanoidRenderState, HumanoidModel<HumanoidRenderState>> {
     
     private static final Identifier TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/eldritch_guardian.png");
     
     public EldritchWardenRenderer(EntityRendererProvider.Context context) {
         super(context, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER)), 0.6F);
-        this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
     }
     
     @Override
-    public Identifier getTextureLocation(EntityEldritchWarden entity) {
+    public Identifier getTextureLocation(HumanoidRenderState state) {
         return TEXTURE;
     }
     
     @Override
-    protected void scale(EntityEldritchWarden entity, PoseStack poseStack, float partialTicks) {
+    public HumanoidRenderState createRenderState() {
+        return new HumanoidRenderState();
+    }
+    
+    @Override
+    protected void scale(HumanoidRenderState state, PoseStack poseStack) {
         // Warden is 20% larger than the guardian
         poseStack.scale(1.4F, 1.4F, 1.4F);
     }

@@ -4,6 +4,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectHelper;
@@ -52,8 +53,8 @@ public class ThaumcraftCraftingManager {
         Level level = player.level();
         
         // Search through all arcane workbench recipes
-        for (Recipe<?> recipe : level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.ARCANE_WORKBENCH.get())) {
-            if (recipe instanceof IArcaneRecipe arcaneRecipe) {
+        for (RecipeHolder<?> recipe : level.getServer().getRecipeManager().recipeMap().byType(ModRecipeTypes.ARCANE_WORKBENCH.get())) {
+            if (recipe.value() instanceof IArcaneRecipe arcaneRecipe) {
                 // Check if the recipe matches
                 if (arcaneRecipe.matches(workbench, level)) {
                     // Check research requirement
@@ -81,7 +82,7 @@ public class ThaumcraftCraftingManager {
     public static ItemStack findMatchingArcaneRecipeResult(CraftingContainer matrix, Player player) {
         IArcaneRecipe recipe = findMatchingArcaneRecipe(matrix, player);
         if (recipe != null && matrix instanceof IArcaneWorkbench workbench) {
-            return recipe.assemble(workbench, player.level().registryAccess());
+            return recipe.assemble(workbench);
         }
         return ItemStack.EMPTY;
     }
@@ -129,8 +130,8 @@ public class ThaumcraftCraftingManager {
             return null;
         }
         
-        for (Recipe<?> recipe : level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.CRUCIBLE.get())) {
-            if (recipe instanceof CrucibleRecipeType crucibleRecipe) {
+        for (RecipeHolder<?> recipe : level.getServer().getRecipeManager().recipeMap().byType(ModRecipeTypes.CRUCIBLE.get())) {
+            if (recipe.value() instanceof CrucibleRecipeType crucibleRecipe) {
                 // Check if the recipe matches
                 if (crucibleRecipe.matchesCrucible(crucibleAspects, catalyst)) {
                     // Check research requirement
@@ -157,8 +158,9 @@ public class ThaumcraftCraftingManager {
      * @return List of matching recipes
      */
     public static List<CrucibleRecipeType> findCrucibleRecipesForCatalyst(ItemStack catalyst, Level level) {
-        return level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.CRUCIBLE.get())
+        return level.getServer().getRecipeManager().recipeMap().byType(ModRecipeTypes.CRUCIBLE.get())
                 .stream()
+                .map(RecipeHolder::value)
                 .filter(recipe -> recipe instanceof CrucibleRecipeType)
                 .map(recipe -> (CrucibleRecipeType) recipe)
                 .filter(recipe -> recipe.catalystMatches(catalyst))
@@ -184,8 +186,8 @@ public class ThaumcraftCraftingManager {
             return null;
         }
         
-        for (Recipe<?> recipe : level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.INFUSION.get())) {
-            if (recipe instanceof InfusionRecipeType infusionRecipe) {
+        for (RecipeHolder<?> recipe : level.getServer().getRecipeManager().recipeMap().byType(ModRecipeTypes.INFUSION.get())) {
+            if (recipe.value() instanceof InfusionRecipeType infusionRecipe) {
                 if (infusionRecipe.matchesInfusion(pedestalItems, centralItem, level, player)) {
                     return infusionRecipe;
                 }
@@ -295,35 +297,29 @@ public class ThaumcraftCraftingManager {
         net.minecraft.world.item.Item item = stack.getItem();
         
         // Armor
-        if (item instanceof net.minecraft.world.item.ArmorItem armorItem) {
-            int defense = armorItem.getDefense();
-            if (defense > 0) {
-                result.merge(Aspect.PROTECT, defense * 4);
-            }
+        if (stack.has(net.minecraft.core.component.DataComponents.EQUIPPABLE)) {
+            result.merge(Aspect.PROTECT, 8);
         }
         
         // Swords
-        if (item instanceof net.minecraft.world.item.SwordItem swordItem) {
-            float damage = swordItem.getDamage();
-            if (damage > 0) {
-                result.merge(Aspect.AVERSION, (int)(damage * 4));
-            }
+        if (stack.is(net.minecraft.tags.ItemTags.SWORDS)) {
+            result.merge(Aspect.AVERSION, 8);
         }
         
         // Bows
-        if (item instanceof net.minecraft.world.item.BowItem) {
+        if (stack.is(net.minecraft.tags.ItemTags.BOW_ENCHANTABLE)) {
             result.merge(Aspect.AVERSION, 10);
             result.merge(Aspect.FLIGHT, 5);
         }
         
         // Tools
-        if (item instanceof net.minecraft.world.item.TieredItem tieredItem) {
-            int tier = tieredItem.getTier().getLevel();
-            result.merge(Aspect.TOOL, (tier + 1) * 4);
+        if (stack.is(net.minecraft.tags.ItemTags.AXES) || stack.is(net.minecraft.tags.ItemTags.PICKAXES)
+                || stack.is(net.minecraft.tags.ItemTags.SHOVELS) || stack.is(net.minecraft.tags.ItemTags.HOES)) {
+            result.merge(Aspect.TOOL, 8);
         }
         
         // Enchantments add aspects
-        var enchantments = stack.getEnchantmentTags();
+        var enchantments = stack.getEnchantments();
         if (enchantments != null && !enchantments.isEmpty()) {
             // Each enchantment adds some magic aspect
             result.merge(Aspect.MAGIC, enchantments.size() * 3);

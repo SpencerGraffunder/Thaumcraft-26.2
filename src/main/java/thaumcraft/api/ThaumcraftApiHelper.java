@@ -2,6 +2,7 @@ package thaumcraft.api;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -9,7 +10,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.crafting.StrictNBTItemStack;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.minecraft.core.registries.BuiltInRegistries;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -56,16 +57,16 @@ public class ThaumcraftApiHelper {
         }
         
         if (obj instanceof ItemStack stack) {
-            if (stack.hasTag()) {
-                // Use strict NBT ingredient for items with NBT
-                return StrictNBTIngredient.of(stack);
+            if (stack.has(DataComponents.CUSTOM_DATA)) {
+                // Use strict data-component ingredient for items with NBT
+                return DataComponentIngredient.of(true, stack);
             } else {
-                return Ingredient.of(stack);
+                return Ingredient.of(stack.getItem());
             }
         }
         
         if (obj instanceof ItemStack[] stacks) {
-            return Ingredient.of(stacks);
+            return Ingredient.of(Arrays.stream(stacks).map(ItemStack::getItem).toArray(Item[]::new));
         }
         
         // Tag-based ingredients would be handled here
@@ -79,7 +80,7 @@ public class ThaumcraftApiHelper {
         ByteBuffer bb = ByteBuffer.allocate(4);
         bb.putInt(0, data);
         bb.put(index, b);
-        return bb.getIntOr(0, 0);
+        return bb.getInt(0);
     }
 
     public static byte getByteInInt(int data, int index) {
@@ -92,7 +93,7 @@ public class ThaumcraftApiHelper {
         ByteBuffer bb = ByteBuffer.allocate(8);
         bb.putLong(0, data);
         bb.put(index, b);
-        return bb.getLongOr(0, 0L);
+        return bb.getLong(0);
     }
 
     public static byte getByteInLong(long data, int index) {

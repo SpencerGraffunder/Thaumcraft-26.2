@@ -2,13 +2,9 @@ package thaumcraft.common.lib.capabilities;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.IPlayerWarp;
 
@@ -120,38 +116,6 @@ public class PlayerWarp {
             normalWarp = tag.getIntOr("norm", 0);
             temporaryWarp = tag.getIntOr("temp", 0);
             counter = tag.getIntOr("counter", 0);
-        }
-    }
-    
-    /**
-     * Capability provider for IPlayerWarp
-     */
-    public static class Provider implements ICapabilitySerializable<CompoundTag> {
-        
-        private final DefaultImpl warp = new DefaultImpl();
-        private final LazyOptional<IPlayerWarp> optional = LazyOptional.of(() -> warp);
-        
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            if (cap == ThaumcraftCapabilities.WARP) {
-                return optional.cast();
-            }
-            return LazyOptional.empty();
-        }
-        
-        @Override
-        public CompoundTag serializeNBT() {
-            return warp.serializeNBT();
-        }
-        
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            warp.deserializeNBT(nbt);
-        }
-        
-        public void invalidate() {
-            optional.invalidate();
         }
     }
 }

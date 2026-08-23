@@ -231,9 +231,8 @@ public class TileLevitator extends TileThaumcraft {
             }
             setChanged();
             syncTile(false);
-            player.displayClientMessage(
-                    Component.translatable("tc.levitator", RANGES[rangeIndex], getCost()),
-                    true);
+            player.sendSystemMessage(
+                    Component.translatable("tc.levitator", RANGES[rangeIndex], getCost()));
         }
     }
     

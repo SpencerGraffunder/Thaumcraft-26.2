@@ -1,12 +1,14 @@
 package thaumcraft.common.items.casters;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.casters.FocusPackage;
 
@@ -38,11 +40,11 @@ public class ItemFocus extends Item {
      * Get the color of this focus based on its effects.
      */
     public int getFocusColor(ItemStack focusStack) {
-        if (focusStack.isEmpty() || !focusStack.hasTag()) {
+        if (focusStack.isEmpty() || !focusStack.has(DataComponents.CUSTOM_DATA)) {
             return 0xFFFFFF; // White default
         }
         
-        CompoundTag tag = focusStack.getTag();
+        CompoundTag tag = focusStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag != null && tag.contains("color")) {
             return tag.getIntOr("color", 0);
         }
@@ -52,8 +54,9 @@ public class ItemFocus extends Item {
         if (core != null) {
             // Default purple-ish color for magic
             int color = 0x9933FF;
-            tag = focusStack.getOrCreateTag();
+            tag = focusStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
             tag.putInt("color", color);
+            CustomData.set(DataComponents.CUSTOM_DATA, focusStack, tag);
             return color;
         }
         
@@ -64,18 +67,20 @@ public class ItemFocus extends Item {
      * Get a string for sorting/comparing focus configurations.
      */
     public String getSortingHelper(ItemStack focusStack) {
-        if (focusStack.isEmpty() || !focusStack.hasTag()) {
+        if (focusStack.isEmpty() || !focusStack.has(DataComponents.CUSTOM_DATA)) {
             return null;
         }
         
-        CompoundTag tag = focusStack.getTag();
+        CompoundTag tag = focusStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         int sh = tag != null ? tag.getIntOr("srt", 0) : 0;
         
         if (sh == 0) {
             FocusPackage pack = getPackage(focusStack);
             if (pack != null) {
                 sh = pack.getSortingHelper();
-                focusStack.getOrCreateTag().putInt("srt", sh);
+                CompoundTag srtTag = focusStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+                srtTag.putInt("srt", sh);
+                CustomData.set(DataComponents.CUSTOM_DATA, focusStack, srtTag);
             }
         }
         
@@ -87,7 +92,9 @@ public class ItemFocus extends Item {
      */
     public static void setPackage(ItemStack focusStack, FocusPackage core) {
         CompoundTag tag = core.serialize();
-        focusStack.getOrCreateTag().put("package", tag);
+        CompoundTag stackTag = focusStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        stackTag.put("package", tag);
+        CustomData.set(DataComponents.CUSTOM_DATA, focusStack, stackTag);
     }
     
     /**
@@ -99,7 +106,8 @@ public class ItemFocus extends Item {
             return null;
         }
         
-        CompoundTag tag = focusStack.getTagElement("package");
+        CompoundTag data = focusStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        CompoundTag tag = data != null ? data.getCompound("package").orElse(null) : null;
         if (tag != null) {
             FocusPackage pack = new FocusPackage();
             pack.deserialize(tag);
@@ -111,7 +119,9 @@ public class ItemFocus extends Item {
     
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        addFocusInformation(stack, level, tooltip, flag);
+        List<Component> tooltip = new java.util.ArrayList<>();
+        addFocusInformation(stack, null, tooltip, flag);
+        tooltip.forEach(builder);
     }
     
     /**
@@ -122,7 +132,7 @@ public class ItemFocus extends Item {
         if (pack != null) {
             float visCost = getVisCost(stack);
             String amount = VIS_FORMAT.format(visCost);
-            builder.accept(Component.translatable("item.thaumcraft.focus.cost", amount)
+            tooltip.add(Component.translatable("item.thaumcraft.focus.cost", amount)
                     .withStyle(ChatFormatting.ITALIC, ChatFormatting.AQUA));
             
             // TODO: Add focus element descriptions

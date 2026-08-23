@@ -1,12 +1,14 @@
 package thaumcraft.common.tiles.crafting;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -111,7 +113,7 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
         super.setItem(slot, stack);
         
         // Reset focus data when focus is changed
-        if (stack.isEmpty() || !ItemStack.isSameItemSameTags(stack, prev)) {
+        if (stack.isEmpty() || !ItemStack.isSameItemSameComponents(stack, prev)) {
             if (level != null && level.isClientSide()) {
                 data.clear();
                 doGuiReset = true;
@@ -282,12 +284,14 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
                 level.playSound(null, worldPosition, ModSounds.WAND.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
                 
                 // Remove color override if any
-                if (focus.hasTag()) {
-                    focus.getTag().remove("color");
+                CompoundTag focusTag = focus.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+                if (focusTag != null) {
+                    focusTag.remove("color");
+                    CustomData.set(DataComponents.CUSTOM_DATA, focus, focusTag);
                 }
                 
                 // Set name and package
-                focus.setHoverName(net.minecraft.network.chat.Component.literal(focusName));
+                focus.set(DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal(focusName));
                 ItemFocus.setPackage(focus, core);
                 
                 setItem(0, focus);
@@ -394,7 +398,7 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
      */
     private boolean playerHasItem(Player player, ItemStack required) {
         int needed = required.getCount();
-        for (ItemStack stack : player.getInventory().getItems()) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (ItemStack.isSameItem(stack, required)) {
                 needed -= stack.getCount();
                 if (needed <= 0) return true;
@@ -408,8 +412,8 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
      */
     private void consumePlayerItem(Player player, ItemStack required) {
         int needed = required.getCount();
-        for (int i = 0; i < player.getInventory().getItems().size() && needed > 0; i++) {
-            ItemStack stack = player.getInventory().getItems().get(i);
+        for (int i = 0; i < player.getInventory().getNonEquipmentItems().size() && needed > 0; i++) {
+            ItemStack stack = player.getInventory().getNonEquipmentItems().get(i);
             if (ItemStack.isSameItem(stack, required)) {
                 int take = Math.min(needed, stack.getCount());
                 stack.shrink(take);
@@ -436,7 +440,6 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
     
     // ==================== Rendering ====================
     
-    @Override
     public AABB getRenderBoundingBox() {
         return new AABB(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(),
                 worldPosition.getX() + 1, worldPosition.getY() + 1, worldPosition.getZ() + 1);

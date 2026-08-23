@@ -37,7 +37,8 @@ public class BlockGrassAmbient extends GrassBlock {
         int skyLight = level.getBrightness(LightLayer.SKY, pos.above());
         
         // Adjust based on time of day (celestial angle)
-        float celestialAngle = level.getSunAngle(1.0f);
+        float celestialAngle = level.environmentAttributes().getValue(
+                net.minecraft.world.attribute.EnvironmentAttributes.SUN_ANGLE, pos) * (float) (Math.PI / 180.0);
         float adjustedAngle = celestialAngle;
         float targetAngle = (celestialAngle < (float)Math.PI) ? 0.0f : (float)(Math.PI * 2);
         adjustedAngle += (targetAngle - celestialAngle) * 0.2f;

@@ -1,14 +1,13 @@
 package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.renderer.entity.state.FallingBlockRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
@@ -20,7 +19,7 @@ import thaumcraft.common.entities.EntityFallingTaint;
  * Renders the falling block state using the block model renderer.
  */
 @OnlyIn(Dist.CLIENT)
-public class FallingTaintRenderer extends EntityRenderer<EntityFallingTaint> {
+public class FallingTaintRenderer extends EntityRenderer<EntityFallingTaint, FallingBlockRenderState> {
     
     public FallingTaintRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -28,41 +27,38 @@ public class FallingTaintRenderer extends EntityRenderer<EntityFallingTaint> {
     }
     
     @Override
-    public Identifier getTextureLocation(EntityFallingTaint entity) {
-        return TextureAtlas.LOCATION_BLOCKS;
+    public FallingBlockRenderState createRenderState() {
+        return new FallingBlockRenderState();
     }
     
     @Override
-    public void render(EntityFallingTaint entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        BlockState blockState = entity.getBlockState();
-        if (blockState == null || blockState.getRenderShape() == RenderShape.INVISIBLE) {
-            return;
+    public void extractRenderState(EntityFallingTaint entity, FallingBlockRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        BlockPos pos = BlockPos.containing(entity.getX(), entity.getBoundingBox().maxY, entity.getZ());
+        state.movingBlockRenderState.randomSeedPos = entity.blockPosition();
+        state.movingBlockRenderState.blockPos = pos;
+        state.movingBlockRenderState.blockState = entity.getBlockState();
+        if (entity.level() instanceof ClientLevel clientLevel) {
+            state.movingBlockRenderState.biome = clientLevel.getBiome(pos);
+            state.movingBlockRenderState.cardinalLighting = clientLevel.cardinalLighting();
+            state.movingBlockRenderState.lightEngine = clientLevel.getLightEngine();
         }
-        
-        poseStack.pushPose();
-        
-        // Center the block
-        poseStack.translate(-0.5, 0.0, -0.5);
-        
-        BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
-        
-        // Render the block model
-        dispatcher.getModelRenderer().tesselateBlock(
-                entity.level(),
-                dispatcher.getBlockModel(blockState),
-                blockState,
-                entity.blockPosition(),
-                poseStack,
-                buffer.getBuffer(net.minecraft.client.renderer.RenderType.cutout()),
-                false,
-                entity.level().getRandom(),
-                blockState.getSeed(entity.blockPosition()),
-                OverlayTexture.NO_OVERLAY
-        );
-        
-        poseStack.popPose();
-        
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+    }
+    
+    @Override
+    public void submit(FallingBlockRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        BlockState blockState = state.movingBlockRenderState.blockState;
+        if (blockState != null && blockState.getRenderShape() == RenderShape.MODEL) {
+            poseStack.pushPose();
+            
+            // Center the block
+            poseStack.translate(-0.5, 0.0, -0.5);
+            
+            submitNodeCollector.submitMovingBlock(poseStack, state.movingBlockRenderState, state.outlineColor);
+            
+            poseStack.popPose();
+            
+            super.submit(state, poseStack, submitNodeCollector, camera);
+        }
     }
 }

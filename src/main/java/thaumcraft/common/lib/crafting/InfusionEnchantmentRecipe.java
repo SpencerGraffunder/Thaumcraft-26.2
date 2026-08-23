@@ -12,14 +12,14 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.item.ItemStackHelper;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
@@ -27,13 +27,14 @@ import thaumcraft.api.items.IRechargable;
 import thaumcraft.common.lib.enchantment.EnumInfusionEnchantment;
 import thaumcraft.init.ModRecipeSerializers;
 import thaumcraft.common.lib.compat.CuriosCompat;
+import net.neoforged.neoforge.common.util.RecipeMatcher;
 
 public class InfusionEnchantmentRecipe extends InfusionRecipeType {
     
     public final EnumInfusionEnchantment enchantment;
     
-    public InfusionEnchantmentRecipe(Identifier id, EnumInfusionEnchantment ench, AspectList as, NonNullList<Ingredient> components) {
-        super(id, "", Ingredient.EMPTY, components, as, ItemStack.EMPTY, ench.research, 4);
+    public InfusionEnchantmentRecipe(EnumInfusionEnchantment ench, AspectList as, NonNullList<Ingredient> components) {
+        super("", Ingredient.of(), components, as, ItemStack.EMPTY, ench.research, 4);
         this.enchantment = ench;
     }
     
@@ -48,29 +49,28 @@ public class InfusionEnchantmentRecipe extends InfusionRecipeType {
         }
         
         if (!enchantment.toolClasses.contains("all")) {
-            Multimap<Attribute, AttributeModifier> itemMods = central.getAttributeModifiers(EquipmentSlot.MAINHAND);
             boolean cool = false;
             
-            if (itemMods != null && itemMods.containsKey(Attributes.ATTACK_DAMAGE) && enchantment.toolClasses.contains("weapon")) {
+            if (central.is(net.minecraft.tags.ItemTags.SWORDS) && enchantment.toolClasses.contains("weapon")) {
                 cool = true;
             }
             
-            if (!cool && central.getItem() instanceof TieredItem) {
+            if (!cool) {
                 // Simplified check matching the previous implementation
-                if (enchantment.toolClasses.contains("axe") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.AXE_DIG)) cool = true;
-                if (enchantment.toolClasses.contains("pickaxe") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.PICKAXE_DIG)) cool = true;
-                if (enchantment.toolClasses.contains("shovel") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.SHOVEL_DIG)) cool = true;
-                if (enchantment.toolClasses.contains("sword") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.SWORD_DIG)) cool = true;
-                if (enchantment.toolClasses.contains("hoe") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.HOE_DIG)) cool = true;
+                if (enchantment.toolClasses.contains("axe") && central.is(net.minecraft.tags.ItemTags.AXES)) cool = true;
+                if (enchantment.toolClasses.contains("pickaxe") && central.is(net.minecraft.tags.ItemTags.PICKAXES)) cool = true;
+                if (enchantment.toolClasses.contains("shovel") && central.is(net.minecraft.tags.ItemTags.SHOVELS)) cool = true;
+                if (enchantment.toolClasses.contains("sword") && central.is(net.minecraft.tags.ItemTags.SWORDS)) cool = true;
+                if (enchantment.toolClasses.contains("hoe") && central.is(net.minecraft.tags.ItemTags.HOES)) cool = true;
             }
             
-            if (!cool && central.getItem() instanceof ArmorItem armorItem) {
+            if (!cool && central.has(DataComponents.EQUIPPABLE)) {
                 String at = "none";
-                switch (armorItem.getType()) {
-                    case HELMET -> at = "helm";
-                    case CHESTPLATE -> at = "chest";
-                    case LEGGINGS -> at = "legs";
-                    case BOOTS -> at = "boots";
+                switch (central.get(DataComponents.EQUIPPABLE).slot()) {
+                    case HEAD -> at = "helm";
+                    case CHEST -> at = "chest";
+                    case LEGS -> at = "legs";
+                    case FEET -> at = "boots";
                 }
                 if (enchantment.toolClasses.contains("armor") || enchantment.toolClasses.contains(at)) {
                     cool = true;
@@ -158,7 +158,7 @@ public class InfusionEnchantmentRecipe extends InfusionRecipeType {
     }
     
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends Recipe<RecipeInput>> getSerializer() {
         return ModRecipeSerializers.INFUSION_ENCHANTMENT.get();
     }
 }

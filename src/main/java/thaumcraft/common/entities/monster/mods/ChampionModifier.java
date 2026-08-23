@@ -1,6 +1,7 @@
 package thaumcraft.common.entities.monster.mods;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import java.util.UUID;
@@ -39,7 +40,7 @@ public class ChampionModifier {
         this.id = id;
         this.type = type;
         this.effect = effect;
-        this.attributeMod = new AttributeModifier(uuid, name, id + 2, AttributeModifier.Operation.ADDITION);
+        this.attributeMod = new AttributeModifier(Identifier.fromNamespaceAndPath("thaumcraft", name), id + 2, AttributeModifier.Operation.ADD_VALUE);
     }
     
     /**
@@ -107,10 +108,8 @@ public class ChampionModifier {
         };
         
         ATTRIBUTE_MOD_NONE = new AttributeModifier(
-                UUID.fromString("1e645a3d-9115-4807-a61c-705172839f87"), 
-                "normal", 1.0, AttributeModifier.Operation.ADDITION);
+                Identifier.fromNamespaceAndPath("thaumcraft", "normal"), 1.0, AttributeModifier.Operation.ADD_VALUE);
         ATTRIBUTE_MINUS_ONE = new AttributeModifier(
-                UUID.fromString("f48eb416-8321-46e6-8c07-a07bed729a0c"), 
-                "minus1", -1.0, AttributeModifier.Operation.ADDITION);
+                Identifier.fromNamespaceAndPath("thaumcraft", "minus1"), -1.0, AttributeModifier.Operation.ADD_VALUE);
     }
 }

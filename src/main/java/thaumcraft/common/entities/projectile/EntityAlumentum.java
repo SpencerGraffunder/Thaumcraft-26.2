@@ -20,7 +20,8 @@ public class EntityAlumentum extends ThrowableProjectile {
     }
     
     public EntityAlumentum(Level level, LivingEntity owner) {
-        super(ModEntities.ALUMENTUM.get(), owner, level);
+        super(ModEntities.ALUMENTUM.get(), level);
+        this.setOwner(owner);
     }
     
     public EntityAlumentum(Level level, double x, double y, double z) {
@@ -70,7 +71,7 @@ public class EntityAlumentum extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return 0.03f; // Standard throwable gravity
     }
 }

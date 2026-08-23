@@ -1,16 +1,15 @@
 package thaumcraft.client.fx.other;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.joml.Quaternionf;
 import thaumcraft.client.fx.particles.ThaumcraftParticle;
 
 import java.util.ArrayList;
@@ -156,28 +155,20 @@ public class FXVoidStream extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         if (this.points.size() < 3) return;
         
-        // End the current batch
-        Tesselator.getInstance().end();
-        
-        // Set up our own rendering
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, VOID_TEX);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(false);
-        
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        
         // Camera position
-        double camX = camera.getPosition().x;
-        double camY = camera.getPosition().y;
-        double camZ = camera.getPosition().z;
+        Vec3 camPos = camera.position();
+        double camX = camPos.x();
+        double camY = camPos.y();
+        double camZ = camPos.z();
         
-        // Render each segment as a billboarded quad
+        Quaternionf rot = camera.rotation();
+        int light = 0xF000F0; // Full brightness
+        int color = ARGB.colorFromFloat(1.0f, 1.0f, 1.0f, 1.0f);
+        
+        // Render each segment as a camera-facing billboard quad
         for (int i = 1; i < this.points.size() - 1; i++) {
             StreamPoint p = this.points.get(i);
             
@@ -197,28 +188,12 @@ public class FXVoidStream extends ThaumcraftParticle {
             float time = (this.age + partialTicks) * 0.01f;
             float u0 = (i * 0.1f + time) % 1.0f;
             float v0 = (i * 0.1f) % 1.0f;
-            float u1 = u0 + 0.25f;
-            float v1 = v0 + 0.25f;
+            float u1 = Math.min(1.0f, u0 + 0.25f);
+            float v1 = Math.min(1.0f, v0 + 0.25f);
             
-            // Simple billboard (always face camera)
-            builder.vertex(px - size, py - size, pz).uv(u0, v1).color(1f, 1f, 1f, 1f).endVertex();
-            builder.vertex(px - size, py + size, pz).uv(u0, v0).color(1f, 1f, 1f, 1f).endVertex();
-            builder.vertex(px + size, py + size, pz).uv(u1, v0).color(1f, 1f, 1f, 1f).endVertex();
-            builder.vertex(px + size, py - size, pz).uv(u1, v1).color(1f, 1f, 1f, 1f).endVertex();
+            state.add(getLayer(), px, py, pz, rot.x, rot.y, rot.z, rot.w, size,
+                    u0, u1, v0, v1, color, light);
         }
-        
-        Tesselator.getInstance().end();
-        
-        RenderSystem.depthMask(true);
-        
-        // Restart particle batch
-        RenderSystem.setShaderTexture(0, TextureManager.INTENTIONAL_MISSING_TEXTURE);
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
     }
     
     public FXVoidStream setTCGravity(float value) {

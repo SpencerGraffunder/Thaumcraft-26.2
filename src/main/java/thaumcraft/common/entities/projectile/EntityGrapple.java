@@ -47,7 +47,8 @@ public class EntityGrapple extends ThrowableProjectile {
     }
     
     public EntityGrapple(Level level, LivingEntity owner, InteractionHand hand) {
-        super(ModEntities.GRAPPLE.get(), owner, level);
+        super(ModEntities.GRAPPLE.get(), level);
+        this.setOwner(owner);
         this.hand = hand;
     }
     
@@ -74,7 +75,7 @@ public class EntityGrapple extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return isPulling() ? 0.0f : 0.03f;
     }
     

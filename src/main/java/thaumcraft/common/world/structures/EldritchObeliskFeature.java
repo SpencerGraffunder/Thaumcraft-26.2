@@ -67,7 +67,7 @@ public class EldritchObeliskFeature extends Feature<NoneFeatureConfiguration> {
     
     private BlockPos findGround(WorldGenLevel level, BlockPos pos) {
         // Search downward for solid ground
-        for (int y = pos.getY(); y > level.getMinBuildHeight() + 10; y--) {
+        for (int y = pos.getY(); y > level.getMinY() + 10; y--) {
             BlockPos checkPos = new BlockPos(pos.getX(), y, pos.getZ());
             BlockState state = level.getBlockState(checkPos);
             BlockState above = level.getBlockState(checkPos.above());

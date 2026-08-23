@@ -3,17 +3,17 @@ package thaumcraft.client.renderers.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
+import thaumcraft.client.renderers.entity.state.RiftBlastRenderState;
 import thaumcraft.common.entities.projectile.EntityRiftBlast;
 
 /**
@@ -22,7 +22,7 @@ import thaumcraft.common.entities.projectile.EntityRiftBlast;
  * The original used an end portal shader, this version uses a simpler approach.
  */
 @OnlyIn(Dist.CLIENT)
-public class RiftBlastRenderer extends EntityRenderer<EntityRiftBlast> {
+public class RiftBlastRenderer extends EntityRenderer<EntityRiftBlast, RiftBlastRenderState> {
     
     private static final Identifier TEXTURE = 
             Identifier.withDefaultNamespace("textures/entity/end_portal.png");
@@ -33,67 +33,67 @@ public class RiftBlastRenderer extends EntityRenderer<EntityRiftBlast> {
     }
     
     @Override
-    public Identifier getTextureLocation(EntityRiftBlast entity) {
-        return TEXTURE;
+    public RiftBlastRenderState createRenderState() {
+        return new RiftBlastRenderState();
     }
     
     @Override
-    public void render(EntityRiftBlast entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void extractRenderState(EntityRiftBlast entity, RiftBlastRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.time = entity.tickCount + partialTick;
+        state.red = entity.isRed();
+    }
+    
+    @Override
+    public void submit(RiftBlastRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         poseStack.pushPose();
         
         // Billboard rotation
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        poseStack.mulPose(camera.orientation);
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         
         // Pulsing scale
-        float pulse = 1.0F + Mth.sin((entity.tickCount + partialTicks) * 0.5F) * 0.1F;
+        float pulse = 1.0F + Mth.sin(state.time * 0.5F) * 0.1F;
         float size = 0.5F * pulse;
         
         // Color based on red variant
-        float r = entity.isRed() ? 1.0F : 0.3F;
-        float g = entity.isRed() ? 0.2F : 0.1F;
-        float b = entity.isRed() ? 0.3F : 0.4F;
+        float r = state.red ? 1.0F : 0.3F;
+        float g = state.red ? 0.2F : 0.1F;
+        float b = state.red ? 0.3F : 0.4F;
         float alpha = 0.8F;
-        
-        // Render the orb
-        RenderType renderType = RenderType.entityTranslucent(TEXTURE);
-        VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
-        
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix = pose.pose();
-        Matrix3f normal = pose.normal();
         
         int light = 0xF000F0; // Full bright
         
-        // Core quad
-        vertex(vertexConsumer, matrix, normal, -size, -size, 0, 0, 0, r, g, b, alpha, light);
-        vertex(vertexConsumer, matrix, normal, -size, size, 0, 0, 1, r, g, b, alpha, light);
-        vertex(vertexConsumer, matrix, normal, size, size, 0, 1, 1, r, g, b, alpha, light);
-        vertex(vertexConsumer, matrix, normal, size, -size, 0, 1, 0, r, g, b, alpha, light);
-        
-        // Outer glow (larger, more transparent)
-        float glowSize = size * 1.5F;
-        float glowAlpha = 0.3F;
-        vertex(vertexConsumer, matrix, normal, -glowSize, -glowSize, 0.01F, 0, 0, r, g, b, glowAlpha, light);
-        vertex(vertexConsumer, matrix, normal, -glowSize, glowSize, 0.01F, 0, 1, r, g, b, glowAlpha, light);
-        vertex(vertexConsumer, matrix, normal, glowSize, glowSize, 0.01F, 1, 1, r, g, b, glowAlpha, light);
-        vertex(vertexConsumer, matrix, normal, glowSize, -glowSize, 0.01F, 1, 0, r, g, b, glowAlpha, light);
+        // Render the orb
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(TEXTURE), (pose, buffer) -> {
+            // Core quad
+            vertex(buffer, pose, -size, -size, 0, 0, 0, r, g, b, alpha, light);
+            vertex(buffer, pose, -size, size, 0, 0, 1, r, g, b, alpha, light);
+            vertex(buffer, pose, size, size, 0, 1, 1, r, g, b, alpha, light);
+            vertex(buffer, pose, size, -size, 0, 1, 0, r, g, b, alpha, light);
+            
+            // Outer glow (larger, more transparent)
+            float glowSize = size * 1.5F;
+            float glowAlpha = 0.3F;
+            vertex(buffer, pose, -glowSize, -glowSize, 0.01F, 0, 0, r, g, b, glowAlpha, light);
+            vertex(buffer, pose, -glowSize, glowSize, 0.01F, 0, 1, r, g, b, glowAlpha, light);
+            vertex(buffer, pose, glowSize, glowSize, 0.01F, 1, 1, r, g, b, glowAlpha, light);
+            vertex(buffer, pose, glowSize, -glowSize, 0.01F, 1, 0, r, g, b, glowAlpha, light);
+        });
         
         poseStack.popPose();
         
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
     
-    private void vertex(VertexConsumer consumer, Matrix4f matrix, Matrix3f normal,
+    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose,
                         float x, float y, float z, float u, float v,
                         float r, float g, float b, float alpha, int light) {
-        consumer.vertex(matrix, x, y, z)
-                .color(r, g, b, alpha)
-                .uv(u, v)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(light)
-                .normal(normal, 0.0F, 0.0F, -1.0F)
-                .endVertex();
+        consumer.addVertex(pose, x, y, z)
+                .setColor(r, g, b, alpha)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(pose, 0.0F, 0.0F, -1.0F);
     }
 }

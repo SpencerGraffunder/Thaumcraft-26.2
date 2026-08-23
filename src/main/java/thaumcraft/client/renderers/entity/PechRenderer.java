@@ -1,15 +1,18 @@
 package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.entity.PechModel;
+import thaumcraft.client.renderers.entity.state.PechRenderState;
 import thaumcraft.common.entities.monster.EntityPech;
 
 /**
@@ -21,7 +24,7 @@ import thaumcraft.common.entities.monster.EntityPech;
  * - Animated jowls for mumbling
  */
 @OnlyIn(Dist.CLIENT)
-public class PechRenderer extends MobRenderer<EntityPech, PechModel> {
+public class PechRenderer extends MobRenderer<EntityPech, PechRenderState, PechModel> {
     
     // Textures for different pech types
     private static final Identifier TEXTURE_FORAGER = 
@@ -35,39 +38,50 @@ public class PechRenderer extends MobRenderer<EntityPech, PechModel> {
         super(context, new PechModel(context.bakeLayer(PechModel.LAYER_LOCATION)), 0.4F);
         
         // Add layer for held items
-        this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
+        this.addLayer(new ItemInHandLayer<>(this));
     }
     
     @Override
-    public Identifier getTextureLocation(EntityPech entity) {
-        return switch (entity.getPechType()) {
+    public Identifier getTextureLocation(PechRenderState state) {
+        return state.texture;
+    }
+    
+    @Override
+    public PechRenderState createRenderState() {
+        return new PechRenderState();
+    }
+    
+    @Override
+    public void extractRenderState(EntityPech entity, PechRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        ArmedEntityRenderState.extractArmedEntityRenderState(entity, state, this.itemModelResolver, partialTick);
+        
+        state.texture = switch (entity.getPechType()) {
             case EntityPech.TYPE_MAGE -> TEXTURE_MAGE;
             case EntityPech.TYPE_FORAGER -> TEXTURE_STALKER;
             default -> TEXTURE_FORAGER;
         };
+        
+        // Sneak offset and animation data used by the model
+        state.sneakOffsetY = entity.isShiftKeyDown() ? -0.125F : 0.0F;
+        state.mumble = entity.getMumble();
+        state.sneaking = entity.isShiftKeyDown();
+        state.riding = entity.isPassenger();
+        state.attackTime = entity.getAttackAnim(partialTick);
     }
     
     @Override
-    public void render(EntityPech entity, float entityYaw, float partialTicks, 
-                       PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void submit(PechRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         // Adjust Y position when sneaking (pech has unique sneak animation)
-        double yOffset = 0.0;
-        if (entity.isShiftKeyDown()) {
-            yOffset = -0.125;
-        }
-        
         poseStack.pushPose();
-        poseStack.translate(0.0, yOffset, 0.0);
-        
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
-        
+        poseStack.translate(0.0, state.sneakOffsetY, 0.0);
+        super.submit(state, poseStack, collector, camera);
         poseStack.popPose();
     }
     
     @Override
-    protected void scale(EntityPech entity, PoseStack poseStack, float partialTicks) {
+    protected void scale(PechRenderState state, PoseStack poseStack) {
         // Pechs are slightly smaller than normal humanoids
-        float scale = 0.9F;
-        poseStack.scale(scale, scale, scale);
+        poseStack.scale(0.9F, 0.9F, 0.9F);
     }
 }

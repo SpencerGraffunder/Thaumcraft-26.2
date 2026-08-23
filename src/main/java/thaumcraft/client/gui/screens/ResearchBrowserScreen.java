@@ -1,22 +1,24 @@
 package thaumcraft.client.gui.screens;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Matrix4f;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.research.ResearchCategories;
@@ -361,25 +363,25 @@ public class ResearchBrowserScreen extends Screen {
     }
     
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (searching && searchField.keyPressed(keyCode, scanCode, modifiers)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (searching && searchField.keyPressed(event)) {
             updateSearch();
             return true;
         }
-        if (minecraft != null && keyCode == minecraft.options.keyInventory.getKey().getValue()) {
+        if (minecraft != null && minecraft.options.keyInventory.matches(event)) {
             onClose();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
     
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
-        if (searching && searchField.charTyped(codePoint, modifiers)) {
+    public boolean charTyped(CharacterEvent event) {
+        if (searching && searchField.charTyped(event)) {
             updateSearch();
             return true;
         }
-        return super.charTyped(codePoint, modifiers);
+        return super.charTyped(event);
     }
     
     private void updateSearch() {
@@ -423,15 +425,12 @@ public class ResearchBrowserScreen extends Screen {
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         // Handle dragging (when not searching)
         if (!searching) {
             handleDragging(mouseX, mouseY);
             handleZoom();
         }
-        
-        // Draw background
-        renderBackground(graphics);
         
         t = System.nanoTime() / 50000000L;
         
@@ -457,10 +456,10 @@ public class ResearchBrowserScreen extends Screen {
         if (!searching) {
             renderResearchBackground(graphics, locX, locY);
             
-            graphics.pose().pushPose();
-            graphics.pose().scale(1.0f / screenZoom, 1.0f / screenZoom, 1.0f);
+            graphics.pose().pushMatrix();
+            graphics.pose().scale(1.0f / screenZoom, 1.0f / screenZoom);
             renderResearchContent(graphics, mouseX, mouseY, locX, locY);
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
         } else {
             // Draw search results
             renderSearchResults(graphics, mouseX, mouseY);
@@ -470,7 +469,7 @@ public class ResearchBrowserScreen extends Screen {
         renderFrame(graphics);
         
         // Draw widgets (buttons)
-        super.render(graphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         
         // Draw tooltip for highlighted research
         if (currentHighlight != null && !searching) {
@@ -479,12 +478,12 @@ public class ResearchBrowserScreen extends Screen {
         
         // Draw popup message
         if (popuptime > System.currentTimeMillis()) {
-            graphics.drawString(font, popupmessage, 10, 34, 0xFFFFFF);
+            graphics.text(font, popupmessage, 10, 34, 0xFFFFFF);
         }
     }
     
     private void handleDragging(int mouseX, int mouseY) {
-        if (hasShiftDown() || isDragging) {
+        if (minecraft.hasShiftDown() || isDragging) {
             if (isDragging) {
                 guiMapX -= (mouseX - lastMouseX) * screenZoom;
                 guiMapY -= (mouseY - lastMouseY) * screenZoom;
@@ -517,22 +516,22 @@ public class ResearchBrowserScreen extends Screen {
     }
     
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (!searching) {
-            if (delta < 0) {
+            if (scrollY < 0) {
                 screenZoom += 0.25f;
-            } else if (delta > 0) {
+            } else if (scrollY > 0) {
                 screenZoom -= 0.25f;
             }
             screenZoom = Mth.clamp(screenZoom, 1.0f, 2.0f);
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
     
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (button == 0 && !searching) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (event.button() == 0 && !searching) {
             isDragging = true;
             guiMapX -= dragX * screenZoom;
             guiMapY -= dragY * screenZoom;
@@ -542,19 +541,21 @@ public class ResearchBrowserScreen extends Screen {
             tempMapY = guiMapY;
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(event, dragX, dragY);
     }
     
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0) {
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == 0) {
             isDragging = false;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
     
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         popuptime = System.currentTimeMillis() - 1L;
         
         if (!searching && currentHighlight != null) {
@@ -563,7 +564,7 @@ public class ResearchBrowserScreen extends Screen {
                     && canUnlockResearch(currentHighlight)) {
                 // Start new research - send packet to server to sync progress
                 PacketHandler.sendToServer(new PacketSyncProgressToServer(currentHighlight.getKey(), true));
-                minecraft.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
+                minecraft.gui.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
                 popuptime = System.currentTimeMillis() + 3000L;
                 popupmessage = Component.translatable("tc.research.popup", currentHighlight.getLocalizedName()).getString();
                 return true;
@@ -575,7 +576,7 @@ public class ResearchBrowserScreen extends Screen {
                 });
                 // Send flag sync packet to server
                 PacketHandler.sendToServer(new PacketSyncResearchFlagsToServer(currentHighlight.getKey(), false, false, false));
-                minecraft.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
+                minecraft.gui.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
                 return true;
             }
         } else if (searching) {
@@ -604,7 +605,7 @@ public class ResearchBrowserScreen extends Screen {
                         // Click on research
                         ResearchEntry entry = ResearchCategories.getResearch(sr.key);
                         if (entry != null) {
-                            minecraft.setScreen(new ResearchPageScreen(entry, sr.recipe, guiMapX, guiMapY));
+                            minecraft.gui.setScreen(new ResearchPageScreen(entry, sr.recipe, guiMapX, guiMapY));
                             return true;
                         }
                     }
@@ -616,7 +617,7 @@ public class ResearchBrowserScreen extends Screen {
             }
         }
         
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
     
     @Override
@@ -640,54 +641,35 @@ public class ResearchBrowserScreen extends Screen {
     /**
      * Renders the category background texture.
      */
-    private void renderResearchBackground(GuiGraphics graphics, int locX, int locY) {
+    private void renderResearchBackground(GuiGraphicsExtractor graphics, int locX, int locY) {
         if (selectedCategory == null || selectedCategory.isEmpty()) return;
         
         ResearchCategory cat = ResearchCategories.getResearchCategory(selectedCategory);
         if (cat == null || cat.background == null) return;
         
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        
         // Draw main background (tiled/scrolled)
-        RenderSystem.setShaderTexture(0, cat.background);
-        drawScrollingTexture(graphics, startX - 2, startY - 2, screenX + 4, screenY + 4, locX / 2.0f, locY / 2.0f);
+        drawScrollingTexture(graphics, cat.background, startX - 2, startY - 2, screenX + 4, screenY + 4, locX / 2.0f, locY / 2.0f);
         
         // Draw foreground layer if present
         if (cat.background2 != null) {
-            RenderSystem.setShaderTexture(0, cat.background2);
-            drawScrollingTexture(graphics, startX - 2, startY - 2, screenX + 4, screenY + 4, locX / 1.5f, locY / 1.5f);
+            drawScrollingTexture(graphics, cat.background2, startX - 2, startY - 2, screenX + 4, screenY + 4, locX / 1.5f, locY / 1.5f);
         }
-        
-        RenderSystem.disableBlend();
     }
     
     /**
      * Draws a scrolling/tiled texture.
      */
-    private void drawScrollingTexture(GuiGraphics graphics, float x, float y, float width, float height, float scrollX, float scrollY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        Matrix4f matrix = graphics.pose().last().pose();
-        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        
+    private void drawScrollingTexture(GuiGraphicsExtractor graphics, Identifier texture, float x, float y, float width, float height, float scrollX, float scrollY) {
         float texScale = 1.0f / 256.0f;
-        buffer.vertex(matrix, x, y + height, 0).uv((scrollX) * texScale, (scrollY + height) * texScale).endVertex();
-        buffer.vertex(matrix, x + width, y + height, 0).uv((scrollX + width) * texScale, (scrollY + height) * texScale).endVertex();
-        buffer.vertex(matrix, x + width, y, 0).uv((scrollX + width) * texScale, (scrollY) * texScale).endVertex();
-        buffer.vertex(matrix, x, y, 0).uv((scrollX) * texScale, (scrollY) * texScale).endVertex();
-        
-        BufferUploader.drawWithShader(buffer.end());
+        graphics.blit(texture, (int)x, (int)y, (int)(x + width), (int)(y + height),
+                scrollX * texScale, (scrollX + width) * texScale, scrollY * texScale, (scrollY + height) * texScale);
     }
     
     /**
      * Renders the research entries and connections.
      */
-    private void renderResearchContent(GuiGraphics graphics, int mouseX, int mouseY, int locX, int locY) {
+    private void renderResearchContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int locX, int locY) {
         if (research.isEmpty()) return;
-        
-        RenderSystem.setShaderTexture(0, TEXTURE);
         
         // Draw connection lines between research
         for (ResearchEntry source : research) {
@@ -774,10 +756,9 @@ public class ResearchBrowserScreen extends Screen {
                     brightness = (float) Math.sin(System.currentTimeMillis() % 600L / 600.0 * Math.PI * 2.0) * 0.25f + 0.75f;
                 }
                 
-                RenderSystem.setShaderColor(brightness, brightness, brightness, 1.0f);
+                int frameColor = ARGB.colorFromFloat(1.0f, brightness, brightness, brightness);
                 
                 // Draw frame
-                RenderSystem.setShaderTexture(0, TEXTURE);
                 int frameU = 80;
                 int frameV = 48;
                 if (iconResearch.hasMeta(ResearchEntry.EnumResearchMeta.HIDDEN)) {
@@ -789,38 +770,35 @@ public class ResearchBrowserScreen extends Screen {
                     frameU = 112;
                 }
                 
-                graphics.blit(TEXTURE, iconX - 8, iconY - 8, frameU, frameV, 32, 32);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, iconX - 8, iconY - 8, frameU, frameV, 32, 32, 256, 256, frameColor);
                 
                 // Draw spiky overlay if needed
                 if (iconResearch.hasMeta(ResearchEntry.EnumResearchMeta.SPIKY)) {
-                    graphics.blit(TEXTURE, iconX - 8, iconY - 8, 176, 
-                            48 + (iconResearch.hasMeta(ResearchEntry.EnumResearchMeta.HIDDEN) ? 32 : 0), 32, 32);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, iconX - 8, iconY - 8, 176.0F, 
+                            48 + (iconResearch.hasMeta(ResearchEntry.EnumResearchMeta.HIDDEN) ? 32 : 0), 32, 32, 256, 256, frameColor);
                 }
                 
                 // Draw research/page flags
                 ThaumcraftCapabilities.getKnowledge(player).ifPresent(knowledge -> {
-                    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                     if (knowledge.hasResearchFlag(iconResearch.getKey(), IPlayerKnowledge.EnumResearchFlag.RESEARCH)) {
-                        graphics.pose().pushPose();
-                        graphics.pose().translate(iconX - 9, iconY - 9, 0);
-                        graphics.pose().scale(0.5f, 0.5f, 1.0f);
-                        graphics.blit(TEXTURE, 0, 0, 176, 16, 32, 32);
-                        graphics.pose().popPose();
+                        graphics.pose().pushMatrix();
+                        graphics.pose().translate(iconX - 9, iconY - 9);
+                        graphics.pose().scale(0.5f);
+                        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 176.0F, 16.0F, 32, 32, 256, 256);
+                        graphics.pose().popMatrix();
                     }
                     if (knowledge.hasResearchFlag(iconResearch.getKey(), IPlayerKnowledge.EnumResearchFlag.PAGE)) {
-                        graphics.pose().pushPose();
-                        graphics.pose().translate(iconX - 9, iconY + 9, 0);
-                        graphics.pose().scale(0.5f, 0.5f, 1.0f);
-                        graphics.blit(TEXTURE, 0, 0, 208, 16, 32, 32);
-                        graphics.pose().popPose();
+                        graphics.pose().pushMatrix();
+                        graphics.pose().translate(iconX - 9, iconY + 9);
+                        graphics.pose().scale(0.5f);
+                        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 208.0F, 16.0F, 32, 32, 256, 256);
+                        graphics.pose().popMatrix();
                     }
                 });
                 
                 // Draw icon
-                RenderSystem.setShaderColor(canUnlockResearch(iconResearch) ? 1.0f : 0.1f, 
-                        canUnlockResearch(iconResearch) ? 1.0f : 0.1f,
-                        canUnlockResearch(iconResearch) ? 1.0f : 0.1f, 1.0f);
-                drawResearchIcon(graphics, iconResearch, iconX, iconY);
+                float iconBrightness = canUnlockResearch(iconResearch) ? 1.0f : 0.1f;
+                drawResearchIcon(graphics, iconResearch, iconX, iconY, ARGB.colorFromFloat(1.0f, iconBrightness, iconBrightness, iconBrightness));
                 
                 // Check for hover
                 int scaledMouseX = (int) (mouseX * screenZoom);
@@ -831,8 +809,6 @@ public class ResearchBrowserScreen extends Screen {
                         && scaledMouseY >= iconY - 2 && scaledMouseY <= iconY + 18) {
                     currentHighlight = iconResearch;
                 }
-                
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             }
         }
     }
@@ -840,7 +816,7 @@ public class ResearchBrowserScreen extends Screen {
     /**
      * Draws an icon for a research entry.
      */
-    private void drawResearchIcon(GuiGraphics graphics, ResearchEntry research, int x, int y) {
+    private void drawResearchIcon(GuiGraphicsExtractor graphics, ResearchEntry research, int x, int y, int color) {
         if (research.getIcons() == null || research.getIcons().length == 0) {
             return;
         }
@@ -849,21 +825,18 @@ public class ResearchBrowserScreen extends Screen {
         Object icon = research.getIcons()[idx];
         
         if (icon instanceof Identifier) {
-            RenderSystem.setShaderTexture(0, (Identifier) icon);
-            graphics.blit((Identifier) icon, x, y, 0, 0, 16, 16, 16, 16);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) icon, x, y, 0.0F, 0.0F, 16, 16, 16, 16, color);
         } else if (icon instanceof ItemStack) {
-            graphics.renderItem((ItemStack) icon, x, y);
+            graphics.item((ItemStack) icon, x, y);
         }
     }
     
     /**
      * Draws a connection line between two research entries.
      */
-    private void drawLine(GuiGraphics graphics, int x1, int y1, int x2, int y2, 
+    private void drawLine(GuiGraphicsExtractor graphics, int x1, int y1, int x2, int y2, 
                          float r, float g, float b, int locX, int locY, boolean arrow, boolean flipped) {
         // Simplified line drawing - draw rectangles for connections
-        RenderSystem.setShaderColor(r, g, b, 1.0f);
-        
         int startPosX, startPosY, endPosX, endPosY;
         if (flipped) {
             startPosX = x2 * 24 + 8 - locX + startX;
@@ -893,24 +866,18 @@ public class ResearchBrowserScreen extends Screen {
             int maxX = Math.max(startPosX, endPosX);
             graphics.fill(minX, endPosY - 1, maxX, endPosY + 1, color);
         }
-        
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
     
     /**
      * Renders the decorative frame around the research area.
      */
-    private void renderFrame(GuiGraphics graphics) {
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        
+    private void renderFrame(GuiGraphicsExtractor graphics) {
         // Draw horizontal borders
         for (int c = 16; c < width - 16; c += 64) {
             int p = Math.min(64, width - 16 - c);
             if (p > 0) {
-                graphics.blit(TEXTURE, c, -2, 48, 13, p, 22);
-                graphics.blit(TEXTURE, c, height - 20, 48, 13, p, 22);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, c, -2, 48.0F, 13.0F, p, 22, 256, 256);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, c, height - 20, 48.0F, 13.0F, p, 22, 256, 256);
             }
         }
         
@@ -918,25 +885,23 @@ public class ResearchBrowserScreen extends Screen {
         for (int c = 16; c < height - 16; c += 64) {
             int p = Math.min(64, height - 16 - c);
             if (p > 0) {
-                graphics.blit(TEXTURE, -2, c, 13, 48, 22, p);
-                graphics.blit(TEXTURE, width - 20, c, 13, 48, 22, p);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, -2, c, 13.0F, 48.0F, 22, p, 256, 256);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, width - 20, c, 13.0F, 48.0F, 22, p, 256, 256);
             }
         }
         
         // Draw corners
-        graphics.blit(TEXTURE, -2, -2, 13, 13, 22, 22);
-        graphics.blit(TEXTURE, -2, height - 20, 13, 13, 22, 22);
-        graphics.blit(TEXTURE, width - 20, -2, 13, 13, 22, 22);
-        graphics.blit(TEXTURE, width - 20, height - 20, 13, 13, 22, 22);
-        
-        RenderSystem.disableBlend();
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, -2, -2, 13.0F, 13.0F, 22, 22, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, -2, height - 20, 13.0F, 13.0F, 22, 22, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, width - 20, -2, 13.0F, 13.0F, 22, 22, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, width - 20, height - 20, 13.0F, 13.0F, 22, 22, 256, 256);
     }
     
     /**
      * Renders search results list.
      */
-    private void renderSearchResults(GuiGraphics graphics, int mouseX, int mouseY) {
-        searchField.render(graphics, mouseX, mouseY, 0);
+    private void renderSearchResults(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        searchField.extractRenderState(graphics, mouseX, mouseY, 0);
         
         int q = 0;
         for (Pair<String, SearchResult> p : searchResults) {
@@ -951,17 +916,17 @@ public class ResearchBrowserScreen extends Screen {
             
             // Draw recipe icon if applicable
             if (sr.recipe != null) {
-                graphics.pose().pushPose();
-                graphics.pose().scale(0.5f, 0.5f, 1.0f);
-                graphics.blit(TEXTURE, 44, (32 + q * 10) * 2, 224, 48, 16, 16);
-                graphics.pose().popPose();
+                graphics.pose().pushMatrix();
+                graphics.pose().scale(0.5f, 0.5f);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 44, (32 + q * 10) * 2, 224.0F, 48.0F, 16, 16, 256, 256);
+                graphics.pose().popMatrix();
             }
             
-            graphics.drawString(font, p.getLeft(), 32, 32 + q * 10, color);
+            graphics.text(font, p.getLeft(), 32, 32 + q * 10, color);
             q++;
             
             if (32 + (q + 1) * 10 > screenY) {
-                graphics.drawString(font, Component.translatable("tc.search.more").getString(), 22, 34 + q * 10, 0xAAAAAA);
+                graphics.text(font, Component.translatable("tc.search.more").getString(), 22, 34 + q * 10, 0xAAAAAA);
                 break;
             }
         }
@@ -970,7 +935,7 @@ public class ResearchBrowserScreen extends Screen {
     /**
      * Renders tooltip for currently highlighted research.
      */
-    private void renderResearchTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void renderResearchTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         List<Component> lines = new ArrayList<>();
         lines.add(Component.literal("§6" + currentHighlight.getLocalizedName().getString()));
         
@@ -1020,7 +985,7 @@ public class ResearchBrowserScreen extends Screen {
             }
         });
         
-        graphics.renderTooltip(font, lines, Optional.empty(), mouseX + 3, mouseY - 3);
+        graphics.setTooltipForNextFrame(font, lines, java.util.Optional.empty(), mouseX + 3, mouseY - 3);
     }
     
     @Override
@@ -1064,7 +1029,7 @@ public class ResearchBrowserScreen extends Screen {
         }
         
         @Override
-        public void onPress() {
+        public void onPress(InputWithModifiers input) {
             searching = false;
             searchField.setVisible(false);
             searchField.setFocused(false);
@@ -1080,32 +1045,25 @@ public class ResearchBrowserScreen extends Screen {
         }
         
         @Override
-        public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-            RenderSystem.enableBlend();
-            
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
             // Draw button frame
-            RenderSystem.setShaderTexture(0, TEXTURE);
             float frameColor = selectedCategory != null && selectedCategory.equals(catKey) ? 0.6f : 1.0f;
-            RenderSystem.setShaderColor(frameColor, 1.0f, 1.0f, 1.0f);
-            graphics.blit(TEXTURE, getX() - 3, getY() - 3 + addonShift, 13, 13, 22, 22);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, getX() - 3, getY() - 3 + addonShift, 13.0F, 13.0F, 22, 22, 256, 256,
+                    ARGB.colorFromFloat(1.0f, frameColor, 1.0f, 1.0f));
             
             // Draw category icon
             if (category.icon != null) {
                 float iconBrightness = (selectedCategory != null && selectedCategory.equals(catKey)) || isHovered ? 1.0f : 0.66f;
-                RenderSystem.setShaderColor(iconBrightness, iconBrightness, iconBrightness, isHovered ? 1.0f : 0.8f);
-                graphics.blit(category.icon, getX(), getY() + addonShift, 0, 0, 16, 16, 16, 16);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, category.icon, getX(), getY() + addonShift, 0.0F, 0.0F, 16, 16, 16, 16,
+                        ARGB.colorFromFloat(isHovered ? 1.0f : 0.8f, iconBrightness, iconBrightness, iconBrightness));
             }
-            
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             
             // Draw hover text
             if (isHovered) {
                 String displayText = getMessage().getString() + " (" + completion + "%)";
                 int textX = isRightSide ? (screenX + 9 - font.width(displayText)) : (getX() + 22);
-                graphics.drawString(font, displayText, textX, getY() + 4 + addonShift, 0xFFFFFF);
+                graphics.text(font, displayText, textX, getY() + 4 + addonShift, 0xFFFFFF);
             }
-            
-            RenderSystem.disableBlend();
         }
     }
 }

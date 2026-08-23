@@ -1,7 +1,5 @@
 package thaumcraft.client.models.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -16,7 +14,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
-import thaumcraft.common.entities.construct.EntityTurretCrossbow;
+import thaumcraft.client.renderers.entity.state.TurretCrossbowRenderState;
 
 /**
  * CrossbowModel - Model for the basic crossbow turret.
@@ -25,7 +23,7 @@ import thaumcraft.common.entities.construct.EntityTurretCrossbow;
  * Features a tripod base with 4 legs and a rotating crossbow mechanism.
  */
 @OnlyIn(Dist.CLIENT)
-public class CrossbowModel extends EntityModel<EntityTurretCrossbow> {
+public class CrossbowModel extends EntityModel<TurretCrossbowRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "turret_crossbow"), "main");
@@ -53,6 +51,7 @@ public class CrossbowModel extends EntityModel<EntityTurretCrossbow> {
     private float loadProgress = 0.0f;
     
     public CrossbowModel(ModelPart root) {
+        super(root);
         this.crossbow = root.getChild("crossbow");
         this.tripod = root.getChild("tripod");
         this.leg1 = root.getChild("leg1");
@@ -213,17 +212,16 @@ public class CrossbowModel extends EntityModel<EntityTurretCrossbow> {
     }
     
     @Override
-    public void setupAnim(EntityTurretCrossbow entity, float limbSwing, float limbSwingAmount, 
-                          float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(TurretCrossbowRenderState state) {
         // Store load progress for animation
-        this.loadProgress = entity.getLoadProgress(ageInTicks - (int)ageInTicks);
+        this.loadProgress = state.loadProgress;
         
         // Head rotation (crossbow aims)
-        this.crossbow.yRot = netHeadYaw * ((float)Math.PI / 180F);
-        this.crossbow.xRot = headPitch * ((float)Math.PI / 180F);
+        this.crossbow.yRot = state.yRot * ((float)Math.PI / 180F);
+        this.crossbow.xRot = state.xRot * ((float)Math.PI / 180F);
         
         // Bow arm animation on firing
-        float swingProgress = entity.getAttackAnim(ageInTicks - (int)ageInTicks);
+        float swingProgress = state.attackAnim;
         if (swingProgress > 0) {
             float bowAnim = Mth.sin(Mth.sqrt(swingProgress) * (float)Math.PI * 2.0F) * 0.2F;
             this.crossl1.yRot = -0.2443F + bowAnim;
@@ -249,7 +247,7 @@ public class CrossbowModel extends EntityModel<EntityTurretCrossbow> {
         this.loadbarr.xRot = loadAnim;
         
         // Adjust legs if riding a minecart
-        if (entity.isPassenger()) {
+        if (state.passenger) {
             this.leg1.y = 11.5F;
             this.leg2.y = 11.5F;
             this.leg3.y = 11.5F;
@@ -268,16 +266,5 @@ public class CrossbowModel extends EntityModel<EntityTurretCrossbow> {
             this.leg3.xRot = 0.5236F;
             this.leg4.xRot = 0.5236F;
         }
-    }
-    
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        crossbow.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        tripod.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leg1.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leg2.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leg3.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leg4.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

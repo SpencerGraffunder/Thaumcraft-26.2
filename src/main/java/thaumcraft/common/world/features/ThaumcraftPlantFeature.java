@@ -123,7 +123,7 @@ public class ThaumcraftPlantFeature extends Feature<NoneFeatureConfiguration> {
      * Check if there's a ceiling above (cave detection)
      */
     private static boolean hasCeiling(WorldGenLevel level, BlockPos pos) {
-        for (int y = pos.getY() + 1; y < pos.getY() + 32 && y < level.getMaxBuildHeight(); y++) {
+        for (int y = pos.getY() + 1; y < pos.getY() + 32 && y < level.getMaxY(); y++) {
             BlockState state = level.getBlockState(new BlockPos(pos.getX(), y, pos.getZ()));
             if (!state.isAir() && !state.canBeReplaced()) {
                 return true;

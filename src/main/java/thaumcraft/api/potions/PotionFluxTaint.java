@@ -1,5 +1,6 @@
 package thaumcraft.api.potions;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,13 +27,13 @@ public class PotionFluxTaint extends MobEffect {
     }
     
     @Override
-    public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide()) return;
+    public boolean applyEffectTick(ServerLevel serverLevel, LivingEntity target, int amplifier) {
+        if (serverLevel.isClientSide()) return false;
         
         // Check if entity is tainted (heals them)
         if (target instanceof ITaintedMob) {
             target.heal(1);
-            return;
+            return true;
         }
         
         // TODO: Check for Champion mod attribute when implemented
@@ -46,13 +47,14 @@ public class PotionFluxTaint extends MobEffect {
         if (!target.isInvertedHealAndHarm()) {
             // Players always take damage, other entities need more than 1 max health
             if (target instanceof Player || target.getMaxHealth() > 1) {
-                target.hurt(DamageSourceThaumcraft.createTaint(target.level()), 1);
+                target.hurtServer(serverLevel, DamageSourceThaumcraft.createTaint(serverLevel), 1);
             }
         }
+        return true;
     }
     
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         int k = 40 >> amplifier;
         return k > 0 ? duration % k == 0 : true;
     }

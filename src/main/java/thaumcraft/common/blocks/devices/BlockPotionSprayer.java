@@ -4,7 +4,6 @@ import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -81,8 +80,8 @@ public class BlockPotionSprayer extends Block implements EntityBlock {
     }
     
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                  BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
@@ -111,8 +110,8 @@ public class BlockPotionSprayer extends Block implements EntityBlock {
     }
     
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof TilePotionSprayer sprayer) {
                 for (int i = 0; i < sprayer.getContainerSize(); i++) {
@@ -123,7 +122,7 @@ public class BlockPotionSprayer extends Block implements EntityBlock {
                 }
             }
         }
-        super.onRemove(state, level, pos, newState, isMoving);
+        return super.playerWillDestroy(level, pos, state, player);
     }
     
     @Nullable

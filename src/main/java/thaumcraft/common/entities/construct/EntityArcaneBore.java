@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -22,7 +23,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.enchantment.Enchantable;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
@@ -32,9 +33,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.fx.PacketFXBoreDig;
 import thaumcraft.common.world.aura.AuraHandler;
@@ -191,8 +193,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         ItemStack held = getMainHandItem();
         if (held.isEmpty()) return false;
         
-        boolean isPickaxe = held.getItem() instanceof PickaxeItem ||
-                held.getItem().canPerformAction(held, net.neoforged.neoforge.common.ToolActions.PICKAXE_DIG);
+        boolean isPickaxe = held.is(net.minecraft.tags.ItemTags.PICKAXES);
         
         if (!isPickaxe) return false;
         
@@ -204,7 +205,8 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         ItemStack held = getMainHandItem();
         if (held.isEmpty()) return 2;
         
-        int r = held.getItem().getEnchantmentValue() / 3;
+        Enchantable ench = held.get(DataComponents.ENCHANTABLE);
+        int r = ench != null ? ench.value() / 3 : 0;
         // TODO: Add infusion enchantment bonus
         return Math.max(2, r);
     }
@@ -217,7 +219,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
     
     public int getFortune() {
         if (!validInventory()) return 0;
-        return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, getMainHandItem());
+        return EnchantmentHelper.getItemEnchantmentLevel(level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).get(Enchantments.FORTUNE).orElseThrow(), getMainHandItem());
     }
     
     public int getDigSpeed(BlockState blockState) {
@@ -225,13 +227,13 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         ItemStack held = getMainHandItem();
         
         int speed = (int) (held.getDestroySpeed(blockState) / 2.0f);
-        speed += EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, held);
+        speed += EnchantmentHelper.getItemEnchantmentLevel(level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).get(Enchantments.EFFICIENCY).orElseThrow(), held);
         return speed;
     }
     
     public boolean hasSilkTouch() {
         if (!validInventory()) return false;
-        return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, getMainHandItem()) > 0;
+        return EnchantmentHelper.getItemEnchantmentLevel(level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).get(Enchantments.SILK_TOUCH).orElseThrow(), getMainHandItem()) > 0;
     }
     
     private boolean dig() {
@@ -254,7 +256,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
             
             // Get drops
             List<ItemStack> blockDrops = new ArrayList<>();
-            if (hasSilkTouch() && state.getBlock().canSustainPlant(state, level(), digTarget, Direction.UP, null)) {
+            if (hasSilkTouch()) {
                 // Silk touch - drop block itself
                 blockDrops.add(new ItemStack(state.getBlock()));
             } else {
@@ -279,7 +281,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
                 if (breakCounter >= 50) {
                     breakCounter -= 50;
                     ItemStack held = getMainHandItem();
-                    held.hurtAndBreak(1, this, (e) -> {});
+                    held.hurtAndBreak(1, serverLevel, this, (e) -> {});
                 }
             }
         }
@@ -402,7 +404,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         // Owner can change facing by hitting
         if (source.getEntity() instanceof LivingEntity living && isOwner(living)) {
             Direction dir = Direction.orderedByNearest(this)[0];
@@ -411,7 +413,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
             }
             return false;
         }
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     @Override
@@ -502,7 +504,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
     // ==================== Team ====================
     
     @Override
-    public Team getTeam() {
+    public PlayerTeam getTeam() {
         if (isOwned()) {
             LivingEntity owner = getOwner();
             if (owner != null) {
@@ -510,10 +512,5 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
             }
         }
         return super.getTeam();
-    }
-    
-    @Override
-    protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions dimensions) {
-        return 0.8125f;
     }
 }

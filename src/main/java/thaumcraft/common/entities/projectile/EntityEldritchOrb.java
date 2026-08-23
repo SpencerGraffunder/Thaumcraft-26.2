@@ -34,7 +34,8 @@ public class EntityEldritchOrb extends ThrowableProjectile {
     }
     
     public EntityEldritchOrb(Level level, LivingEntity owner) {
-        super(ModEntities.ELDRITCH_ORB.get(), owner, level);
+        super(ModEntities.ELDRITCH_ORB.get(), level);
+        this.setOwner(owner);
         // Shoot in direction owner is looking
         shootFromRotation(owner, owner.getXRot(), owner.getYRot(), -5.0f, 0.75f, 0.0f);
     }
@@ -45,7 +46,7 @@ public class EntityEldritchOrb extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return 0.0f; // No gravity
     }
     
@@ -94,7 +95,7 @@ public class EntityEldritchOrb extends ThrowableProjectile {
                     }
                     
                     DamageSource source = level().damageSources().indirectMagic(this, owner);
-                    living.hurt(source, damage);
+                    living.hurtServer((net.minecraft.server.level.ServerLevel) level(), source, damage);
                     
                     // Apply weakness
                     try {

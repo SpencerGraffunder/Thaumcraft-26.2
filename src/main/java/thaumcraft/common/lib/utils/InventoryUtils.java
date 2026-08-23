@@ -3,8 +3,8 @@ package thaumcraft.common.lib.utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.Entity;
@@ -18,7 +18,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import thaumcraft.api.ThaumcraftInvHelper;
@@ -240,9 +240,9 @@ public class InventoryUtils {
         }
         
         int count = item.getCount();
-        for (int slot = 0; slot < player.getInventory().getItems().size(); slot++) {
-            ItemStack slotStack = player.getInventory().getItems().get(slot);
-            ThaumcraftInvHelper.InvFilter filter = new ThaumcraftInvHelper.InvFilter(false, !item.hasTag(), useTagMatch, false)
+        for (int slot = 0; slot < player.getInventory().getNonEquipmentItems().size(); slot++) {
+            ItemStack slotStack = player.getInventory().getNonEquipmentItems().get(slot);
+            ThaumcraftInvHelper.InvFilter filter = new ThaumcraftInvHelper.InvFilter(false, !item.has(DataComponents.CUSTOM_DATA), useTagMatch, false)
                     .setRelaxedNBT();
             
             if (areItemStacksEqual(slotStack, item, filter)) {
@@ -251,7 +251,7 @@ public class InventoryUtils {
                     count = 0;
                 } else {
                     count -= slotStack.getCount();
-                    player.getInventory().getItems().set(slot, ItemStack.EMPTY);
+                    player.getInventory().getNonEquipmentItems().set(slot, ItemStack.EMPTY);
                 }
                 if (count <= 0) {
                     return true;
@@ -270,15 +270,15 @@ public class InventoryUtils {
         }
         
         int remaining = amount;
-        for (int slot = 0; slot < player.getInventory().getItems().size(); slot++) {
-            ItemStack slotStack = player.getInventory().getItems().get(slot);
+        for (int slot = 0; slot < player.getInventory().getNonEquipmentItems().size(); slot++) {
+            ItemStack slotStack = player.getInventory().getNonEquipmentItems().get(slot);
             if (slotStack.is(item)) {
                 if (slotStack.getCount() > remaining) {
                     slotStack.shrink(remaining);
                     remaining = 0;
                 } else {
                     remaining -= slotStack.getCount();
-                    player.getInventory().getItems().set(slot, ItemStack.EMPTY);
+                    player.getInventory().getNonEquipmentItems().set(slot, ItemStack.EMPTY);
                 }
                 if (remaining <= 0) {
                     return true;
@@ -297,11 +297,11 @@ public class InventoryUtils {
         }
         
         int needed = stack.getCount();
-        ThaumcraftInvHelper.InvFilter filter = new ThaumcraftInvHelper.InvFilter(false, !stack.hasTag(), useTagMatch, false)
+        ThaumcraftInvHelper.InvFilter filter = new ThaumcraftInvHelper.InvFilter(false, !stack.has(DataComponents.CUSTOM_DATA), useTagMatch, false)
                 .setRelaxedNBT();
         
-        for (int slot = 0; slot < player.getInventory().getItems().size(); slot++) {
-            ItemStack slotStack = player.getInventory().getItems().get(slot);
+        for (int slot = 0; slot < player.getInventory().getNonEquipmentItems().size(); slot++) {
+            ItemStack slotStack = player.getInventory().getNonEquipmentItems().get(slot);
             if (areItemStacksEqual(slotStack, stack, filter)) {
                 needed -= slotStack.getCount();
                 if (needed <= 0) {
@@ -350,9 +350,9 @@ public class InventoryUtils {
      * Get the player inventory slot containing a matching item.
      */
     public static int getPlayerSlotFor(Player player, ItemStack stack) {
-        for (int i = 0; i < player.getInventory().getItems().size(); i++) {
-            ItemStack slotStack = player.getInventory().getItems().get(i);
-            if (!slotStack.isEmpty() && ItemStack.isSameItemSameTags(stack, slotStack)) {
+        for (int i = 0; i < player.getInventory().getNonEquipmentItems().size(); i++) {
+            ItemStack slotStack = player.getInventory().getNonEquipmentItems().get(i);
+            if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(stack, slotStack)) {
                 return i;
             }
         }
@@ -363,7 +363,7 @@ public class InventoryUtils {
      * Check if two stacks are exactly equal (item, NBT).
      */
     public static boolean stackEqualExact(ItemStack stack1, ItemStack stack2) {
-        return ItemStack.isSameItemSameTags(stack1, stack2);
+        return ItemStack.isSameItemSameComponents(stack1, stack2);
     }
     
     /**
@@ -400,7 +400,7 @@ public class InventoryUtils {
         // Tag-based matching (replacement for OreDictionary)
         if (filter.useOre && !stack0.isEmpty()) {
             // Check if they share any item tags
-            for (var tag : stack0.getTags().toList()) {
+            for (var tag : stack0.getItem().builtInRegistryHolder().tags().toList()) {
                 if (stack1.is(tag)) {
                     return true;
                 }
@@ -413,8 +413,8 @@ public class InventoryUtils {
             if (filter.relaxedNBT) {
                 nbtMatch = ThaumcraftInvHelper.areItemStackTagsEqualRelaxed(stack0, stack1);
             } else {
-                nbtMatch = ItemStack.isSameItemSameTags(stack0, stack1) || 
-                           (!stack0.hasTag() && !stack1.hasTag());
+                nbtMatch = ItemStack.isSameItemSameComponents(stack0, stack1) || 
+                           (!stack0.has(DataComponents.CUSTOM_DATA) && !stack1.has(DataComponents.CUSTOM_DATA));
             }
         }
         
@@ -512,7 +512,7 @@ public class InventoryUtils {
     public static void dropHarvestsAtPos(Level level, BlockPos pos, List<ItemStack> items,
             boolean followItem, int color, @Nullable Entity target) {
         if (level.isClientSide()) return;
-        if (!level.getGameRules().getBooleanOr(net.minecraft.world.level.GameRules.RULE_DOBLOCKDROPS, false)) return;
+        if (!level.getGameRules().get(net.minecraft.world.level.gamerules.GameRules.BLOCK_DROPS)) return;
         
         for (ItemStack item : items) {
             if (item.isEmpty()) continue;
@@ -594,7 +594,7 @@ public class InventoryUtils {
         ItemStack result = ItemStack.EMPTY;
         
         if (input instanceof Ingredient ingredient) {
-            ItemStack[] stacks = ingredient.getItems();
+            ItemStack[] stacks = ingredient.items().map(ItemStack::new).toArray(ItemStack[]::new);
             if (stacks.length > 0) {
                 int idx = (int) ((counter + System.currentTimeMillis() / 1000L) % stacks.length);
                 result = cycleItemStack(stacks[idx], counter + 1);
@@ -625,13 +625,11 @@ public class InventoryUtils {
             // Handle item tags (replacement for ore dictionary strings)
             @SuppressWarnings("unchecked")
             TagKey<Item> itemTag = (TagKey<Item>) tag;
-            var items = net.minecraft.core.registries.BuiltInRegistries.ITEM.getTag(itemTag);
-            if (items.isPresent()) {
-                var list = items.get().stream().toList();
-                if (!list.isEmpty()) {
-                    int idx = (int) ((counter + System.currentTimeMillis() / 1000L) % list.size());
-                    result = new ItemStack(list.get(idx).value());
-                }
+            var items = net.minecraft.core.registries.BuiltInRegistries.ITEM.getTagOrEmpty(itemTag);
+            var list = java.util.stream.StreamSupport.stream(items.spliterator(), false).toList();
+            if (!list.isEmpty()) {
+                int idx = (int) ((counter + System.currentTimeMillis() / 1000L) % list.size());
+                result = new ItemStack(list.get(idx).value());
             }
         }
         
@@ -643,9 +641,9 @@ public class InventoryUtils {
      */
     @Nullable
     public static IItemHandler getItemHandler(Level level, BlockPos pos, Direction side) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be != null) {
-            return be.getCapability(ForgeCapabilities.ITEM_HANDLER, side).orElse(null);
+        var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, side);
+        if (handler != null) {
+            return IItemHandler.of(handler);
         }
         return null;
     }

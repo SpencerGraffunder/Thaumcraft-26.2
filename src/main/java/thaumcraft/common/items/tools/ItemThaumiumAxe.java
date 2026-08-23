@@ -14,9 +14,4 @@ public class ItemThaumiumAxe extends AxeItem {
     public ItemThaumiumAxe() {
         super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 6.0F, -3.1F, new Item.Properties());
     }
-    
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.THAUMIUM_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
 }

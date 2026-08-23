@@ -1,8 +1,10 @@
 package thaumcraft.common.blocks.devices;
 
+import net.minecraft.core.Direction;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
+
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -68,12 +70,12 @@ public class BlockDioptra extends Block implements EntityBlock {
     }
     
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                  BlockHitResult hit) {
         // Toggle between vis and flux display
         boolean currentMode = state.getValue(ENABLED);
         level.setBlock(pos, state.setValue(ENABLED, !currentMode), 3);
-        return InteractionResult.sidedSuccess(level.isClientSide());
+        return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
     }
     
     @Override
@@ -82,7 +84,7 @@ public class BlockDioptra extends Block implements EntityBlock {
     }
     
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof TileDioptra dioptra) {
             // Center of grid is index 84 (6*13 + 6 for a 13x13 grid)

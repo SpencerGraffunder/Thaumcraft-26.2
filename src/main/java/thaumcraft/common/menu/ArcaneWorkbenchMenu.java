@@ -169,19 +169,25 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
             boolean hasCrystals = true; // TODO: Check crystal requirements
             
             if (hasVis && hasCrystals) {
-                craftResult.setRecipeUsed(arcaneRecipe);
-                result = arcaneRecipe.assemble(craftMatrix, level.registryAccess());
+                craftResult.setRecipeUsed(new net.minecraft.world.item.crafting.RecipeHolder<>(
+                        net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
+                                net.minecraft.resources.Identifier.fromNamespaceAndPath("thaumcraft", "arcane_workbench")),
+                        arcaneRecipe));
+                result = arcaneRecipe.assemble(craftMatrix);
             }
         } else {
             // Check for vanilla recipes
-            var vanillaRecipe = level.getRecipeManager()
-                    .getRecipeFor(RecipeType.CRAFTING, craftMatrix, level);
-            
-            if (vanillaRecipe.isPresent()) {
-                CraftingRecipe recipe = vanillaRecipe.get();
-                // TODO: Check recipe book/limited crafting
-                craftResult.setRecipeUsed(recipe);
-                result = recipe.assemble(craftMatrix, level.registryAccess());
+            var server = level.getServer();
+            if (server != null) {
+                var vanillaRecipe = server.getRecipeManager()
+                        .getRecipeFor(RecipeType.CRAFTING, craftMatrix.asCraftInput(), level);
+                
+                if (vanillaRecipe.isPresent()) {
+                    var holder = vanillaRecipe.get();
+                    // TODO: Check recipe book/limited crafting
+                    craftResult.setRecipeUsed(holder);
+                    result = holder.value().assemble(craftMatrix.asCraftInput());
+                }
             }
         }
         

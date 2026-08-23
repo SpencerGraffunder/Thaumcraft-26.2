@@ -1,9 +1,9 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,7 +11,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * Swarm runes particle - magical rune particles that swarm around a target entity.
@@ -165,55 +164,22 @@ public class FXSwarmRunes extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         float bob = Mth.sin(this.age / 3.0f) * 0.25f + 1.0f;
         float trans = (50.0f - this.deathTimer) / 50.0f * 0.66f;
-        
-        Vec3 cameraPos = camera.getPosition();
-        float x = (float)(Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
-        float y = (float)(Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
-        float z = (float)(Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
-        
-        Quaternionf quaternion = camera.rotation();
+
+        Vec3 cameraPos = camera.position();
+        float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
+        float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
+        float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
+
+        Quaternionf rot = camera.rotation();
         float size = 0.07f * this.quadSize * bob;
-        
-        Vector3f[] vertices = new Vector3f[]{
-            new Vector3f(-1.0F, -1.0F, 0.0F),
-            new Vector3f(-1.0F, 1.0F, 0.0F),
-            new Vector3f(1.0F, 1.0F, 0.0F),
-            new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-        
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-        
-        // Texture coords for rune sprite
-        float u0 = this.particle / 64.0f;
-        float u1 = u0 + 0.015625f;
-        float v0 = 0.09375f;
-        float v1 = v0 + 0.015625f;
-        int light = 240; // Full bright for magic particles
-        
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-              .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, trans)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-              .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, trans)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-              .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, trans)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-              .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, trans)
-              .uv2(light).endVertex();
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+
+        int color = ARGB.colorFromFloat(trans, this.rCol, this.gCol, this.bCol);
+        int light = 0xF000F0; // Full bright for magic particles
+
+        state.add(getLayer(), x, y, z, rot.x, rot.y, rot.z, rot.w, size,
+                0.0f, 1.0f, 0.0f, 1.0f, color, light);
     }
 }

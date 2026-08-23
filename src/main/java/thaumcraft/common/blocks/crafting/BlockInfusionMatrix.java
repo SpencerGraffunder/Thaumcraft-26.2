@@ -32,7 +32,7 @@ public class BlockInfusionMatrix extends Block implements EntityBlock {
                 .strength(5.0f, 100.0f)
                 .sound(SoundType.STONE)
                 .noOcclusion()
-                .noCollission()
+                .noCollision()
                 .lightLevel(state -> 5));
     }
 

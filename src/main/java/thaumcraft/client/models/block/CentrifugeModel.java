@@ -7,18 +7,19 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
+import thaumcraft.client.renderers.tile.state.CentrifugeRenderState;
 
 /**
  * Model for the Centrifuge block entity.
  * Has a static outer frame (top/bottom boxes) and a spinning inner mechanism.
  */
 @OnlyIn(Dist.CLIENT)
-public class CentrifugeModel extends Model {
+public class CentrifugeModel extends Model<CentrifugeRenderState> {
 
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "centrifuge"), "main");
@@ -28,7 +29,7 @@ public class CentrifugeModel extends Model {
     private final ModelPart spinnyBit; // Contains crossbar, core, and dinguses
 
     public CentrifugeModel(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
+        super(root, RenderTypes::entityCutoutCull);
         this.top = root.getChild("top");
         this.bottom = root.getChild("bottom");
         this.spinnyBit = root.getChild("spinny_bit");
@@ -82,28 +83,9 @@ public class CentrifugeModel extends Model {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        top.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        bottom.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        spinnyBit.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-
-    /**
-     * Render only the static parts (top and bottom).
-     */
-    public void renderStaticParts(PoseStack poseStack, VertexConsumer buffer, int packedLight,
-                                  int packedOverlay, float red, float green, float blue, float alpha) {
-        top.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        bottom.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-
-    /**
-     * Render only the spinning mechanism.
-     */
-    public void renderSpinnyBit(PoseStack poseStack, VertexConsumer buffer, int packedLight,
-                                int packedOverlay, float red, float green, float blue, float alpha) {
-        spinnyBit.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void setupAnim(CentrifugeRenderState state) {
+        super.setupAnim(state);
+        spinnyBit.yRot = state.rotation;
     }
 
     /**

@@ -32,7 +32,8 @@ public class EntityBottleTaint extends ThrowableProjectile {
     }
     
     public EntityBottleTaint(Level level, LivingEntity owner) {
-        super(ModEntities.BOTTLE_TAINT.get(), owner, level);
+        super(ModEntities.BOTTLE_TAINT.get(), level);
+        this.setOwner(owner);
     }
     
     public EntityBottleTaint(Level level, double x, double y, double z) {
@@ -126,7 +127,7 @@ public class EntityBottleTaint extends ThrowableProjectile {
         BlockState stateAt = level().getBlockState(pos);
         
         // Need solid ground below and air/replaceable at position
-        return stateBelow.isSolidRender(level(), pos.below()) && 
+        return stateBelow.isSolidRender() && 
                (stateAt.isAir() || stateAt.canBeReplaced());
     }
     
@@ -138,7 +139,7 @@ public class EntityBottleTaint extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return 0.05f; // Standard potion-like gravity
     }
 }

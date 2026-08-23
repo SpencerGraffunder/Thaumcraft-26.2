@@ -11,8 +11,8 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -27,8 +27,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.api.crafting.IInfusionStabiliserExt;
 import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.common.tiles.devices.TileStabilizer;
@@ -98,7 +96,7 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
                 .mapColor(MapColor.GOLD)
                 .sound(SoundType.METAL)
                 .strength(0.5f)
-                .noCollission()
+                .noCollision()
                 .lightLevel(state -> 1));
         
         registerDefaultState(stateDefinition.any()
@@ -198,8 +196,8 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
     // ==================== Block Updates ====================
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
-                                   LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+                                   BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
         if (direction.getAxis().isHorizontal()) {
             state = state.setValue(getPropertyForDirection(direction), 
                     getAttachPosition(level, pos, direction));
@@ -233,16 +231,13 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!level.isClientSide() && !state.is(newState.getBlock())) {
-            super.onRemove(state, level, pos, newState, isMoving);
-            for (Direction dir : Direction.Plane.HORIZONTAL) {
-                level.updateNeighborsAt(pos.relative(dir), this);
-            }
-            updateSurroundingInlay(level, pos, state);
-            for (Direction dir : Direction.Plane.HORIZONTAL) {
-                notifyInlayNeighborsOfStateChange(level, pos.relative(dir));
-            }
+    public void affectNeighborsAfterRemoval(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, boolean isMoving) {
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
+            level.updateNeighborsAt(pos.relative(dir), this);
+        }
+        updateSurroundingInlay(level, pos, state);
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
+            notifyInlayNeighborsOfStateChange(level, pos.relative(dir));
         }
     }
 
@@ -317,7 +312,7 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
     public static boolean isSourceBlock(BlockGetter level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         // Check if it's a stabilizer block
-        if (ModBlocks.STABILIZER != null && ModBlocks.STABILIZER.isPresent()) {
+        if (ModBlocks.STABILIZER != null) {
             return state.is(ModBlocks.STABILIZER.get());
         }
         return state.getBlock() instanceof BlockStabilizer;
@@ -409,7 +404,6 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
 
     // ==================== Visual Effects ====================
 
-    @OnlyIn(Dist.CLIENT)
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         int charge = state.getValue(CHARGE);
@@ -440,7 +434,6 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
      * Returns the color multiplier based on charge level.
      * Used by the color handler for rendering.
      */
-    @OnlyIn(Dist.CLIENT)
     public static int colorMultiplier(int charge) {
         float f = charge / 15.0f;
         float brightness = f * 0.5f + 0.5f;

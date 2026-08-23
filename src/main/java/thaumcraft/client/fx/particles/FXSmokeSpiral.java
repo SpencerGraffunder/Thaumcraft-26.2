@@ -2,12 +2,13 @@ package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * FXSmokeSpiral - Spiraling smoke particle that orbits around a central point.
@@ -52,8 +53,8 @@ public class FXSmokeSpiral extends ThaumcraftParticle {
     }
 
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 cameraPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 cameraPos = camera.position();
 
         // Calculate spiral position based on age
         float progress = (this.age + partialTicks) / this.lifetime;
@@ -86,41 +87,13 @@ public class FXSmokeSpiral extends ThaumcraftParticle {
         float size = 0.15f * this.quadSize;
         float displayAlpha = 0.66f * this.alpha;
 
-        int light = this.getLightCoords(partialTicks);
+        // Single camera-facing billboard quad (26.2 render-state model)
+        Quaternionf rot = camera.rotation();
+        int color = ARGB.colorFromFloat(displayAlpha, this.rCol, this.gCol, this.bCol);
+        int light = 0xF000F0;
 
-        Quaternionf quaternion = camera.rotation();
-
-        Vector3f[] vertices = new Vector3f[]{
-                new Vector3f(-1.0F, -1.0F, 0.0F),
-                new Vector3f(-1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, 1.0F, 0.0F),
-                new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-    }
-
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_LIT;
+        state.add(getLayer(), x, y, z, rot.x, rot.y, rot.z, rot.w, size,
+                u0, u1, v0, v1, color, light);
     }
 
     // ==================== Configuration Methods ====================

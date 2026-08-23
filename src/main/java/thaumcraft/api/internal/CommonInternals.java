@@ -1,5 +1,6 @@
 package thaumcraft.api.internal;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -61,26 +62,22 @@ public class CommonInternals {
     }
     
     /**
-     * Generate a unique ID for an itemstack based on its NBT serialization.
+     * Generate a unique ID for an itemstack based on its data components.
      * Obviously not truly unique, but unique enough for this purpose.
      */
     public static int generateUniqueItemstackId(ItemStack stack) {
         ItemStack sc = stack.copy();
         sc.setCount(1);
-        CompoundTag nbt = new CompoundTag();
-        sc.save(nbt);
-        return nbt.toString().hashCode();
+        return sc.getComponents().toString().hashCode();
     }
     
     /**
-     * Generate a unique ID for an itemstack, stripping all NBT data first.
+     * Generate a unique ID for an itemstack, stripping all data component data first.
      */
     public static int generateUniqueItemstackIdStripped(ItemStack stack) {
         ItemStack sc = stack.copy();
         sc.setCount(1);
-        sc.setTag(null);
-        CompoundTag nbt = new CompoundTag();
-        sc.save(nbt);
-        return nbt.toString().hashCode();
+        sc.remove(DataComponents.CUSTOM_DATA);
+        return sc.getComponents().toString().hashCode();
     }
 }

@@ -2,7 +2,9 @@ package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,7 +13,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import thaumcraft.init.ModSounds;
 
 import java.util.ArrayList;
@@ -212,61 +213,37 @@ public class FXSwarm extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 camPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 camPos = camera.position();
         float px = (float)(Mth.lerp(partialTicks, xo, x) - camPos.x());
         float py = (float)(Mth.lerp(partialTicks, yo, y) - camPos.y());
         float pz = (float)(Mth.lerp(partialTicks, zo, z) - camPos.z());
-        
+
         // Pulsing size
         float bob = Mth.sin(age / 3.0f) * 0.25f + 1.0f;
         float size = 0.1f * quadSize * bob;
-        
+
         // Transparency when dying
         float trans = (50.0f - deathTimer) / 50.0f;
-        
+
         // Flash red when target is hurt
         float dd = 1.0f;
         if (target instanceof LivingEntity living && living.hurtTime > 0) {
             dd = 2.0f;
         }
-        
-        // Billboard quad
-        Quaternionf rotation = camera.rotation();
-        Vector3f[] vertices = new Vector3f[] {
-            new Vector3f(-1.0f, -1.0f, 0.0f),
-            new Vector3f(-1.0f, 1.0f, 0.0f),
-            new Vector3f(1.0f, 1.0f, 0.0f),
-            new Vector3f(1.0f, -1.0f, 0.0f)
-        };
-        
-        for (Vector3f vertex : vertices) {
-            vertex.rotate(rotation);
-            vertex.mul(size);
-            vertex.add(px, py, pz);
-        }
-        
+
         // Animated sprite (8 frames, starting at position 7)
         int frame = 7 + age % 8;
         float u0 = frame / 64.0f;
         float u1 = u0 + 0.015625f;
         float v0 = 0.0625f;  // Row 4
         float v1 = v0 + 0.015625f;
-        
+
         int light = 0xF000F0;  // Full brightness
-        
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(rCol, gCol / dd, bCol / dd, trans).uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(rCol, gCol / dd, bCol / dd, trans).uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(rCol, gCol / dd, bCol / dd, trans).uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(rCol, gCol / dd, bCol / dd, trans).uv2(light).endVertex();
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_LIT;
+        int color = ARGB.colorFromFloat(trans, rCol, gCol / dd, bCol / dd);
+
+        Quaternionf rotation = camera.rotation();
+        state.add(getLayer(), px, py, pz, rotation.x, rotation.y, rotation.z, rotation.w, size,
+                u0, u1, v0, v1, color, light);
     }
 }

@@ -33,7 +33,8 @@ import thaumcraft.common.lib.network.misc.PacketItemKeyToServer;
 public class KeyHandler {
     
     // Key category for Thaumcraft
-    public static final String KEY_CATEGORY = "key.categories.thaumcraft";
+    public static final KeyMapping.Category KEY_CATEGORY =
+            new KeyMapping.Category(net.minecraft.resources.Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "thaumcraft"));
     
     // Key mappings
     public static KeyMapping keyF;
@@ -81,6 +82,7 @@ public class KeyHandler {
         if (keyF == null || keyG == null) {
             init();
         }
+        event.registerCategory(KEY_CATEGORY);
         event.register(keyF);
         event.register(keyG);
         Thaumcraft.LOGGER.info("Registered Thaumcraft key mappings");
@@ -96,7 +98,7 @@ public class KeyHandler {
         Minecraft mc = Minecraft.getInstance();
         
         // Only process when in-game and focused
-        if (mc.player == null || mc.screen != null) {
+        if (mc.player == null || mc.gui.screen() != null) {
             // Reset states when not in game or a screen is open
             if (keyPressedF) {
                 radialActive = false;
@@ -176,7 +178,7 @@ public class KeyHandler {
                 // Check modifier keys
                 // In 1.20.1, we use Screen.hasControlDown() and Screen.hasShiftDown()
                 // but those require a screen context. Use GLFW directly instead.
-                long windowHandle = Minecraft.getInstance().getWindow().getWindow();
+                com.mojang.blaze3d.platform.Window windowHandle = Minecraft.getInstance().getWindow();
                 boolean ctrlDown = InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL) ||
                                    InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL);
                 boolean shiftDown = InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_SHIFT) ||

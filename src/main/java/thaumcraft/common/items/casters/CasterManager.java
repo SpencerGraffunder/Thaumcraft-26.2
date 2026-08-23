@@ -1,11 +1,13 @@
 package thaumcraft.common.items.casters;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.casters.FocusEngine;
 import thaumcraft.api.casters.FocusPackage;
@@ -56,8 +58,13 @@ public class CasterManager {
         total += CuriosCompat.getVisDiscountFromCurios(player);
         
         // Check armor slots (0=feet, 1=legs, 2=chest, 3=head)
-        for (int slot = 0; slot < 4; slot++) {
-            ItemStack armorStack = player.getInventory().armor.get(slot);
+        net.minecraft.world.entity.EquipmentSlot[] armorSlots = new net.minecraft.world.entity.EquipmentSlot[]{
+                net.minecraft.world.entity.EquipmentSlot.FEET,
+                net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.HEAD};
+        for (int slot = 0; slot < armorSlots.length; slot++) {
+            ItemStack armorStack = player.getItemBySlot(armorSlots[slot]);
             if (!armorStack.isEmpty() && armorStack.getItem() instanceof IVisDiscountGear gear) {
                 total += gear.getVisDiscount(armorStack, player);
             }
@@ -82,8 +89,8 @@ public class CasterManager {
      * Used when the player needs vis but isn't holding a caster.
      */
     public static boolean consumeVisFromInventory(Player player, float cost) {
-        for (int slot = player.getInventory().getItems().size() - 1; slot >= 0; slot--) {
-            ItemStack item = player.getInventory().getItems().get(slot);
+        for (int slot = player.getInventory().getNonEquipmentItems().size() - 1; slot >= 0; slot--) {
+            ItemStack item = player.getInventory().getNonEquipmentItems().get(slot);
             if (!item.isEmpty() && item.getItem() instanceof ICaster caster) {
                 if (caster.consumeVis(item, player, cost, true, false)) {
                     return true;
@@ -116,7 +123,7 @@ public class CasterManager {
         
         // Check player inventory for foci and focus pouches
         for (int slot = 0; slot < 36; slot++) {
-            ItemStack item = player.getInventory().getItems().get(slot);
+            ItemStack item = player.getInventory().getNonEquipmentItems().get(slot);
             if (item.isEmpty()) continue;
             
             if (item.getItem() instanceof ItemFocus focus) {
@@ -173,8 +180,8 @@ public class CasterManager {
             
             if (location >= 0 && location < 1000) {
                 // Focus is in player inventory
-                newFocus = player.getInventory().getItems().get(location).copy();
-                player.getInventory().getItems().set(location, ItemStack.EMPTY);
+                newFocus = player.getInventory().getNonEquipmentItems().get(location).copy();
+                player.getInventory().getNonEquipmentItems().set(location, ItemStack.EMPTY);
             } else {
                 // Focus is in a pouch
                 int pouchId = location / 1000;
@@ -209,11 +216,11 @@ public class CasterManager {
      */
     private static ItemStack fetchFocusFromPouch(Player player, int focusSlot, int pouchSlot) {
         // Negative slot numbers were used for Curios slots (no longer supported)
-        if (pouchSlot < 0 || pouchSlot >= player.getInventory().getItems().size()) {
+        if (pouchSlot < 0 || pouchSlot >= player.getInventory().getNonEquipmentItems().size()) {
             return ItemStack.EMPTY;
         }
         
-        ItemStack pouch = player.getInventory().getItems().get(pouchSlot);
+        ItemStack pouch = player.getInventory().getNonEquipmentItems().get(pouchSlot);
         
         if (pouch.isEmpty() || !(pouch.getItem() instanceof ItemFocusPouch focusPouch)) {
             return ItemStack.EMPTY;
@@ -233,7 +240,7 @@ public class CasterManager {
         inv.set(focusSlot, ItemStack.EMPTY);
         focusPouch.setInventory(pouch, inv);
         
-        player.getInventory().getItems().set(pouchSlot, pouch);
+        player.getInventory().getNonEquipmentItems().set(pouchSlot, pouch);
         player.getInventory().setChanged();
         
         return result;
@@ -247,11 +254,11 @@ public class CasterManager {
             int pouchSlot = entry.getValue();
             
             // Negative slot numbers were used for Curios slots (no longer supported)
-            if (pouchSlot < 0 || pouchSlot >= player.getInventory().getItems().size()) {
+            if (pouchSlot < 0 || pouchSlot >= player.getInventory().getNonEquipmentItems().size()) {
                 continue;
             }
             
-            ItemStack pouch = player.getInventory().getItems().get(pouchSlot);
+            ItemStack pouch = player.getInventory().getNonEquipmentItems().get(pouchSlot);
             
             if (pouch.isEmpty() || !(pouch.getItem() instanceof ItemFocusPouch focusPouch)) {
                 continue;
@@ -263,7 +270,7 @@ public class CasterManager {
                     inv.set(q, focus.copy());
                     focusPouch.setInventory(pouch, inv);
                     
-                    player.getInventory().getItems().set(pouchSlot, pouch);
+                    player.getInventory().getNonEquipmentItems().set(pouchSlot, pouch);
                     player.getInventory().setChanged();
                     return true;
                 }
@@ -328,7 +335,7 @@ public class CasterManager {
     }
     
     public static int getAreaDim(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag != null && tag.contains("aread")) {
             return tag.getIntOr("aread", 0);
         }
@@ -336,7 +343,7 @@ public class CasterManager {
     }
     
     public static int getAreaX(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag != null && tag.contains("areax")) {
             return Math.min(tag.getIntOr("areax", 0), getAreaSize(stack));
         }
@@ -344,7 +351,7 @@ public class CasterManager {
     }
     
     public static int getAreaY(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag != null && tag.contains("areay")) {
             return Math.min(tag.getIntOr("areay", 0), getAreaSize(stack));
         }
@@ -352,7 +359,7 @@ public class CasterManager {
     }
     
     public static int getAreaZ(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag != null && tag.contains("areaz")) {
             return Math.min(tag.getIntOr("areaz", 0), getAreaSize(stack));
         }
@@ -360,19 +367,27 @@ public class CasterManager {
     }
     
     public static void setAreaX(ItemStack stack, int area) {
-        stack.getOrCreateTag().putInt("areax", area);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.putInt("areax", area);
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     public static void setAreaY(ItemStack stack, int area) {
-        stack.getOrCreateTag().putInt("areay", area);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.putInt("areay", area);
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     public static void setAreaZ(ItemStack stack, int area) {
-        stack.getOrCreateTag().putInt("areaz", area);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.putInt("areaz", area);
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     public static void setAreaDim(ItemStack stack, int dim) {
-        stack.getOrCreateTag().putInt("aread", dim);
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        tag.putInt("aread", dim);
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
     }
     
     // === Cooldown tracking ===

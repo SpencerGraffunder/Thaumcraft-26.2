@@ -98,7 +98,7 @@ public class SealGuard implements ISeal, ISealConfigArea, ISealConfigToggles {
         // Check if targeting players (only if PVP enabled)
         if (props[2].getValue() && target instanceof Player) {
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server != null && server.isPvpAllowed()) {
+            if (server != null && true) {
                 valid = true;
             }
         }

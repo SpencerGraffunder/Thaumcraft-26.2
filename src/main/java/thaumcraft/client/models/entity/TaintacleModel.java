@@ -12,12 +12,12 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
-import thaumcraft.common.entities.monster.tainted.EntityTaintacle;
+import thaumcraft.client.renderers.entity.state.TaintacleRenderState;
 
 /**
  * TaintacleModel - Model for Taintacles (tainted tentacles).
@@ -33,7 +33,7 @@ import thaumcraft.common.entities.monster.tainted.EntityTaintacle;
  * careful positioning and animation.
  */
 @OnlyIn(Dist.CLIENT)
-public class TaintacleModel<T extends Entity> extends EntityModel<T> {
+public class TaintacleModel extends EntityModel<TaintacleRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle"), "main");
@@ -47,6 +47,7 @@ public class TaintacleModel<T extends Entity> extends EntityModel<T> {
     private final ModelPart head;
     
     public TaintacleModel(ModelPart root) {
+        super(root);
         this.base = root.getChild("base");
         this.segments = new ModelPart[NUM_SEGMENTS];
         
@@ -119,16 +120,10 @@ public class TaintacleModel<T extends Entity> extends EntityModel<T> {
     }
     
     @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, 
-                          float ageInTicks, float netHeadYaw, float headPitch) {
-        // Get flail intensity from entity if it's a Taintacle
-        float flailIntensity = 1.0F;
-        float hurtTime = 0.0F;
-        
-        if (entity instanceof EntityTaintacle taintacle) {
-            flailIntensity = taintacle.flailIntensity;
-            hurtTime = taintacle.hurtTime;
-        }
+    public void setupAnim(TaintacleRenderState state) {
+        // Get flail intensity from the render state
+        float flailIntensity = state.flailIntensity;
+        float hurtTime = state.hurtTime;
         
         // Calculate animation modifiers
         float mod = 0.2F;
@@ -144,25 +139,25 @@ public class TaintacleModel<T extends Entity> extends EntityModel<T> {
         for (int i = 0; i < NUM_SEGMENTS; i++) {
             // X rotation creates the main wave motion (forward/back swaying)
             this.segments[i].xRot = 0.15F * intensityFactor * 
-                    Mth.sin(ageInTicks * 0.1F * speedFactor - i / 2.0F);
+                    Mth.sin(state.ageInTicks * 0.1F * speedFactor - i / 2.0F);
             
             // Z rotation adds secondary side-to-side motion
             this.segments[i].zRot = 0.1F / intensityFactor * 
-                    Mth.sin(ageInTicks * 0.15F - i / 2.0F);
+                    Mth.sin(state.ageInTicks * 0.15F - i / 2.0F);
         }
         
         // Head/tip follows the wave but with slight delay
-        float tipWave = Mth.sin(ageInTicks * 0.1F * speedFactor - NUM_SEGMENTS / 2.0F);
+        float tipWave = Mth.sin(state.ageInTicks * 0.1F * speedFactor - NUM_SEGMENTS / 2.0F);
         this.tipOrb.xRot = tipWave * 0.1F;
         this.head.xRot = tipWave * 0.1F;
     }
     
-    @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, 
                                int packedLight, int packedOverlay, 
                                float red, float green, float blue, float alpha) {
         // Render the base, which recursively renders all children
-        this.base.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        this.base.render(poseStack, vertexConsumer, packedLight, packedOverlay,
+                net.minecraft.util.ARGB.colorFromFloat(alpha, red, green, blue));
     }
     
     /**

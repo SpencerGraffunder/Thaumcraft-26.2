@@ -7,11 +7,12 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
+import thaumcraft.client.renderers.tile.state.BannerRenderState;
 
 /**
  * BannerModel - Model for Thaumcraft banners.
@@ -25,7 +26,7 @@ import thaumcraft.Thaumcraft;
  * Ported from 1.12.2 ModelBanner.
  */
 @OnlyIn(Dist.CLIENT)
-public class BannerModel extends Model {
+public class BannerModel extends Model<BannerRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "banner"), "main");
@@ -37,7 +38,7 @@ public class BannerModel extends Model {
     private final ModelPart banner;
     
     public BannerModel(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
+        super(root, RenderTypes::entityCutoutCull);
         this.pole = root.getChild("pole");
         this.beam = root.getChild("beam");
         this.b1 = root.getChild("b1");
@@ -83,35 +84,9 @@ public class BannerModel extends Model {
     }
     
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        // Render all parts
-        pole.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        beam.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        b1.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        b2.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        banner.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-    
-    public void renderPole(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                           int packedOverlay, float red, float green, float blue, float alpha) {
-        pole.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-    
-    public void renderBeam(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                           int packedOverlay, float red, float green, float blue, float alpha) {
-        beam.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-    
-    public void renderTabs(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                           int packedOverlay, float red, float green, float blue, float alpha) {
-        b1.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        b2.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-    
-    public void renderBanner(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                             int packedOverlay, float red, float green, float blue, float alpha) {
-        banner.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void setupAnim(BannerRenderState state) {
+        super.setupAnim(state);
+        banner.xRot = state.wind;
     }
     
     /**

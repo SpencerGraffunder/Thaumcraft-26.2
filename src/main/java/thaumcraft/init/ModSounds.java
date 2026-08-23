@@ -3,7 +3,7 @@ package thaumcraft.init;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.block.SoundType;
-import net.neoforged.neoforge.common.SoundTypes;
+import net.neoforged.neoforge.common.util.DeferredSoundType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -116,15 +116,15 @@ public class ModSounds {
     // These must be initialized lazily since they reference RegistryObjects
     // Use ForgeSoundType which accepts suppliers
     
-    public static final SoundType GORE_TYPE = new ForgeSoundType(0.5f, 1.0f, 
+    public static final SoundType GORE_TYPE = new DeferredSoundType(0.5f, 1.0f, 
             GORE::get, GORE::get, GORE::get, GORE::get, GORE::get);
     
-    public static final SoundType CRYSTAL_TYPE = new ForgeSoundType(0.5f, 1.0f, 
+    public static final SoundType CRYSTAL_TYPE = new DeferredSoundType(0.5f, 1.0f, 
             CRYSTAL::get, CRYSTAL::get, CRYSTAL::get, CRYSTAL::get, CRYSTAL::get);
     
-    public static final SoundType JAR_TYPE = new ForgeSoundType(0.5f, 1.0f, 
+    public static final SoundType JAR_TYPE = new DeferredSoundType(0.5f, 1.0f, 
             JAR::get, JAR::get, JAR::get, JAR::get, JAR::get);
     
-    public static final SoundType URN_TYPE = new ForgeSoundType(0.5f, 1.5f, 
+    public static final SoundType URN_TYPE = new DeferredSoundType(0.5f, 1.5f, 
             URN_BREAK::get, URN_BREAK::get, URN_BREAK::get, URN_BREAK::get, URN_BREAK::get);
 }

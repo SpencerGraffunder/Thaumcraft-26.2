@@ -1,7 +1,6 @@
 package thaumcraft.client.models.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -18,7 +17,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
-import thaumcraft.common.entities.monster.EntityPech;
+import thaumcraft.client.renderers.entity.state.PechRenderState;
 
 /**
  * PechModel - Model for the Pech mob.
@@ -27,7 +26,7 @@ import thaumcraft.common.entities.monster.EntityPech;
  * Features a short humanoid body with large jowls, backpack, and animated mumbling jaw.
  */
 @OnlyIn(Dist.CLIENT)
-public class PechModel extends EntityModel<EntityPech> implements ArmedModel {
+public class PechModel extends EntityModel<PechRenderState> implements ArmedModel<PechRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "pech"), "main");
@@ -44,6 +43,7 @@ public class PechModel extends EntityModel<EntityPech> implements ArmedModel {
     private final ModelPart upperPack;
     
     public PechModel(ModelPart root) {
+        super(root);
         this.head = root.getChild("head");
         this.jowls = root.getChild("jowls");
         this.body = root.getChild("body");
@@ -129,36 +129,35 @@ public class PechModel extends EntityModel<EntityPech> implements ArmedModel {
     }
     
     @Override
-    public void setupAnim(EntityPech entity, float limbSwing, float limbSwingAmount, 
-                          float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(PechRenderState state) {
         // Head rotation
-        this.head.yRot = netHeadYaw * ((float)Math.PI / 180F);
-        this.head.xRot = headPitch * ((float)Math.PI / 180F);
+        this.head.yRot = state.yRot * ((float)Math.PI / 180F);
+        this.head.xRot = state.xRot * ((float)Math.PI / 180F);
         
         // Jowls animation - follows head and mumbles
-        float mumble = entity.getMumble();
+        float mumble = state.mumble;
         this.jowls.yRot = this.head.yRot;
-        this.jowls.xRot = this.head.xRot + 0.2618F + Mth.cos(limbSwing * 0.6662F) * limbSwingAmount * 0.25F 
+        this.jowls.xRot = this.head.xRot + 0.2618F + Mth.cos(state.walkAnimationPos * 0.6662F) * state.walkAnimationSpeed * 0.25F 
                 + 0.349F * Math.abs(Mth.sin(mumble / 8.0F));
         
         // Arm swing while walking
-        this.rightArm.xRot = Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.0F * limbSwingAmount * 0.5F;
-        this.leftArm.xRot = Mth.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F;
+        this.rightArm.xRot = Mth.cos(state.walkAnimationPos * 0.6662F + (float)Math.PI) * 2.0F * state.walkAnimationSpeed * 0.5F;
+        this.leftArm.xRot = Mth.cos(state.walkAnimationPos * 0.6662F) * 2.0F * state.walkAnimationSpeed * 0.5F;
         this.rightArm.zRot = 0.0F;
         this.leftArm.zRot = 0.0F;
         
         // Leg swing while walking
-        this.rightLeg.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-        this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.rightLeg.xRot = Mth.cos(state.walkAnimationPos * 0.6662F) * 1.4F * state.walkAnimationSpeed;
+        this.leftLeg.xRot = Mth.cos(state.walkAnimationPos * 0.6662F + (float)Math.PI) * 1.4F * state.walkAnimationSpeed;
         this.rightLeg.yRot = 0.0F;
         this.leftLeg.yRot = 0.0F;
         
         // Backpack wobble
-        this.lowerPack.yRot = Mth.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.125F;
-        this.lowerPack.zRot = Mth.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.125F;
+        this.lowerPack.yRot = Mth.cos(state.walkAnimationPos * 0.6662F) * 2.0F * state.walkAnimationSpeed * 0.125F;
+        this.lowerPack.zRot = Mth.cos(state.walkAnimationPos * 0.6662F) * 2.0F * state.walkAnimationSpeed * 0.125F;
         
         // Riding adjustments
-        if (riding) {
+        if (state.riding) {
             this.rightArm.xRot -= 0.6283F;
             this.leftArm.xRot -= 0.6283F;
             this.rightLeg.xRot = -1.2566F;
@@ -172,55 +171,41 @@ public class PechModel extends EntityModel<EntityPech> implements ArmedModel {
         this.leftArm.yRot = 0.0F;
         
         // Attack swing animation
-        if (attackTime > 0) {
-            float swingProgress = attackTime;
+        if (state.attackTime > 0) {
+            float swingProgress = state.attackTime;
             
             this.rightArm.yRot += body.yRot;
             this.leftArm.yRot += body.yRot;
             this.leftArm.xRot += body.yRot;
             
-            float f6 = 1.0F - attackTime;
+            float f6 = 1.0F - state.attackTime;
             f6 = f6 * f6;
             f6 = f6 * f6;
             f6 = 1.0F - f6;
             
             float f7 = Mth.sin(f6 * (float)Math.PI);
-            float f8 = Mth.sin(attackTime * (float)Math.PI) * -(head.xRot - 0.7F) * 0.75F;
+            float f8 = Mth.sin(state.attackTime * (float)Math.PI) * -(head.xRot - 0.7F) * 0.75F;
             
             this.rightArm.xRot -= f7 * 1.2F + f8;
             this.rightArm.yRot += body.yRot * 2.0F;
-            this.rightArm.zRot = Mth.sin(attackTime * (float)Math.PI) * -0.4F;
+            this.rightArm.zRot = Mth.sin(state.attackTime * (float)Math.PI) * -0.4F;
         }
         
         // Sneaking adjustments
-        if (entity.isShiftKeyDown()) {
+        if (state.sneaking) {
             this.rightArm.xRot += 0.4F;
             this.leftArm.xRot += 0.4F;
         }
         
         // Idle arm movement
-        this.rightArm.zRot += Mth.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-        this.leftArm.zRot -= Mth.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-        this.rightArm.xRot += Mth.sin(ageInTicks * 0.067F) * 0.05F;
-        this.leftArm.xRot -= Mth.sin(ageInTicks * 0.067F) * 0.05F;
+        this.rightArm.zRot += Mth.cos(state.ageInTicks * 0.09F) * 0.05F + 0.05F;
+        this.leftArm.zRot -= Mth.cos(state.ageInTicks * 0.09F) * 0.05F + 0.05F;
+        this.rightArm.xRot += Mth.sin(state.ageInTicks * 0.067F) * 0.05F;
+        this.leftArm.xRot -= Mth.sin(state.ageInTicks * 0.067F) * 0.05F;
     }
     
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        jowls.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        rightArm.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leftArm.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        rightLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leftLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        lowerPack.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        upperPack.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-    
-    @Override
-    public void translateToHand(HumanoidArm arm, PoseStack poseStack) {
+    public void translateToHand(PechRenderState state, HumanoidArm arm, PoseStack poseStack) {
         ModelPart modelpart = arm == HumanoidArm.LEFT ? this.leftArm : this.rightArm;
         modelpart.translateAndRotate(poseStack);
         // Translate to end of arm

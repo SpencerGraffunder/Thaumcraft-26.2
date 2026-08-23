@@ -1,7 +1,5 @@
 package thaumcraft.client.models.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -16,7 +14,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
-import thaumcraft.common.entities.construct.EntityTurretCrossbowAdvanced;
+import thaumcraft.client.renderers.entity.state.TurretCrossbowRenderState;
 
 /**
  * CrossbowAdvancedModel - Model for the advanced crossbow turret.
@@ -25,7 +23,7 @@ import thaumcraft.common.entities.construct.EntityTurretCrossbowAdvanced;
  * Features additional parts: shield, box (ammunition storage), brain module, and loader mechanism.
  */
 @OnlyIn(Dist.CLIENT)
-public class CrossbowAdvancedModel extends EntityModel<EntityTurretCrossbowAdvanced> {
+public class CrossbowAdvancedModel extends EntityModel<TurretCrossbowRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "turret_crossbow_advanced"), "main");
@@ -46,6 +44,7 @@ public class CrossbowAdvancedModel extends EntityModel<EntityTurretCrossbowAdvan
     private float loadProgress = 0.0f;
     
     public CrossbowAdvancedModel(ModelPart root) {
+        super(root);
         this.legs = root.getChild("legs");
         this.mech = root.getChild("mech");
         this.box = mech.getChild("box");
@@ -152,21 +151,20 @@ public class CrossbowAdvancedModel extends EntityModel<EntityTurretCrossbowAdvan
     }
     
     @Override
-    public void setupAnim(EntityTurretCrossbowAdvanced entity, float limbSwing, float limbSwingAmount, 
-                          float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(TurretCrossbowRenderState state) {
         // Store load progress for animation
-        this.loadProgress = entity.getLoadProgress(ageInTicks - (int)ageInTicks);
+        this.loadProgress = state.loadProgress;
         
         // Mech rotation (aiming)
-        this.mech.yRot = netHeadYaw * ((float)Math.PI / 180F);
-        this.mech.xRot = headPitch * ((float)Math.PI / 180F);
+        this.mech.yRot = state.yRot * ((float)Math.PI / 180F);
+        this.mech.xRot = state.xRot * ((float)Math.PI / 180F);
         
         // Loader slide animation during reload
         float loaderZ = Mth.sin(Mth.sqrt(loadProgress) * (float)Math.PI * 2.0F) / 12.0F * 16.0F;
         this.loader.z = 2.0F + loaderZ;
         
         // Bow arm animation on firing
-        float swingProgress = entity.getAttackAnim(ageInTicks - (int)ageInTicks);
+        float swingProgress = state.attackAnim;
         if (swingProgress > 0) {
             float bowAnim = Mth.sin(Mth.sqrt(swingProgress) * (float)Math.PI * 2.0F) * 0.35F;
             this.bow1.yRot = bowAnim;
@@ -175,12 +173,5 @@ public class CrossbowAdvancedModel extends EntityModel<EntityTurretCrossbowAdvan
             this.bow1.yRot = 0.0F;
             this.bow2.yRot = 0.0F;
         }
-    }
-    
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        legs.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        mech.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

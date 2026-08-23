@@ -106,16 +106,16 @@ public class ModBlocks {
     // ==================== Stairs ====================
 
     public static final DeferredHolder<Block, Block> ARCANE_STONE_STAIRS = registerBlock("arcane_stone_stairs",
-            () -> new StairBlock(() -> ARCANE_STONE.get().defaultBlockState(),
-                    BlockBehaviour.Properties.copy(ARCANE_STONE.get())));
+            () -> new StairBlock(ARCANE_STONE.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(ARCANE_STONE.get())));
 
     public static final DeferredHolder<Block, Block> ARCANE_STONE_BRICK_STAIRS = registerBlock("arcane_stone_brick_stairs",
-            () -> new StairBlock(() -> ARCANE_STONE_BRICK.get().defaultBlockState(),
-                    BlockBehaviour.Properties.copy(ARCANE_STONE_BRICK.get())));
+            () -> new StairBlock(ARCANE_STONE_BRICK.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(ARCANE_STONE_BRICK.get())));
 
     public static final DeferredHolder<Block, Block> ANCIENT_STONE_STAIRS = registerBlock("ancient_stone_stairs",
-            () -> new StairBlock(() -> ANCIENT_STONE.get().defaultBlockState(),
-                    BlockBehaviour.Properties.copy(ANCIENT_STONE.get())));
+            () -> new StairBlock(ANCIENT_STONE.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(ANCIENT_STONE.get())));
 
     // ==================== Slabs ====================
 
@@ -170,12 +170,12 @@ public class ModBlocks {
             BlockPlanksTC::createSilverwood);
 
     public static final DeferredHolder<Block, Block> GREATWOOD_STAIRS = registerBlock("greatwood_stairs",
-            () -> new StairBlock(() -> GREATWOOD_PLANKS.get().defaultBlockState(),
-                    BlockBehaviour.Properties.copy(GREATWOOD_PLANKS.get())));
+            () -> new StairBlock(GREATWOOD_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(GREATWOOD_PLANKS.get())));
 
     public static final DeferredHolder<Block, Block> SILVERWOOD_STAIRS = registerBlock("silverwood_stairs",
-            () -> new StairBlock(() -> SILVERWOOD_PLANKS.get().defaultBlockState(),
-                    BlockBehaviour.Properties.copy(SILVERWOOD_PLANKS.get())));
+            () -> new StairBlock(SILVERWOOD_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(SILVERWOOD_PLANKS.get())));
 
     public static final DeferredHolder<Block, Block> GREATWOOD_SLAB = registerBlock("greatwood_slab",
             () -> new SlabBlock(BlockBehaviour.Properties.of()
@@ -707,8 +707,8 @@ public class ModBlocks {
     /**
      * Register a block and its corresponding item.
      */
-    private static <T extends Block> DeferredHolder<T, T> registerBlock(String name, Supplier<T> block) {
-        DeferredHolder<T, T> blockObj = BLOCKS.register(name, block);
+    private static <T extends Block> DeferredHolder<Block, T> registerBlock(String name, Supplier<T> block) {
+        DeferredHolder<Block, T> blockObj = BLOCKS.register(name, block);
         registerBlockItem(name, blockObj);
         return blockObj;
     }
@@ -717,14 +717,14 @@ public class ModBlocks {
      * Register a block without a corresponding item.
      * Used for effect blocks, holes, and other non-obtainable blocks.
      */
-    private static <T extends Block> DeferredHolder<T, T> registerBlockNoItem(String name, Supplier<T> block) {
+    private static <T extends Block> DeferredHolder<Block, T> registerBlockNoItem(String name, Supplier<T> block) {
         return BLOCKS.register(name, block);
     }
 
     /**
      * Register a BlockItem for a block.
      */
-    private static <T extends Block> void registerBlockItem(String name, DeferredHolder<T, T> block) {
+    private static <T extends Block> void registerBlockItem(String name, DeferredHolder<Block, T> block) {
         BLOCK_ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
     }
 }

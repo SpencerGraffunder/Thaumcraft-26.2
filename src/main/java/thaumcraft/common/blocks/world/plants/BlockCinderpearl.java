@@ -1,5 +1,6 @@
 package thaumcraft.common.blocks.world.plants;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.PlantType;
 
 /**
  * Cinderpearl - A fiery magical plant that grows in deserts and near heat.
@@ -36,7 +36,7 @@ public class BlockCinderpearl extends BushBlock {
     public BlockCinderpearl() {
         super(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_ORANGE)
-                .noCollission()
+                .noCollision()
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .lightLevel(state -> 8)
@@ -49,6 +49,11 @@ public class BlockCinderpearl extends BushBlock {
     }
 
     @Override
+    public MapCodec<BlockCinderpearl> codec() {
+        return simpleCodec(p -> new BlockCinderpearl());
+    }
+
+    @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
         return state.is(Blocks.SAND) || 
                state.is(Blocks.RED_SAND) ||
@@ -56,11 +61,6 @@ public class BlockCinderpearl extends BushBlock {
                state.is(Blocks.TERRACOTTA) ||
                state.is(BlockTags.TERRACOTTA) ||
                state.is(BlockTags.SAND);
-    }
-
-    @Override
-    public PlantType getPlantType(BlockGetter level, BlockPos pos) {
-        return PlantType.DESERT;
     }
 
     @Override

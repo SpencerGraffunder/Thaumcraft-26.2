@@ -176,7 +176,7 @@ public class SealEntity implements ISealEntity {
             if (seal instanceof ISealConfigToggles toggleSeal) {
                 for (ISealConfigToggles.SealToggle toggle : toggleSeal.getToggles()) {
                     if (nbt.contains(toggle.getKey())) {
-                        toggle.setValue(nbt.getBoolean(toggle.getKey()));
+                        toggle.setValue(nbt.getBooleanOr(toggle.getKey(), false));
                     }
                 }
             }

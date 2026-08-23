@@ -148,8 +148,8 @@ public class TileLampGrowth extends TileThaumcraft implements IEssentiaTransport
 
             // Check if it's a growable plant
             if (block instanceof BonemealableBlock growable) {
-                // 1.20.1 API: isValidBonemealTarget(LevelReader, BlockPos, BlockState, boolean isClient)
-                if (growable.isValidBonemealTarget(level, checkPos, blockState, false)) {
+                // 26.2 API: isValidBonemealTarget(LevelReader, BlockPos, BlockState)
+                if (growable.isValidBonemealTarget(level, checkPos, blockState)) {
                     if (growable.isBonemealSuccess(level, level.getRandom(), checkPos, blockState)) {
                         growable.performBonemeal(serverLevel, level.getRandom(), checkPos, blockState);
                         charges--;

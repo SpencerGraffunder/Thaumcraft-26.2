@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import thaumcraft.Thaumcraft;
@@ -104,9 +104,9 @@ public class SealStock extends SealFiltered implements ISealConfigToggles {
     private IItemHandler getItemHandler(Level level, BlockPos pos, Direction face) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
-            var cap = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, face);
-            if (cap.isPresent()) {
-                return cap.orElse(null);
+            var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, face);
+            if (handler != null) {
+                return IItemHandler.of(handler);
             }
         }
         return null;
@@ -157,7 +157,7 @@ public class SealStock extends SealFiltered implements ISealConfigToggles {
         
         // NBT match
         if (props[1].getValue()) {
-            return ItemStack.isSameItemSameTags(stack, filter);
+            return ItemStack.isSameItemSameComponents(stack, filter);
         }
         
         return true;

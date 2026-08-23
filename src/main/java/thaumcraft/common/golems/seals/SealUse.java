@@ -174,7 +174,7 @@ public class SealUse extends SealFiltered implements ISealConfigToggles {
                 }
                 if (matches && props[1].getValue()) {
                     // Match NBT
-                    matches = ItemStack.isSameItemSameTags(stack, filterStack);
+                    matches = ItemStack.isSameItemSameComponents(stack, filterStack);
                 }
                 if (matches) {
                     return !blacklist;

@@ -5,7 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -30,22 +30,17 @@ public class ClientRenderEvents {
      * Called during world rendering to add custom world visuals.
      */
     @SubscribeEvent
-    public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        // Only render during the AFTER_TRANSLUCENT_BLOCKS stage for proper layering
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-            return;
-        }
-        
+    public static void onSubmitCustomGeometry(SubmitCustomGeometryEvent event) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        
+
         if (player == null) return;
-        
+
         // Check if player is holding an ISealDisplayer item
         if (isHoldingSealDisplayer(player)) {
             SealRenderer.renderSeals(
                 event.getPoseStack(),
-                event.getPartialTick(),
+                event.getSubmitNodeCollector(),
                 player
             );
         }

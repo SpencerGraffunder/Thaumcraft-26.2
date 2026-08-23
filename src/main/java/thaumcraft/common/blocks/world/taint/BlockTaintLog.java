@@ -75,26 +75,23 @@ public class BlockTaintLog extends RotatedPillarBlock implements ITaintBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock())) {
-            // Trigger leaf decay in a radius around the removed log
-            int radius = 4;
-            int checkRadius = radius + 1;
-            
-            if (level.isAreaLoaded(pos, checkRadius)) {
-                for (BlockPos checkPos : BlockPos.betweenClosed(
-                        pos.offset(-radius, -radius, -radius), 
-                        pos.offset(radius, radius, radius))) {
-                    BlockState checkState = level.getBlockState(checkPos);
-                    // In 1.20.1, leaves handle their own decay via randomTick
-                    // We can trigger a block update to speed it up
-                    if (checkState.is(net.minecraft.tags.BlockTags.LEAVES)) {
-                        level.scheduleTick(checkPos.immutable(), checkState.getBlock(), 1);
-                    }
+    public void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        // Trigger leaf decay in a radius around the removed log
+        int radius = 4;
+        int checkRadius = radius + 1;
+
+        if (level.isAreaLoaded(pos, checkRadius)) {
+            for (BlockPos checkPos : BlockPos.betweenClosed(
+                    pos.offset(-radius, -radius, -radius),
+                    pos.offset(radius, radius, radius))) {
+                BlockState checkState = level.getBlockState(checkPos);
+                // Leaves handle their own decay via randomTick;
+                // trigger a block update to speed it up
+                if (checkState.is(net.minecraft.tags.BlockTags.LEAVES)) {
+                    level.scheduleTick(checkPos.immutable(), checkState.getBlock(), 1);
                 }
             }
-            
-            super.onRemove(state, level, pos, newState, movedByPiston);
         }
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
     }
 }

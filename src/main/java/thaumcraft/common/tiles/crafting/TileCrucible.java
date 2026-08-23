@@ -13,12 +13,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
@@ -52,7 +52,6 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
             return stack.getFluid() == Fluids.WATER;
         }
     };
-    private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(() -> tank);
 
     private int bellows = -1;
     private long tickCounter = 0;
@@ -176,7 +175,7 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
                 aspects.remove(required);
                 
                 // Crafted successfully
-                ItemStack result = recipe.assemble(null, level.registryAccess());
+                ItemStack result = recipe.assemble(null);
                 
                 // Spawn result in world
                 double x = worldPosition.getX() + 0.5;
@@ -336,19 +335,46 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
 
     // ==================== Fluid Handling ====================
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.FLUID_HANDLER) {
-            return fluidHandler.cast();
-        }
-        return super.getCapability(cap, side);
-    }
+    /**
+     * ResourceHandler view of the internal water tank (used by the registered fluid capability).
+     */
+    public ResourceHandler<FluidResource> getTankHandler() {
+        return new ResourceHandler<>() {
+            @Override
+            public int size() {
+                return 1;
+            }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        fluidHandler.invalidate();
+            @Override
+            public FluidResource getResource(int slot) {
+                return FluidResource.of(tank.getFluid());
+            }
+
+            @Override
+            public long getAmountAsLong(int slot) {
+                return tank.getFluidAmount();
+            }
+
+            @Override
+            public long getCapacityAsLong(int slot, FluidResource resource) {
+                return TANK_CAPACITY;
+            }
+
+            @Override
+            public boolean isValid(int slot, FluidResource resource) {
+                return tank.isFluidValid(resource.toStack(1));
+            }
+
+            @Override
+            public int insert(int slot, FluidResource resource, int amount, TransactionContext transaction) {
+                return tank.fill(resource.toStack(amount), IFluidHandler.FluidAction.EXECUTE);
+            }
+
+            @Override
+            public int extract(int slot, FluidResource resource, int amount, TransactionContext transaction) {
+                return tank.drain(resource.toStack(amount), IFluidHandler.FluidAction.EXECUTE).getAmount();
+            }
+        };
     }
 
     public FluidTank getTank() {
@@ -364,7 +390,6 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
 
     // ==================== Rendering ====================
 
-    @Override
     public AABB getRenderBoundingBox() {
         return new AABB(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(),
                 worldPosition.getX() + 1, worldPosition.getY() + 1, worldPosition.getZ() + 1);

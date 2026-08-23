@@ -1,9 +1,7 @@
 package thaumcraft.common.entities;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -12,14 +10,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.network.syncher.AdditionalSpawnData;
 import thaumcraft.init.ModEntities;
 
 /**
  * EntityFollowingItem - A special item entity that follows a target position or entity.
  * Used for items being drawn toward players, into devices, etc.
  */
-public class EntityFollowingItem extends EntitySpecialItem implements IEntityAdditionalSpawnData {
+public class EntityFollowingItem extends EntitySpecialItem {
     
     private static final EntityDataAccessor<Integer> DATA_TYPE = 
             SynchedEntityData.defineId(EntityFollowingItem.class, EntityDataSerializers.INT);
@@ -157,28 +154,5 @@ public class EntityFollowingItem extends EntitySpecialItem implements IEntityAdd
         targetX = input.getDoubleOr("targetX", 0.0D);
         targetY = input.getDoubleOr("targetY", 0.0D);
         targetZ = input.getDoubleOr("targetZ", 0.0D);
-    }
-    
-    @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        buffer.writeInt(target != null ? target.getId() : -1);
-        buffer.writeDouble(targetX);
-        buffer.writeDouble(targetY);
-        buffer.writeDouble(targetZ);
-        buffer.writeByte(getFollowType());
-    }
-    
-    @Override
-    public void readSpawnData(FriendlyByteBuf buffer) {
-        try {
-            int entityId = buffer.readInt();
-            if (entityId > -1) {
-                target = level().getEntity(entityId);
-            }
-            targetX = buffer.readDouble();
-            targetY = buffer.readDouble();
-            targetZ = buffer.readDouble();
-            setFollowType(buffer.readByte());
-        } catch (Exception ignored) {}
     }
 }

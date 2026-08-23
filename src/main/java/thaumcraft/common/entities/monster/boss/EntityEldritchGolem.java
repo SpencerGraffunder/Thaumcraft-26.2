@@ -30,6 +30,7 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
@@ -116,11 +117,6 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
         this.goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0, 5, 5, 24.0f));
     }
     
-    @Override
-    public float getEyeHeight(net.minecraft.world.entity.Pose pose) {
-        return isHeadless() ? 3.33f : 3.0f;
-    }
-    
     // ==================== NBT ====================
     
     @Override
@@ -143,10 +139,10 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
         spawnTimer = 100;
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnData);
     }
     
     // ==================== AI / Update ====================
@@ -238,9 +234,9 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
     // ==================== Damage Handling ====================
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(net.minecraft.server.level.ServerLevel level, DamageSource source, float amount) {
         // When about to die, become headless instead
-        if (!level().isClientSide() && amount > getHealth() && !isHeadless()) {
+        if (amount > getHealth() && !isHeadless()) {
             setHeadless(true);
             spawnTimer = 100;
             
@@ -252,7 +248,7 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
             makeHeadless();
             return false; // Don't actually take this damage
         }
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     // ==================== Attack ====================
@@ -266,7 +262,7 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
         level().broadcastEntityEvent(this, (byte) 4);
         
         float damage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.75f;
-        boolean hit = target.hurt(damageSources().mobAttack(this), damage);
+        boolean hit = target.hurtServer(level, damageSources().mobAttack(this), damage);
         
         if (hit) {
             // Knock target upward

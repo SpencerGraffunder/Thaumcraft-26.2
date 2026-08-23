@@ -46,6 +46,11 @@ public class EntityFocusCloud extends Entity {
         this.noPhysics = true;
     }
     
+    @Override
+    public boolean hurtServer(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount) {
+        return false;
+    }
+    
     /**
      * Create a focus cloud with full parameters.
      */
@@ -231,10 +236,10 @@ public class EntityFocusCloud extends Entity {
         output.putInt("Duration", duration);
         output.putFloat("Radius", getRadius());
         if (ownerUUID != null) {
-            output.putUUID("OwnerUUID", ownerUUID);
+            output.putString("OwnerUUID", ownerUUID.toString());
         }
         if (focusPackage != null) {
-            output.put("pack", focusPackage.serialize());
+            output.store("pack", net.minecraft.nbt.CompoundTag.CODEC, focusPackage.serialize());
         }
     }
     
@@ -243,12 +248,17 @@ public class EntityFocusCloud extends Entity {
         tickCount = input.getIntOr("Age", 0);
         duration = input.getIntOr("Duration", 0);
         setRadius(input.getFloatOr("Radius", 0.0F));
-        if (input.hasUUID("OwnerUUID")) {
-            ownerUUID = input.getUUID("OwnerUUID");
+        if (input.keySet().contains("OwnerUUID")) {
+            String uuidStr = input.getStringOr("OwnerUUID", "");
+            if (!uuidStr.isEmpty()) {
+                try {
+                    ownerUUID = java.util.UUID.fromString(uuidStr);
+                } catch (Throwable ignored) {}
+            }
         }
-        if (input.contains("pack")) {
+        if (input.keySet().contains("pack")) {
             focusPackage = new FocusPackage();
-            focusPackage.deserialize(input.getCompoundOrEmpty("pack"));
+            input.read("pack", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(focusPackage::deserialize);
         }
     }
     

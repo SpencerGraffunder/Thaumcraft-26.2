@@ -12,7 +12,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -107,7 +108,8 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
                 tile.charges--;
                 
                 // Get potion effects from the stored potion
-                List<MobEffectInstance> effects = PotionUtils.getMobEffects(tile.getItem(0));
+                java.util.List<MobEffectInstance> effects = new java.util.ArrayList<>();
+                tile.getItem(0).getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getAllEffects().forEach(effects::add);
                 if (effects != null && !effects.isEmpty()) {
                     // Get targets in range
                     int area = 1;
@@ -132,7 +134,7 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
                 }
                 
                 // Play sound and visual effect
-                level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 
+                level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH.value(), SoundSource.BLOCKS, 
                         0.25f, 2.6f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.8f);
                 level.blockEvent(pos, state.getBlock(), 0, 0);
                 tile.syncTile(false);
@@ -237,7 +239,7 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
     
     public static boolean isValidPotion(ItemStack stack) {
         if (stack.isEmpty()) return false;
-        List<MobEffectInstance> effects = PotionUtils.getMobEffects(stack);
+        List<MobEffectInstance> effects = new java.util.ArrayList<>(); stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getAllEffects().forEach(effects::add);
         return effects != null && !effects.isEmpty();
     }
     
@@ -252,7 +254,7 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
         } else {
             // Calculate aspects from potion effects
             recipe = getPotionAspects(stack);
-            color = PotionUtils.getColor(stack);
+            color = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getColor();
         }
         
         charges = 0;
@@ -266,7 +268,7 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
      */
     private AspectList getPotionAspects(ItemStack stack) {
         AspectList aspects = new AspectList();
-        List<MobEffectInstance> effects = PotionUtils.getMobEffects(stack);
+        List<MobEffectInstance> effects = new java.util.ArrayList<>(); stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getAllEffects().forEach(effects::add);
         
         if (effects != null) {
             for (MobEffectInstance effect : effects) {

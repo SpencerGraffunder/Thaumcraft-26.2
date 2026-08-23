@@ -2,17 +2,20 @@ package thaumcraft.api;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.wrapper.InventoryWrapper;
-import net.neoforged.neoforge.items.wrapper.SidedInventoryWrapper;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nullable;
 
@@ -62,18 +65,17 @@ public class ThaumcraftInvHelper {
      */
     @Nullable
     public static IItemHandler getItemHandlerAt(Level level, BlockPos pos, Direction side) {
+        // Try capability first
+        BlockState state = level.getBlockState(pos);
+        var handler = level.getCapability(Capabilities.Item.BLOCK, pos, state, null, side);
+        if (handler != null) {
+            return IItemHandler.of(handler);
+        }
+
+        // Fall back to Container wrapping
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity != null) {
-            // Try capability first
-            var capability = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side);
-            if (capability.isPresent()) {
-                return capability.orElse(null);
-            }
-            
-            // Fall back to Container wrapping
-            if (blockEntity instanceof Container container) {
-                return wrapInventory(container, side);
-            }
+        if (blockEntity instanceof Container container) {
+            return wrapInventory(container, side);
         }
         return null;
     }
@@ -97,7 +99,7 @@ public class ThaumcraftInvHelper {
             return true;
         }
         if (!prime.isEmpty() && !other.isEmpty()) {
-            return prime.getTag() == null || compareTagsRelaxed(prime.getTag(), other.getTag());
+            return prime.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag() == null || compareTagsRelaxed(prime.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag(), other.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag());
         }
         return false;
     }
@@ -110,7 +112,7 @@ public class ThaumcraftInvHelper {
         if (prime == null) return true;
         if (other == null) return false;
         
-        for (String key : prime.getAllKeys()) {
+        for (String key : prime.keySet()) {
             if (!other.contains(key)) return false;
             if (!prime.get(key).equals(other.get(key))) return false;
         }
@@ -130,7 +132,7 @@ public class ThaumcraftInvHelper {
         
         if (input instanceof ItemStack other) {
             // NBT comparison
-            boolean nbtMatch = !stack0.hasTag() || areItemStackTagsEqualForCrafting(stack0, other);
+            boolean nbtMatch = !stack0.has(DataComponents.CUSTOM_DATA) || areItemStackTagsEqualForCrafting(stack0, other);
             if (!nbtMatch) return false;
             
             // Item comparison (ignoring damage for damageable items)
@@ -144,7 +146,7 @@ public class ThaumcraftInvHelper {
      * Check if stacks share any item tags.
      */
     public static boolean containsTagMatch(ItemStack input, ItemStack target) {
-        for (var tag : input.getTags().toList()) {
+        for (var tag : input.getItem().builtInRegistryHolder().tags().toList()) {
             if (target.is(tag)) {
                 return true;
             }
@@ -159,7 +161,7 @@ public class ThaumcraftInvHelper {
         if (s1.isDamageableItem() && s2.isDamageableItem()) {
             return s1.is(s2.getItem());
         }
-        return ItemStack.isSameItemSameTags(s1, s2);
+        return ItemStack.isSameItemSameComponents(s1, s2);
     }
     
     /**
@@ -167,13 +169,13 @@ public class ThaumcraftInvHelper {
      */
     public static boolean areItemStackTagsEqualForCrafting(ItemStack slotItem, ItemStack recipeItem) {
         if (recipeItem == null || slotItem == null) return false;
-        if (recipeItem.hasTag() && !slotItem.hasTag()) return false;
-        if (!recipeItem.hasTag()) return true;
+        if (recipeItem.has(DataComponents.CUSTOM_DATA) && !slotItem.has(DataComponents.CUSTOM_DATA)) return false;
+        if (!recipeItem.has(DataComponents.CUSTOM_DATA)) return true;
         
-        CompoundTag recipeTag = recipeItem.getTag();
-        CompoundTag slotTag = slotItem.getTag();
+        CompoundTag recipeTag = recipeItem.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        CompoundTag slotTag = slotItem.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         
-        for (String key : recipeTag.getAllKeys()) {
+        for (String key : recipeTag.keySet()) {
             if (!slotTag.contains(key)) return false;
             if (!slotTag.get(key).toString().equals(recipeTag.get(key).toString())) {
                 return false;
@@ -277,8 +279,8 @@ public class ThaumcraftInvHelper {
             if (filter.relaxedNBT) {
                 nbtMatch = areItemStackTagsEqualRelaxed(stack0, stack1);
             } else {
-                nbtMatch = ItemStack.isSameItemSameTags(stack0, stack1) ||
-                           (!stack0.hasTag() && !stack1.hasTag());
+                nbtMatch = ItemStack.isSameItemSameComponents(stack0, stack1) ||
+                           (!stack0.has(DataComponents.CUSTOM_DATA) && !stack1.has(DataComponents.CUSTOM_DATA));
             }
         }
         

@@ -320,20 +320,18 @@ public class ConfigResearch {
         if (!knowledge.isResearchKnown("m_hellandback") && dimKey.getPath().contains("nether")) {
             knowledge.addResearch("m_hellandback");
             knowledge.sync(serverPlayer);
-            player.displayClientMessage(
+            player.sendSystemMessage(
                     net.minecraft.network.chat.Component.literal("\u00A75" + 
-                            net.minecraft.network.chat.Component.translatable("got.hellandback").getString()), 
-                    true);
+                            net.minecraft.network.chat.Component.translatable("got.hellandback").getString()));
         }
         
         // End discovery
         if (!knowledge.isResearchKnown("m_endoftheworld") && dimKey.getPath().contains("end")) {
             knowledge.addResearch("m_endoftheworld");
             knowledge.sync(serverPlayer);
-            player.displayClientMessage(
+            player.sendSystemMessage(
                     net.minecraft.network.chat.Component.literal("\u00A75" + 
-                            net.minecraft.network.chat.Component.translatable("got.endoftheworld").getString()), 
-                    true);
+                            net.minecraft.network.chat.Component.translatable("got.endoftheworld").getString()));
         }
         
         // Height-based discoveries (only if auromancy is partially unlocked)
@@ -342,21 +340,19 @@ public class ConfigResearch {
             if (player.getY() < 10 && !knowledge.isResearchKnown("m_deepdown")) {
                 knowledge.addResearch("m_deepdown");
                 knowledge.sync(serverPlayer);
-                player.displayClientMessage(
+                player.sendSystemMessage(
                         net.minecraft.network.chat.Component.literal("\u00A75" + 
-                                net.minecraft.network.chat.Component.translatable("got.deepdown").getString()), 
-                        true);
+                                net.minecraft.network.chat.Component.translatable("got.deepdown").getString()));
             }
             
             // High up
-            int worldHeight = player.level().getMaxBuildHeight();
+            int worldHeight = player.level().getMaxY();
             if (player.getY() > worldHeight * 0.4 && !knowledge.isResearchKnown("m_uphigh")) {
                 knowledge.addResearch("m_uphigh");
                 knowledge.sync(serverPlayer);
-                player.displayClientMessage(
+                player.sendSystemMessage(
                         net.minecraft.network.chat.Component.literal("\u00A75" + 
-                                net.minecraft.network.chat.Component.translatable("got.uphigh").getString()), 
-                        true);
+                                net.minecraft.network.chat.Component.translatable("got.uphigh").getString()));
             }
         }
         

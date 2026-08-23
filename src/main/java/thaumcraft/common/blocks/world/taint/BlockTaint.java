@@ -235,7 +235,7 @@ public class BlockTaint extends Block implements ITaintBlock {
             return false;
         }
         
-        if (canFallBelow(level, fallPos.below()) && fallPos.getY() >= level.getMinBuildHeight()) {
+        if (canFallBelow(level, fallPos.below()) && fallPos.getY() >= level.getMinY()) {
             int range = 32;
             
             if (level.isAreaLoaded(fallPos, range)) {
@@ -254,10 +254,10 @@ public class BlockTaint extends Block implements ITaintBlock {
                 // Instant fall if area isn't loaded
                 level.removeBlock(pos, false);
                 BlockPos landPos = fallPos;
-                while (canFallBelow(level, landPos.below()) && landPos.getY() > level.getMinBuildHeight()) {
+                while (canFallBelow(level, landPos.below()) && landPos.getY() > level.getMinY()) {
                     landPos = landPos.below();
                 }
-                if (landPos.getY() > level.getMinBuildHeight()) {
+                if (landPos.getY() > level.getMinY()) {
                     level.setBlockAndUpdate(landPos, defaultBlockState());
                 }
             }

@@ -12,11 +12,12 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
-import thaumcraft.common.entities.monster.tainted.EntityTaintSeed;
+import thaumcraft.client.renderers.entity.state.TaintSeedRenderState;
 
 /**
  * TaintSeedModel - Model for the Taint Seed entity.
@@ -31,7 +32,7 @@ import thaumcraft.common.entities.monster.tainted.EntityTaintSeed;
  * tentacles that extend outward from a central mass.
  */
 @OnlyIn(Dist.CLIENT)
-public class TaintSeedModel<T extends EntityTaintSeed> extends EntityModel<T> {
+public class TaintSeedModel extends EntityModel<TaintSeedRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_seed"), "main");
@@ -45,6 +46,7 @@ public class TaintSeedModel<T extends EntityTaintSeed> extends EntityModel<T> {
     private final ModelPart[][] tentacles; // [tentacle index][segment index]
     
     public TaintSeedModel(ModelPart root) {
+        super(root);
         this.core = root.getChild("core");
         this.tentacles = new ModelPart[NUM_TENTACLES][SEGMENTS_PER_TENTACLE];
         
@@ -114,11 +116,10 @@ public class TaintSeedModel<T extends EntityTaintSeed> extends EntityModel<T> {
     }
     
     @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, 
-                          float ageInTicks, float netHeadYaw, float headPitch) {
-        // Get attack animation from entity
-        float attackAnim = entity.attackAnim;
-        float hurtTime = entity.hurtTime / 200.0f;
+    public void setupAnim(TaintSeedRenderState state) {
+        // Get attack animation from the render state
+        float attackAnim = state.attackAnim;
+        float hurtTime = state.hurtTime / 200.0f;
         
         // Base flail intensity for idle animation
         float flailIntensity = 0.1f * 3.0f;
@@ -136,22 +137,22 @@ public class TaintSeedModel<T extends EntityTaintSeed> extends EntityModel<T> {
                 
                 // Side-to-side wave motion
                 segment.zRot = 0.1f / flailIntensity * 
-                        Mth.sin(ageInTicks * 0.05f - s / 2.0f + tentacleOffset) / 5.0f;
+                        Mth.sin(state.ageInTicks * 0.05f - s / 2.0f + tentacleOffset) / 5.0f;
             }
         }
         
         // Pulse the core slightly
-        // (Model parts don't have scale in 1.20.1 setupAnim, so we use rotation)
-        float pulse = Mth.sin(ageInTicks * 0.1f) * 0.02f;
+        // (Model parts don't have scale in setupAnim, so we use rotation)
+        float pulse = Mth.sin(state.ageInTicks * 0.1f) * 0.02f;
         this.core.xRot = pulse;
         this.core.zRot = -pulse;
     }
     
-    @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, 
                                int packedLight, int packedOverlay, 
                                float red, float green, float blue, float alpha) {
-        this.core.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        this.core.render(poseStack, vertexConsumer, packedLight, packedOverlay,
+                net.minecraft.util.ARGB.colorFromFloat(alpha, red, green, blue));
     }
     
     /**

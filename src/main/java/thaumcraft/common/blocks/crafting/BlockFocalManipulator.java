@@ -2,7 +2,6 @@ package thaumcraft.common.blocks.crafting;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -81,8 +80,8 @@ public class BlockFocalManipulator extends BlockTCDevice {
     }
     
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, 
+                                  BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
@@ -90,7 +89,6 @@ public class BlockFocalManipulator extends BlockTCDevice {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof TileFocalManipulator && player instanceof ServerPlayer serverPlayer) {
             // TODO: Open GUI when menu system is implemented
-            // NetworkHooks.openScreen(serverPlayer, (TileFocalManipulator) be, pos);
             return InteractionResult.CONSUME;
         }
         
@@ -98,13 +96,13 @@ public class BlockFocalManipulator extends BlockTCDevice {
     }
     
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof TileFocalManipulator tile) {
                 tile.dropContents();
             }
         }
-        super.onRemove(state, level, pos, newState, isMoving);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 }

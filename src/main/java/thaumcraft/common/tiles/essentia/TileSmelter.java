@@ -6,12 +6,14 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -105,7 +107,7 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
         // Recalculate current burn time
         ItemStack fuel = getItem(SLOT_FUEL);
         if (!fuel.isEmpty()) {
-            currentItemBurnTime = ForgeHooks.getBurnTime(fuel, null);
+            currentItemBurnTime = (level != null ? fuel.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING, level.fuelValues()) : 0);
         }
     }
 
@@ -148,7 +150,7 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
         // Try to start burning if we have fuel and can smelt
         if (tile.furnaceBurnTime == 0 && tile.canSmelt()) {
             ItemStack fuel = tile.getItem(SLOT_FUEL);
-            int burnTime = ForgeHooks.getBurnTime(fuel, null);
+            int burnTime = (level != null ? fuel.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING, level.fuelValues()) : 0);
             
             if (burnTime > 0) {
                 tile.furnaceBurnTime = burnTime;
@@ -161,7 +163,8 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
                 
                 // Consume fuel
                 if (!fuel.isEmpty()) {
-                    ItemStack containerItem = fuel.getCraftingRemainingItem();
+                    ItemStackTemplate containerTemplate = fuel.getCraftingRemainder();
+                    ItemStack containerItem = containerTemplate != null ? containerTemplate.create() : ItemStack.EMPTY;
                     fuel.shrink(1);
                     if (fuel.isEmpty()) {
                         tile.setItem(SLOT_FUEL, containerItem);
@@ -355,7 +358,11 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
     }
 
     public static boolean isItemFuel(ItemStack stack) {
-        return ForgeHooks.getBurnTime(stack, null) > 0;
+        MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        if (server != null) {
+            return stack.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING, server.overworld().fuelValues()) > 0;
+        }
+        return false;
     }
 
     @Override

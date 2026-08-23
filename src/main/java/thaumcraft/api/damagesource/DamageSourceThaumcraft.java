@@ -37,38 +37,28 @@ public class DamageSourceThaumcraft {
      * Create taint damage source (bypasses armor, magic damage).
      */
     public static DamageSource createTaint(Level level) {
-        return new DamageSource(
-                level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(TAINT)
-        );
+        return new DamageSource(level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(TAINT));
     }
     
     /**
      * Create tentacle damage source from an entity.
      */
     public static DamageSource causeTentacleDamage(LivingEntity attacker) {
-        return new DamageSource(
-                attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(TENTACLE),
-                attacker
-        );
+        return new DamageSource(attacker.level().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(TENTACLE), attacker);
     }
     
     /**
      * Create swarm damage source from an entity.
      */
     public static DamageSource causeSwarmDamage(LivingEntity attacker) {
-        return new DamageSource(
-                attacker.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(SWARM),
-                attacker
-        );
+        return new DamageSource(attacker.level().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(SWARM), attacker);
     }
     
     /**
      * Create dissolve damage source (bypasses armor).
      */
     public static DamageSource createDissolve(Level level) {
-        return new DamageSource(
-                level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DISSOLVE)
-        );
+        return new DamageSource(level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DISSOLVE));
     }
     
     /**

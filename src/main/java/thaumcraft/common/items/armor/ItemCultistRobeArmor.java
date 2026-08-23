@@ -39,17 +39,6 @@ public class ItemCultistRobeArmor extends Item implements IVisDiscountGear, IWar
     }
     
     @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(Items.IRON_INGOT) || super.isValidRepairItem(toRepair, repair);
-    }
-    
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return "thaumcraft:textures/entity/armor/cultist_robe_armor.png";
-    }
-    
-    @Override
     public int getVisDiscount(ItemStack stack, Player player) {
         return 1; // Small discount
     }

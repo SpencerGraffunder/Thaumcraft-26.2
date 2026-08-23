@@ -1,6 +1,7 @@
 package thaumcraft.common.lib.research.theorycraft;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -35,14 +36,16 @@ public class CardCurio extends TheorycraftCard {
     @Override
     public CompoundTag serialize() {
         CompoundTag nbt = super.serialize();
-        nbt.put("stack", curio.save(new CompoundTag()));
+        nbt.put("stack", (CompoundTag) ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, curio).resultOrPartial().orElse(new CompoundTag()));
         return nbt;
     }
 
     @Override
     public void deserialize(CompoundTag nbt) {
         super.deserialize(nbt);
-        curio = ItemStack.of(nbt.getCompoundOrEmpty("stack"));
+        curio = nbt.contains("stack")
+                ? ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, nbt.get("stack")).resultOrPartial().orElse(ItemStack.EMPTY)
+                : ItemStack.EMPTY;
     }
 
     @Override
@@ -76,7 +79,7 @@ public class CardCurio extends TheorycraftCard {
         List<ItemStack> curios = new ArrayList<>();
         
         // Look for valuable items in player inventory
-        for (ItemStack stack : player.getInventory().getItems()) {
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (!stack.isEmpty()) {
                 for (ItemStack curioType : CURIO_TYPES) {
                     if (stack.is(curioType.getItem())) {

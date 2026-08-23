@@ -1,7 +1,6 @@
 package thaumcraft.client.models.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -18,7 +17,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
-import thaumcraft.common.golems.EntityThaumcraftGolem;
+import thaumcraft.client.renderers.entity.state.GolemRenderState;
 
 /**
  * GolemModel - Basic model for Thaumcraft golems.
@@ -33,7 +32,7 @@ import thaumcraft.common.golems.EntityThaumcraftGolem;
  * swappable parts based on golem configuration.
  */
 @OnlyIn(Dist.CLIENT)
-public class GolemModel extends EntityModel<EntityThaumcraftGolem> implements ArmedModel {
+public class GolemModel extends EntityModel<GolemRenderState> implements ArmedModel<GolemRenderState> {
     
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "golem"), "main");
@@ -46,6 +45,7 @@ public class GolemModel extends EntityModel<EntityThaumcraftGolem> implements Ar
     private final ModelPart leftLeg;
     
     public GolemModel(ModelPart root) {
+        super(root);
         this.head = root.getChild("head");
         this.body = root.getChild("body");
         this.rightArm = root.getChild("right_arm");
@@ -108,11 +108,10 @@ public class GolemModel extends EntityModel<EntityThaumcraftGolem> implements Ar
     }
     
     @Override
-    public void setupAnim(EntityThaumcraftGolem entity, float limbSwing, float limbSwingAmount, 
-                          float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(GolemRenderState state) {
         // Head rotation
-        this.head.yRot = netHeadYaw * ((float)Math.PI / 180F);
-        this.head.xRot = headPitch * ((float)Math.PI / 180F);
+        this.head.yRot = state.yRot * ((float)Math.PI / 180F);
+        this.head.xRot = state.xRot * ((float)Math.PI / 180F);
         
         // Reset rotations
         this.rightArm.xRot = 0.0F;
@@ -121,42 +120,31 @@ public class GolemModel extends EntityModel<EntityThaumcraftGolem> implements Ar
         this.leftLeg.xRot = 0.0F;
         
         // Walking animation
-        this.rightArm.xRot = Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.0F * limbSwingAmount * 0.5F;
-        this.leftArm.xRot = Mth.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F;
-        this.rightLeg.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-        this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.rightArm.xRot = Mth.cos(state.walkAnimationPos * 0.6662F + (float)Math.PI) * 2.0F * state.walkAnimationSpeed * 0.5F;
+        this.leftArm.xRot = Mth.cos(state.walkAnimationPos * 0.6662F) * 2.0F * state.walkAnimationSpeed * 0.5F;
+        this.rightLeg.xRot = Mth.cos(state.walkAnimationPos * 0.6662F) * 1.4F * state.walkAnimationSpeed;
+        this.leftLeg.xRot = Mth.cos(state.walkAnimationPos * 0.6662F + (float)Math.PI) * 1.4F * state.walkAnimationSpeed;
         
         // Slight arm swing for idle
-        this.rightArm.zRot = Mth.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-        this.leftArm.zRot = -Mth.cos(ageInTicks * 0.09F) * 0.05F - 0.05F;
+        this.rightArm.zRot = Mth.cos(state.ageInTicks * 0.09F) * 0.05F + 0.05F;
+        this.leftArm.zRot = -Mth.cos(state.ageInTicks * 0.09F) * 0.05F - 0.05F;
         
         // If holding item, adjust arm
-        if (!entity.getMainHandItem().isEmpty()) {
+        if (state.holdingItem) {
             this.rightArm.xRot = -0.5F;
             this.leftArm.xRot = -0.5F;
         }
         
         // Swing animation (for attacking/interacting)
-        if (entity.swinging) {
-            float swingProgress = entity.getAttackAnim(ageInTicks - (int)ageInTicks);
+        if (state.swinging) {
+            float swingProgress = state.attackAnim;
             float swing = Mth.sin(Mth.sqrt(swingProgress) * (float)Math.PI * 2.0F) * 0.2F;
             this.rightArm.xRot -= swing * 2.0F;
         }
     }
     
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        rightArm.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leftArm.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        rightLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        leftLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-    
-    @Override
-    public void translateToHand(HumanoidArm arm, PoseStack poseStack) {
+    public void translateToHand(GolemRenderState state, HumanoidArm arm, PoseStack poseStack) {
         ModelPart modelPart = arm == HumanoidArm.LEFT ? this.leftArm : this.rightArm;
         modelPart.translateAndRotate(poseStack);
         // Translate to the end of the arm where items should be held

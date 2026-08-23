@@ -5,8 +5,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -40,7 +38,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.syncher.AdditionalSpawnData;
 import thaumcraft.common.entities.monster.EntityEldritchGuardian;
 import thaumcraft.common.entities.projectile.EntityGolemOrb;
 import thaumcraft.init.ModEntities;
@@ -51,7 +48,7 @@ import thaumcraft.init.ModSounds;
  * Wears crimson robes and attacks with magical projectiles.
  * Can act as a ritualist in cult rituals.
  */
-public class EntityCultistCleric extends EntityCultist implements RangedAttackMob, IEntityAdditionalSpawnData {
+public class EntityCultistCleric extends EntityCultist implements RangedAttackMob {
     
     private static final EntityDataAccessor<Boolean> DATA_RITUALIST = 
             SynchedEntityData.defineId(EntityCultistCleric.class, EntityDataSerializers.BOOLEAN);
@@ -155,9 +152,9 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
             
             for (int i = 0; i < 3; ++i) {
                 SmallFireball fireball = new SmallFireball(level(), this,
-                        dx + random.nextGaussian() * scatter,
+                        new Vec3(dx + random.nextGaussian() * scatter,
                         dy,
-                        dz + random.nextGaussian() * scatter);
+                        dz + random.nextGaussian() * scatter));
                 fireball.setPos(getX(), getY() + getBbHeight() / 2.0f + 0.5, getZ());
                 level().addFreshEntity(fireball);
             }
@@ -170,13 +167,13 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
     }
     
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo((ServerLevel) this.level(), source)) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (isInvulnerableTo(level, source)) {
             return false;
         }
         // Attacking a ritualist interrupts the ritual
         setRitualist(false);
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
     
     @Override
@@ -250,27 +247,5 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         setRitualist(input.getBooleanOr("ritualist", false));
-    }
-    
-    @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        BlockPos home = getHomePos();
-        if (home != null) {
-            buffer.writeInt(home.getX());
-            buffer.writeInt(home.getY());
-            buffer.writeInt(home.getZ());
-        } else {
-            buffer.writeInt(0);
-            buffer.writeInt(0);
-            buffer.writeInt(0);
-        }
-    }
-    
-    @Override
-    public void readSpawnData(FriendlyByteBuf buffer) {
-        BlockPos home = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
-        if (home.getX() != 0 || home.getY() != 0 || home.getZ() != 0) {
-            setHomePos(home, 8);
-        }
     }
 }

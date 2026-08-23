@@ -93,7 +93,7 @@ public class FocusEffectCurse extends FocusEffect {
                 float chance = 0.85f;
                 
                 if (world.getRandom().nextFloat() < chance) {
-                    living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, effectLevel));
+                    living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, duration, effectLevel));
                     chance -= 0.15f;
                 }
                 
@@ -103,7 +103,7 @@ public class FocusEffectCurse extends FocusEffect {
                 }
                 
                 if (world.getRandom().nextFloat() < chance) {
-                    living.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, duration * 2, effectLevel));
+                    living.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, duration * 2, effectLevel));
                     chance -= 0.15f;
                 }
                 

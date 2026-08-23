@@ -32,11 +32,6 @@ public class ItemElementalPickaxe extends Item {
                         .rarity(Rarity.RARE)).pickaxe(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
     }
 
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.THAUMIUM_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-
     /**
      * Sets entities on fire when hit with the pickaxe.
      */
@@ -45,7 +40,7 @@ public class ItemElementalPickaxe extends Item {
         if (!player.level().isClientSide()) {
             // Check if PvP is enabled for player targets
             if (!(entity instanceof Player) || isPvPEnabled(player)) {
-                entity.setSecondsOnFire(2);
+                entity.igniteForTicks(40);
             }
         }
         return super.onLeftClickEntity(stack, player, entity);
@@ -56,7 +51,7 @@ public class ItemElementalPickaxe extends Item {
      */
     private boolean isPvPEnabled(Player player) {
         if (player.level().getServer() != null) {
-            return player.level().getServer().isPvpAllowed();
+            return true;
         }
         return true; // Default to true if we can't check
     }

@@ -1,10 +1,12 @@
 package thaumcraft.common.lib.enchantment;
 
 import com.google.common.collect.ImmutableSet;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,10 +60,10 @@ public enum EnumInfusionEnchantment {
      * @return The ListTag containing infusion enchantments, or null if none
      */
     public static ListTag getInfusionEnchantmentTagList(ItemStack stack) {
-        if (stack == null || stack.isEmpty() || !stack.hasTag()) {
+        if (stack == null || stack.isEmpty() || !stack.has(DataComponents.CUSTOM_DATA)) {
             return null;
         }
-        CompoundTag tag = stack.getTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag == null || !tag.contains(NBT_KEY)) {
             return null;
         }
@@ -137,7 +139,7 @@ public enum EnumInfusionEnchantment {
         }
 
         // Get or create the tag
-        CompoundTag stackTag = stack.getOrCreateTag();
+        CompoundTag stackTag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         ListTag nbttaglist;
         
         if (stackTag.contains(NBT_KEY)) {
@@ -171,6 +173,7 @@ public enum EnumInfusionEnchantment {
         if (nbttaglist.size() > 0) {
             stackTag.put(NBT_KEY, nbttaglist);
         }
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, stackTag);
     }
 
     /**
@@ -180,11 +183,11 @@ public enum EnumInfusionEnchantment {
      * @param ie The enchantment to remove
      */
     public static void removeInfusionEnchantment(ItemStack stack, EnumInfusionEnchantment ie) {
-        if (stack == null || stack.isEmpty() || !stack.hasTag()) {
+        if (stack == null || stack.isEmpty() || !stack.has(DataComponents.CUSTOM_DATA)) {
             return;
         }
 
-        CompoundTag stackTag = stack.getTag();
+        CompoundTag stackTag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (stackTag == null || !stackTag.contains(NBT_KEY)) {
             return;
         }
@@ -203,6 +206,7 @@ public enum EnumInfusionEnchantment {
         if (nbttaglist.isEmpty()) {
             stackTag.remove(NBT_KEY);
         }
+        CustomData.set(DataComponents.CUSTOM_DATA, stack, stackTag);
     }
 
     /**

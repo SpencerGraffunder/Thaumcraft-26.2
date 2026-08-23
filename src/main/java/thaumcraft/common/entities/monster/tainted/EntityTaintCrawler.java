@@ -11,7 +11,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -69,11 +68,6 @@ public class EntityTaintCrawler extends Monster {
     }
     
     @Override
-    protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions dimensions) {
-        return 0.1f;
-    }
-    
-    @Override
     public float getVoicePitch() {
         return 0.7f;
     }
@@ -98,10 +92,6 @@ public class EntityTaintCrawler extends Monster {
         playSound(SoundEvents.SILVERFISH_STEP, 0.15f, 1.0f);
     }
     
-    @Override
-    public MobType getMobType() {
-        return MobType.ARTHROPOD;
-    }
     
     /**
      * Check if this entity is on the same team as tainted mobs.
@@ -123,11 +113,11 @@ public class EntityTaintCrawler extends Monster {
     }
     
     @Override
-    public boolean isAlliedTo(Entity other) {
+    protected boolean considersEntityAsAlly(Entity other) {
         if (isTaintedMob(other)) {
             return true;
         }
-        return super.isAlliedTo(other);
+        return super.considersEntityAsAlly(other);
     }
     
     @Override
@@ -143,7 +133,7 @@ public class EntityTaintCrawler extends Monster {
             BlockState stateBelow = level().getBlockState(pos.below());
             
             // Place taint fiber if there's air and solid ground below
-            if (stateAt.isAir() && stateBelow.isSolidRender(level(), pos.below())) {
+            if (stateAt.isAir() && stateBelow.isSolidRender()) {
                 // Place taint fiber - connections are calculated automatically
                 level().setBlockAndUpdate(pos, ModBlocks.TAINT_FIBRE.get().defaultBlockState());
             }

@@ -1,13 +1,13 @@
 package thaumcraft.client.gui.screens;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -83,10 +83,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     private final Player player;
     
     public ResearchTableScreen(ResearchTableMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
-        this.imageWidth = 255;
-        this.imageHeight = 255;
-        this.inventoryLabelY = this.imageHeight - 94;
+        super(menu, playerInventory, title, 255, 255);
         this.table = menu.getBlockEntity();
         this.player = playerInventory.player;
         
@@ -185,27 +182,21 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         updateButtonStates();
-        this.renderBackground(graphics);
-        super.render(graphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         
         // Draw overlays that go on top
         renderOverlay(graphics, mouseX, mouseY, partialTick);
-        
-        this.renderTooltip(graphics, mouseX, mouseY);
     }
     
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int xx = this.leftPos;
         int yy = this.topPos;
         
         // Draw main background
-        graphics.blit(TEXTURE, xx, yy, 0, 0, 255, 255);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, xx, yy, 0.0F, 0.0F, 255, 255, 256, 256);
         
         if (table.data == null) {
             // Pre-game: show aids and dummy inspiration
@@ -219,7 +210,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /**
      * Render the pre-game state showing available aids and inspiration preview.
      */
-    private void renderPreGameState(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private void renderPreGameState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int xx = leftPos;
         int yy = topPos;
         
@@ -231,18 +222,17 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         
         // Draw inspiration preview (hearts)
-        RenderSystem.setShaderTexture(0, TX_BASE);
-        PoseStack pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(xx + 128 - dummyInspirationStart * 5, yy + 55, 0);
-        pose.scale(0.5f, 0.5f, 1.0f);
+        var pose = graphics.pose();
+        pose.pushMatrix();
+        pose.translate(xx + 128 - dummyInspirationStart * 5, yy + 55);
+        pose.scale(0.5f, 0.5f);
         
         for (int a = 0; a < dummyInspirationStart; a++) {
             // Hearts that will be used by aids are shown as empty
             int texU = (dummyInspirationStart - selectedAids.size() <= a) ? 48 : 32;
-            graphics.blit(TX_BASE, 20 * a, 0, texU, 96, 16, 16);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TX_BASE, 20 * a, 0, texU, 96.0F, 16, 16, 256, 256);
         }
-        pose.popPose();
+        pose.popMatrix();
         
         // Draw available aids
         if (!currentAids.isEmpty()) {
@@ -259,15 +249,15 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 
                 // Draw selection highlight
                 if (selectedAids.contains(key)) {
-                    graphics.blit(TX_BASE, x, y, 0, 96, 16, 16);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, TX_BASE, x, y, 0.0F, 96.0F, 16, 16, 256, 256);
                 }
                 
                 // Draw aid icon
                 Object aidObj = aid.getAidObject();
                 if (aidObj instanceof ItemStack stack) {
-                    graphics.renderItem(stack, x, y);
+                    graphics.item(stack, x, y);
                 } else if (aidObj instanceof Block block) {
-                    graphics.renderItem(new ItemStack(block), x, y);
+                    graphics.item(new ItemStack(block), x, y);
                 }
                 
                 if (++c >= side) {
@@ -281,7 +271,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /**
      * Render the active game state with cards, inspiration, and category progress.
      */
-    private void renderActiveGameState(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private void renderActiveGameState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int xx = leftPos;
         int yy = topPos;
         ResearchTableData data = table.data;
@@ -289,23 +279,23 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         checkCards();
         
         // Draw bonus draw indicator
-        PoseStack pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(xx + 15, yy + 150, 0);
+        var pose = graphics.pose();
+        pose.pushMatrix();
+        pose.translate(xx + 15, yy + 150);
         for (int a = 0; a < data.bonusDraws; a++) {
-            graphics.blit(TX_BASE, a * 2, a, 64, 96, 16, 16);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TX_BASE, a * 2, a, 64.0F, 96.0F, 16, 16, 256, 256);
         }
-        pose.popPose();
+        pose.popMatrix();
         
         // Draw inspiration hearts
-        pose.pushPose();
-        pose.translate(xx + 128 - data.inspirationStart * 5, yy + 16, 0);
-        pose.scale(0.5f, 0.5f, 1.0f);
+        pose.pushMatrix();
+        pose.translate(xx + 128 - data.inspirationStart * 5, yy + 16);
+        pose.scale(0.5f, 0.5f);
         for (int a = 0; a < data.inspirationStart; a++) {
             int texU = (data.inspiration <= a) ? 48 : 32;
-            graphics.blit(TX_BASE, 20 * a, 0, texU, 96, 16, 16);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TX_BASE, 20 * a, 0, texU, 96.0F, 16, 16, 256, 256);
         }
-        pose.popPose();
+        pose.popMatrix();
         
         // Draw paper stack (question mark area for drawing cards)
         int sheets = 0;
@@ -329,15 +319,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 highlight = true;
             }
             
-            pose.pushPose();
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, highlight ? 1.0f : 0.5f);
-            RenderSystem.enableBlend();
-            pose.translate(xx + 65, yy + 100, 0);
+            pose.pushMatrix();
+            pose.translate(xx + 65, yy + 100);
             float scale = highlight ? 1.75f : 1.5f;
-            pose.scale(scale, scale, 1.0f);
-            graphics.blit(TX_QUESTION, -8, -8, 0, 0, 16, 16, 16, 16);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            pose.popPose();
+            pose.scale(scale, scale);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TX_QUESTION, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16,
+                    ARGB.white(highlight ? 1.0f : 0.5f));
+            pose.popMatrix();
         }
         
         // Draw saved cards pile
@@ -365,128 +353,121 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /**
      * Draw a paper sheet with optional card content.
      */
-    private void drawSheet(GuiGraphics graphics, float x, float y, float scale, Random r, 
+    private void drawSheet(GuiGraphicsExtractor graphics, float x, float y, float scale, Random r, 
                           float alpha, float tilt, ResearchTableData.CardChoice cardChoice) {
-        PoseStack pose = graphics.pose();
-        pose.pushPose();
+        var pose = graphics.pose();
+        pose.pushMatrix();
         
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
-        
-        pose.translate(x + r.nextGaussian(), y + r.nextGaussian(), 0);
-        pose.scale(scale, scale, 1.0f);
+        pose.translate(x + r.nextGaussian(), y + r.nextGaussian());
+        pose.scale(scale, scale);
         
         // Random rotation
         float rotation = (float)(r.nextGaussian() * tilt);
-        pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(rotation));
+        pose.rotate(new org.joml.Quaternionf().rotationZ((float)Math.toRadians(rotation)));
         
-        pose.pushPose();
+        pose.pushMatrix();
         // Select paper texture
         Identifier paperTex = (cardChoice != null && cardChoice.fromAid) ? TX_PAPER_GILDED : TX_PAPER;
         
         // Random flip
         if (r.nextBoolean()) {
-            pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(180));
+            pose.rotate(new org.joml.Quaternionf().rotationZ((float)Math.PI));
         }
         if (r.nextBoolean()) {
-            pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(180));
+            pose.scale(-1.0f, 1.0f);
         }
         
         // Draw paper texture
-        RenderSystem.setShaderTexture(0, paperTex);
-        graphics.blit(paperTex, -8, -8, 0, 0, 16, 16, 16, 16);
-        pose.popPose();
+        graphics.blit(RenderPipelines.GUI_TEXTURED, paperTex, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16, ARGB.white(alpha));
+        pose.popMatrix();
         
         // Draw card content
         if (cardChoice != null && alpha == 1.0f) {
             drawCardContent(graphics, cardChoice);
         }
         
-        RenderSystem.disableBlend();
-        pose.popPose();
+        pose.popMatrix();
     }
     
     /**
      * Draw card content (category icon, name, text, cost, items).
      */
-    private void drawCardContent(GuiGraphics graphics, ResearchTableData.CardChoice cardChoice) {
-        PoseStack pose = graphics.pose();
+    private void drawCardContent(GuiGraphicsExtractor graphics, ResearchTableData.CardChoice cardChoice) {
+        var pose = graphics.pose();
         TheorycraftCard card = cardChoice.card;
         
         // Draw category icon as watermark
         if (card.getResearchCategory() != null) {
             ResearchCategory rc = ResearchCategories.getResearchCategory(card.getResearchCategory());
             if (rc != null && rc.icon != null) {
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f / 6.0f);
-                pose.pushPose();
-                pose.scale(0.5f, 0.5f, 1.0f);
-                graphics.blit(rc.icon, -8, -8, 0, 0, 16, 16, 16, 16);
-                pose.popPose();
+                pose.pushMatrix();
+                pose.scale(0.5f, 0.5f);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, rc.icon, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16,
+                        ARGB.white(1.0f / 6.0f));
+                pose.popMatrix();
             }
         }
         
         // Draw card name
-        pose.pushPose();
-        pose.scale(0.0625f, 0.0625f, 1.0f);
-        RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
+        pose.pushMatrix();
+        pose.scale(0.0625f, 0.0625f);
         String name = Component.translatable(card.getLocalizedName()).getString();
         int nameWidth = font.width(name);
-        graphics.drawString(font, name, -nameWidth / 2, -65, 0, false);
+        graphics.text(font, name, -nameWidth / 2, -65, 0, false);
         
         // Draw card text (split into lines)
         String text = Component.translatable(card.getLocalizedText()).getString();
         drawSplitString(graphics, text, -70, -48, 140, 0);
-        pose.popPose();
+        pose.popMatrix();
         
         // Draw inspiration cost (hearts)
-        pose.pushPose();
-        pose.scale(0.0625f, 0.0625f, 1.0f);
+        pose.pushMatrix();
+        pose.scale(0.0625f, 0.0625f);
         int cost = card.getInspirationCost();
         boolean isGain = cost < 0;
         int hearts = isGain ? Math.abs(cost) + 1 : cost;
         
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         for (int a = 0; a < hearts; a++) {
             int texU = (a == 0 && isGain) ? 48 : 32; // First heart green if gain
-            graphics.blit(TX_BASE, -10 * hearts + 20 * a, -95, texU, (isGain && a == 0) ? 0 : 96, 16, 16);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TX_BASE, -10 * hearts + 20 * a, -95, texU, (isGain && a == 0) ? 0 : 96, 16, 16, 256, 256);
         }
-        pose.popPose();
+        pose.popMatrix();
         
         // Draw required items
         ItemStack[] items = card.getRequiredItems();
         if (items != null) {
-            pose.pushPose();
+            pose.pushMatrix();
             for (int a = 0; a < items.length; a++) {
-                pose.pushPose();
-                pose.scale(0.125f, 0.125f, 1.0f);
+                pose.pushMatrix();
+                pose.scale(0.125f, 0.125f);
                 
                 if (items[a] == null || items[a].isEmpty()) {
                     // Draw question mark for unknown items
-                    RenderSystem.setShaderColor(0.75f, 0.75f, 0.75f, 1.0f);
-                    pose.translate(-9 * items.length + 18 * a, 35, 0);
-                    graphics.blit(TX_QUESTION, 0, 0, 0, 0, 16, 16, 16, 16);
+                    pose.translate(-9 * items.length + 18 * a, 35);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, TX_QUESTION, 0, 0, 0.0F, 0.0F, 16, 16, 16, 16,
+                            ARGB.colorFromFloat(1.0f, 0.75f, 0.75f, 0.75f));
                 } else {
                     // Draw item
-                    graphics.renderItem(items[a], -9 * items.length + 18 * a, 35);
+                    graphics.item(items[a], -9 * items.length + 18 * a, 35);
                     
                     // Draw fire icon if consumed
                     try {
                         if (card.getRequiredItemsConsumed()[a]) {
-                            pose.pushPose();
-                            pose.translate(-2 - 9 * items.length + 18 * a, 45, 0);
-                            pose.scale(0.5f, 0.5f, 1.0f);
-                            graphics.blit(TX_BASE, 0, 0, 64, 120, 16, 16);
-                            pose.popPose();
+                            pose.pushMatrix();
+                            pose.translate(-2 - 9 * items.length + 18 * a, 45);
+                            pose.scale(0.5f, 0.5f);
+                            graphics.blit(RenderPipelines.GUI_TEXTURED, TX_BASE, 0, 0, 64.0F, 120.0F, 16, 16, 256, 256);
+                            pose.popMatrix();
                         }
                     } catch (Exception ignored) {}
                 }
-                pose.popPose();
+                pose.popMatrix();
             }
-            pose.popPose();
+            pose.popMatrix();
         }
     }
     
-    private void drawSplitString(GuiGraphics graphics, String text, int x, int y, int width, int color) {
+    private void drawSplitString(GuiGraphicsExtractor graphics, String text, int x, int y, int width, int color) {
         // Simple word wrap
         List<String> lines = new ArrayList<>();
         StringBuilder currentLine = new StringBuilder();
@@ -509,7 +490,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         }
         
         for (int i = 0; i < lines.size(); i++) {
-            graphics.drawString(font, lines.get(i), x, y + i * 10, color, false);
+            graphics.text(font, lines.get(i), x, y + i * 10, color, false);
         }
     }
     
@@ -539,7 +520,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /**
      * Draw category progress on the right side.
      */
-    private void drawCategoryProgress(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void drawCategoryProgress(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         int xx = leftPos;
         int yy = topPos;
         ResearchTableData data = table.data;
@@ -549,26 +530,23 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
         sorted.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
         sorted.removeIf(e -> e.getValue() <= 0);
         
-        RenderSystem.enableBlend();
-        
         int i = 0;
         for (Map.Entry<String, Integer> entry : sorted) {
             String cat = entry.getKey();
             int total = entry.getValue();
             
-            PoseStack pose = graphics.pose();
-            pose.pushPose();
+            var pose = graphics.pose();
+            pose.pushMatrix();
             
             // Draw category icon
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            pose.translate(xx + 253, yy + 16 + i * 18 + (i > 0 ? 4 : 0), 0);
-            pose.scale(0.0625f, 0.0625f, 1.0f);
+            pose.translate(xx + 253, yy + 16 + i * 18 + (i > 0 ? 4 : 0));
+            pose.scale(0.0625f, 0.0625f);
             
             ResearchCategory rc = ResearchCategories.getResearchCategory(cat);
             if (rc != null && rc.icon != null) {
-                graphics.blit(rc.icon, 0, 0, 0, 0, 255, 255, 256, 256);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, rc.icon, 0, 0, 0.0F, 0.0F, 255, 255, 256, 256);
             }
-            pose.popPose();
+            pose.popMatrix();
             
             // Draw percentage text
             String s = total + "%";
@@ -580,13 +558,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             int color = data.categoriesBlocked.contains(cat) ? 0x606060 : 
                        (i <= data.penaltyStart ? 0x00E100 : 0xFFFFFF);
             
-            graphics.drawString(font, s, xx + 276, yy + 20 + i * 18 + (i > data.penaltyStart ? 4 : 0), color, true);
+            graphics.text(font, s, xx + 276, yy + 20 + i * 18 + (i > data.penaltyStart ? 4 : 0), color, true);
             
             // Tooltip on hover
             int var9 = mouseX - (xx + 256);
             int var10 = mouseY - (yy + 16 + i * 18 + (i > data.penaltyStart ? 4 : 0));
             if (var9 >= 0 && var10 >= 0 && var9 < 16 && var10 < 16) {
-                graphics.renderTooltip(font, ResearchCategories.getCategoryName(cat), mouseX, mouseY);
+                graphics.setTooltipForNextFrame(font, ResearchCategories.getCategoryName(cat), mouseX, mouseY);
             }
             
             i++;
@@ -597,7 +575,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /**
      * Draw card choices with animation.
      */
-    private void drawCardChoices(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private void drawCardChoices(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int xx = leftPos;
         int yy = topPos;
         int sx = 128;
@@ -674,7 +652,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /**
      * Render overlay elements (tooltips for cards).
      */
-    private void renderOverlay(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private void renderOverlay(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int xx = leftPos;
         int yy = topPos;
         
@@ -685,7 +663,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 int c = 0;
                 int r = 0;
                 
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.2f);
                 for (String key : currentAids) {
                     ITheorycraftAid aid = TheorycraftManager.aids.get(key);
                     if (aid == null) continue;
@@ -694,7 +671,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                     int y = yy + 85 + 35 * r;
                     
                     if (isHovering(x - xx, y - yy, 16, 16, mouseX, mouseY) && !selectedAids.contains(key)) {
-                        graphics.blit(TX_BASE, x, y, 0, 96, 16, 16);
+                        graphics.blit(RenderPipelines.GUI_TEXTURED, TX_BASE, x, y, 0.0F, 96.0F, 16, 16, 256, 256,
+                                ARGB.white(0.2f));
                     }
                     
                     if (++c >= side) {
@@ -702,7 +680,6 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                         c = 0;
                     }
                 }
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             }
         } else {
             // Card item tooltips
@@ -733,13 +710,13 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                     Component.translatable("tile.researchtable.noink.0"),
                     Component.translatable("tile.researchtable.noink.1")
                 );
-                graphics.renderTooltip(font, tooltip, Optional.empty(), xx + 100, yy + 60);
+                graphics.setTooltipForNextFrame(font, tooltip, java.util.Optional.empty(), xx + 100, yy + 60);
             }
             
             // No paper warning
             ItemStack paper = table.getItem(TileResearchTable.SLOT_PAPER);
             if (paper.isEmpty()) {
-                graphics.renderTooltip(font, Component.translatable("tile.researchtable.nopaper.0"), xx + 100, yy + 100);
+                graphics.setTooltipForNextFrame(font, Component.translatable("tile.researchtable.nopaper.0"), xx + 100, yy + 100);
             }
         }
     }
@@ -747,7 +724,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     /**
      * Draw item tooltips for card requirements.
      */
-    private void drawSheetOverlay(GuiGraphics graphics, float x, float y, 
+    private void drawSheetOverlay(GuiGraphicsExtractor graphics, float x, float y, 
                                   ResearchTableData.CardChoice cardChoice, int mouseX, int mouseY) {
         if (cardChoice == null || cardChoice.card.getRequiredItems() == null) return;
         
@@ -758,21 +735,24 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             
             if (isHovering(itemX, itemY, 15, 15, mouseX + leftPos, mouseY + topPos)) {
                 if (items[a] == null || items[a].isEmpty()) {
-                    graphics.renderTooltip(font, Component.translatable("tc.card.unknown"), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, Component.translatable("tc.card.unknown"), mouseX, mouseY);
                 } else {
-                    graphics.renderTooltip(font, items[a], mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, items[a], mouseX, mouseY);
                 }
             }
         }
     }
     
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Don't draw default labels
     }
     
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         int xx = leftPos;
         int yy = topPos;
         int mx = (int) mouseX;
@@ -851,7 +831,7 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
             }
         }
         
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
     
     /**

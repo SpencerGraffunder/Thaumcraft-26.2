@@ -1,19 +1,21 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.BreakingItemParticle;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * Breaking item particle with fade effect.
@@ -39,9 +41,7 @@ public class FXBreakingFade extends ThaumcraftParticle {
         this.itemStack = new ItemStack(item);
         
         // Set sprite from item
-        this.setSprite(Minecraft.getInstance().getItemRenderer()
-                .getModel(itemStack, level, null, 0)
-                .getParticleIcon());
+        this.setSprite(itemParticleSprite(itemStack, level));
         
         this.gravity = 1.0f;
         this.quadSize = 0.1f;
@@ -54,6 +54,17 @@ public class FXBreakingFade extends ThaumcraftParticle {
         this.zd = vz + (this.random.nextFloat() - 0.5f) * 0.2f;
     }
     
+    private net.minecraft.client.renderer.texture.TextureAtlasSprite itemParticleSprite(ItemStack item, ClientLevel level) {
+        try {
+            ItemStackRenderState scratch = new ItemStackRenderState();
+            Minecraft.getInstance().getItemModelResolver()
+                    .updateForTopItem(scratch, item, ItemDisplayContext.GROUND, level, null, 0);
+            Material.Baked material = scratch.pickParticleMaterial(this.random);
+            if (material != null) return material.sprite();
+        } catch (Exception ignored) {}
+        return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(net.minecraft.data.AtlasIds.ITEMS).missingSprite();
+    }
+
     public FXBreakingFade setParticleMaxAge(int age) {
         this.lifetime = age;
         return this;
@@ -72,7 +83,7 @@ public class FXBreakingFade extends ThaumcraftParticle {
     }
     
     public void boom() {
-        float f = (float)(Math.getRandom() + Math.getRandom() + 1.0) * 0.15f;
+        float f = (float)(this.random.nextFloat() + this.random.nextFloat() + 1.0) * 0.15f;
         float len = Mth.sqrt((float)(this.xd * this.xd + this.yd * this.yd + this.zd * this.zd));
         this.xd = this.xd / len * f * 0.964f;
         this.yd = this.yd / len * f * 0.964f + 0.1f;
@@ -108,11 +119,11 @@ public class FXBreakingFade extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         // Calculate fade
         float fade = 1.0f - (float)this.age / (float)this.lifetime;
         
-        Vec3 cameraPos = camera.getPosition();
+        Vec3 cameraPos = camera.position();
         float x = (float)(Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float y = (float)(Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float z = (float)(Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
@@ -120,42 +131,16 @@ public class FXBreakingFade extends ThaumcraftParticle {
         Quaternionf quaternion = camera.rotation();
         float size = this.quadSize;
         
-        Vector3f[] vertices = new Vector3f[]{
-            new Vector3f(-1.0F, -1.0F, 0.0F),
-            new Vector3f(-1.0F, 1.0F, 0.0F),
-            new Vector3f(1.0F, 1.0F, 0.0F),
-            new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-        
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
-        
+        // Sprite UVs (item particle icon from the particle atlas)
         float u0 = this.getU0();
         float u1 = this.getU1();
         float v0 = this.getV0();
         float v1 = this.getV1();
-        int light = this.getLightColor(partialTicks);
+        int light = this.getLightCoords(partialTicks);
         
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-              .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha * fade)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-              .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha * fade)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-              .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha * fade)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-              .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha * fade)
-              .uv2(light).endVertex();
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.TERRAIN_SHEET;
+        int color = ARGB.colorFromFloat(this.alpha * fade, this.rCol, this.gCol, this.bCol);
+        
+        state.add(getLayer(), x, y, z, quaternion.x, quaternion.y, quaternion.z, quaternion.w,
+                size, u0, u1, v0, v1, color, light);
     }
 }

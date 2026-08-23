@@ -13,7 +13,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -462,7 +464,8 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                                             serverLevel, worldPosition);
                                 }
                             } else if (--itemCount <= 1) {
-                                ItemStack container = ped.getItem(0).getItem().getCraftingRemainingItem(ped.getItem(0));
+                                ItemStackTemplate containerTemplate = ped.getItem(0).getCraftingRemainder();
+                                ItemStack container = containerTemplate != null ? containerTemplate.create() : null;
                                 ped.setItem(0, container == null || container.isEmpty() ? ItemStack.EMPTY : container.copy());
                                 te.setChanged();
                                 ped.syncTile(false);
@@ -522,10 +525,13 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                 pedestal.setItemFromInfusion(qs);
             } else if (recipeOutput instanceof Enchantment ench) {
                 ItemStack temp = pedestal.getItem(0);
-                Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(temp);
-                int currentLevel = enchantments.getOrDefault(ench, 0);
-                enchantments.put(ench, currentLevel + 1);
-                EnchantmentHelper.setEnchantments(enchantments, temp);
+                var enchRegistry = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+                net.minecraft.core.Holder<Enchantment> enchHolder = enchRegistry.listElements()
+                        .filter(h -> h.value() == ench)
+                        .findFirst()
+                        .orElseGet(() -> net.minecraft.core.Holder.direct(ench));
+                EnchantmentHelper.updateEnchantments(temp, enchantments ->
+                        enchantments.upgrade(enchHolder, enchantments.getLevel(enchHolder) + 1));
                 syncTile(false);
                 te.setChanged();
             }
@@ -671,9 +677,8 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         for (Player player : targets) {
             if (!ThaumcraftCapabilities.knowsResearch(player, "!INSTABILITY")) {
                 ResearchManager.completeResearch(player, "!INSTABILITY");
-                player.displayClientMessage(
-                        Component.translatable("got.instability").withStyle(net.minecraft.ChatFormatting.DARK_PURPLE), 
-                        true);
+                player.sendSystemMessage(
+                        Component.translatable("got.instability").withStyle(net.minecraft.ChatFormatting.DARK_PURPLE));
             }
         }
     }
@@ -716,12 +721,12 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                         else if (bi == Blocks.SKELETON_SKULL || bi == Blocks.WITHER_SKELETON_SKULL ||
                             bi == Blocks.ZOMBIE_HEAD || bi == Blocks.CREEPER_HEAD || bi == Blocks.PLAYER_HEAD ||
                             bi == Blocks.CANDLE || bi == Blocks.CANDLE_CAKE ||
-                            bi == Blocks.WHITE_CANDLE || bi == Blocks.ORANGE_CANDLE || bi == Blocks.MAGENTA_CANDLE ||
-                            bi == Blocks.LIGHT_BLUE_CANDLE || bi == Blocks.YELLOW_CANDLE || bi == Blocks.LIME_CANDLE ||
-                            bi == Blocks.PINK_CANDLE || bi == Blocks.GRAY_CANDLE || bi == Blocks.LIGHT_GRAY_CANDLE ||
-                            bi == Blocks.CYAN_CANDLE || bi == Blocks.PURPLE_CANDLE || bi == Blocks.BLUE_CANDLE ||
-                            bi == Blocks.BROWN_CANDLE || bi == Blocks.GREEN_CANDLE || bi == Blocks.RED_CANDLE ||
-                            bi == Blocks.BLACK_CANDLE) {
+                            bi == Blocks.DYED_CANDLE.pick(DyeColor.WHITE) || bi == Blocks.DYED_CANDLE.pick(DyeColor.ORANGE) || bi == Blocks.DYED_CANDLE.pick(DyeColor.MAGENTA) ||
+                            bi == Blocks.DYED_CANDLE.pick(DyeColor.LIGHT_BLUE) || bi == Blocks.DYED_CANDLE.pick(DyeColor.YELLOW) || bi == Blocks.DYED_CANDLE.pick(DyeColor.LIME) ||
+                            bi == Blocks.DYED_CANDLE.pick(DyeColor.PINK) || bi == Blocks.DYED_CANDLE.pick(DyeColor.GRAY) || bi == Blocks.DYED_CANDLE.pick(DyeColor.LIGHT_GRAY) ||
+                            bi == Blocks.DYED_CANDLE.pick(DyeColor.CYAN) || bi == Blocks.DYED_CANDLE.pick(DyeColor.PURPLE) || bi == Blocks.DYED_CANDLE.pick(DyeColor.BLUE) ||
+                            bi == Blocks.DYED_CANDLE.pick(DyeColor.BROWN) || bi == Blocks.DYED_CANDLE.pick(DyeColor.GREEN) || bi == Blocks.DYED_CANDLE.pick(DyeColor.RED) ||
+                            bi == Blocks.DYED_CANDLE.pick(DyeColor.BLACK)) {
                             stuff.add(bp.asLong());
                         }
                     }

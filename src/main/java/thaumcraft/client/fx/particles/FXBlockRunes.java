@@ -2,12 +2,13 @@ package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * FXBlockRunes - Magical rune particles that appear on blocks.
@@ -52,7 +53,7 @@ public class FXBlockRunes extends ThaumcraftParticle {
         this.setSize(0.01f, 0.01f);
 
         // Random rune index (224-240 range in sprite sheet)
-        this.runeIndex = (int) (Math.getRandom() * 16.0 + 224.0);
+        this.runeIndex = (int) (this.random.nextFloat() * 16.0 + 224.0);
 
         // Random offsets for position variation
         this.offsetX = this.random.nextFloat() * 0.2;
@@ -89,67 +90,35 @@ public class FXBlockRunes extends ThaumcraftParticle {
     }
 
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 cameraPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 cameraPos = camera.position();
         float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
 
-        // Calculate UV coordinates for the rune sprite
-        float u0 = (runeIndex % 16) / 64.0f;
-        float u1 = u0 + 0.015625f;
-        float v0 = 0.09375f; // Row 6 in sprite sheet
-        float v1 = v0 + 0.015625f;
-
-        float size = 0.3f * this.quadSize;
-        float displayAlpha = this.alpha / 2.0f;
-
-        int light = 0xF000F0; // Full brightness for runes
-
-        // Create rotation quaternion for the rune orientation
+        // Rune orientation: rotated around Y, then tilted flat (same as old render)
         Quaternionf quaternion = new Quaternionf();
         quaternion.rotateY((float) Math.toRadians(rotation));
         quaternion.rotateZ((float) Math.toRadians(90.0f));
 
-        // Apply offset
+        // Old quad spanned +/-0.5*size; new model scale is the half-extent
+        float size = 0.3f * this.quadSize;
+        float displayAlpha = this.alpha / 2.0f;
+
+        int color = ARGB.colorFromFloat(displayAlpha, this.rCol, this.gCol, this.bCol);
+        int light = 0xF000F0; // Full brightness for runes
+
         float offsetXf = (float) this.offsetX;
         float offsetYf = (float) this.offsetY;
 
-        Vector3f[] vertices = new Vector3f[]{
-                new Vector3f(-0.5f * size, 0.5f * size, 0.0f),
-                new Vector3f(0.5f * size, 0.5f * size, 0.0f),
-                new Vector3f(0.5f * size, -0.5f * size, 0.0f),
-                new Vector3f(-0.5f * size, -0.5f * size, 0.0f)
-        };
-
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.add(x + offsetXf, y + offsetYf, z - 0.51f);
-        }
-
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-                .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-                .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-                .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-                .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, displayAlpha)
-                .uv2(light).endVertex();
+        state.add(getLayer(), x + offsetXf, y + offsetYf, z - 0.51f,
+                quaternion.x, quaternion.y, quaternion.z, quaternion.w,
+                size / 2.0f, 0.0f, 1.0f, 0.0f, 1.0f, color, light);
     }
 
     @Override
     public int getLightCoords(float partialTick) {
         return 0xF000F0; // Full brightness
-    }
-
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     // ==================== Configuration Methods ====================

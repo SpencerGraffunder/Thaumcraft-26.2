@@ -10,8 +10,10 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -140,14 +142,14 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
     private ItemStack getSmeltingResult(ItemStack input) {
         if (input.isEmpty() || level == null) return ItemStack.EMPTY;
         
-        RecipeManager recipeManager = level.getRecipeManager();
+        RecipeManager recipeManager = level.getServer().getRecipeManager();
         Optional<SmeltingRecipe> recipe = recipeManager.getRecipeFor(
                 RecipeType.SMELTING, 
-                new SimpleContainer(input), 
+                new SingleRecipeInput(input), 
                 level
-        );
+        ).map(RecipeHolder::value);
         
-        return recipe.map(r -> r.getResultItem(level.registryAccess()).copy()).orElse(ItemStack.EMPTY);
+        return recipe.map(r -> r.assemble(new SingleRecipeInput(input)).copy()).orElse(ItemStack.EMPTY);
     }
     
     private boolean canSmelt(ItemStack stack) {
@@ -158,10 +160,11 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
         if (level == null) return 0;
         
         // Try to get experience from recipe
-        RecipeManager recipeManager = level.getRecipeManager();
-        for (AbstractCookingRecipe recipe : recipeManager.getAllRecipesFor(RecipeType.SMELTING)) {
-            if (ItemStack.isSameItem(recipe.getResultItem(level.registryAccess()), result)) {
-                return recipe.getExperience();
+        RecipeManager recipeManager = level.getServer().getRecipeManager();
+        for (RecipeHolder<SmeltingRecipe> holder : recipeManager.recipeMap().byType(RecipeType.SMELTING)) {
+            SmeltingRecipe recipe = holder.value();
+            if (ItemStack.isSameItem(recipe.assemble(new SingleRecipeInput(ItemStack.EMPTY)), result)) {
+                return recipe.experience();
             }
         }
         return 0;
@@ -360,7 +363,6 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
     
     // ==================== Rendering ====================
     
-    @Override
     public AABB getRenderBoundingBox() {
         return new AABB(
                 worldPosition.getX() - 1.3, worldPosition.getY() - 1.3, worldPosition.getZ() - 1.3,

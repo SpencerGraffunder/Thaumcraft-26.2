@@ -23,9 +23,7 @@ public class ItemZombieBrain extends Item {
         super(new Properties()
                 .food(new FoodProperties.Builder()
                         .nutrition(4)
-                        .saturationMod(0.2f)
-                        .meat()
-                        .effect(() -> new MobEffectInstance(MobEffects.HUNGER, 600, 0), 0.8f)
+                        .saturationModifier(0.2f)
                         .build()));
     }
     

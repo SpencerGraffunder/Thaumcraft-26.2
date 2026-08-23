@@ -1,7 +1,6 @@
 package thaumcraft.common.blocks.crafting;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -87,16 +86,16 @@ public class BlockGolemBuilder extends BlockTCDevice {
     }
     
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
-                                  InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, 
+                                  BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         
         BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof TileGolemBuilder golemBuilder) {
+        if (be instanceof TileGolemBuilder golemBuilder && player instanceof ServerPlayer serverPlayer) {
             // Open the golem builder GUI
-            NetworkHooks.openScreen((ServerPlayer) player, golemBuilder, pos);
+            serverPlayer.openMenu(golemBuilder, buf -> buf.writeBlockPos(pos));
             return InteractionResult.CONSUME;
         }
         
@@ -104,13 +103,13 @@ public class BlockGolemBuilder extends BlockTCDevice {
     }
     
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof TileGolemBuilder golemBuilder) {
                 golemBuilder.dropContents();
             }
         }
-        super.onRemove(state, level, pos, newState, isMoving);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 }

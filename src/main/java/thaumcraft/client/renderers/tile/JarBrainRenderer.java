@@ -1,19 +1,23 @@
 package thaumcraft.client.renderers.tile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Unit;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jspecify.annotations.Nullable;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.models.block.BrainModel;
+import thaumcraft.client.renderers.tile.state.JarBrainRenderState;
 import thaumcraft.common.tiles.essentia.TileJarBrain;
 
 /**
@@ -21,7 +25,7 @@ import thaumcraft.common.tiles.essentia.TileJarBrain;
  * Renders a floating, rotating brain inside the jar.
  */
 @OnlyIn(Dist.CLIENT)
-public class JarBrainRenderer implements BlockEntityRenderer<TileJarBrain> {
+public class JarBrainRenderer implements BlockEntityRenderer<TileJarBrain, JarBrainRenderState> {
 
     private static final Identifier BRAIN_TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/brain.png");
@@ -33,21 +37,30 @@ public class JarBrainRenderer implements BlockEntityRenderer<TileJarBrain> {
     }
 
     @Override
-    public void render(TileJarBrain tile, float partialTicks, PoseStack poseStack,
-                       MultiBufferSource buffer, int packedLight, int packedOverlay) {
-        
-        // Interpolate animation values for smooth motion
-        float rotation = Mth.lerp(partialTicks, tile.brainRotationPrev, tile.brainRotation);
-        float yOffset = Mth.lerp(partialTicks, tile.brainYPrev, tile.brainY);
+    public JarBrainRenderState createRenderState() {
+        return new JarBrainRenderState();
+    }
 
+    @Override
+    public void extractRenderState(TileJarBrain tile, JarBrainRenderState state, float partialTicks, Vec3 cameraPosition,
+                                   ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(tile, state, partialTicks, cameraPosition, breakProgress);
+
+        // Interpolate animation values for smooth motion
+        state.rotation = Mth.lerp(partialTicks, tile.brainRotationPrev, tile.brainRotation);
+        state.yOffset = Mth.lerp(partialTicks, tile.brainYPrev, tile.brainY);
+    }
+
+    @Override
+    public void submit(JarBrainRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         poseStack.pushPose();
 
         // Position brain in center of jar, slightly raised
         // The jar is roughly 1 block tall, brain should float in the middle-upper portion
-        poseStack.translate(0.5, 0.35 + yOffset, 0.5);
+        poseStack.translate(0.5, 0.35 + state.yOffset, 0.5);
 
         // Apply rotation around Y axis (slow spin)
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.rotation));
 
         // Scale down the brain to fit inside the jar
         // Original model is designed at 1/16 scale, we need it smaller for the jar
@@ -57,15 +70,9 @@ public class JarBrainRenderer implements BlockEntityRenderer<TileJarBrain> {
         // Flip the model (models are often upside down)
         poseStack.mulPose(Axis.ZP.rotationDegrees(180));
 
-        // Render the brain model
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(BRAIN_TEXTURE));
-        
-        // Use a slightly pink/flesh color tint
-        float r = 1.0f;
-        float g = 0.85f;
-        float b = 0.85f;
-        
-        brainModel.renderToBuffer(poseStack, vertexConsumer, packedLight, packedOverlay, r, g, b, 1.0f);
+        // Render the brain model with a slightly pink/flesh color tint
+        submitNodeCollector.submitModel(this.brainModel, Unit.INSTANCE, poseStack, this.brainModel.renderType(BRAIN_TEXTURE),
+                state.lightCoords, OverlayTexture.NO_OVERLAY, 0xFFD9D9D9, null, 0, state.breakProgress);
 
         poseStack.popPose();
     }

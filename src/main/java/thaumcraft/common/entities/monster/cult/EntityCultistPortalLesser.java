@@ -217,18 +217,16 @@ public class EntityCultistPortalLesser extends Monster {
         }
         
         // Position near the portal
-        cultist.moveTo(
-                getX() + random.nextFloat() - random.nextFloat(),
-                getY() + 0.25,
-                getZ() + random.nextFloat() - random.nextFloat(),
-                random.nextFloat() * 360.0f, 0.0f);
+        cultist.setPos(getX() + random.nextFloat() - random.nextFloat(), getY() + 0.25, getZ() + random.nextFloat() - random.nextFloat());
+        cultist.setYRot(random.nextFloat() * 360.0f);
+        cultist.setXRot(0.0f);
         
         // Initialize the cultist
         cultist.finalizeSpawn(
                 (net.minecraft.world.level.ServerLevelAccessor) level(),
-                level().getCurrentDifficultyAt(new BlockPos((int) cultist.getX(), (int) cultist.getY(), (int) cultist.getZ())),
+                ((net.minecraft.world.level.ServerLevelAccessor) level()).getCurrentDifficultyAt(new BlockPos((int) cultist.getX(), (int) cultist.getY(), (int) cultist.getZ())),
                 net.minecraft.world.entity.EntitySpawnReason.SPAWNER,
-                null, null);
+                null);
         
         level().addFreshEntity(cultist);
         cultist.spawnExplosionParticle();
@@ -236,14 +234,14 @@ public class EntityCultistPortalLesser extends Monster {
         cultist.playSound(ModSounds.WAND_FAIL.get(), 1.0f, 1.0f);
         
         // Portal takes damage when spawning
-        hurt(damageSources().magic(), 5 + random.nextInt(5));
+        hurtServer((ServerLevel) level(), damageSources().magic(), 5 + random.nextInt(5));
     }
     
     @Override
     public void playerTouch(Player player) {
         // Damage players that get too close
-        if (distanceToSqr(player) < 3.0) {
-            if (player.hurt(damageSources().indirectMagic(this, this), 4.0f)) {
+        if (distanceToSqr(player) < 3.0 && !level().isClientSide()) {
+            if (player.hurtServer((ServerLevel) level(), damageSources().indirectMagic(this, this), 4.0f)) {
                 playSound(ModSounds.ZAP.get(), 1.0f, (random.nextFloat() - random.nextFloat()) * 0.1f + 1.0f);
             }
         }
@@ -304,7 +302,7 @@ public class EntityCultistPortalLesser extends Monster {
     }
     
     @Override
-    public boolean causeFallDamage(float distance, float multiplier, DamageSource source) {
+    public boolean causeFallDamage(double distance, float multiplier, DamageSource source) {
         // Immune to fall damage
         return false;
     }

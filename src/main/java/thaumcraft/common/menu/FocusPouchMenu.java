@@ -9,7 +9,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import thaumcraft.common.items.casters.ItemFocus;
@@ -52,7 +52,7 @@ public class FocusPouchMenu extends AbstractContainerMenu implements ContainerLi
         // Main hand: current item slot + player inventory offset
         // Off hand: -1 (not blocked since it's not in the regular inventory)
         this.blockedSlot = (hand == InteractionHand.MAIN_HAND) ? 
-                playerInventory.selected + POUCH_SIZE + 27 : -1;
+                playerInventory.getSelectedSlot() + POUCH_SIZE + 27 : -1;
         
         // Create and populate pouch inventory
         this.pouchInventory = new SimpleContainer(POUCH_SIZE) {
@@ -66,8 +66,7 @@ public class FocusPouchMenu extends AbstractContainerMenu implements ContainerLi
                 return !stack.isEmpty() && stack.getItem() instanceof ItemFocus;
             }
         };
-        pouchInventory.addListener(this);
-        
+                
         // Load existing contents from pouch NBT
         if (pouch.getItem() instanceof ItemFocusPouch pouchItem) {
             NonNullList<ItemStack> contents = pouchItem.getInventory(pouch);
@@ -99,12 +98,15 @@ public class FocusPouchMenu extends AbstractContainerMenu implements ContainerLi
     }
     
     @Override
-    public void containerChanged(Container container) {
-        broadcastChanges();
+    public void slotChanged(AbstractContainerMenu container, int slotIndex, ItemStack itemStack) {
+    }
+
+    @Override
+    public void dataChanged(AbstractContainerMenu container, int id, int value) {
     }
     
     @Override
-    public void clicked(int slotId, int button, ClickType clickType, Player player) {
+    public void clicked(int slotId, int button, ContainerInput clickType, Player player) {
         // Prevent clicking on the pouch itself
         if (slotId == blockedSlot) {
             return;

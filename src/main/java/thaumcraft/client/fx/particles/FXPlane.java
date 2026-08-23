@@ -1,17 +1,15 @@
 package thaumcraft.client.fx.particles;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 /**
  * FXPlane - Flat plane particle that moves from point A to point B.
@@ -118,23 +116,8 @@ public class FXPlane extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        // Custom rendering for oriented plane
-        renderPlane(camera, partialTicks);
-    }
-    
-    protected void renderPlane(Camera camera, float partialTicks) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder builder = tesselator.getBuilder();
-        
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, PARTICLE_TEXTURE);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(false);
-        RenderSystem.disableCull();
-        
-        Vec3 camPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 camPos = camera.position();
         float px = (float)(Mth.lerp(partialTicks, xo, x) - camPos.x());
         float py = (float)(Mth.lerp(partialTicks, yo, y) - camPos.y());
         float pz = (float)(Mth.lerp(partialTicks, zo, z) - camPos.z());
@@ -152,43 +135,13 @@ public class FXPlane extends ThaumcraftParticle {
         float size = quadSize * (0.5f + (age + partialTicks) / lifetime);
         float renderAlpha = alpha / 2.0f;
         
-        // Set up transformation
-        PoseStack poseStack = new PoseStack();
-        poseStack.pushPose();
-        poseStack.translate(px, py, pz);
+        // Camera-facing billboard (render-state particle model)
+        Quaternionf rot = camera.rotation();
+        int color = ARGB.colorFromFloat(renderAlpha, rCol, gCol, bCol);
+        int light = 0xF000F0; // Full brightness
         
-        // Rotate to face along movement direction
-        poseStack.mulPose(Axis.YP.rotationDegrees(-angleYaw + 90.0f));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(anglePitch + 90.0f));
-        poseStack.mulPose(Axis.YP.rotationDegrees(angle));
-        
-        Matrix4f matrix = poseStack.last().pose();
-        
-        float halfSize = size * 0.5f;
-        
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        
-        builder.vertex(matrix, -halfSize, halfSize, 0)
-                .uv(u1, v1).color(rCol, gCol, bCol, renderAlpha).endVertex();
-        builder.vertex(matrix, halfSize, halfSize, 0)
-                .uv(u1, v0).color(rCol, gCol, bCol, renderAlpha).endVertex();
-        builder.vertex(matrix, halfSize, -halfSize, 0)
-                .uv(u0, v0).color(rCol, gCol, bCol, renderAlpha).endVertex();
-        builder.vertex(matrix, -halfSize, -halfSize, 0)
-                .uv(u0, v1).color(rCol, gCol, bCol, renderAlpha).endVertex();
-        
-        tesselator.end();
-        
-        poseStack.popPose();
-        
-        RenderSystem.depthMask(true);
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        state.add(getLayer(), px, py, pz, rot.x, rot.y, rot.z, rot.w, size,
+                u0, u1, v0, v1, color, light);
     }
     
     public void setColor(float r, float g, float b) {

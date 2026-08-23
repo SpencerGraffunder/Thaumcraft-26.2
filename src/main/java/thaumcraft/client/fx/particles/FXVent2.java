@@ -1,7 +1,6 @@
 package thaumcraft.client.fx.particles;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -116,10 +115,5 @@ public class FXVent2 extends ThaumcraftParticle {
         this.endG = g;
         this.endB = b;
         return this;
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 }

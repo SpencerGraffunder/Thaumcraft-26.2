@@ -63,11 +63,11 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
                 if (player.isShiftKeyDown()) {
                     // Remove the seal
                     SealHandler.removeSealEntity(level, sealEntity.getSealPos(), false);
-                    level.playSound(null, pos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 0.5f, 1.0f);
+                    level.playSound(null, pos, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
                 } else {
                     // TODO: Open seal GUI
                     // For now just play a sound
-                    level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
+                    level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -94,10 +94,10 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
                 if (player.isShiftKeyDown()) {
                     // Remove the seal
                     SealHandler.removeSealEntity(level, sealEntity.getSealPos(), false);
-                    level.playSound(null, sealEntity.getSealPos().pos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 0.5f, 1.0f);
+                    level.playSound(null, sealEntity.getSealPos().pos, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
                 } else {
                     // TODO: Open seal GUI
-                    level.playSound(null, sealEntity.getSealPos().pos, SoundEvents.NOTE_BLOCK_BELL.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
+                    level.playSound(null, sealEntity.getSealPos().pos, SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -112,7 +112,7 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
                 for (EntityThaumcraftGolem golem : golems) {
                     golem.setFollowingOwner(!golem.isFollowingOwner());
                 }
-                level.playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_BELL.get(), 
+                level.playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_BELL.value(), 
                         SoundSource.BLOCKS, 0.6f, 1.0f + level.getRandom().nextFloat() * 0.1f);
                 return InteractionResult.SUCCESS;
             }

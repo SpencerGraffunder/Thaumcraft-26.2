@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -120,7 +121,7 @@ public class FXDispatcher {
     public void drawLightningFlash(double x, double y, double z, float r, float g, float b, float alpha, float scale) {
         Level level = getWorld();
         if (level != null) {
-            level.addParticle(ParticleTypes.FLASH, x, y, z, 0, 0, 0);
+            level.addParticle(ColorParticleOption.create(ParticleTypes.FLASH, r, g, b), x, y, z, 0, 0, 0);
         }
     }
     

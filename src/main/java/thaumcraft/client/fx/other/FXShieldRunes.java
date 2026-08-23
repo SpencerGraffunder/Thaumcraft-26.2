@@ -1,16 +1,15 @@
 package thaumcraft.client.fx.other;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import thaumcraft.client.fx.particles.ThaumcraftParticle;
 
 /**
@@ -81,28 +80,13 @@ public class FXShieldRunes extends ThaumcraftParticle {
     }
     
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
-        Vec3 cameraPos = camera.getPosition();
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 cameraPos = camera.position();
         float x = (float)(Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float y = (float)(Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float z = (float)(Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
         
         Quaternionf quaternion = camera.rotation();
-        float size = this.quadSize;
-        
-        Vector3f[] vertices = new Vector3f[]{
-            new Vector3f(-1.0F, -1.0F, 0.0F),
-            new Vector3f(-1.0F, 1.0F, 0.0F),
-            new Vector3f(1.0F, 1.0F, 0.0F),
-            new Vector3f(1.0F, -1.0F, 0.0F)
-        };
-        
-        for (int i = 0; i < 4; ++i) {
-            Vector3f vertex = vertices[i];
-            vertex.rotate(quaternion);
-            vertex.mul(size);
-            vertex.add(x, y, z);
-        }
         
         // Texture coords for rune from sprite sheet
         float u0 = this.runeIndex / 64.0f;
@@ -110,24 +94,10 @@ public class FXShieldRunes extends ThaumcraftParticle {
         float v0 = 6.0f / 64.0f; // Rune row
         float v1 = v0 + 1.0f / 64.0f;
         
-        int light = 240; // Full bright for magic particles
+        int color = ARGB.colorFromFloat(this.alpha, this.rCol, this.gCol, this.bCol);
+        int light = 0xF000F0; // Full bright for magic particles
         
-        buffer.vertex(vertices[0].x(), vertices[0].y(), vertices[0].z())
-              .uv(u1, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[1].x(), vertices[1].y(), vertices[1].z())
-              .uv(u1, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[2].x(), vertices[2].y(), vertices[2].z())
-              .uv(u0, v0).color(this.rCol, this.gCol, this.bCol, this.alpha)
-              .uv2(light).endVertex();
-        buffer.vertex(vertices[3].x(), vertices[3].y(), vertices[3].z())
-              .uv(u0, v1).color(this.rCol, this.gCol, this.bCol, this.alpha)
-              .uv2(light).endVertex();
-    }
-    
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        state.add(getLayer(), x, y, z, quaternion.x, quaternion.y, quaternion.z, quaternion.w,
+                this.quadSize, u0, u1, v0, v1, color, light);
     }
 }

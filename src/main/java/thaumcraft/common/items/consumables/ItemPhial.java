@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -131,7 +132,7 @@ public class ItemPhial extends ItemEssentiaContainer {
                                         pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, filledPhial));
                             }
                             
-                            level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.25f, 1.0f);
+                            level.playSound(null, pos, SoundEvents.BOTTLE_FILL.value(), SoundSource.PLAYERS, 0.25f, 1.0f);
                             return InteractionResult.CONSUME;
                         }
                     }
@@ -162,7 +163,7 @@ public class ItemPhial extends ItemEssentiaContainer {
                                         pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, emptyPhial));
                             }
                             
-                            level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 0.25f, 1.0f);
+                            level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY.value(), SoundSource.PLAYERS, 0.25f, 1.0f);
                             return InteractionResult.CONSUME;
                         }
                     }

@@ -1,29 +1,32 @@
 package thaumcraft.common.lib.crafting;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
-import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.api.crafting.IArcaneWorkbench;
 import thaumcraft.init.ModRecipeTypes;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * ShapedArcaneRecipe - A shaped crafting recipe for the Arcane Workbench.
@@ -36,7 +39,6 @@ import java.util.Map;
  */
 public class ShapedArcaneRecipe implements IArcaneRecipe {
     
-    private final Identifier id;
     private final String group;
     private final int width;
     private final int height;
@@ -46,10 +48,9 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
     private final AspectList crystals;
     private final String research;
     
-    public ShapedArcaneRecipe(Identifier id, String group, int width, int height,
+    public ShapedArcaneRecipe(String group, int width, int height,
                               NonNullList<Ingredient> ingredients, ItemStack result,
                               int visCost, AspectList crystals, String research) {
-        this.id = id;
         this.group = group;
         this.width = width;
         this.height = height;
@@ -82,7 +83,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
                 int checkX = x - offsetX;
                 int checkY = y - offsetY;
                 
-                Ingredient ingredient = Ingredient.EMPTY;
+                Ingredient ingredient = Ingredient.of();
                 if (checkX >= 0 && checkY >= 0 && checkX < width && checkY < height) {
                     if (mirrored) {
                         ingredient = ingredients.get(width - checkX - 1 + checkY * width);
@@ -101,43 +102,51 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
     }
     
     @Override
-    public ItemStack assemble(IArcaneWorkbench container, RegistryAccess registryAccess) {
+    public ItemStack assemble(IArcaneWorkbench container) {
         return result.copy();
     }
     
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width >= this.width && height >= this.height;
+    public ItemStack getResultItem() {
+        return result.copy();
     }
     
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
-        return result;
+    public RecipeSerializer<? extends Recipe<IArcaneWorkbench>> getSerializer() {
+        return SERIALIZER;
     }
     
     @Override
-    public Identifier getId() {
-        return id;
-    }
-    
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return Serializer.INSTANCE;
-    }
-    
-    @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends Recipe<IArcaneWorkbench>> getType() {
         return ModRecipeTypes.ARCANE_WORKBENCH.get();
     }
     
     @Override
-    public NonNullList<Ingredient> getIngredients() {
-        return ingredients;
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
     }
     
     @Override
+    public RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+    
+    @Override
+    public boolean showNotification() {
+        return true;
+    }
+    
+    @Override
+    public String group() {
+        return group;
+    }
+    
     public String getGroup() {
         return group;
+    }
+    
+    public NonNullList<Ingredient> getIngredients() {
+        return ingredients;
     }
     
     public int getWidth() {
@@ -165,197 +174,118 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
         return crystals;
     }
     
-    /**
-     * Serializer for ShapedArcaneRecipe.
-     * Handles JSON parsing and network serialization.
-     */
-    public static class Serializer implements RecipeSerializer<ShapedArcaneRecipe> {
-        
-        public static final Serializer INSTANCE = new Serializer();
-        public static final Identifier ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "arcane_workbench_shaped");
-        
-        @Override
-        public ShapedArcaneRecipe fromJson(Identifier recipeId, JsonObject json) {
-            String group = GsonHelper.getAsString(json, "group", "");
-            String research = GsonHelper.getAsString(json, "research", "");
-            int visCost = GsonHelper.getAsInt(json, "vis", 0);
-            
-            // Parse crystal requirements
-            AspectList crystals = new AspectList();
-            if (json.has("crystals")) {
-                JsonObject crystalsJson = GsonHelper.getAsJsonObject(json, "crystals");
-                for (String aspectName : crystalsJson.keySet()) {
-                    Aspect aspect = Aspect.getAspect(aspectName);
-                    if (aspect != null) {
-                        crystals.add(aspect, crystalsJson.get(aspectName).getAsInt());
-                    }
+    /** Codec for an AspectList stored as { "aspectTag": amount, ... }. */
+    private static final Codec<AspectList> ASPECTS_CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT)
+            .xmap(map -> {
+                AspectList list = new AspectList();
+                map.forEach((name, amount) -> {
+                    Aspect aspect = Aspect.getAspect(name);
+                    if (aspect != null) list.add(aspect, amount);
+                });
+                return list;
+            }, list -> {
+                Map<String, Integer> map = new HashMap<>();
+                for (Aspect aspect : list.getAspects()) {
+                    map.put(aspect.getTag(), list.getAmount(aspect));
                 }
-            }
-            
-            // Parse pattern
-            Map<String, Ingredient> key = keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
-            String[] pattern = shrink(patternFromJson(GsonHelper.getAsJsonArray(json, "pattern")));
-            int width = pattern[0].length();
-            int height = pattern.length;
-            NonNullList<Ingredient> ingredients = dissolvePattern(pattern, key, width, height);
-            
-            // Parse result
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            
-            return new ShapedArcaneRecipe(recipeId, group, width, height, ingredients, result, visCost, crystals, research);
-        }
-        
+                return map;
+            });
+    
+    public static final MapCodec<ShapedArcaneRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
+            Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research),
+            Codec.INT.optionalFieldOf("vis", 0).forGetter(r -> r.visCost),
+            ASPECTS_CODEC.optionalFieldOf("crystals", new AspectList()).forGetter(r -> r.crystals),
+            ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.crystals),
+            ShapedRecipePattern.MAP_CODEC.forGetter(r -> new ShapedRecipePattern(r.width, r.height, toOptionalIngredients(r.ingredients), Optional.empty())),
+            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result)
+    ).apply(i, ShapedArcaneRecipe::create));
+    
+    public static final StreamCodec<RegistryFriendlyByteBuf, ShapedArcaneRecipe> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public @Nullable ShapedArcaneRecipe fromNetwork(Identifier recipeId, FriendlyByteBuf buffer) {
+        public ShapedArcaneRecipe decode(RegistryFriendlyByteBuf buffer) {
             String group = buffer.readUtf();
             String research = buffer.readUtf();
             int visCost = buffer.readVarInt();
             
-            // Read crystals
-            AspectList crystals = new AspectList();
-            int crystalCount = buffer.readVarInt();
-            for (int i = 0; i < crystalCount; i++) {
-                String aspectName = buffer.readUtf();
-                int amount = buffer.readVarInt();
-                Aspect aspect = Aspect.getAspect(aspectName);
-                if (aspect != null) {
-                    crystals.add(aspect, amount);
-                }
-            }
+            AspectList crystals = readAspects(buffer);
             
             int width = buffer.readVarInt();
             int height = buffer.readVarInt();
-            
-            NonNullList<Ingredient> ingredients = NonNullList.withSize(width * height, Ingredient.EMPTY);
-            for (int i = 0; i < ingredients.size(); i++) {
-                ingredients.set(i, Ingredient.fromNetwork(buffer));
+            NonNullList<Ingredient> ingredients = NonNullList.create();
+            for (int i = 0; i < width * height; i++) {
+                ingredients.add(Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.decode(buffer).orElse(Ingredient.of()));
             }
             
-            ItemStack result = buffer.readItem();
+            ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
             
-            return new ShapedArcaneRecipe(recipeId, group, width, height, ingredients, result, visCost, crystals, research);
+            return new ShapedArcaneRecipe(group, width, height, ingredients, result, visCost, crystals, research);
         }
         
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, ShapedArcaneRecipe recipe) {
+        public void encode(RegistryFriendlyByteBuf buffer, ShapedArcaneRecipe recipe) {
             buffer.writeUtf(recipe.group);
             buffer.writeUtf(recipe.research);
             buffer.writeVarInt(recipe.visCost);
             
-            // Write crystals
-            Aspect[] aspects = recipe.crystals.getAspects();
-            buffer.writeVarInt(aspects.length);
-            for (Aspect aspect : aspects) {
-                buffer.writeUtf(aspect.getTag());
-                buffer.writeVarInt(recipe.crystals.getAmount(aspect));
-            }
+            writeAspects(buffer, recipe.crystals);
             
             buffer.writeVarInt(recipe.width);
             buffer.writeVarInt(recipe.height);
-            
             for (Ingredient ingredient : recipe.ingredients) {
-                ingredient.toNetwork(buffer);
+                Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.encode(buffer, ingredient.isEmpty() ? Optional.empty() : Optional.of(ingredient));
             }
             
-            buffer.writeItem(recipe.result);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
         }
-        
-        // Helper methods from ShapedRecipe
-        
-        private static Map<String, Ingredient> keyFromJson(JsonObject json) {
-            Map<String, Ingredient> map = new java.util.HashMap<>();
-            for (Map.Entry<String, com.google.gson.JsonElement> entry : json.entrySet()) {
-                if (entry.getKey().length() != 1) {
-                    throw new JsonParseException("Invalid key entry: '" + entry.getKey() + "' is not a single character symbol");
-                }
-                if (" ".equals(entry.getKey())) {
-                    throw new JsonParseException("Invalid key entry: ' ' is a reserved symbol");
-                }
-                map.put(entry.getKey(), Ingredient.fromJson(entry.getValue(), false));
-            }
-            map.put(" ", Ingredient.EMPTY);
-            return map;
+    };
+    
+    public static final RecipeSerializer<ShapedArcaneRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+    
+    private static ShapedArcaneRecipe create(String group, String research, int visCost,
+                                             AspectList crystals, AspectList aspects,
+                                             ShapedRecipePattern pattern, ItemStack result) {
+        return new ShapedArcaneRecipe(group, pattern.width(), pattern.height(),
+                toIngredients(pattern.ingredients()), result, visCost,
+                !aspects.isEmpty() ? aspects : crystals, research);
+    }
+    
+    private static NonNullList<Ingredient> toIngredients(List<Optional<Ingredient>> list) {
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        for (Optional<Ingredient> opt : list) {
+            ingredients.add(opt.orElse(Ingredient.of()));
         }
-        
-        private static String[] patternFromJson(JsonArray jsonArray) {
-            String[] pattern = new String[jsonArray.size()];
-            if (pattern.length > 3) {
-                throw new JsonParseException("Invalid pattern: too many rows, 3 is maximum");
-            }
-            if (pattern.length == 0) {
-                throw new JsonParseException("Invalid pattern: empty pattern not allowed");
-            }
-            for (int i = 0; i < pattern.length; i++) {
-                String row = GsonHelper.convertToString(jsonArray.get(i), "pattern[" + i + "]");
-                if (row.length() > 3) {
-                    throw new JsonParseException("Invalid pattern: too many columns, 3 is maximum");
-                }
-                if (i > 0 && pattern[0].length() != row.length()) {
-                    throw new JsonParseException("Invalid pattern: each row must be the same width");
-                }
-                pattern[i] = row;
-            }
-            return pattern;
+        return ingredients;
+    }
+    
+    private static List<Optional<Ingredient>> toOptionalIngredients(NonNullList<Ingredient> ingredients) {
+        List<Optional<Ingredient>> list = new ArrayList<>(ingredients.size());
+        for (Ingredient ingredient : ingredients) {
+            list.add(ingredient.isEmpty() ? Optional.empty() : Optional.of(ingredient));
         }
-        
-        private static String[] shrink(String... pattern) {
-            int firstNonSpace = Integer.MAX_VALUE;
-            int lastNonSpace = 0;
-            int firstNonEmptyRow = 0;
-            int lastNonEmptyRow = pattern.length - 1;
-            
-            for (int row = 0; row < pattern.length; row++) {
-                String rowStr = pattern[row];
-                boolean empty = true;
-                for (int col = 0; col < rowStr.length(); col++) {
-                    if (rowStr.charAt(col) != ' ') {
-                        firstNonSpace = Math.min(firstNonSpace, col);
-                        lastNonSpace = Math.max(lastNonSpace, col);
-                        empty = false;
-                    }
-                }
-                if (!empty) {
-                    if (firstNonEmptyRow == 0 && row > 0) {
-                        boolean allEmpty = true;
-                        for (int r = 0; r < row; r++) {
-                            if (!pattern[r].trim().isEmpty()) {
-                                allEmpty = false;
-                                break;
-                            }
-                        }
-                        if (allEmpty) firstNonEmptyRow = row;
-                    }
-                    lastNonEmptyRow = row;
-                }
+        return list;
+    }
+    
+    private static AspectList readAspects(RegistryFriendlyByteBuf buffer) {
+        AspectList aspects = new AspectList();
+        int aspectCount = buffer.readVarInt();
+        for (int i = 0; i < aspectCount; i++) {
+            String aspectName = buffer.readUtf();
+            int amount = buffer.readVarInt();
+            Aspect aspect = Aspect.getAspect(aspectName);
+            if (aspect != null) {
+                aspects.add(aspect, amount);
             }
-            
-            if (firstNonSpace == Integer.MAX_VALUE) {
-                return new String[0];
-            }
-            
-            String[] shrunk = new String[lastNonEmptyRow - firstNonEmptyRow + 1];
-            for (int i = 0; i < shrunk.length; i++) {
-                shrunk[i] = pattern[firstNonEmptyRow + i].substring(firstNonSpace, lastNonSpace + 1);
-            }
-            return shrunk;
         }
-        
-        private static NonNullList<Ingredient> dissolvePattern(String[] pattern, Map<String, Ingredient> key, int width, int height) {
-            NonNullList<Ingredient> ingredients = NonNullList.withSize(width * height, Ingredient.EMPTY);
-            for (int row = 0; row < height; row++) {
-                for (int col = 0; col < width; col++) {
-                    String s = pattern[row].substring(col, col + 1);
-                    Ingredient ingredient = key.get(s);
-                    if (ingredient == null) {
-                        if (!" ".equals(s)) {
-                            throw new JsonParseException("Pattern references symbol '" + s + "' but it's not defined in the key");
-                        }
-                        ingredient = Ingredient.EMPTY;
-                    }
-                    ingredients.set(col + row * width, ingredient);
-                }
-            }
-            return ingredients;
+        return aspects;
+    }
+    
+    private static void writeAspects(RegistryFriendlyByteBuf buffer, AspectList aspects) {
+        Aspect[] aspectArray = aspects.getAspects();
+        buffer.writeVarInt(aspectArray.length);
+        for (Aspect aspect : aspectArray) {
+            buffer.writeUtf(aspect.getTag());
+            buffer.writeVarInt(aspects.getAmount(aspect));
         }
     }
 }

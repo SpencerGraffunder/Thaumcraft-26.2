@@ -1,5 +1,6 @@
 package thaumcraft.common.entities.monster.mods;
 
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -40,10 +41,10 @@ public class ChampionModPoison implements IChampionModifierEffect {
         double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
         double h = champion.level().getRandom().nextFloat() * champion.getBbHeight();
         
-        champion.level().addParticle(ParticleTypes.ENTITY_EFFECT,
+        champion.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0.1f, 0.5f, 0.1f),
                 champion.getBoundingBox().minX + w,
                 champion.getBoundingBox().minY + h,
                 champion.getBoundingBox().minZ + d,
-                0.1, 0.5, 0.1); // Dark green color
+                0, 0, 0); // Dark green color
     }
 }

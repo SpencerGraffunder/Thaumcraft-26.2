@@ -1,9 +1,8 @@
 package thaumcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -81,7 +80,7 @@ public class ResearchToast implements Toast {
     }
     
     @Override
-    public Visibility render(GuiGraphics graphics, ToastComponent toastComponent, long timeSinceLastVisible) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long timeSinceLastVisible) {
         if (firstDrawTime == 0) {
             firstDrawTime = timeSinceLastVisible;
             // Play sound on first draw
@@ -93,21 +92,20 @@ public class ResearchToast implements Toast {
         }
         
         // Draw toast background
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        graphics.blit(TEXTURE, 0, 0, 0, 0, this.width(), this.height());
+        graphics.blit(TEXTURE, 0, 0, this.width(), this.height(), 0.0F, 1.0F, 0.0F, 1.0F);
         
         // Draw purple tint for Thaumcraft flavor
         graphics.fill(0, 0, this.width(), this.height(), 0x20800080);
         
         // Draw title
-        graphics.drawString(toastComponent.getMinecraft().font, title, 30, 7, 0x8000A0, false);
+        graphics.text(font, title, 30, 7, 0x8000A0, false);
         
         // Draw research name
-        graphics.drawString(toastComponent.getMinecraft().font, description, 30, 18, 0x404040, false);
+        graphics.text(font, description, 30, 18, 0x404040, false);
         
         // Draw icon
         if (!icon.isEmpty()) {
-            graphics.renderItem(icon, 8, 8);
+            graphics.item(icon, 8, 8);
         } else {
             // Draw a placeholder icon
             graphics.fill(8, 8, 24, 24, 0x40800080);
@@ -115,7 +113,20 @@ public class ResearchToast implements Toast {
         
         // Check if we should hide
         long elapsed = timeSinceLastVisible - firstDrawTime;
-        return elapsed >= DISPLAY_TIME ? Visibility.HIDE : Visibility.SHOW;
+        if (elapsed >= DISPLAY_TIME) {
+            this.hide = true;
+        }
+    }
+
+    private boolean hide;
+
+    @Override
+    public Toast.Visibility getWantedVisibility() {
+        return this.hide ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
+    }
+
+    @Override
+    public void update(net.minecraft.client.gui.components.toasts.ToastManager manager, long fullyVisibleForMs) {
     }
     
     @Override

@@ -67,11 +67,6 @@ public class ItemPrimalCrusher extends Item implements IWarpingGear {
         return super.getDestroySpeed(stack, state);
     }
 
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(ModItems.VOID_METAL_INGOT.get()) || super.isValidRepairItem(toRepair, repair);
-    }
-
     /**
      * Self-repair mechanic - repairs 1 durability every 20 ticks.
      */

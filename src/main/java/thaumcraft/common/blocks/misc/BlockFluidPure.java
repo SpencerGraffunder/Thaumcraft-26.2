@@ -8,10 +8,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -61,7 +63,7 @@ public class BlockFluidPure extends Block {
                 .noOcclusion()
                 .pushReaction(PushReaction.DESTROY)
                 .randomTicks()
-                .noCollission()
+                .noCollision()
                 .lightLevel(state -> 10)
                 .sound(net.minecraft.world.level.block.SoundType.HONEY_BLOCK));
         registerDefaultState(stateDefinition.any().setValue(LEVEL, 7));
@@ -83,7 +85,8 @@ public class BlockFluidPure extends Block {
     }
     
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
+            InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         int fluidLevel = state.getValue(LEVEL);
         float quantaPercentage = (fluidLevel + 1) / 8.0f;
         
@@ -158,11 +161,11 @@ public class BlockFluidPure extends Block {
     }
     
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, 
-            LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+            BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
         // Flow down if there's space below
-        if (direction == Direction.DOWN && neighborState.isAir()) {
-            level.scheduleTick(pos, this, 5);
+        if (directionToNeighbour == Direction.DOWN && neighbourState.isAir()) {
+            ticks.scheduleTick(pos, this, 5);
         }
         return state;
     }

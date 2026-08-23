@@ -114,7 +114,6 @@ public class TileBanner extends BlockEntity {
     
     // ==================== Rendering ====================
     
-    @Override
     public AABB getRenderBoundingBox() {
         return new AABB(
                 worldPosition.getX(), worldPosition.getY() - 1, worldPosition.getZ(),

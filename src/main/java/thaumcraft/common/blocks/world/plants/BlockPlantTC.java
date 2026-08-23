@@ -1,5 +1,6 @@
 package thaumcraft.common.blocks.world.plants;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -10,7 +11,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.PlantType;
 
 /**
  * Base class for Thaumcraft plants (shimmerleaf, cinderpearl, vishroom).
@@ -28,18 +28,13 @@ public class BlockPlantTC extends BushBlock {
         return SHAPE;
     }
 
-    @Override
-    public PlantType getPlantType(BlockGetter level, BlockPos pos) {
-        return PlantType.PLAINS;
-    }
-
     /**
      * Creates shimmerleaf - glowing magical plant.
      */
     public static BlockPlantTC createShimmerleaf() {
         return new BlockPlantTC(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.PLANT)
-                .noCollission()
+                .noCollision()
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .lightLevel(state -> 6)
@@ -52,7 +47,7 @@ public class BlockPlantTC extends BushBlock {
     public static BlockPlantTC createCinderpearl() {
         return new BlockPlantTC(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_ORANGE)
-                .noCollission()
+                .noCollision()
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .lightLevel(state -> 8)
@@ -65,15 +60,15 @@ public class BlockPlantTC extends BushBlock {
     public static BlockPlantTC createVishroom() {
         return new BlockPlantTC(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
-                .noCollission()
+                .noCollision()
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .lightLevel(state -> 3)
-                .offsetType(BlockBehaviour.OffsetType.XZ)) {
-            @Override
-            public PlantType getPlantType(BlockGetter level, BlockPos pos) {
-                return PlantType.CAVE;
-            }
-        };
+                .offsetType(BlockBehaviour.OffsetType.XZ));
+    }
+
+    @Override
+    public MapCodec<BlockPlantTC> codec() {
+        return simpleCodec(BlockPlantTC::new);
     }
 }

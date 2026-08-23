@@ -45,8 +45,8 @@ public class TileLampArcane extends TileThaumcraft {
         if (targetPos.getY() > surfaceY + 4) {
             targetPos = new BlockPos(targetPos.getX(), surfaceY + 4, targetPos.getZ());
         }
-        if (targetPos.getY() < level.getMinBuildHeight() + 5) {
-            targetPos = new BlockPos(targetPos.getX(), level.getMinBuildHeight() + 5, targetPos.getZ());
+        if (targetPos.getY() < level.getMinY() + 5) {
+            targetPos = new BlockPos(targetPos.getX(), level.getMinY() + 5, targetPos.getZ());
         }
 
         // Check if we can place a light source

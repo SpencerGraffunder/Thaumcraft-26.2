@@ -3,7 +3,6 @@ package thaumcraft.client.lib.events;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -35,16 +34,5 @@ public class ClientEvents {
         // - Radial menu updates
         // - Goggle/HUD overlay updates
         // - Client-side particle systems
-    }
-    
-    /**
-     * Handle render tick events.
-     * Used for frame-rate independent rendering updates.
-     */
-    @SubscribeEvent
-    public static void onRenderTick(RenderTickEvent.Post event) {
-        // TODO: Implement render tick processing
-        // - Smooth animations
-        // - Partial tick interpolation
     }
 }

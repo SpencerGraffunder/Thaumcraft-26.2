@@ -50,7 +50,8 @@ public class EntityHomingShard extends ThrowableProjectile {
     }
     
     public EntityHomingShard(Level level, LivingEntity owner, LivingEntity target, int strength, boolean persistent) {
-        super(ModEntities.HOMING_SHARD.get(), owner, level);
+        super(ModEntities.HOMING_SHARD.get(), level);
+        this.setOwner(owner);
         this.target = target;
         this.targetClass = target.getClass();
         this.persistent = persistent;
@@ -89,7 +90,7 @@ public class EntityHomingShard extends ThrowableProjectile {
     }
     
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return 0.0f; // No gravity - floats toward target
     }
     
@@ -196,7 +197,7 @@ public class EntityHomingShard extends ThrowableProjectile {
             // Deal damage: 1 + (strength * 0.5)
             float damage = 1.0f + getStrength() * 0.5f;
             DamageSource source = level().damageSources().indirectMagic(this, owner);
-            hit.hurt(source, damage);
+            hit.hurtServer((net.minecraft.server.level.ServerLevel) level(), source, damage);
             
             playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
             level().broadcastEntityEvent(this, (byte)16);
@@ -244,7 +245,7 @@ public class EntityHomingShard extends ThrowableProjectile {
         super.readAdditionalSaveData(input);
         setStrength(input.getByteOr("Strength", (byte)0));
         persistent = input.getBooleanOr("Persistent", false);
-        if (input.contains("TargetId")) {
+        if (input.keySet().contains("TargetId")) {
             entityData.set(DATA_TARGET_ID, input.getIntOr("TargetId", 0));
         }
         // Note: targetClass restoration would require reflection, skipping for safety

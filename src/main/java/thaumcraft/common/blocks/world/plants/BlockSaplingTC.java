@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.grower.AbstractTreeGrower;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
  */
 public class BlockSaplingTC extends SaplingBlock {
 
-    public BlockSaplingTC(AbstractTreeGrower treeGrower, Properties properties) {
+    public BlockSaplingTC(TreeGrower treeGrower, Properties properties) {
         super(treeGrower, properties);
     }
 
@@ -31,17 +31,10 @@ public class BlockSaplingTC extends SaplingBlock {
      */
     public static BlockSaplingTC createGreatwood() {
         return new BlockSaplingTC(
-                new AbstractTreeGrower() {
-                    @Nullable
-                    @Override
-                    protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource random, boolean hasFlowers) {
-                        // TODO: Return greatwood tree feature when implemented
-                        return null;
-                    }
-                },
+                new TreeGrower("thaumcraft_greatwood", java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty()),
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.PLANT)
-                        .noCollission()
+                        .noCollision()
                         .randomTicks()
                         .instabreak()
                         .sound(SoundType.GRASS));
@@ -52,17 +45,10 @@ public class BlockSaplingTC extends SaplingBlock {
      */
     public static BlockSaplingTC createSilverwood() {
         return new BlockSaplingTC(
-                new AbstractTreeGrower() {
-                    @Nullable
-                    @Override
-                    protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource random, boolean hasFlowers) {
-                        // TODO: Return silverwood tree feature when implemented
-                        return null;
-                    }
-                },
+                new TreeGrower("thaumcraft_silverwood", java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty()),
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.QUARTZ)
-                        .noCollission()
+                        .noCollision()
                         .randomTicks()
                         .instabreak()
                         .sound(SoundType.GRASS)

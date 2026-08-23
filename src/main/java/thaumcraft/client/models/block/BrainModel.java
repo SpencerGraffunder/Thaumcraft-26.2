@@ -7,8 +7,9 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
@@ -18,7 +19,7 @@ import thaumcraft.Thaumcraft;
  * Based on the original 1.12.2 ModelBrain.
  */
 @OnlyIn(Dist.CLIENT)
-public class BrainModel extends Model {
+public class BrainModel extends Model<Unit> {
 
     public static final ModelLayerLocation LAYER_LOCATION = 
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "brain"), "main");
@@ -28,7 +29,7 @@ public class BrainModel extends Model {
     private final ModelPart spinalCord;
 
     public BrainModel(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
+        super(root, RenderTypes::entityCutoutCull);
         this.mainBrain = root.getChild("main_brain");
         this.brainStem = root.getChild("brain_stem");
         this.spinalCord = root.getChild("spinal_cord");
@@ -57,13 +58,5 @@ public class BrainModel extends Model {
                 PartPose.offsetAndRotation(0.0f, 18.0f, -1.0f, 0.4089647f, 0.0f, 0.0f));
 
         return LayerDefinition.create(meshdefinition, 128, 64);
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, 
-                               int packedOverlay, float red, float green, float blue, float alpha) {
-        mainBrain.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        brainStem.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        spinalCord.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

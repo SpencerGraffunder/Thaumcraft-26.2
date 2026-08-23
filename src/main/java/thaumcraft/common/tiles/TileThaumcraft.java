@@ -116,7 +116,8 @@ public abstract class TileThaumcraft extends BlockEntity {
      */
     public void sendMessageToClients(CompoundTag nbt) {
         if (level != null && !level.isClientSide()) {
-            PacketHandler.sendToAllTracking(new PacketTileToClient(worldPosition, nbt), this);
+            PacketHandler.sendToAllTrackingChunk(new PacketTileToClient(worldPosition, nbt),
+                    (net.minecraft.server.level.ServerLevel) level, worldPosition);
         }
     }
 

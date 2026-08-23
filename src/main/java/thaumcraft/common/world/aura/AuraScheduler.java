@@ -46,7 +46,9 @@ public class AuraScheduler {
             if (worldTime != lastWorldTime.getOrDefault(dim, -1L)) {
                 lastWorldTime.put(dim, worldTime);
                 
-                int moonPhase = level.dimensionType().moonPhase(worldTime);
+                int moonPhase = level.environmentAttributes()
+                        .getDimensionValue(net.minecraft.world.attribute.EnvironmentAttributes.MOON_PHASE)
+                        .index();
                 phaseVis.put(dim, phaseTable[moonPhase]);
                 phaseMax.put(dim, 1.0f + maxTable[moonPhase]);
                 phaseFlux.put(dim, 0.25f - phaseVis.get(dim));
