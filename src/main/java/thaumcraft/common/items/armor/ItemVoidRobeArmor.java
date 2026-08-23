@@ -25,6 +25,7 @@ import thaumcraft.api.items.IWarpingGear;
 import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
+import net.minecraft.server.level.ServerLevel;
 
 /**
  * Void Robe Armor - The ultimate mage armor combining void metal protection
@@ -69,8 +70,8 @@ public class ItemVoidRobeArmor extends Item
     }
     
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
         
         // Self-repair while worn
         if (!level.isClientSide() && stack.isDamaged() && entity.tickCount % 20 == 0 

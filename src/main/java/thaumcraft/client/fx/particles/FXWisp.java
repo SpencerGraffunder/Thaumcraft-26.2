@@ -32,9 +32,9 @@ public class FXWisp extends ThaumcraftParticle {
         this.target = target;
 
         // Random initial velocity
-        this.xd = this.getRandom().nextGaussian() * 0.03;
+        this.xd = this.random.nextGaussian() * 0.03;
         this.yd = -0.05;
-        this.zd = this.getRandom().nextGaussian() * 0.03;
+        this.zd = this.random.nextGaussian() * 0.03;
 
         this.quadSize *= 0.4f;
         this.lifetime = (int) (40.0 / (Math.getRandom() * 0.3 + 0.7));
@@ -44,9 +44,9 @@ public class FXWisp extends ThaumcraftParticle {
         this.blendMode = 771;
 
         // Dark wispy color
-        this.rCol = this.getRandom().nextFloat() * 0.05f;
-        this.gCol = this.getRandom().nextFloat() * 0.05f;
-        this.bCol = this.getRandom().nextFloat() * 0.05f;
+        this.rCol = this.random.nextFloat() * 0.05f;
+        this.gCol = this.random.nextFloat() * 0.05f;
+        this.bCol = this.random.nextFloat() * 0.05f;
     }
 
     /**

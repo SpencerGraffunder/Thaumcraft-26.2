@@ -18,6 +18,8 @@ import thaumcraft.init.ModSounds;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * ItemCreativeFluxSponge - Creative-only item that drains flux from the aura.
@@ -34,13 +36,13 @@ public class ItemCreativeFluxSponge extends Item {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
-        tooltip.add(Component.literal("Right-click to drain all").withStyle(ChatFormatting.GREEN));
-        tooltip.add(Component.literal("flux from 9x9 chunk area").withStyle(ChatFormatting.GREEN));
-        tooltip.add(Component.literal("Also removes flux rifts").withStyle(ChatFormatting.DARK_AQUA));
-        tooltip.add(Component.literal("if used while sneaking.").withStyle(ChatFormatting.DARK_AQUA));
-        tooltip.add(Component.literal("Creative only").withStyle(ChatFormatting.DARK_PURPLE));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, builder, flag);
+        builder.accept(Component.literal("Right-click to drain all").withStyle(ChatFormatting.GREEN));
+        builder.accept(Component.literal("flux from 9x9 chunk area").withStyle(ChatFormatting.GREEN));
+        builder.accept(Component.literal("Also removes flux rifts").withStyle(ChatFormatting.DARK_AQUA));
+        builder.accept(Component.literal("if used while sneaking.").withStyle(ChatFormatting.DARK_AQUA));
+        builder.accept(Component.literal("Creative only").withStyle(ChatFormatting.DARK_PURPLE));
     }
     
     @Override

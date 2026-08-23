@@ -44,15 +44,15 @@ public class FXVisSparkle extends ThaumcraftParticle {
 
         // Random initial velocity
         float f3 = 0.01f;
-        this.xd = (float) this.getRandom().nextGaussian() * f3;
-        this.yd = (float) this.getRandom().nextGaussian() * f3;
-        this.zd = (float) this.getRandom().nextGaussian() * f3;
+        this.xd = (float) this.random.nextGaussian() * f3;
+        this.yd = (float) this.random.nextGaussian() * f3;
+        this.zd = (float) this.random.nextGaussian() * f3;
 
-        this.sizeMod = 45 + this.getRandom().nextInt(15);
+        this.sizeMod = 45 + this.random.nextInt(15);
 
         // Green tinted color
         this.rCol = 0.2f;
-        this.gCol = 0.6f + this.getRandom().nextFloat() * 0.3f;
+        this.gCol = 0.6f + this.random.nextFloat() * 0.3f;
         this.bCol = 0.2f;
 
         this.gravity = 0.2f;

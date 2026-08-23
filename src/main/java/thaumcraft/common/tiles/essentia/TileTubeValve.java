@@ -10,6 +10,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.init.ModBlockEntities;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Valve tube - can be toggled open/closed with redstone.
@@ -34,17 +36,17 @@ public class TileTubeValve extends TileTube {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putBoolean("Flow", allowFlow);
-        tag.putBoolean("HadPower", wasPoweredLastTick);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putBoolean("Flow", allowFlow);
+        output.putBoolean("HadPower", wasPoweredLastTick);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        allowFlow = tag.getBooleanOr("Flow", false);
-        wasPoweredLastTick = tag.getBooleanOr("HadPower", false);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        allowFlow = input.getBooleanOr("Flow", false);
+        wasPoweredLastTick = input.getBooleanOr("HadPower", false);
     }
 
     // ==================== Tick ====================

@@ -19,6 +19,8 @@ import thaumcraft.api.aspects.IAspectSource;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Essentia mirror tile entity - teleports essentia between linked mirrors.
@@ -53,28 +55,28 @@ public class TileMirrorEssentia extends TileThaumcraft implements IAspectSource 
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putBoolean("Linked", linked);
-        tag.putInt("LinkX", linkX);
-        tag.putInt("LinkY", linkY);
-        tag.putInt("LinkZ", linkZ);
-        tag.putString("LinkDim", linkDimension.identifier().toString());
-        tag.putInt("Instability", instability);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putBoolean("Linked", linked);
+        output.putInt("LinkX", linkX);
+        output.putInt("LinkY", linkY);
+        output.putInt("LinkZ", linkZ);
+        output.putString("LinkDim", linkDimension.identifier().toString());
+        output.putInt("Instability", instability);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        linked = tag.getBooleanOr("Linked", false);
-        linkX = tag.getIntOr("LinkX", 0);
-        linkY = tag.getIntOr("LinkY", 0);
-        linkZ = tag.getIntOr("LinkZ", 0);
-        if (tag.contains("LinkDim")) {
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        linked = input.getBooleanOr("Linked", false);
+        linkX = input.getIntOr("LinkX", 0);
+        linkY = input.getIntOr("LinkY", 0);
+        linkZ = input.getIntOr("LinkZ", 0);
+        if (input.keySet().contains("LinkDim")) {
             linkDimension = ResourceKey.create(Registries.DIMENSION,
-                Identifier.withDefaultNamespace(tag.getStringOr("LinkDim", "")));
+                Identifier.withDefaultNamespace(input.getStringOr("LinkDim", "")));
         }
-        instability = tag.getIntOr("Instability", 0);
+        instability = input.getIntOr("Instability", 0);
     }
 
     // ==================== Tick ====================

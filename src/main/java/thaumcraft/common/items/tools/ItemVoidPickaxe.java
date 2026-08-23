@@ -12,6 +12,8 @@ import net.minecraft.world.level.Level;
 import thaumcraft.api.ThaumcraftMaterials;
 import thaumcraft.api.items.IWarpingGear;
 import thaumcraft.init.ModItems;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
 
 /**
  * Void Metal Pickaxe - Powerful but warping pickaxe that applies weakness and self-repairs.
@@ -28,8 +30,8 @@ public class ItemVoidPickaxe extends Item implements IWarpingGear {
     }
     
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
         // Self-repair: repair 1 durability every second (20 ticks)
         if (stack.isDamaged() && entity != null && entity.tickCount % 20 == 0 && entity instanceof LivingEntity) {
             stack.setDamageValue(stack.getDamageValue() - 1);
@@ -37,7 +39,7 @@ public class ItemVoidPickaxe extends Item implements IWarpingGear {
     }
     
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         // Apply weakness effect on hit
         if (!attacker.level().isClientSide()) {
             if (!(target instanceof Player) || isPvPEnabled(attacker.level())) {

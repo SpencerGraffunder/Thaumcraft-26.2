@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Flux Condenser tile entity - converts flux from the aura into Vitium essentia.
@@ -55,17 +57,17 @@ public class TileCondenser extends TileThaumcraft implements IEssentiaTransport 
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putShort("Essentia", (short) essentia);
-        tag.putShort("Flux", (short) flux);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putShort("Essentia", (short) essentia);
+        output.putShort("Flux", (short) flux);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        essentia = tag.getShortOr("Essentia", (short)0);
-        flux = tag.getShortOr("Flux", (short)0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        essentia = (short) input.getShortOr("Essentia", (short)0);
+        flux = (short) input.getShortOr("Flux", (short)0);
     }
 
     // ==================== Tick ====================

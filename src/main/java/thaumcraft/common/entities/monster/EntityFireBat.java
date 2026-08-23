@@ -68,7 +68,7 @@ public class EntityFireBat extends Monster {
      * Fire bats spawn in dark areas, typically in the Nether.
      */
     public static boolean checkFireBatSpawnRules(EntityType<? extends EntityFireBat> type, ServerLevelAccessor level,
-            MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+            EntitySpawnReason spawnType, BlockPos pos, RandomSource random) {
         // Check light level - spawn in dark areas
         int light = level.getMaxLocalRawBrightness(pos);
         return light <= random.nextInt(7);
@@ -310,7 +310,7 @@ public class EntityFireBat extends Monster {
     }
     
     @Override
-    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, net.minecraft.world.entity.MobSpawnType spawnType) {
+    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, net.minecraft.world.entity.EntitySpawnReason spawnType) {
         BlockPos pos = blockPosition();
         int light = level.getMaxLocalRawBrightness(pos);
         return light <= random.nextInt(7) && super.checkSpawnRules(level, spawnType);

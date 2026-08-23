@@ -29,32 +29,41 @@ currently carries ~340 modified files across multiple migration waves).
   (`saveAdditional(ValueOutput)` / `loadAdditional(ValueInput)`)
 - Level `random` access → `getRandom()`
 
-**Current wave — BlockEntity sync NBT → ValueIO (in progress)**
+**Current wave — BlockEntity sync NBT → ValueIO (COMPLETE)**
 
 The `writeSyncNBT(CompoundTag)` / `readSyncNBT(CompoundTag)` sync chain (cascading
-from `saveAdditional(ValueOutput)` / `loadAdditional(ValueInput)`) is being
-converted to `ValueOutput` / `ValueInput`. The API surface is fully mapped
-(`ValueOutput`/`ValueInput` interfaces, `TagValueOutput`, MC `ContainerHelper`,
-`ItemStack` codecs, NeoForge `ValueIOExtension`s, `FluidTank` as
-`ValueIOSerializable`). Progress:
+from `saveAdditional(ValueOutput)` / `loadAdditional(ValueInput)`) has been fully
+converted to `ValueOutput` / `ValueInput`:
 
-- ✅ `AspectList` now has `ValueIO` overloads of `writeToNBT`/`readFromNBT`
-  alongside the legacy `CompoundTag` ones
-- 🔄 Base `TileThaumcraft` is mid-transition — `saveAdditional`/`loadAdditional`
-  call the `ValueIO` variants but the `writeSyncNBT`/`readSyncNBT` overloads are
-  still `CompoundTag`-typed (compile is intentionally red here until the wave lands)
-- ⏳ All 36 tile subclasses still declare the `CompoundTag`-typed overloads
-  (migration script + hand-fixes queued, see `TODO.md` → 26.2 section)
+- ✅ `AspectList` ValueIO overloads of `writeToNBT`/`readFromNBT` (added earlier)
+- ✅ Base `TileThaumcraft` — `writeSyncNBT(ValueOutput)` / `readSyncNBT(ValueInput)`
+  decls, `getUpdateTag(HolderLookup.Provider)` → `saveWithoutMetadata(registries)`
+- ✅ All 36 tile subclasses migrated (primitive ops, `AspectList` stores,
+  `FluidTank` → `putChild`/`readChild`, `ItemStack` → `OPTIONAL_CODEC`,
+  byte[] grids → `putIntArray`, focus-node list via `CompoundTag.CODEC.listOf()`,
+  `contains` → `keySet().contains`, `getShortOr` returns `int` → `(short)` casts)
+- ✅ `TileBanner`/`TileSmelter` `getUpdateTag`/serialization fixed
+- ✅ Pre-existing `loadAdditional` leftovers in `TileMemory`/`TileMirror`/
+  `TileInfusionMatrix`/`TileWaterJug` migrated to codecs
 
-**Remaining work**
+**Current status — compilation still red (~3.8k errors)**
 
-- Finish the sync ValueIO wave: flip the 36 `writeSyncNBT`/`readSyncNBT` bodies
-  to `ValueOutput`/`ValueInput`, migrate special cases (byte[] grids, focus-node
-  list, `ResearchTableData`/`FocusElementNode`, `ItemStack` codecs), fix
-  `TileBanner`/`getUpdateTag(HolderLookup.Provider)` signature
-- Wave 2 — remove the old `ItemStack` CompoundTag API (`hasTag`/`setTag`/
-  `getOrCreateTag`/`ItemStack.of`) across ~50 files in favor of the 26.2 codecs
-- Port GUI screens to the new 26.2 render API (`GuiGraphics` → `GuiGraphicsExtractor`)
+Compile errors are down from ~4.1k and now concentrate in a few deep 26.2
+subsystem rewrites (each tracked in `TODO.md` → 26.2 section):
+
+- **Render/GUI subsystem (~1.2k errors)** — the 26.2 render-state model:
+  `GuiGraphics` → `GuiGraphicsExtractor`, `MultiBufferSource`/`VertexConsumer.vertex`
+  → new submit-node pipeline, `EntityRenderer<T, S extends EntityRenderState>`
+  with `extractRenderState`/`submit` replacing `getTextureLocation`/`render`
+  (~30 entity + tile renderers, FX beams, screens)
+- **Wave 2 — ItemStack old NBT removal (~340 errors)** — `hasTag`/`getTag`/
+  `getOrCreateTag`/`ItemStack.of` across ~50 files → `DataComponents`/codecs
+- **NeoForge capabilities rework** — `LazyOptional`/`Capability`/
+  `ForgeCapabilities`/`getCapability`/`invalidateCaps` are gone in 26.2
+- **Recipe codec rewrite** — `RecipeSerializer` is now a record
+  (`MapCodec` + `StreamCodec`); old `fromJson`/`fromNetwork` serializers obsolete
+- **Block API** — `Block.onRemove` removed; `updateShape`/`isSolidRender`/
+  `isValidRepairItem`/`getItems`/`displayClientMessage` signatures changed
 - Networking to the NeoForge payload system
 - Full in-game testing on a test server
 

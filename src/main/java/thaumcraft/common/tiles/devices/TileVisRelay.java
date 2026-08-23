@@ -13,6 +13,8 @@ import thaumcraft.init.ModBlockEntities;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileVisRelay - Distributes vis across a network of relays.
@@ -55,9 +57,9 @@ public class TileVisRelay extends TileThaumcraft {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putFloat("StoredVis", storedVis);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putFloat("StoredVis", storedVis);
         
         // Save linked positions
         int[] linkX = new int[linkedRelays.size()];
@@ -69,21 +71,21 @@ public class TileVisRelay extends TileThaumcraft {
             linkY[i] = pos.getY();
             linkZ[i] = pos.getZ();
         }
-        tag.putIntArray("LinkX", linkX);
-        tag.putIntArray("LinkY", linkY);
-        tag.putIntArray("LinkZ", linkZ);
+        output.putIntArray("LinkX", linkX);
+        output.putIntArray("LinkY", linkY);
+        output.putIntArray("LinkZ", linkZ);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        storedVis = tag.getFloatOr("StoredVis", 0.0F);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        storedVis = input.getFloatOr("StoredVis", 0.0F);
         
         // Load linked positions
         linkedRelays.clear();
-        int[] linkX = tag.getIntArray("LinkX").orElse(new int[0]);
-        int[] linkY = tag.getIntArray("LinkY").orElse(new int[0]);
-        int[] linkZ = tag.getIntArray("LinkZ").orElse(new int[0]);
+        int[] linkX = input.getIntArray("LinkX").orElse(new int[0]);
+        int[] linkY = input.getIntArray("LinkY").orElse(new int[0]);
+        int[] linkZ = input.getIntArray("LinkZ").orElse(new int[0]);
         for (int i = 0; i < linkX.length && i < linkY.length && i < linkZ.length; i++) {
             linkedRelays.add(new BlockPos(linkX[i], linkY[i], linkZ[i]));
         }

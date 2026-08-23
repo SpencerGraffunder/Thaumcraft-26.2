@@ -14,6 +14,8 @@ import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
 
 import java.util.List;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileJarBrain - Brain in a Jar that collects and stores XP orbs.
@@ -55,15 +57,15 @@ public class TileJarBrain extends TileThaumcraft {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putInt("XP", xp);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putInt("XP", xp);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        xp = tag.getIntOr("XP", 0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        xp = input.getIntOr("XP", 0);
     }
 
     // ==================== Tick ====================

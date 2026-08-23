@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.common.world.aura.AuraHandler;
@@ -18,6 +18,8 @@ import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Vis Generator tile entity - converts aura vis into Forge Energy (RF/FE).
@@ -45,15 +47,15 @@ public class TileVisGenerator extends TileThaumcraft implements IEnergyStorage {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putInt("Energy", energy);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putInt("Energy", energy);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        energy = tag.getIntOr("Energy", 0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        energy = input.getIntOr("Energy", 0);
     }
 
     // ==================== Tick ====================

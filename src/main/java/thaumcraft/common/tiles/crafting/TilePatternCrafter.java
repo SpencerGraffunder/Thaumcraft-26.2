@@ -357,15 +357,15 @@ public class TilePatternCrafter extends TileThaumcraft {
     // ==================== NBT ====================
     
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putByte("type", type);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putByte("type", type);
     }
     
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        type = tag.getByteOr("type", (byte)0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        type = input.getByteOr("type", (byte)0);
     }
     
     @Override

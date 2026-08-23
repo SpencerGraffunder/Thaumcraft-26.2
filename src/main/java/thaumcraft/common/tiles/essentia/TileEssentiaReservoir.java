@@ -13,6 +13,8 @@ import thaumcraft.api.aspects.IAspectSource;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileEssentiaReservoir - A large essentia storage tank.
@@ -47,25 +49,25 @@ public class TileEssentiaReservoir extends TileThaumcraft implements IAspectSour
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
         if (aspect != null) {
-            tag.putString("Aspect", aspect.getTag());
+            output.putString("Aspect", aspect.getTag());
         }
         if (aspectFilter != null) {
-            tag.putString("AspectFilter", aspectFilter.getTag());
+            output.putString("AspectFilter", aspectFilter.getTag());
         }
-        tag.putShort("Amount", (short) amount);
-        tag.putByte("Facing", (byte) facing);
+        output.putShort("Amount", (short) amount);
+        output.putByte("Facing", (byte) facing);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        aspect = Aspect.getAspect(tag.getStringOr("Aspect", ""));
-        aspectFilter = Aspect.getAspect(tag.getStringOr("AspectFilter", ""));
-        amount = tag.getShortOr("Amount", (short)0);
-        facing = tag.getByteOr("Facing", (byte)0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        aspect = Aspect.getAspect(input.getStringOr("Aspect", ""));
+        aspectFilter = Aspect.getAspect(input.getStringOr("AspectFilter", ""));
+        amount = (short) input.getShortOr("Amount", (short)0);
+        facing = input.getByteOr("Facing", (byte)0);
     }
 
     // ==================== Tick ====================

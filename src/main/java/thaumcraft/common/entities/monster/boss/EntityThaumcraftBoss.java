@@ -199,7 +199,7 @@ public abstract class EntityThaumcraftBoss extends Monster {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
         
         setHomePos(blockPosition(), 24);
         generateName();

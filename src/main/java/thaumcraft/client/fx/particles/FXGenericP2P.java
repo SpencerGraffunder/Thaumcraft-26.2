@@ -34,13 +34,13 @@ public class FXGenericP2P extends FXGeneric {
         int base = (int) (Math.sqrt(dx * dx + dy * dy + dz * dz) * 3.0f);
         if (base < 1) base = 1;
 
-        this.lifetime = base / 2 + this.getRandom().nextInt(base);
+        this.lifetime = base / 2 + this.random.nextInt(base);
 
         // Small random initial velocity
         float f3 = 0.01f;
-        this.xd = this.getRandom().nextGaussian() * f3;
-        this.yd = this.getRandom().nextGaussian() * f3;
-        this.zd = this.getRandom().nextGaussian() * f3;
+        this.xd = this.random.nextGaussian() * f3;
+        this.yd = this.random.nextGaussian() * f3;
+        this.zd = this.random.nextGaussian() * f3;
 
         this.gravity = 0.2f;
     }

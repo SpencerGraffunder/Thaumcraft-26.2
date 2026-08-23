@@ -8,6 +8,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import thaumcraft.Thaumcraft;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for all Thaumcraft sound events.

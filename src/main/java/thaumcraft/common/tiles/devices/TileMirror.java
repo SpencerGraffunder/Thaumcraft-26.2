@@ -63,28 +63,28 @@ public class TileMirror extends TileThaumcraft implements Container {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putBoolean("Linked", linked);
-        tag.putInt("LinkX", linkX);
-        tag.putInt("LinkY", linkY);
-        tag.putInt("LinkZ", linkZ);
-        tag.putString("LinkDim", linkDimension.identifier().toString());
-        tag.putInt("Instability", instability);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putBoolean("Linked", linked);
+        output.putInt("LinkX", linkX);
+        output.putInt("LinkY", linkY);
+        output.putInt("LinkZ", linkZ);
+        output.putString("LinkDim", linkDimension.identifier().toString());
+        output.putInt("Instability", instability);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        linked = tag.getBooleanOr("Linked", false);
-        linkX = tag.getIntOr("LinkX", 0);
-        linkY = tag.getIntOr("LinkY", 0);
-        linkZ = tag.getIntOr("LinkZ", 0);
-        if (tag.contains("LinkDim")) {
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        linked = input.getBooleanOr("Linked", false);
+        linkX = input.getIntOr("LinkX", 0);
+        linkY = input.getIntOr("LinkY", 0);
+        linkZ = input.getIntOr("LinkZ", 0);
+        if (input.keySet().contains("LinkDim")) {
             linkDimension = ResourceKey.create(Registries.DIMENSION, 
-                Identifier.withDefaultNamespace(tag.getStringOr("LinkDim", "")));
+                Identifier.withDefaultNamespace(input.getStringOr("LinkDim", "")));
         }
-        instability = tag.getIntOr("Instability", 0);
+        instability = input.getIntOr("Instability", 0);
     }
 
     @Override
@@ -92,17 +92,8 @@ public class TileMirror extends TileThaumcraft implements Container {
         super.saveAdditional(output);
         
         // Save output stacks
-        ListTag itemList = new ListTag();
-        for (int i = 0; i < outputStacks.size(); i++) {
-            ItemStack stack = outputStacks.get(i);
-            if (!stack.isEmpty()) {
-                CompoundTag itemTag = new CompoundTag();
-                itemTag.putByte("Slot", (byte) i);
-                stack.save(itemTag);
-                itemList.add(itemTag);
-            }
-        }
-        output.put("Items", itemList);
+        output.store("Items", ItemStack.OPTIONAL_CODEC.listOf(),
+            outputStacks.stream().filter(s -> !s.isEmpty()).toList());
     }
 
     @Override
@@ -111,14 +102,7 @@ public class TileMirror extends TileThaumcraft implements Container {
         
         // Load output stacks
         outputStacks.clear();
-        ListTag itemList = input.getListOrEmpty("Items");
-        for (int i = 0; i < itemList.size(); i++) {
-            CompoundTag itemTag = itemList.getCompoundOrEmpty(i);
-            ItemStack stack = ItemStack.of(itemTag);
-            if (!stack.isEmpty()) {
-                outputStacks.add(stack);
-            }
-        }
+        outputStacks.addAll(input.read("Items", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of()));
     }
 
     // ==================== Tick ====================

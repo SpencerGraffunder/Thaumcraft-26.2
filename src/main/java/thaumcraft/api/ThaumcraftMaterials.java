@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Block;
 import thaumcraft.Thaumcraft;
 
 import java.util.Map;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Custom materials for Thaumcraft armor and tools.

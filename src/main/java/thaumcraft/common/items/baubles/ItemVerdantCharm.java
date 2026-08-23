@@ -17,6 +17,10 @@ import thaumcraft.init.ModEffects;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Verdant Charm - A charm that provides various life-sustaining benefits.
@@ -70,8 +74,8 @@ public class ItemVerdantCharm extends Item implements IRechargable {
     }
     
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
         
         if (level.isClientSide() || !(entity instanceof Player player)) {
             return;
@@ -122,13 +126,13 @@ public class ItemVerdantCharm extends Item implements IRechargable {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         switch (type) {
-            case LIFE -> tooltip.add(Component.translatable("item.thaumcraft.verdant_charm.life.text")
+            case LIFE -> builder.accept(Component.translatable("item.thaumcraft.verdant_charm.life.text")
                     .withStyle(ChatFormatting.GOLD));
-            case SUSTAIN -> tooltip.add(Component.translatable("item.thaumcraft.verdant_charm.sustain.text")
+            case SUSTAIN -> builder.accept(Component.translatable("item.thaumcraft.verdant_charm.sustain.text")
                     .withStyle(ChatFormatting.GOLD));
-            default -> tooltip.add(Component.translatable("item.thaumcraft.verdant_charm.text")
+            default -> builder.accept(Component.translatable("item.thaumcraft.verdant_charm.text")
                     .withStyle(ChatFormatting.GREEN));
         }
     }

@@ -3,7 +3,7 @@
 > Everything below this header tracks the **26.2 NeoForge port** (NeoForge
 > 26.2.0.59, Java 25). The historical 1.20.1 plan is preserved further down.
 
-## 26.2 Current Wave — BlockEntity Sync NBT → ValueIO
+## 26.2 Current Wave — BlockEntity Sync NBT → ValueIO (✅ COMPLETE)
 
 **Goal:** convert the `writeSyncNBT(CompoundTag)` / `readSyncNBT(CompoundTag)`
 sync chain (36 block-entity subclasses, inherited from `TileThaumcraft`) to the
@@ -16,22 +16,23 @@ sync chain (36 block-entity subclasses, inherited from `TileThaumcraft`) to the
 - `ValueOutput`: `<T> store(String, Codec<T>, T)` / `storeNullable`, primitives
   (`putBoolean/Byte/Short/Int/Long/Float/Double/String`), `putIntArray`,
   `child(String)`, `childrenList(String)`, `list(String, Codec<T>)`, `discard(String)`
-  - **No** `putByteArray` / `long[]` / `double[]` — byte arrays need an alternative
+  - **No** `putByteArray` / `long[]` / `double[]` — byte arrays used `putIntArray`
   - NeoForge extensions: `store(CompoundTag)` (merges via `CompoundTag.CODEC`),
     `putChild(String, ValueIOSerializable)`
 - `ValueInput`: mirrors read side — `read(String, Codec<T>)` → `Optional<T>`,
   `getBooleanOr/getByteOr/getShortOr/getIntOr/getLongOr/getFloatOr/getDoubleOr/
   getStringOr`, `getIntArray`, `childOrEmpty`, `listOrEmpty`, plus extension
   `keySet()`, `readChild(String, ValueIOSerializable)`
+  - ⚠️ `getShortOr` returns `int` (not `short`) → cast with `(short)`
 - `TagValueOutput.createWithContext(...)` / `buildResult()` bridges ValueOutput →
   `CompoundTag` (used by `saveWithFullMetadata` etc.)
 - MC `ContainerHelper` is already ValueIO: `saveAllItems(ValueOutput, NonNullList)`,
   `loadAllItems(ValueInput, NonNullList)`
-- `FluidTank` implements `ValueIOSerializable` → replaces `writeToNBT`/`readFromNBT`
-- `ItemStack` old CompoundTag API is **removed** in 26.2 — use `MAP_CODEC`,
-  `OPTIONAL_CODEC` (= `ExtraCodecs.optionalEmptyMap`), `lenientOptionalFieldOf`
+- `FluidTank` implements `ValueIOSerializable` → `putChild`/`readChild`
+- `ItemStack` old CompoundTag API is **removed** in 26.2 — use `OPTIONAL_CODEC`
+  (a `Codec<ItemStack>`, `.listOf()` works), `MAP_CODEC`, `lenientOptionalFieldOf`
 - Network read path is unified on `loadAdditional(ValueInput)`;
-  `getUpdateTag(HolderLookup.Provider)` (no no-arg overload)
+  `getUpdateTag(HolderLookup.Provider)` (no no-arg overload) → return `saveWithoutMetadata(registries)`
 - `AspectList` — ValueIO overloads added ✅ (both `CompoundTag` and `ValueIO`
   variants coexist)
 
@@ -39,33 +40,57 @@ sync chain (36 block-entity subclasses, inherited from `TileThaumcraft`) to the
 
 - [x] Add `AspectList` ValueIO overloads (`writeToNBT`/`readFromNBT` for both
       `ValueOutput`/`ValueInput`)
-- [ ] Migrate `AspectList` callers to the ValueIO overloads: `TileCrucible`,
+- [x] Migrate `AspectList` callers to the ValueIO overloads: `TileCrucible`,
       `TileWaterJug`, `TileInfusionMatrix`, `TileSmelter`, `TileTubeBuffer`,
       `TilePotionSprayer`, `TileFocalManipulator`, `TileThaumatorium`
-- [ ] Migrate the 36 `writeSyncNBT`/`readSyncNBT` decls (basic op renames) via
-      script — `tag.putX` → `output.putX`, `tag.getXOr` → `input.getXOr`
-      (ValueInput already uses the same `*Or(name, default)` naming)
-- [ ] Hand-fix special cases:
-  - [ ] `byte[]` grids (TileDioptra `grid_a` [169], tube coords) — `putByteArray`
-        missing; decide int-array / `store(CompoundTag)` / list strategy
-  - [ ] `contains(...)` → `input.keySet()` / `read(...).isPresent()`
-  - [ ] Focus-node `ListTag` loop (`TileFocalManipulator`) — nodes
-        `serialize()`/`deserialize(CompoundTag)` need a ValueIO treatment
-  - [ ] Aspect stores (`TileCrucible`, `TileThaumatorium`, `TilePotionSprayer`)
-        → ValueIO overloads
-  - [ ] ItemStack save/load (`TileThaumatorium`, `TileInfusionMatrix`, `TileSpa`,
-        `TileMirror`) → `ItemStack.OPTIONAL_CODEC` / `lenientOptionalFieldOf`
-  - [ ] `ResearchTableData` (`TileResearchTable` note) — currently
-        `CompoundTag.serialize()/deserialize()`, needs ValueIO
-- [ ] Rewrite `TileThaumcraft` base class: `writeSyncNBT(ValueOutput)` /
+- [x] Migrate the 36 `writeSyncNBT`/`readSyncNBT` decls (script + hand-fixes)
+      — `tag.putX` → `output.putX`, `tag.getXOr` → `input.getXOr`
+- [x] Hand-fix special cases:
+  - [x] `byte[]` grids (TileDioptra `grid_a` [169], tube Open/Choke) →
+        `putIntArray`/`getIntArray` with byte↔int conversion
+  - [x] `contains(...)` → `input.keySet().contains(...)`
+  - [x] Focus-node `ListTag` loop (`TileFocalManipulator`) →
+        `output.store("nodes", CompoundTag.CODEC.listOf(), ...)` / `input.read(...)`
+  - [x] Aspect stores → `AspectList` ValueIO overloads
+  - [x] ItemStack save/load (`TileThaumatorium`, `TileInfusionMatrix`, `TileSpa`,
+        `TileMirror`) → `ItemStack.OPTIONAL_CODEC` / `.listOf()`
+  - [x] `ResearchTableData` (`TileResearchTable` note) → `CompoundTag.CODEC`
+- [x] Rewrite `TileThaumcraft` base class: `writeSyncNBT(ValueOutput)` /
       `readSyncNBT(ValueInput)` decls + `getUpdateTag(HolderLookup.Provider)`
-      (no-arg override removed)
-- [ ] Fix `TileSmelter` `saveAdditional`/`loadAdditional` + `writeSyncNBT`
-- [ ] Fix `TileBanner` `getUpdateTag` signature (no-arg → `(HolderLookup.Provider)`)
-- [ ] Fix `SealFiltered` / `ItemFocusPouch` item-level NBT callers
-- [ ] Recompile (`./gradlew compileJava`) and verify all ValueIO errors cleared
+- [x] Fix `TileSmelter` `saveAdditional`/`loadAdditional` + `writeSyncNBT`
+- [x] Fix `TileBanner` `getUpdateTag` signature (no-arg → `(HolderLookup.Provider)`)
+- [x] Fix `TileMemory`/`TileWaterJug`/`TileInfusionMatrix`/`TileMirror`
+      `loadAdditional` CompoundTag leftovers → codecs
+- [ ] Recompile to zero ValueIO errors — done as part of the wider build
+      (remaining ~3.8k errors are in other subsystems, see below)
 
-## 26.2 Wave 2 (scoped, not started) — ItemStack old NBT removal
+## 26.2 Remaining Work (compile still red — ~3.8k errors)
+
+1. **Render/GUI subsystem (~1.2k errors)** — the 26.2 render-state model:
+   - `GuiGraphics` → `GuiGraphicsExtractor` (~290 errors; screens)
+   - `MultiBufferSource` / `VertexConsumer.vertex(Matrix4f,...)` → new submit-node
+     pipeline (~700 errors; FX beams `FXBeam*`, `FXArc`, `FXBolt`, `FXEssentiaStream`)
+   - `EntityRenderer<T, S extends EntityRenderState>` with `extractRenderState`/
+     `submit` replacing `getTextureLocation`/`render` (~30 entity + tile renderers)
+2. **Wave 2 — ItemStack old NBT removal (~340 errors)** — `hasTag`/`getTag`/
+   `getOrCreateTag`/`isSameItemSameTags`/`ItemStack.of` across ~50 files →
+   `DataComponents`/`ItemStack` codecs (persistence-sensitive; do carefully)
+3. **NeoForge capabilities rework** — `LazyOptional`/`Capability`/
+   `ForgeCapabilities`/`getCapability`/`invalidateCaps` gone in 26.2
+   (`TileCrucible`, `TileWaterJug`, `TileVisGenerator`, `ThaumcraftCapabilities`)
+4. **Recipe codec rewrite** — `RecipeSerializer` is a record
+   (`MapCodec` + `StreamCodec`); old `fromJson`/`fromNetwork` serializers
+   (`InfusionEnchantmentRecipeSerializer`, `ShapedArcaneRecipe`, `ShapelessArcaneRecipe`,
+   `CrucibleRecipeType`, `InfusionRecipeType`) need MapCodec/StreamCodec
+5. **Block/Item/Player API removals** — `onRemove` (removed), `updateShape`,
+   `isSolidRender`, `isValidRepairItem`, `getItems`, `displayClientMessage`
+6. **Renderer registration** — `EntityRenderers.register`, `RegisterRenderers`/
+   `BlockEntityRenderers.register` signatures, `MenuScreens.register` private,
+   `imageWidth/imageHeight` final, `ModEntities` DeferredHolder generics
+7. **Networking** — NeoForge payload system
+8. **Full in-game testing** on a test server
+
+## 26.2 Wave 2 (scoped) — ItemStack old NBT removal
 
 `hasTag()` / `setTag()` / `getOrCreateTag()` / `getTag()` and `ItemStack.of(...)`
 are gone in 26.2. ~50 files affected (incl. `ThaumcraftInvHelper`, `AspectList`,

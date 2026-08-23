@@ -64,12 +64,12 @@ public class TileArcaneWorkbench extends TileThaumcraft implements MenuProvider 
     }
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
+    protected void writeSyncNBT(ValueOutput output) {
         // Don't sync crafting contents to all clients
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
+    protected void readSyncNBT(ValueInput input) {
         // Don't sync crafting contents from server
     }
 

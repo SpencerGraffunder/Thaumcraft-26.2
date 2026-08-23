@@ -109,7 +109,7 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
     }
     
     @Override
-    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, net.minecraft.world.entity.MobSpawnType spawnType) {
+    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, net.minecraft.world.entity.EntitySpawnReason spawnType) {
         if (level.getDifficulty() == Difficulty.PEACEFUL) {
             return false;
         }

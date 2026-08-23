@@ -11,6 +11,7 @@ import thaumcraft.common.lib.crafting.InfusionEnchantmentRecipeSerializer;
 import thaumcraft.common.lib.crafting.InfusionRecipeType;
 import thaumcraft.common.lib.crafting.ShapedArcaneRecipe;
 import thaumcraft.common.lib.crafting.ShapelessArcaneRecipe;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for Thaumcraft recipe serializers.

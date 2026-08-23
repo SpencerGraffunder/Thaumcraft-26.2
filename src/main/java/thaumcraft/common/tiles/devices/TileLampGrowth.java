@@ -20,6 +20,8 @@ import thaumcraft.init.ModBlockEntities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Growth lamp tile entity - accelerates plant growth in range.
@@ -52,17 +54,17 @@ public class TileLampGrowth extends TileThaumcraft implements IEssentiaTransport
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putBoolean("Reserve", reserve);
-        tag.putInt("Charges", charges);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putBoolean("Reserve", reserve);
+        output.putInt("Charges", charges);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        reserve = tag.getBooleanOr("Reserve", false);
-        charges = tag.getIntOr("Charges", 0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        reserve = input.getBooleanOr("Reserve", false);
+        charges = input.getIntOr("Charges", 0);
     }
 
     // ==================== Tick ====================

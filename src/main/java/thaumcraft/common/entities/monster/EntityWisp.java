@@ -76,7 +76,7 @@ public class EntityWisp extends FlyingMob implements Enemy {
      * Wisps spawn in dark areas and not in peaceful mode.
      */
     public static boolean checkWispSpawnRules(EntityType<? extends EntityWisp> type, ServerLevelAccessor level, 
-            MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+            EntitySpawnReason spawnType, BlockPos pos, RandomSource random) {
         // Check difficulty
         if (level.getDifficulty() == Difficulty.PEACEFUL) {
             return false;
@@ -366,7 +366,7 @@ public class EntityWisp extends FlyingMob implements Enemy {
     }
     
     @Override
-    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, MobSpawnType spawnType) {
+    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, EntitySpawnReason spawnType) {
         // Check spawn density
         int count = 0;
         try {

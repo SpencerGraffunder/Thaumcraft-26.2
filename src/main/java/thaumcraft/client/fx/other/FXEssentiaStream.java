@@ -104,7 +104,7 @@ public class FXEssentiaStream extends ThaumcraftParticle {
         this.bCol = c.getBlue() / 255.0f;
         
         this.gravity = 0.2f;
-        this.quadSize = (float)(scale * (1.0 + this.getRandom().nextGaussian() * 0.15));
+        this.quadSize = (float)(scale * (1.0 + this.random.nextGaussian() * 0.15));
         
         // Initialize points
         this.points.add(new StreamPoint(0, 0, 0, 0.001f));
@@ -186,9 +186,9 @@ public class FXEssentiaStream extends ThaumcraftParticle {
             
             // Spawn drop effect at target
             FXDispatcher.INSTANCE.essentiaDropFx(
-                this.targetX + this.getRandom().nextGaussian() * 0.075,
-                this.targetY + this.getRandom().nextGaussian() * 0.075,
-                this.targetZ + this.getRandom().nextGaussian() * 0.075,
+                this.targetX + this.random.nextGaussian() * 0.075,
+                this.targetY + this.random.nextGaussian() * 0.075,
+                this.targetZ + this.random.nextGaussian() * 0.075,
                 this.rCol, this.gCol, this.bCol, 0.5f
             );
         }
@@ -199,9 +199,9 @@ public class FXEssentiaStream extends ThaumcraftParticle {
         }
         
         // Spawn drops along stream
-        if (this.points.size() > 2 && this.getRandom().nextBoolean()) {
-            int q = this.getRandom().nextInt(Math.min(3, this.points.size()));
-            if (this.getRandom().nextBoolean() && this.points.size() > 2) {
+        if (this.points.size() > 2 && this.random.nextBoolean()) {
+            int q = this.random.nextInt(Math.min(3, this.points.size()));
+            if (this.random.nextBoolean() && this.points.size() > 2) {
                 q = this.points.size() - 2;
             }
             StreamPoint p = this.points.get(q);

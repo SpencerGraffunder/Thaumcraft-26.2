@@ -12,6 +12,8 @@ import thaumcraft.common.world.aura.AuraHandler;
 import thaumcraft.init.ModBlockEntities;
 
 import java.util.Arrays;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileDioptra - Vis/Flux visualization device.
@@ -89,18 +91,25 @@ public class TileDioptra extends TileThaumcraft {
     // ==================== NBT ====================
     
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putByteArray("grid_a", grid_amt);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+                int[] gridInt = new int[grid_amt.length];
+        for (int i = 0; i < grid_amt.length; i++) {
+            gridInt[i] = grid_amt[i];
+        }
+        output.putIntArray("grid_a", gridInt);
     }
     
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        if (tag.contains("grid_a")) {
-            byte[] data = tag.getByteArray("grid_a").orElse(new byte[0]);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        if (input.keySet().contains("grid_a")) {
+            int[] data = input.getIntArray("grid_a").orElse(new int[0]);
             if (data.length == 169) {
-                grid_amt = data;
+                grid_amt = new byte[169];
+                for (int i = 0; i < 169; i++) {
+                    grid_amt[i] = (byte) data[i];
+                }
             }
         }
     }

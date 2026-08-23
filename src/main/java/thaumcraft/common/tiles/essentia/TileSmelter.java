@@ -75,15 +75,15 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putShort("BurnTime", (short) furnaceBurnTime);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putShort("BurnTime", (short) furnaceBurnTime);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        furnaceBurnTime = tag.getShortOr("BurnTime", (short)0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        furnaceBurnTime = (short) input.getShortOr("BurnTime", (short)0);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
     public void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         speedBoost = input.getBooleanOr("SpeedBoost", false);
-        furnaceCookTime = input.getShortOr("CookTime", (short)0);
+        furnaceCookTime = (short) input.getShortOr("CookTime", (short)0);
         aspects.readFromNBT(input);
         vis = aspects.visSize();
         

@@ -247,7 +247,7 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
     // ==================== Spawn Rules ====================
     
     @Override
-    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, MobSpawnType spawnType) {
+    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, EntitySpawnReason spawnType) {
         // Limit spawn density
         List<EntityEldritchGuardian> nearby = level.getEntitiesOfClass(EntityEldritchGuardian.class,
                 new AABB(getX() - 32, getY() - 16, getZ() - 32,
@@ -258,7 +258,7 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
         
         spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
         

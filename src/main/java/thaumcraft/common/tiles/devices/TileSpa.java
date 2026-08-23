@@ -22,6 +22,8 @@ import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
 
 import java.util.List;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileSpa - Sanitizing Spa that cleanses warp and negative effects.
@@ -67,22 +69,22 @@ public class TileSpa extends TileThaumcraft implements Container {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putInt("Charge", charge);
-        tag.putBoolean("MixMode", mixMode);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putInt("Charge", charge);
+        output.putBoolean("MixMode", mixMode);
         if (!bathSalts.isEmpty()) {
-            tag.put("BathSalts", bathSalts.save(new CompoundTag()));
+            output.store("BathSalts", ItemStack.OPTIONAL_CODEC, bathSalts);
         }
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        charge = tag.getIntOr("Charge", 0);
-        mixMode = tag.getBooleanOr("MixMode", false);
-        if (tag.contains("BathSalts")) {
-            bathSalts = ItemStack.of(tag.getCompoundOrEmpty("BathSalts"));
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        charge = input.getIntOr("Charge", 0);
+        mixMode = input.getBooleanOr("MixMode", false);
+        if (input.keySet().contains("BathSalts")) {
+            bathSalts = input.read("BathSalts", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         } else {
             bathSalts = ItemStack.EMPTY;
         }

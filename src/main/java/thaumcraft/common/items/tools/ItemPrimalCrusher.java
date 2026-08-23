@@ -19,6 +19,11 @@ import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Primal Crusher - A multi-tool that works as both pickaxe and shovel.
@@ -71,8 +76,8 @@ public class ItemPrimalCrusher extends Item implements IWarpingGear {
      * Self-repair mechanic - repairs 1 durability every 20 ticks.
      */
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
 
         if (stack.isDamaged() && entity != null && entity.tickCount % 20 == 0 && entity instanceof LivingEntity living) {
             stack.setDamageValue(stack.getDamageValue() - 1);
@@ -86,11 +91,11 @@ public class ItemPrimalCrusher extends Item implements IWarpingGear {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("enchantment.thaumcraft.destructive").withStyle(style -> style.withColor(0x8B4513)));
-        tooltip.add(Component.translatable("enchantment.thaumcraft.refining").withStyle(style -> style.withColor(0xFFD700)));
-        tooltip.add(Component.translatable("item.thaumcraft.primal_crusher.desc").withStyle(style -> style.withColor(0x808080)));
-        tooltip.add(Component.translatable("item.thaumcraft.self_repair").withStyle(style -> style.withColor(0x9400D3)));
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("enchantment.thaumcraft.destructive").withStyle(style -> style.withColor(0x8B4513)));
+        builder.accept(Component.translatable("enchantment.thaumcraft.refining").withStyle(style -> style.withColor(0xFFD700)));
+        builder.accept(Component.translatable("item.thaumcraft.primal_crusher.desc").withStyle(style -> style.withColor(0x808080)));
+        builder.accept(Component.translatable("item.thaumcraft.self_repair").withStyle(style -> style.withColor(0x9400D3)));
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

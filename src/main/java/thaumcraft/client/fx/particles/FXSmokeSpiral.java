@@ -35,7 +35,7 @@ public class FXSmokeSpiral extends ThaumcraftParticle {
         this.zd = 0.0;
 
         this.quadSize *= 1.0f;
-        this.lifetime = 20 + this.getRandom().nextInt(10);
+        this.lifetime = 20 + this.random.nextInt(10);
 
         this.setSize(0.01f, 0.01f);
         this.alpha = 1.0f;

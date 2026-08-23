@@ -102,7 +102,7 @@ public class FXFireMote extends ThaumcraftParticle {
         super.tick();
 
         // Random chance to age faster (flickering effect)
-        if (this.getRandom().nextInt(6) == 0) {
+        if (this.random.nextInt(6) == 0) {
             this.age++;
         }
 

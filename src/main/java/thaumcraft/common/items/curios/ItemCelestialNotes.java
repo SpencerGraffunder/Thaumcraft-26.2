@@ -10,6 +10,8 @@ import thaumcraft.common.items.ItemTCBase;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Celestial Notes - Papers containing observations about celestial bodies.
@@ -60,9 +62,9 @@ public class ItemCelestialNotes extends ItemTCBase {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
-        tooltip.add(Component.translatable("item.thaumcraft.celestial_notes." + noteType.getId() + ".text")
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, builder, flag);
+        builder.accept(Component.translatable("item.thaumcraft.celestial_notes." + noteType.getId() + ".text")
                 .withStyle(ChatFormatting.AQUA));
     }
 

@@ -9,6 +9,7 @@ import thaumcraft.Thaumcraft;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.common.lib.crafting.CrucibleRecipeType;
 import thaumcraft.common.lib.crafting.InfusionRecipeType;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for Thaumcraft custom recipe types.

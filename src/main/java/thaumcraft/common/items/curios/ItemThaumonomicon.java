@@ -16,6 +16,8 @@ import thaumcraft.common.items.ItemTC;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * The Thaumonomicon - the player's guide to all things Thaumcraft.
@@ -53,8 +55,8 @@ public class ItemThaumonomicon extends ItemTC {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.thaumcraft.thaumonomicon.desc"));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("item.thaumcraft.thaumonomicon.desc"));
     }
 
     @Override

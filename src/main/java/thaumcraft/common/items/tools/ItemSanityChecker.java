@@ -16,6 +16,8 @@ import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Sanity Checker - Shows the player their current warp levels.
@@ -67,8 +69,8 @@ public class ItemSanityChecker extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.thaumcraft.sanity_checker.desc").withStyle(style -> style.withColor(0x808080)));
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("item.thaumcraft.sanity_checker.desc").withStyle(style -> style.withColor(0x808080)));
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

@@ -14,6 +14,8 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileFluxScrubber - Removes flux from the aura and converts it to vitium essentia.
@@ -53,17 +55,17 @@ public class TileFluxScrubber extends TileThaumcraft implements IEssentiaTranspo
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putInt("StoredFlux", storedFlux);
-        tag.putBoolean("Active", active);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putInt("StoredFlux", storedFlux);
+        output.putBoolean("Active", active);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        storedFlux = tag.getIntOr("StoredFlux", 0);
-        active = tag.getBooleanOr("Active", false);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        storedFlux = input.getIntOr("StoredFlux", 0);
+        active = input.getBooleanOr("Active", false);
     }
 
     // ==================== Tick ====================

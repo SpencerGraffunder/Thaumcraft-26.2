@@ -52,7 +52,7 @@ public class FXBoreParticles extends ThaumcraftParticle {
         this.rCol = 0.6f;
         this.gCol = 0.6f;
         this.bCol = 0.6f;
-        this.quadSize = this.getRandom().nextFloat() * 0.3f + 0.4f;
+        this.quadSize = this.random.nextFloat() * 0.3f + 0.4f;
         
         this.targetX = tx;
         this.targetY = ty;
@@ -64,13 +64,13 @@ public class FXBoreParticles extends ThaumcraftParticle {
         double dz = tz - z;
         int base = (int)(Mth.sqrt((float)(dx * dx + dy * dy + dz * dz)) * 10.0f);
         if (base < 1) base = 1;
-        this.lifetime = base / 2 + this.getRandom().nextInt(base);
+        this.lifetime = base / 2 + this.random.nextInt(base);
         
         // Small random initial motion
         float f3 = 0.01f;
-        this.xd = this.getRandom().nextGaussian() * f3;
-        this.yd = this.getRandom().nextGaussian() * f3;
-        this.zd = this.getRandom().nextGaussian() * f3;
+        this.xd = this.random.nextGaussian() * f3;
+        this.yd = this.random.nextGaussian() * f3;
+        this.zd = this.random.nextGaussian() * f3;
         this.gravity = 0.01f;
     }
     
@@ -91,7 +91,7 @@ public class FXBoreParticles extends ThaumcraftParticle {
         this.rCol = 0.6f;
         this.gCol = 0.6f;
         this.bCol = 0.6f;
-        this.quadSize = this.getRandom().nextFloat() * 0.3f + 0.4f;
+        this.quadSize = this.random.nextFloat() * 0.3f + 0.4f;
         
         this.targetX = tx;
         this.targetY = ty;
@@ -103,11 +103,11 @@ public class FXBoreParticles extends ThaumcraftParticle {
         double dz = tz - z;
         int base = (int)(Mth.sqrt((float)(dx * dx + dy * dy + dz * dz)) * 10.0f);
         if (base < 1) base = 1;
-        this.lifetime = base / 2 + this.getRandom().nextInt(base);
+        this.lifetime = base / 2 + this.random.nextInt(base);
         
-        this.xd = sx + this.getRandom().nextGaussian() * 0.01f;
-        this.yd = sy + this.getRandom().nextGaussian() * 0.01f;
-        this.zd = sz + this.getRandom().nextGaussian() * 0.01f;
+        this.xd = sx + this.random.nextGaussian() * 0.01f;
+        this.yd = sy + this.random.nextGaussian() * 0.01f;
+        this.zd = sz + this.random.nextGaussian() * 0.01f;
         this.gravity = 0.01f;
         
         // Distance culling
@@ -201,9 +201,9 @@ public class FXBoreParticles extends ThaumcraftParticle {
         this.zd = Mth.clamp(this.zd, -clamp, clamp);
         
         // Add some randomness
-        this.xd += this.getRandom().nextGaussian() * 0.005;
-        this.yd += this.getRandom().nextGaussian() * 0.005;
-        this.zd += this.getRandom().nextGaussian() * 0.005;
+        this.xd += this.random.nextGaussian() * 0.005;
+        this.yd += this.random.nextGaussian() * 0.005;
+        this.zd += this.random.nextGaussian() * 0.005;
     }
     
     @Override

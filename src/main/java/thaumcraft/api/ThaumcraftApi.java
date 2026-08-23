@@ -19,6 +19,7 @@ import thaumcraft.api.internal.CommonInternals;
 import thaumcraft.api.internal.DummyInternalMethodHandler;
 import thaumcraft.api.internal.IInternalMethodHandler;
 import thaumcraft.api.internal.WeightedRandomLoot;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Main API class for Thaumcraft.

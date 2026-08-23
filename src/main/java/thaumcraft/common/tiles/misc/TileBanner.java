@@ -2,6 +2,7 @@ package thaumcraft.common.tiles.misc;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -102,10 +103,8 @@ public class TileBanner extends BlockEntity {
     // ==================== Sync ====================
     
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
-        saveAdditional(tag);
-        return tag;
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveWithoutMetadata(registries);
     }
     
     @Override

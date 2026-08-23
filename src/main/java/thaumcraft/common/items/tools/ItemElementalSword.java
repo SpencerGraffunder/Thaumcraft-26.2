@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -23,6 +23,8 @@ import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Sword of the Zephyr - Air elemental sword.
@@ -43,13 +45,12 @@ public class ItemElementalSword extends Item {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.NONE;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.NONE;
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
-        return 72000;
+    public int getUseDuration(ItemStack stack, LivingEntity user) {        return 72000;
     }
 
     @Override
@@ -122,9 +123,9 @@ public class ItemElementalSword extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("enchantment.thaumcraft.arcing").withStyle(style -> style.withColor(0x87CEEB)));
-        tooltip.add(Component.translatable("item.thaumcraft.elemental_sword.desc").withStyle(style -> style.withColor(0x808080)));
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("enchantment.thaumcraft.arcing").withStyle(style -> style.withColor(0x87CEEB)));
+        builder.accept(Component.translatable("item.thaumcraft.elemental_sword.desc").withStyle(style -> style.withColor(0x808080)));
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

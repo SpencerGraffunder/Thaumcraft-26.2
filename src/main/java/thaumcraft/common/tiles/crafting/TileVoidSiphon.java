@@ -170,7 +170,7 @@ public class TileVoidSiphon extends TileThaumcraftInventory implements WorldlyCo
     @Override
     public void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        progress = input.getShortOr("progress", (short)0);
+        progress = (short) input.getShortOr("progress", (short)0);
     }
     
     // ==================== Inventory ====================

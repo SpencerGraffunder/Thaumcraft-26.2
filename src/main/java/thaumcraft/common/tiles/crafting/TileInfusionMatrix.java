@@ -139,23 +139,23 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putBoolean("Active", active);
-        tag.putBoolean("Crafting", crafting);
-        tag.putFloat("Stability", stability);
-        tag.putInt("RecipeInstability", recipeInstability);
-        recipeEssentia.writeToNBT(tag);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putBoolean("Active", active);
+        output.putBoolean("Crafting", crafting);
+        output.putFloat("Stability", stability);
+        output.putInt("RecipeInstability", recipeInstability);
+        recipeEssentia.writeToNBT(output);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        active = tag.getBooleanOr("Active", false);
-        crafting = tag.getBooleanOr("Crafting", false);
-        stability = tag.getFloatOr("Stability", 0.0F);
-        recipeInstability = tag.getIntOr("RecipeInstability", 0);
-        recipeEssentia.readFromNBT(tag);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        active = input.getBooleanOr("Active", false);
+        crafting = input.getBooleanOr("Crafting", false);
+        stability = input.getFloatOr("Stability", 0.0F);
+        recipeInstability = input.getIntOr("RecipeInstability", 0);
+        recipeEssentia.readFromNBT(input);
     }
 
     @Override
@@ -164,23 +164,16 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         
         // Save recipe ingredients
         if (recipeIngredients != null && !recipeIngredients.isEmpty()) {
-            ListTag ingredientList = new ListTag();
-            for (ItemStack stack : recipeIngredients) {
-                if (!stack.isEmpty()) {
-                    CompoundTag itemTag = new CompoundTag();
-                    stack.save(itemTag);
-                    ingredientList.add(itemTag);
-                }
-            }
-            output.put("RecipeIngredients", ingredientList);
+            output.store("RecipeIngredients", ItemStack.OPTIONAL_CODEC.listOf(),
+                recipeIngredients.stream().filter(s -> !s.isEmpty()).toList());
         }
         
         if (!recipeInput.isEmpty()) {
-            output.put("RecipeInput", recipeInput.save(new CompoundTag()));
+            output.store("RecipeInput", ItemStack.OPTIONAL_CODEC, recipeInput);
         }
         if (recipeOutput != null && recipeOutput instanceof ItemStack outStack) {
             output.putString("RecipeOutputType", "@");
-            output.put("RecipeOutput", outStack.save(new CompoundTag()));
+            output.store("RecipeOutput", ItemStack.OPTIONAL_CODEC, outStack);
         }
         if (recipePlayer != null) {
             output.putString("RecipePlayer", recipePlayer);
@@ -194,19 +187,17 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         super.loadAdditional(input);
         
         recipeIngredients = new ArrayList<>();
-        if (input.contains("RecipeIngredients")) {
-            ListTag ingredientList = input.getListOrEmpty("RecipeIngredients");
-            for (int i = 0; i < ingredientList.size(); i++) {
-                recipeIngredients.add(ItemStack.of(ingredientList.getCompoundOrEmpty(i)));
-            }
+        if (input.keySet().contains("RecipeIngredients")) {
+            recipeIngredients = new ArrayList<>(
+                input.read("RecipeIngredients", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of()));
         }
         
-        if (input.contains("RecipeInput")) {
-            recipeInput = ItemStack.of(input.getCompoundOrEmpty("RecipeInput"));
+        if (input.keySet().contains("RecipeInput")) {
+            recipeInput = input.read("RecipeInput", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         }
         String outputType = input.getStringOr("RecipeOutputType", "");
-        if (outputType.equals("@") && input.contains("RecipeOutput")) {
-            recipeOutput = ItemStack.of(input.getCompoundOrEmpty("RecipeOutput"));
+        if (outputType.equals("@") && input.keySet().contains("RecipeOutput")) {
+            recipeOutput = input.read("RecipeOutput", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         }
         recipePlayer = input.getStringOr("RecipePlayer", "");
         if (recipePlayer.isEmpty()) {

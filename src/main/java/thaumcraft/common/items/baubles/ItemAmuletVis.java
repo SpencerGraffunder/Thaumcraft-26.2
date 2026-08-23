@@ -12,6 +12,10 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Amulet of Vis - A bauble that slowly recharges rechargeable items in the player's inventory.
@@ -45,8 +49,8 @@ public class ItemAmuletVis extends Item {
     }
     
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
         
         // Only process server-side and for players
         if (level.isClientSide() || !(entity instanceof Player player)) {
@@ -65,12 +69,12 @@ public class ItemAmuletVis extends Item {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.thaumcraft.amulet_vis.text")
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("item.thaumcraft.amulet_vis.text")
                 .withStyle(ChatFormatting.AQUA));
         
         if (isCrafted) {
-            tooltip.add(Component.translatable("item.thaumcraft.amulet_vis.crafted")
+            builder.accept(Component.translatable("item.thaumcraft.amulet_vis.crafted")
                     .withStyle(ChatFormatting.GRAY));
         }
     }

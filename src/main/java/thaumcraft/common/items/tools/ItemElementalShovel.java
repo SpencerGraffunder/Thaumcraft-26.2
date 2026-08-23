@@ -26,6 +26,8 @@ import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Shovel of the Earthmover - Earth elemental shovel.
@@ -215,9 +217,9 @@ public class ItemElementalShovel extends ShovelItem {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("enchantment.thaumcraft.destructive").withStyle(style -> style.withColor(0x8B4513)));
-        tooltip.add(Component.translatable("item.thaumcraft.elemental_shovel.desc").withStyle(style -> style.withColor(0x808080)));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("enchantment.thaumcraft.destructive").withStyle(style -> style.withColor(0x8B4513)));
+        builder.accept(Component.translatable("item.thaumcraft.elemental_shovel.desc").withStyle(style -> style.withColor(0x808080)));
         
         byte orientation = getOrientation(stack);
         String orientationKey = switch (orientation) {
@@ -225,8 +227,8 @@ public class ItemElementalShovel extends ShovelItem {
             case 2 -> "item.thaumcraft.elemental_shovel.orientation.mixed";
             default -> "item.thaumcraft.elemental_shovel.orientation.horizontal";
         };
-        tooltip.add(Component.translatable(orientationKey).withStyle(style -> style.withColor(0x808080)));
+        builder.accept(Component.translatable(orientationKey).withStyle(style -> style.withColor(0x808080)));
         
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

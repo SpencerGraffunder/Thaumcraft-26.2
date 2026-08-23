@@ -32,6 +32,8 @@ import thaumcraft.init.ModSounds;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Research table tile entity - used for the theorycraft minigame.
@@ -74,19 +76,19 @@ public class TileResearchTable extends TileThaumcraftInventory implements MenuPr
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
         if (data != null) {
-            tag.put("note", data.serialize());
+            output.store("note", CompoundTag.CODEC, data.serialize());
         }
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        if (tag.contains("note")) {
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        if (input.keySet().contains("note")) {
             data = new ResearchTableData(this);
-            data.deserialize(tag.getCompoundOrEmpty("note"));
+            data.deserialize(input.read("note", CompoundTag.CODEC).orElseGet(CompoundTag::new));
         } else {
             data = null;
         }

@@ -9,6 +9,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Redstone Relay tile entity - converts redstone signal strength.
@@ -31,17 +33,17 @@ public class TileRedstoneRelay extends TileThaumcraft {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putByte("In", (byte) inputThreshold);
-        tag.putByte("Out", (byte) outputStrength);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putByte("In", (byte) inputThreshold);
+        output.putByte("Out", (byte) outputStrength);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        setInputThreshold(tag.getByteOr("In", (byte)0));
-        setOutputStrength(tag.getByteOr("Out", (byte)0));
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        setInputThreshold(input.getByteOr("In", (byte)0));
+        setOutputStrength(input.getByteOr("Out", (byte)0));
     }
 
     // ==================== Configuration ====================

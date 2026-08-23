@@ -13,6 +13,7 @@ import thaumcraft.api.research.IScanThing;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchCategory;
 import thaumcraft.api.research.ScanningManager;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Generic scanner that gives observation knowledge based on an object's aspects.

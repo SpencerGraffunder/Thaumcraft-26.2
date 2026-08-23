@@ -18,6 +18,7 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Helper class for various Thaumcraft API operations.

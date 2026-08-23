@@ -81,7 +81,7 @@ public class EntityCultist extends Monster {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
         
         spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
         setLoot(difficulty);

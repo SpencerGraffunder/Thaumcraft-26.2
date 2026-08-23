@@ -13,6 +13,8 @@ import thaumcraft.api.casters.FocusPackage;
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Base class for all focus items.
@@ -108,7 +110,7 @@ public class ItemFocus extends Item {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         addFocusInformation(stack, level, tooltip, flag);
     }
     
@@ -120,7 +122,7 @@ public class ItemFocus extends Item {
         if (pack != null) {
             float visCost = getVisCost(stack);
             String amount = VIS_FORMAT.format(visCost);
-            tooltip.add(Component.translatable("item.thaumcraft.focus.cost", amount)
+            builder.accept(Component.translatable("item.thaumcraft.focus.cost", amount)
                     .withStyle(ChatFormatting.ITALIC, ChatFormatting.AQUA));
             
             // TODO: Add focus element descriptions

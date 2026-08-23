@@ -16,6 +16,8 @@ import thaumcraft.api.aspects.IEssentiaContainerItem;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
 
 /**
  * Crystal Essence - Crystallized vis that contains a single aspect.
@@ -80,8 +82,8 @@ public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
     // ==================== Random Aspect Assignment ====================
     
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, level, entity, slot, selected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
         
         // Assign random aspect if none set (for items spawned without NBT)
         if (!level.isClientSide() && !stack.hasTag()) {

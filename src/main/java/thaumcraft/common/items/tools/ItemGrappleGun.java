@@ -20,6 +20,10 @@ import thaumcraft.api.items.RechargeHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Grapple Gun - A vis-powered grappling hook launcher.
@@ -62,7 +66,7 @@ public class ItemGrappleGun extends Item implements IRechargable {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         // Reset loaded state if grapple entity is gone
         // TODO: Check grapple entity tracking
         // For now, just clear after some time
@@ -106,11 +110,11 @@ public class ItemGrappleGun extends Item implements IRechargable {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.thaumcraft.grapple_gun.desc").withStyle(style -> style.withColor(0x808080)));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("item.thaumcraft.grapple_gun.desc").withStyle(style -> style.withColor(0x808080)));
         if (isLoaded(stack)) {
-            tooltip.add(Component.translatable("item.thaumcraft.grapple_gun.loaded").withStyle(style -> style.withColor(0x00FF00)));
+            builder.accept(Component.translatable("item.thaumcraft.grapple_gun.loaded").withStyle(style -> style.withColor(0x00FF00)));
         }
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

@@ -29,7 +29,7 @@ public class FXVent extends ThaumcraftParticle {
 
         this.targetScale = 1.0f;
         this.setSize(0.02f, 0.02f);
-        this.quadSize = this.getRandom().nextFloat() * 0.1f + 0.05f;
+        this.quadSize = this.random.nextFloat() * 0.1f + 0.05f;
 
         this.xd = vx;
         this.yd = vy;
@@ -66,9 +66,9 @@ public class FXVent extends ThaumcraftParticle {
         }
 
         // Add randomness to direction
-        vx += this.getRandom().nextGaussian() * (this.getRandom().nextBoolean() ? -1 : 1) * 0.0075 * spread;
-        vy += this.getRandom().nextGaussian() * (this.getRandom().nextBoolean() ? -1 : 1) * 0.0075 * spread;
-        vz += this.getRandom().nextGaussian() * (this.getRandom().nextBoolean() ? -1 : 1) * 0.0075 * spread;
+        vx += this.random.nextGaussian() * (this.random.nextBoolean() ? -1 : 1) * 0.0075 * spread;
+        vy += this.random.nextGaussian() * (this.random.nextBoolean() ? -1 : 1) * 0.0075 * spread;
+        vz += this.random.nextGaussian() * (this.random.nextBoolean() ? -1 : 1) * 0.0075 * spread;
 
         this.xd = vx * speed;
         this.yd = vy * speed;

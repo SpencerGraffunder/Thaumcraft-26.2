@@ -23,6 +23,9 @@ import thaumcraft.init.ModBlockEntities;
 import thaumcraft.init.ModSounds;
 
 import java.util.HashMap;
+import java.util.List;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileFocalManipulator - Crafting station for creating and modifying foci.
@@ -72,33 +75,28 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
     // ==================== NBT ====================
     
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putFloat("vis", vis);
-        tag.putString("focusName", focusName);
-        crystalsSync.writeToNBT(tag, "crystals");
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putFloat("vis", vis);
+        output.putString("focusName", focusName);
+        crystalsSync.writeToNBT(output, "crystals");
         
         // Serialize node data
-        ListTag nodeList = new ListTag();
-        for (FocusElementNode node : data.values()) {
-            nodeList.add(node.serialize());
-        }
-        tag.put("nodes", nodeList);
+        output.store("nodes", CompoundTag.CODEC.listOf(),
+            data.values().stream().map(FocusElementNode::serialize).toList());
     }
     
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        vis = tag.getFloatOr("vis", 0.0F);
-        focusName = tag.getStringOr("focusName", "");
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        vis = input.getFloatOr("vis", 0.0F);
+        focusName = input.getStringOr("focusName", "");
         crystalsSync = new AspectList();
-        crystalsSync.readFromNBT(tag, "crystals");
+        crystalsSync.readFromNBT(input, "crystals");
         
         // Deserialize node data
-        ListTag nodeList = tag.getListOrEmpty("nodes");
         data.clear();
-        for (int i = 0; i < nodeList.size(); i++) {
-            CompoundTag nodeTag = nodeList.getCompoundOrEmpty(i);
+        for (CompoundTag nodeTag : input.read("nodes", CompoundTag.CODEC.listOf()).orElse(List.of())) {
             FocusElementNode node = new FocusElementNode();
             node.deserialize(nodeTag);
             data.put(node.id, node);

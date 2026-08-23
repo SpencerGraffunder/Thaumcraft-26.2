@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -68,22 +68,22 @@ public class TileWaterJug extends TileThaumcraft {
     // ==================== NBT ====================
     
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tank.writeToNBT(tag);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putChild("tank", tank);
     }
     
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        tank.readFromNBT(tag);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        input.readChild("tank", tank);
     }
     
     @Override
     public void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         handlers.clear();
-        if (input.contains("handlers")) {
+        if (input.keySet().contains("handlers")) {
             int[] arr = input.getIntArray("handlers").orElse(new int[0]);
             for (int h : arr) {
                 handlers.add(h);

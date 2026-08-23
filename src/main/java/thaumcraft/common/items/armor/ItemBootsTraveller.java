@@ -17,6 +17,7 @@ import thaumcraft.api.items.IRechargable;
 import thaumcraft.api.items.RechargeHelper;
 
 import javax.annotation.Nullable;
+import net.minecraft.server.level.ServerLevel;
 
 /**
  * Boots of the Traveller - Magical boots that grant speed and step height.
@@ -43,8 +44,8 @@ public class ItemBootsTraveller extends Item implements IRechargable {
     }
     
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
         
         // Only process if worn on feet and entity is a player
         if (!(entity instanceof Player player)) return;

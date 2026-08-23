@@ -18,6 +18,8 @@ import thaumcraft.init.ModBlockEntities;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Fertility lamp tile entity - accelerates animal breeding in range.
@@ -46,15 +48,15 @@ public class TileLampFertility extends TileThaumcraft implements IEssentiaTransp
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putInt("Charges", charges);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putInt("Charges", charges);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        charges = tag.getIntOr("Charges", 0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        charges = input.getIntOr("Charges", 0);
     }
 
     // ==================== Tick ====================

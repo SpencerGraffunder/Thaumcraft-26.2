@@ -9,6 +9,7 @@ import thaumcraft.api.aspects.AspectList;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.core.registries.Registries;
 
 /**
  * CommonInternals - Holds internal data for Thaumcraft systems.

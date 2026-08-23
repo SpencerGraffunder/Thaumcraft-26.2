@@ -11,6 +11,8 @@ import net.minecraft.world.phys.AABB;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Stabilizer tile entity - reduces instability of nearby flux rifts and infusion altars.
@@ -38,15 +40,15 @@ public class TileStabilizer extends TileThaumcraft {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putInt("Energy", energy);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putInt("Energy", energy);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        energy = Math.min(tag.getIntOr("Energy", 0), CAPACITY);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        energy = Math.min(input.getIntOr("Energy", 0), CAPACITY);
     }
 
     // ==================== Tick ====================

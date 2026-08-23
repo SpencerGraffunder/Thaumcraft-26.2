@@ -23,6 +23,8 @@ import thaumcraft.init.ModBlockEntities;
 import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileGolemBuilder - Tile entity for the Golem Builder block.
@@ -343,29 +345,29 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
     // ==================== NBT ====================
     
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putLong("golem", golemProps);
-        tag.putInt("cost", cost);
-        tag.putInt("maxCost", maxCost);
-        tag.putInt("selMat", selectedMaterial);
-        tag.putInt("selHead", selectedHead);
-        tag.putInt("selArms", selectedArms);
-        tag.putInt("selLegs", selectedLegs);
-        tag.putInt("selAddon", selectedAddon);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putLong("golem", golemProps);
+        output.putInt("cost", cost);
+        output.putInt("maxCost", maxCost);
+        output.putInt("selMat", selectedMaterial);
+        output.putInt("selHead", selectedHead);
+        output.putInt("selArms", selectedArms);
+        output.putInt("selLegs", selectedLegs);
+        output.putInt("selAddon", selectedAddon);
     }
     
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        golemProps = tag.getLongOr("golem", 0L);
-        cost = tag.getIntOr("cost", 0);
-        maxCost = tag.getIntOr("maxCost", 0);
-        selectedMaterial = tag.getIntOr("selMat", 0);
-        selectedHead = tag.getIntOr("selHead", 0);
-        selectedArms = tag.getIntOr("selArms", 0);
-        selectedLegs = tag.getIntOr("selLegs", 0);
-        selectedAddon = tag.getIntOr("selAddon", 0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        golemProps = input.getLongOr("golem", 0L);
+        cost = input.getIntOr("cost", 0);
+        maxCost = input.getIntOr("maxCost", 0);
+        selectedMaterial = input.getIntOr("selMat", 0);
+        selectedHead = input.getIntOr("selHead", 0);
+        selectedArms = input.getIntOr("selArms", 0);
+        selectedLegs = input.getIntOr("selLegs", 0);
+        selectedAddon = input.getIntOr("selAddon", 0);
     }
     
     // ==================== Rendering ====================

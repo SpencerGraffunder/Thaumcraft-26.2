@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -23,6 +23,8 @@ import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Axe of the Stream - Water elemental axe.
@@ -42,13 +44,12 @@ public class ItemElementalAxe extends AxeItem {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BOW;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.BOW;
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
-        return 72000;
+    public int getUseDuration(ItemStack stack, LivingEntity user) {        return 72000;
     }
 
     @Override
@@ -101,10 +102,10 @@ public class ItemElementalAxe extends AxeItem {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("enchantment.thaumcraft.burrowing").withStyle(style -> style.withColor(0x4169E1)));
-        tooltip.add(Component.translatable("enchantment.thaumcraft.collector").withStyle(style -> style.withColor(0x4169E1)));
-        tooltip.add(Component.translatable("item.thaumcraft.elemental_axe.desc").withStyle(style -> style.withColor(0x808080)));
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("enchantment.thaumcraft.burrowing").withStyle(style -> style.withColor(0x4169E1)));
+        builder.accept(Component.translatable("enchantment.thaumcraft.collector").withStyle(style -> style.withColor(0x4169E1)));
+        builder.accept(Component.translatable("item.thaumcraft.elemental_axe.desc").withStyle(style -> style.withColor(0x808080)));
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

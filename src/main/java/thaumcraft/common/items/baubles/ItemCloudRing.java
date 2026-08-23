@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.UUID;
+import net.minecraft.server.level.ServerLevel;
 
 /**
  * Cloud Ring - A ring that allows double-jumping while in the air.
@@ -31,8 +32,8 @@ public class ItemCloudRing extends Item {
     }
     
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
         
         if (!(entity instanceof Player player)) {
             return;

@@ -15,7 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -30,6 +30,10 @@ import thaumcraft.common.world.aura.AuraHandler;
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * Caster Gauntlet - Main item for casting spells in Thaumcraft.
@@ -305,18 +309,17 @@ public class ItemCaster extends Item implements ICaster {
     }
     
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         // TODO: Sync aura information to client when holding caster
     }
     
     @Override
-    public int getUseDuration(ItemStack stack) {
-        return 72000; // Long duration for channeled spells
+    public int getUseDuration(ItemStack stack, LivingEntity user) {        return 72000; // Long duration for channeled spells
     }
     
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BOW;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.BOW;
     }
     
     @Override
@@ -343,29 +346,29 @@ public class ItemCaster extends Item implements ICaster {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         ItemStack focusStack = getFocusStack(stack);
         
         if (focusStack != null && !focusStack.isEmpty() && focusStack.getItem() instanceof ItemFocus focus) {
             // Show vis cost
             float visCost = focus.getVisCost(focusStack);
             if (visCost > 0) {
-                tooltip.add(Component.translatable("tc.vis.cost")
+                builder.accept(Component.translatable("tc.vis.cost")
                         .append(" ")
                         .append(Component.literal(VIS_FORMAT.format(visCost)))
                         .withStyle(ChatFormatting.ITALIC, ChatFormatting.AQUA));
             }
             
             // Show focus name
-            tooltip.add(Component.empty());
-            tooltip.add(focusStack.getHoverName()
+            builder.accept(Component.empty());
+            builder.accept(focusStack.getHoverName()
                     .copy()
                     .withStyle(ChatFormatting.BOLD, ChatFormatting.ITALIC, ChatFormatting.GREEN));
             
             // Add focus details
             focus.addFocusInformation(focusStack, level, tooltip, flag);
         } else {
-            tooltip.add(Component.translatable("item.thaumcraft.caster.no_focus")
+            builder.accept(Component.translatable("item.thaumcraft.caster.no_focus")
                     .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         }
     }

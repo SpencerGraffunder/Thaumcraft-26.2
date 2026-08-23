@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.syncher.AdditionalSpawnData;
 import thaumcraft.init.ModEntities;
+import net.minecraft.core.registries.Registries;
 
 /**
  * EntityFallingTaint - A falling taint block entity.

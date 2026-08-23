@@ -14,6 +14,7 @@ import thaumcraft.common.lib.potions.PotionSunScorned;
 import thaumcraft.common.lib.potions.PotionThaumarhia;
 import thaumcraft.common.lib.potions.PotionUnnaturalHunger;
 import thaumcraft.common.lib.potions.PotionWarpWard;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for all Thaumcraft mob effects (potions).

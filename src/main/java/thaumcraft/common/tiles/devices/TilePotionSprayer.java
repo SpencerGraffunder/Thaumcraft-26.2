@@ -29,6 +29,8 @@ import thaumcraft.common.tiles.TileThaumcraftInventory;
 import thaumcraft.init.ModBlockEntities;
 
 import java.util.List;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TilePotionSprayer - Applies potion effects to nearby entities using essentia.
@@ -297,23 +299,23 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
     // ==================== NBT ====================
     
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        recipe.writeToNBT(tag, "recipe");
-        recipeProgress.writeToNBT(tag, "progress");
-        tag.putInt("charges", charges);
-        tag.putInt("color", color);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        recipe.writeToNBT(output, "recipe");
+        recipeProgress.writeToNBT(output, "progress");
+        output.putInt("charges", charges);
+        output.putInt("color", color);
     }
     
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
         recipe = new AspectList();
-        recipe.readFromNBT(tag, "recipe");
+        recipe.readFromNBT(input, "recipe");
         recipeProgress = new AspectList();
-        recipeProgress.readFromNBT(tag, "progress");
-        charges = tag.getIntOr("charges", 0);
-        color = tag.getIntOr("color", 0);
+        recipeProgress.readFromNBT(input, "progress");
+        charges = input.getIntOr("charges", 0);
+        color = input.getIntOr("color", 0);
     }
     
     // ==================== WorldlyContainer ====================

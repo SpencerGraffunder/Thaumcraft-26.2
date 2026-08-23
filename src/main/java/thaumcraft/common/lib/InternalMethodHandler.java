@@ -29,6 +29,7 @@ import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.playerdata.PacketWarpMessage;
 import thaumcraft.common.lib.research.ResearchManager;
 import thaumcraft.common.world.aura.AuraHandler;
+import net.minecraft.core.registries.Registries;
 
 /**
  * InternalMethodHandler - The real implementation of IInternalMethodHandler.

@@ -8,6 +8,8 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.init.ModBlockEntities;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Filtered tube - only allows one aspect type to pass through.
@@ -28,17 +30,17 @@ public class TileTubeFilter extends TileTube implements IAspectContainer {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
         if (aspectFilter != null) {
-            tag.putString("AspectFilter", aspectFilter.getTag());
+            output.putString("AspectFilter", aspectFilter.getTag());
         }
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        aspectFilter = Aspect.getAspect(tag.getStringOr("AspectFilter", ""));
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        aspectFilter = Aspect.getAspect(input.getStringOr("AspectFilter", ""));
     }
 
     // ==================== Suction Override ====================

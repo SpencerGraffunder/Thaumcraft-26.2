@@ -175,8 +175,8 @@ public class TileHole extends TileMemory {
     @Override
     public void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
-        countdown = input.getShortOr("countdown", (short)0);
-        countdownMax = input.getShortOr("countdownMax", (short)0);
+        countdown = (short) input.getShortOr("countdown", (short)0);
+        countdownMax = (short) input.getShortOr("countdownMax", (short)0);
         depth = input.getByteOr("depth", (byte)0);
         byte dirByte = input.getByteOr("direction", (byte)0);
         direction = dirByte >= 0 && dirByte < Direction.values().length ? Direction.values()[dirByte] : null;

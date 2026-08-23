@@ -23,16 +23,16 @@ public class FXVent2 extends ThaumcraftParticle {
         super(level, x, y, z, vx, vy, vz);
         
         this.setSize(0.02f, 0.02f);
-        this.quadSize = this.getRandom().nextFloat() * 0.1f + 0.05f;
+        this.quadSize = this.random.nextFloat() * 0.1f + 0.05f;
         this.maxScale = this.quadSize;
         this.startScale = 0.01f;
         this.endScale = this.maxScale;
         
         // Parse color
         Color c = new Color(color);
-        this.rCol = (float) Mth.clamp(c.getRed() / 255.0f + this.getRandom().nextGaussian() * 0.05, 0.0, 1.0);
-        this.gCol = (float) Mth.clamp(c.getGreen() / 255.0f + this.getRandom().nextGaussian() * 0.05, 0.0, 1.0);
-        this.bCol = (float) Mth.clamp(c.getBlue() / 255.0f + this.getRandom().nextGaussian() * 0.05, 0.0, 1.0);
+        this.rCol = (float) Mth.clamp(c.getRed() / 255.0f + this.random.nextGaussian() * 0.05, 0.0, 1.0);
+        this.gCol = (float) Mth.clamp(c.getGreen() / 255.0f + this.random.nextGaussian() * 0.05, 0.0, 1.0);
+        this.bCol = (float) Mth.clamp(c.getBlue() / 255.0f + this.random.nextGaussian() * 0.05, 0.0, 1.0);
         this.startR = this.rCol;
         this.startG = this.gCol;
         this.startB = this.bCol;
@@ -41,7 +41,7 @@ public class FXVent2 extends ThaumcraftParticle {
         this.endB = this.bCol;
         
         this.alpha = 0.33f;
-        this.grav = (float) (this.getRandom().nextGaussian() * 0.0075);
+        this.grav = (float) (this.random.nextGaussian() * 0.0075);
         this.gravity = 0;
         this.slowDown = 0.85;
         this.lifetime = 40;
@@ -61,9 +61,9 @@ public class FXVent2 extends ThaumcraftParticle {
         vx /= len;
         vy /= len;
         vz /= len;
-        vx += this.getRandom().nextGaussian() * (this.getRandom().nextBoolean() ? -1 : 1) * 0.0075 * spread;
-        vy += this.getRandom().nextGaussian() * (this.getRandom().nextBoolean() ? -1 : 1) * 0.0075 * spread;
-        vz += this.getRandom().nextGaussian() * (this.getRandom().nextBoolean() ? -1 : 1) * 0.0075 * spread;
+        vx += this.random.nextGaussian() * (this.random.nextBoolean() ? -1 : 1) * 0.0075 * spread;
+        vy += this.random.nextGaussian() * (this.random.nextBoolean() ? -1 : 1) * 0.0075 * spread;
+        vz += this.random.nextGaussian() * (this.random.nextBoolean() ? -1 : 1) * 0.0075 * spread;
         this.xd = vx * speed;
         this.yd = vy * speed;
         this.zd = vz * speed;

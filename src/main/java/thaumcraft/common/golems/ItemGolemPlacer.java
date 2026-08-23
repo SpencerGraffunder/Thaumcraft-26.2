@@ -24,6 +24,8 @@ import thaumcraft.init.ModEntities;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * ItemGolemPlacer - Item used to spawn Thaumcraft golems.
@@ -119,7 +121,7 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         if (stack.hasTag() && stack.getTag().contains("props")) {
             IGolemProperties props = GolemProperties.fromLong(stack.getTag().getLongOr("props", 0L));
             
@@ -127,13 +129,13 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
             if (props.hasTrait(EnumGolemTrait.SMART)) {
                 int rank = props.getRank();
                 if (rank >= 10) {
-                    tooltip.add(Component.translatable("golem.rank")
+                    builder.accept(Component.translatable("golem.rank")
                             .append(" " + rank)
                             .withStyle(ChatFormatting.GOLD));
                 } else {
                     int xp = stack.getTag().contains("xp") ? stack.getTag().getIntOr("xp", 0) : 0;
                     int xpNeeded = (rank + 1) * (rank + 1) * EntityThaumcraftGolem.XP_MULTIPLIER;
-                    tooltip.add(Component.translatable("golem.rank")
+                    builder.accept(Component.translatable("golem.rank")
                             .append(" " + rank + " ")
                             .withStyle(ChatFormatting.GOLD)
                             .append(Component.literal("(" + xp + "/" + xpNeeded + ")")
@@ -142,17 +144,17 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
             }
             
             // Show material
-            tooltip.add(props.getMaterial().getLocalizedName().copy()
+            builder.accept(props.getMaterial().getLocalizedName().copy()
                     .withStyle(ChatFormatting.GREEN));
             
             // Show traits
             for (EnumGolemTrait trait : props.getTraits()) {
-                tooltip.add(Component.literal("-").append(trait.getLocalizedName())
+                builder.accept(Component.literal("-").append(trait.getLocalizedName())
                         .withStyle(ChatFormatting.BLUE));
             }
         }
         
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 
     /**

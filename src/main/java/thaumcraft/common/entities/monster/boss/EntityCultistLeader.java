@@ -186,7 +186,7 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
         
         setLoot(difficulty);
         setEnchantmentBasedOnDifficulty(difficulty);

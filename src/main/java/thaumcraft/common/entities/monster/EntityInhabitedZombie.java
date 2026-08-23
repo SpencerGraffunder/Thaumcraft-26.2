@@ -48,7 +48,7 @@ public class EntityInhabitedZombie extends Zombie {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable net.minecraft.nbt.CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable net.minecraft.nbt.CompoundTag tag) {
         
         SpawnGroupData result = super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);
         
@@ -126,7 +126,7 @@ public class EntityInhabitedZombie extends Zombie {
     }
     
     @Override
-    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, MobSpawnType spawnType) {
+    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, EntitySpawnReason spawnType) {
         // Limit spawn density
         List<EntityInhabitedZombie> nearby = level.getEntitiesOfClass(EntityInhabitedZombie.class,
                 new AABB(getX() - 32, getY() - 16, getZ() - 32, 

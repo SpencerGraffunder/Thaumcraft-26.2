@@ -15,7 +15,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ItemHandlerProvider;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -30,6 +30,8 @@ import thaumcraft.common.lib.crafting.CrucibleRecipeType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Crucible tile entity - melts items into their aspects and performs crucible crafting.
@@ -62,19 +64,19 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putShort("Heat", heat);
-        tank.writeToNBT(tag);
-        aspects.writeToNBT(tag);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putShort("Heat", heat);
+        output.putChild("tank", tank);
+        aspects.writeToNBT(output);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        heat = tag.getShortOr("Heat", (short)0);
-        tank.readFromNBT(tag);
-        aspects.readFromNBT(tag);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        heat = (short) input.getShortOr("Heat", (short)0);
+        input.readChild("tank", tank);
+        aspects.readFromNBT(input);
     }
 
     // ==================== Tick ====================

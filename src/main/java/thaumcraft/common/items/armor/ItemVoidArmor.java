@@ -14,6 +14,7 @@ import thaumcraft.api.items.IWarpingGear;
 import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
+import net.minecraft.server.level.ServerLevel;
 
 /**
  * Void Metal Armor - High protection, self-repairing, but warping.
@@ -48,8 +49,8 @@ public class ItemVoidArmor extends Item implements IWarpingGear {
     }
     
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, level, entity, slot);
         // Self-repair: repair 1 durability every second (20 ticks) while worn
         if (stack.isDamaged() && entity != null && entity.tickCount % 20 == 0 && entity instanceof LivingEntity living) {
             // Only repair if actually worn

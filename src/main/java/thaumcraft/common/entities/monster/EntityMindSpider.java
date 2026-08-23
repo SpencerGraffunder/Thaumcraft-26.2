@@ -137,7 +137,7 @@ public class EntityMindSpider extends Spider {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, 
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
         // Don't apply default spider spawn logic (no jockeys)
         return spawnData;
     }

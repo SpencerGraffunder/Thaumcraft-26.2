@@ -15,6 +15,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Causality Collapser - A powerful throwable that creates a void implosion.
@@ -53,11 +55,11 @@ public class ItemCausalityCollapser extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.thaumcraft.causality_collapser.desc")
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("item.thaumcraft.causality_collapser.desc")
                 .withStyle(style -> style.withColor(0x8B0000)));
-        tooltip.add(Component.translatable("item.thaumcraft.causality_collapser.warning")
+        builder.accept(Component.translatable("item.thaumcraft.causality_collapser.warning")
                 .withStyle(style -> style.withColor(0xFF0000)));
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

@@ -14,6 +14,8 @@ import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.common.tiles.devices.TileBellows;
 import thaumcraft.init.ModBlockEntities;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Buffer tube - stores up to 10 units of mixed essentia.
@@ -43,39 +45,46 @@ public class TileTubeBuffer extends TileTube implements IAspectContainer {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
+    protected void writeSyncNBT(ValueOutput output) {
         // Don't call super - buffer has different sync data
         aspects.writeToNBT(tag);
         
-        byte[] sides = new byte[6];
+        int[] sides = new int[6];
         for (int i = 0; i < 6; i++) {
-            sides[i] = (byte) (openSides[i] ? 1 : 0);
+            sides[i] = openSides[i] ? 1 : 0;
         }
-        tag.putByteArray("Open", sides);
-        tag.putByteArray("Choke", chokedSides);
-        tag.putInt("Side", facing.ordinal());
+        output.putIntArray("Open", sides);
+        int[] choke = new int[6];
+        for (int i = 0; i < 6; i++) {
+            choke[i] = chokedSides[i];
+        }
+        output.putIntArray("Choke", choke);
+        output.putInt("Side", facing.ordinal());
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
+    protected void readSyncNBT(ValueInput input) {
         // Don't call super - buffer has different sync data
         aspects.readFromNBT(tag);
         
-        byte[] sides = tag.getByteArray("Open").orElse(new byte[0]);
-        if (sides != null && sides.length == 6) {
+        int[] sides = input.getIntArray("Open").orElse(new int[0]);
+        if (sides.length == 6) {
             for (int i = 0; i < 6; i++) {
                 openSides[i] = sides[i] == 1;
             }
         }
         
-        byte[] choke = tag.getByteArray("Choke").orElse(new byte[0]);
-        if (choke != null && choke.length == 6) {
-            chokedSides = choke;
+        int[] choke = input.getIntArray("Choke").orElse(new int[0]);
+        if (choke.length == 6) {
+            chokedSides = new byte[6];
+            for (int i = 0; i < 6; i++) {
+                chokedSides[i] = (byte) choke[i];
+            }
         } else {
             chokedSides = new byte[] { 0, 0, 0, 0, 0, 0 };
         }
         
-        facing = Direction.values()[tag.getIntOr("Side", 0)];
+        facing = Direction.values()[input.getIntOr("Side", 0)];
     }
 
     // ==================== Tick ====================

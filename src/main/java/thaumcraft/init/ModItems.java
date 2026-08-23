@@ -71,6 +71,7 @@ import thaumcraft.common.golems.seals.ItemSealPlacer;
 import thaumcraft.common.entities.construct.ItemTurretPlacer;
 import thaumcraft.common.items.misc.ItemCreativeFluxSponge;
 import thaumcraft.common.items.misc.ItemCreativePlacer;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for all Thaumcraft items.

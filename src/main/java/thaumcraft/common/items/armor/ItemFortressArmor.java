@@ -20,6 +20,8 @@ import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Fortress Armor - Heavy battle mage armor.
@@ -58,21 +60,21 @@ public class ItemFortressArmor extends Item implements IGoggles, IRevealer {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         // Show attached goggles
         if (hasGoggles(stack)) {
-            tooltip.add(Component.translatable("item.thaumcraft.goggles.name")
+            builder.accept(Component.translatable("item.thaumcraft.goggles.name")
                     .withStyle(ChatFormatting.DARK_PURPLE));
         }
         
         // Show mask variant
         if (hasMask(stack)) {
             int maskType = getMaskType(stack);
-            tooltip.add(Component.translatable("item.thaumcraft.fortress_helm.mask." + maskType)
+            builder.accept(Component.translatable("item.thaumcraft.fortress_helm.mask." + maskType)
                     .withStyle(ChatFormatting.GOLD));
         }
         
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, display, builder, flag);
     }
     
     // ==================== Goggles Attachment ====================

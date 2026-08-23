@@ -16,6 +16,8 @@ import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Pickaxe of the Core - Fire elemental pickaxe.
@@ -61,9 +63,9 @@ public class ItemElementalPickaxe extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("enchantment.thaumcraft.refining").withStyle(style -> style.withColor(0xFFD700)));
-        tooltip.add(Component.translatable("enchantment.thaumcraft.sounding").withStyle(style -> style.withColor(0xFFD700)));
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("enchantment.thaumcraft.refining").withStyle(style -> style.withColor(0xFFD700)));
+        builder.accept(Component.translatable("enchantment.thaumcraft.sounding").withStyle(style -> style.withColor(0xFFD700)));
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

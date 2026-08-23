@@ -14,6 +14,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
+import net.minecraft.core.registries.Registries;
 
 /**
  * CropUtils - Utilities for determining crop growth states.

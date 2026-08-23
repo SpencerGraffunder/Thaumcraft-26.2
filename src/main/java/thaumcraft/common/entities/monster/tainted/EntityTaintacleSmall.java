@@ -47,7 +47,7 @@ public class EntityTaintacleSmall extends EntityTaintacle {
     }
     
     @Override
-    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, net.minecraft.world.entity.MobSpawnType spawnType) {
+    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, net.minecraft.world.entity.EntitySpawnReason spawnType) {
         return false; // Only spawned by parent taintacle
     }
     

@@ -59,6 +59,7 @@ import thaumcraft.common.blocks.world.BlockGrassAmbient;
 import thaumcraft.common.blocks.world.BlockLoot;
 
 import java.util.function.Supplier;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for all Thaumcraft blocks.

@@ -12,6 +12,8 @@ import thaumcraft.common.items.ItemTCBase;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Primordial Pearl - A rare artifact that serves as a crafting catalyst.
@@ -62,10 +64,10 @@ public class ItemPrimordialPearl extends ItemTCBase {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, builder, flag);
         int uses = MAX_DAMAGE - stack.getDamageValue();
-        tooltip.add(Component.translatable("item.thaumcraft.primordial_pearl.uses", uses));
+        builder.accept(Component.translatable("item.thaumcraft.primordial_pearl.uses", uses));
     }
 
     /**

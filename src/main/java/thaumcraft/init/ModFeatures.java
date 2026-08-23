@@ -15,6 +15,7 @@ import thaumcraft.common.world.structures.AncientStoneCircleFeature;
 import thaumcraft.common.world.structures.BarrowFeature;
 import thaumcraft.common.world.structures.EldritchObeliskFeature;
 import thaumcraft.common.world.structures.RuinedTowerFeature;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for all Thaumcraft world generation features.

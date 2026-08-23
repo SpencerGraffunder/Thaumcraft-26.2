@@ -1,7 +1,7 @@
 package thaumcraft.init;
 
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.neoforge.common.extensions.IForgeMenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -23,6 +23,7 @@ import thaumcraft.common.menu.ThaumatoriumMenu;
 import thaumcraft.common.menu.TurretMenu;
 import thaumcraft.common.menu.VoidSiphonMenu;
 import thaumcraft.common.menu.LogisticsMenu;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for all Thaumcraft menu types.
@@ -40,95 +41,95 @@ public class ModMenuTypes {
     
     public static final DeferredHolder<MenuType<GolemBuilderMenu>, MenuType<GolemBuilderMenu>> GOLEM_BUILDER = 
             MENU_TYPES.register("golem_builder", 
-                    () -> IForgeMenuType.create(GolemBuilderMenu::new));
+                    () -> IMenuTypeExtension.create(GolemBuilderMenu::new));
     
     public static final DeferredHolder<MenuType<SealMenu>, MenuType<SealMenu>> SEAL = 
             MENU_TYPES.register("seal", 
-                    () -> IForgeMenuType.create(SealMenu::new));
+                    () -> IMenuTypeExtension.create(SealMenu::new));
     
     // ==================== Crafting ====================
     
     public static final DeferredHolder<MenuType<ArcaneWorkbenchMenu>, MenuType<ArcaneWorkbenchMenu>> ARCANE_WORKBENCH = 
             MENU_TYPES.register("arcane_workbench", 
-                    () -> IForgeMenuType.create(ArcaneWorkbenchMenu::new));
+                    () -> IMenuTypeExtension.create(ArcaneWorkbenchMenu::new));
     
     public static final DeferredHolder<MenuType<ThaumatoriumMenu>, MenuType<ThaumatoriumMenu>> THAUMATORIUM = 
             MENU_TYPES.register("thaumatorium", 
-                    () -> IForgeMenuType.create(ThaumatoriumMenu::new));
+                    () -> IMenuTypeExtension.create(ThaumatoriumMenu::new));
     
     // ==================== Research ====================
     
     public static final DeferredHolder<MenuType<ResearchTableMenu>, MenuType<ResearchTableMenu>> RESEARCH_TABLE = 
             MENU_TYPES.register("research_table", 
-                    () -> IForgeMenuType.create(ResearchTableMenu::new));
+                    () -> IMenuTypeExtension.create(ResearchTableMenu::new));
     
     // ==================== Essentia Processing ====================
     
     public static final DeferredHolder<MenuType<SmelterMenu>, MenuType<SmelterMenu>> SMELTER = 
             MENU_TYPES.register("smelter", 
-                    () -> IForgeMenuType.create(SmelterMenu::new));
+                    () -> IMenuTypeExtension.create(SmelterMenu::new));
     
     // ==================== Caster/Focus ====================
     
     public static final DeferredHolder<MenuType<FocalManipulatorMenu>, MenuType<FocalManipulatorMenu>> FOCAL_MANIPULATOR = 
             MENU_TYPES.register("focal_manipulator", 
-                    () -> IForgeMenuType.create(FocalManipulatorMenu::new));
+                    () -> IMenuTypeExtension.create(FocalManipulatorMenu::new));
     
     public static final DeferredHolder<MenuType<FocusPouchMenu>, MenuType<FocusPouchMenu>> FOCUS_POUCH = 
             MENU_TYPES.register("focus_pouch", 
-                    () -> IForgeMenuType.create(FocusPouchMenu::new));
+                    () -> IMenuTypeExtension.create(FocusPouchMenu::new));
     
     // ==================== Tools ====================
     
     public static final DeferredHolder<MenuType<HandMirrorMenu>, MenuType<HandMirrorMenu>> HAND_MIRROR = 
             MENU_TYPES.register("hand_mirror", 
-                    () -> IForgeMenuType.create(HandMirrorMenu::new));
+                    () -> IMenuTypeExtension.create(HandMirrorMenu::new));
     
     // ==================== Storage ====================
     
     public static final DeferredHolder<MenuType<HungryChestMenu>, MenuType<HungryChestMenu>> HUNGRY_CHEST = 
             MENU_TYPES.register("hungry_chest", 
-                    () -> IForgeMenuType.create(HungryChestMenu::new));
+                    () -> IMenuTypeExtension.create(HungryChestMenu::new));
     
     // ==================== Devices ====================
     
     public static final DeferredHolder<MenuType<PotionSprayerMenu>, MenuType<PotionSprayerMenu>> POTION_SPRAYER = 
             MENU_TYPES.register("potion_sprayer", 
-                    () -> IForgeMenuType.create(PotionSprayerMenu::new));
+                    () -> IMenuTypeExtension.create(PotionSprayerMenu::new));
     
     public static final DeferredHolder<MenuType<SpaMenu>, MenuType<SpaMenu>> SPA = 
             MENU_TYPES.register("spa", 
-                    () -> IForgeMenuType.create(SpaMenu::new));
+                    () -> IMenuTypeExtension.create(SpaMenu::new));
     
     public static final DeferredHolder<MenuType<VoidSiphonMenu>, MenuType<VoidSiphonMenu>> VOID_SIPHON = 
             MENU_TYPES.register("void_siphon", 
-                    () -> IForgeMenuType.create(VoidSiphonMenu::new));
+                    () -> IMenuTypeExtension.create(VoidSiphonMenu::new));
     
     // ==================== Turrets ====================
     
     public static final DeferredHolder<MenuType<TurretMenu>, MenuType<TurretMenu>> TURRET_BASIC = 
             MENU_TYPES.register("turret_basic", 
-                    () -> IForgeMenuType.create(TurretMenu::new));
+                    () -> IMenuTypeExtension.create(TurretMenu::new));
     
     public static final DeferredHolder<MenuType<TurretMenu>, MenuType<TurretMenu>> TURRET_ADVANCED = 
             MENU_TYPES.register("turret_advanced", 
-                    () -> IForgeMenuType.create(TurretMenu::new));
+                    () -> IMenuTypeExtension.create(TurretMenu::new));
     
     // ==================== Constructs ====================
     
     public static final DeferredHolder<MenuType<ArcaneBoreMenu>, MenuType<ArcaneBoreMenu>> ARCANE_BORE = 
             MENU_TYPES.register("arcane_bore", 
-                    () -> IForgeMenuType.create(ArcaneBoreMenu::new));
+                    () -> IMenuTypeExtension.create(ArcaneBoreMenu::new));
     
     // ==================== Trading ====================
     
     public static final DeferredHolder<MenuType<PechMenu>, MenuType<PechMenu>> PECH_TRADING = 
             MENU_TYPES.register("pech_trading", 
-                    () -> IForgeMenuType.create(PechMenu::new));
+                    () -> IMenuTypeExtension.create(PechMenu::new));
     
     // ==================== Logistics ====================
     
     public static final DeferredHolder<MenuType<LogisticsMenu>, MenuType<LogisticsMenu>> LOGISTICS = 
             MENU_TYPES.register("logistics", 
-                    () -> IForgeMenuType.create(LogisticsMenu::new));
+                    () -> IMenuTypeExtension.create(LogisticsMenu::new));
 }

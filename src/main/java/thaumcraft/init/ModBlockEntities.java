@@ -28,6 +28,7 @@ import thaumcraft.common.tiles.essentia.TileJarVoid;
 import thaumcraft.common.tiles.misc.TileBanner;
 import thaumcraft.common.tiles.misc.TileBarrierStone;
 import thaumcraft.common.tiles.misc.TileHole;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for all Thaumcraft block entities (tile entities).

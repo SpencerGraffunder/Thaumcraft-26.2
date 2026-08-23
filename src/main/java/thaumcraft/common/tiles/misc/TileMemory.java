@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.registries.Registries;
 
 /**
  * TileMemory - Base tile entity that remembers the original block state.
@@ -80,13 +81,13 @@ public class TileMemory extends BlockEntity {
     public void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         // Load block state using NbtUtils
-        if (input.contains("oldBlock")) {
-            oldBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), input.getCompoundOrEmpty("oldBlock"));
+        if (input.keySet().contains("oldBlock")) {
+            oldBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), input.read("oldBlock", CompoundTag.CODEC).orElseGet(CompoundTag::new));
         } else {
             oldBlock = Blocks.AIR.defaultBlockState();
         }
-        if (input.contains("tileData")) {
-            tileEntityCompound = input.getCompoundOrEmpty("tileData");
+        if (input.keySet().contains("tileData")) {
+            tileEntityCompound = input.read("tileData", CompoundTag.CODEC).orElseGet(CompoundTag::new);
         }
     }
 }

@@ -9,6 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Base class for Thaumcraft tile entities that have an inventory.
@@ -85,15 +87,15 @@ public abstract class TileThaumcraftInventory extends TileThaumcraft implements 
     // ==================== NBT Serialization ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        ContainerHelper.saveAllItems(tag, items);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        ContainerHelper.saveAllItems(output, items);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        ContainerHelper.loadAllItems(tag, items);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        ContainerHelper.loadAllItems(input, items);
     }
 
     // ==================== Drop Items ====================

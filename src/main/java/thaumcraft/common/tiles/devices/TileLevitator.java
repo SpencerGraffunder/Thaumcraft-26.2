@@ -19,6 +19,8 @@ import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
 
 import java.util.List;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileLevitator - Pushes entities in a direction using vis from the aura.
@@ -257,19 +259,19 @@ public class TileLevitator extends TileThaumcraft {
     // ==================== NBT ====================
     
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putByte("range", (byte)rangeIndex);
-        tag.putInt("vis", vis);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putByte("range", (byte)rangeIndex);
+        output.putInt("vis", vis);
     }
     
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        rangeIndex = tag.getByteOr("range", (byte)0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        rangeIndex = input.getByteOr("range", (byte)0);
         if (rangeIndex < 0 || rangeIndex >= RANGES.length) {
             rangeIndex = 1;
         }
-        vis = tag.getIntOr("vis", 0);
+        vis = input.getIntOr("vis", 0);
     }
 }

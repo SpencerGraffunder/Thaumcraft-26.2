@@ -24,6 +24,8 @@ import thaumcraft.common.menu.FocusPouchMenu;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Focus Pouch - A portable container for storing foci.
@@ -99,16 +101,16 @@ public class ItemFocusPouch extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         int count = getFociCount(stack);
         if (count > 0) {
-            tooltip.add(Component.translatable("item.thaumcraft.focus_pouch.contents", count, INVENTORY_SIZE)
+            builder.accept(Component.translatable("item.thaumcraft.focus_pouch.contents", count, INVENTORY_SIZE)
                     .withStyle(style -> style.withColor(0x808080)));
         } else {
-            tooltip.add(Component.translatable("item.thaumcraft.focus_pouch.empty")
+            builder.accept(Component.translatable("item.thaumcraft.focus_pouch.empty")
                     .withStyle(style -> style.withColor(0x808080)));
         }
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 
     // TODO: Implement Curios integration for belt slot

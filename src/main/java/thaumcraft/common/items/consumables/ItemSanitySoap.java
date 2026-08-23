@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.capabilities.IPlayerWarp;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
@@ -28,13 +28,12 @@ public class ItemSanitySoap extends Item {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
-        return 100; // 5 seconds of scrubbing
+    public int getUseDuration(ItemStack stack, LivingEntity user) {        return 100; // 5 seconds of scrubbing
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BLOCK;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.BLOCK;
     }
 
     @Override
@@ -64,7 +63,7 @@ public class ItemSanitySoap extends Item {
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
+    public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
         int ticksUsed = getUseDuration(stack) - timeLeft;
 
         // Only apply effect if used long enough
@@ -79,6 +78,7 @@ public class ItemSanitySoap extends Item {
                     // Check for Warp Ward potion effect - adds +1
                     if (player.hasEffect(ModEffects.WARP_WARD)) {
                         amountToRemove++;
+        return false;
                     }
                     
                     // TODO: Check if standing in purifying fluid - adds +1

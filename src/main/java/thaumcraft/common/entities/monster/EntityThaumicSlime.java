@@ -46,7 +46,7 @@ public class EntityThaumicSlime extends Slime {
      * Thaumic slimes don't spawn naturally - they are created by flux effects.
      */
     public static boolean checkThaumicSlimeSpawnRules(EntityType<? extends EntityThaumicSlime> type, ServerLevelAccessor level,
-            MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+            EntitySpawnReason spawnType, BlockPos pos, RandomSource random) {
         // Thaumic slimes don't spawn naturally - only from flux effects
         return false;
     }
@@ -128,7 +128,7 @@ public class EntityThaumicSlime extends Slime {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, 
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable net.minecraft.nbt.CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable net.minecraft.nbt.CompoundTag tag) {
         // Random size based on difficulty
         int sizeIndex = random.nextInt(3);
         if (sizeIndex < 2 && random.nextFloat() < 0.5f * difficulty.getSpecialMultiplier()) {
@@ -275,7 +275,7 @@ public class EntityThaumicSlime extends Slime {
     }
     
     @Override
-    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, MobSpawnType spawnType) {
+    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, EntitySpawnReason spawnType) {
         // Thaumic slimes don't spawn naturally - only from flux effects
         return false;
     }

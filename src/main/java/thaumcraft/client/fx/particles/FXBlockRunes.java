@@ -37,7 +37,7 @@ public class FXBlockRunes extends ThaumcraftParticle {
         if (r == 0.0f) r = 1.0f;
 
         // Random 90-degree rotation
-        this.rotation = this.getRandom().nextInt(4) * 90.0f;
+        this.rotation = this.random.nextInt(4) * 90.0f;
 
         this.rCol = r;
         this.gCol = g;
@@ -55,10 +55,10 @@ public class FXBlockRunes extends ThaumcraftParticle {
         this.runeIndex = (int) (Math.getRandom() * 16.0 + 224.0);
 
         // Random offsets for position variation
-        this.offsetX = this.getRandom().nextFloat() * 0.2;
-        this.offsetY = -0.3 + this.getRandom().nextFloat() * 0.6;
+        this.offsetX = this.random.nextFloat() * 0.2;
+        this.offsetY = -0.3 + this.random.nextFloat() * 0.6;
 
-        this.quadSize = (float) (1.0 + this.getRandom().nextGaussian() * 0.1);
+        this.quadSize = (float) (1.0 + this.random.nextGaussian() * 0.1);
         this.alpha = 0.0f;
     }
 

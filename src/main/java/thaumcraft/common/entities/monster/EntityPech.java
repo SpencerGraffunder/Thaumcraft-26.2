@@ -156,7 +156,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
      * Pechs spawn in magical biomes in moderately lit areas.
      */
     public static boolean checkPechSpawnRules(EntityType<? extends EntityPech> type, ServerLevelAccessor level,
-            MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+            EntitySpawnReason spawnType, BlockPos pos, RandomSource random) {
         // Pechs spawn in dimmer areas but not total darkness
         // They prefer magical forest biomes (handled by biome modifiers)
         int skyLight = level.getBrightness(LightLayer.SKY, pos);
@@ -223,7 +223,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
         
         setEquipmentBasedOnDifficulty(difficulty);
         

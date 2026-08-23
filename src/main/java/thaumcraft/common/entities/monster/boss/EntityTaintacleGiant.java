@@ -163,14 +163,14 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
     // ==================== Spawn ====================
     
     @Override
-    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, MobSpawnType spawnType) {
+    public boolean checkSpawnRules(net.minecraft.world.level.LevelAccessor level, EntitySpawnReason spawnType) {
         return false; // Cannot spawn naturally
     }
     
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
         
         // TODO: EntityUtils.makeChampion when implemented
         this.bossEvent.setName(getDisplayName());

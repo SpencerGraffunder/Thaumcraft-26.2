@@ -37,13 +37,13 @@ public class FXShieldRunes extends ThaumcraftParticle {
         this.bCol = b;
         this.alpha = 0.8f;
         
-        this.orbitAngle = this.getRandom().nextFloat() * 360.0f;
-        this.orbitHeight = this.getRandom().nextFloat() * target.getBbHeight();
-        this.orbitSpeed = 3.0f + this.getRandom().nextFloat() * 2.0f;
+        this.orbitAngle = this.random.nextFloat() * 360.0f;
+        this.orbitHeight = this.random.nextFloat() * target.getBbHeight();
+        this.orbitSpeed = 3.0f + this.random.nextFloat() * 2.0f;
         this.orbitRadius = target.getBbWidth() * 0.8f + 0.3f;
-        this.runeIndex = this.getRandom().nextInt(16);
+        this.runeIndex = this.random.nextInt(16);
         
-        this.quadSize = 0.15f + this.getRandom().nextFloat() * 0.1f;
+        this.quadSize = 0.15f + this.random.nextFloat() * 0.1f;
         this.lifetime = lifetime;
         this.gravity = 0;
         this.noClip = true;

@@ -8,6 +8,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -44,7 +45,7 @@ public abstract class TileThaumcraft extends BlockEntity {
      * Write data that should be synced to clients.
      * Override in subclasses to add custom data.
      */
-    protected void writeSyncNBT(CompoundTag tag) {
+    protected void writeSyncNBT(ValueOutput output) {
         // Override in subclasses
     }
 
@@ -52,17 +53,15 @@ public abstract class TileThaumcraft extends BlockEntity {
      * Read data synced from server.
      * Override in subclasses to read custom data.
      */
-    protected void readSyncNBT(CompoundTag tag) {
+    protected void readSyncNBT(ValueInput input) {
         // Override in subclasses
     }
 
     // ==================== Client Sync ====================
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
-        writeSyncNBT(tag);
-        return tag;
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveWithoutMetadata(registries);
     }
 
     @Nullable

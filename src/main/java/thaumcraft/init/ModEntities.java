@@ -1,6 +1,8 @@
 package thaumcraft.init;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -53,6 +55,7 @@ import thaumcraft.common.entities.construct.EntityArcaneBore;
 import thaumcraft.common.entities.construct.EntityTurretCrossbow;
 import thaumcraft.common.entities.construct.EntityTurretCrossbowAdvanced;
 import thaumcraft.common.golems.EntityThaumcraftGolem;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Registry for all Thaumcraft entities.
@@ -71,7 +74,7 @@ public class ModEntities {
                     .sized(0.15f, 0.15f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "focus_projectile").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "focus_projectile"))));
     
     public static final DeferredHolder<EntityType<EntityFocusCloud>, EntityType<EntityFocusCloud>> FOCUS_CLOUD = 
             ENTITY_TYPES.register("focus_cloud", () -> 
@@ -80,7 +83,7 @@ public class ModEntities {
                     .clientTrackingRange(8)
                     .updateInterval(10)
                     .fireImmune()
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "focus_cloud").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "focus_cloud"))));
     
     public static final DeferredHolder<EntityType<EntityFocusMine>, EntityType<EntityFocusMine>> FOCUS_MINE = 
             ENTITY_TYPES.register("focus_mine", () -> 
@@ -88,7 +91,7 @@ public class ModEntities {
                     .sized(0.15f, 0.15f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "focus_mine").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "focus_mine"))));
     
     // ==================== Other Projectile Entities ====================
     
@@ -98,7 +101,7 @@ public class ModEntities {
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "alumentum").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "alumentum"))));
     
     public static final DeferredHolder<EntityType<EntityGrapple>, EntityType<EntityGrapple>> GRAPPLE = 
             ENTITY_TYPES.register("grapple", () -> 
@@ -106,7 +109,7 @@ public class ModEntities {
                     .sized(0.1f, 0.1f)
                     .clientTrackingRange(8)
                     .updateInterval(5)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "grapple").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "grapple"))));
     
     public static final DeferredHolder<EntityType<EntityBottleTaint>, EntityType<EntityBottleTaint>> BOTTLE_TAINT = 
             ENTITY_TYPES.register("bottle_taint", () -> 
@@ -114,7 +117,7 @@ public class ModEntities {
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "bottle_taint").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "bottle_taint"))));
     
     public static final DeferredHolder<EntityType<EntityHomingShard>, EntityType<EntityHomingShard>> HOMING_SHARD = 
             ENTITY_TYPES.register("homing_shard", () -> 
@@ -122,7 +125,7 @@ public class ModEntities {
                     .sized(0.15f, 0.15f)
                     .clientTrackingRange(8)
                     .updateInterval(5)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "homing_shard").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "homing_shard"))));
     
     public static final DeferredHolder<EntityType<EntityGolemDart>, EntityType<EntityGolemDart>> GOLEM_DART = 
             ENTITY_TYPES.register("golem_dart", () -> 
@@ -130,7 +133,7 @@ public class ModEntities {
                     .sized(0.2f, 0.2f)
                     .clientTrackingRange(4)
                     .updateInterval(20)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "golem_dart").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "golem_dart"))));
     
     public static final DeferredHolder<EntityType<EntityGolemOrb>, EntityType<EntityGolemOrb>> GOLEM_ORB = 
             ENTITY_TYPES.register("golem_orb", () -> 
@@ -138,7 +141,7 @@ public class ModEntities {
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(8)
                     .updateInterval(5)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "golem_orb").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "golem_orb"))));
     
     public static final DeferredHolder<EntityType<EntityEldritchOrb>, EntityType<EntityEldritchOrb>> ELDRITCH_ORB = 
             ENTITY_TYPES.register("eldritch_orb", () -> 
@@ -146,7 +149,7 @@ public class ModEntities {
                     .sized(0.5f, 0.5f)
                     .clientTrackingRange(8)
                     .updateInterval(5)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_orb").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_orb"))));
     
     public static final DeferredHolder<EntityType<EntityCausalityCollapser>, EntityType<EntityCausalityCollapser>> CAUSALITY_COLLAPSER = 
             ENTITY_TYPES.register("causality_collapser", () -> 
@@ -154,7 +157,7 @@ public class ModEntities {
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "causality_collapser").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "causality_collapser"))));
     
     public static final DeferredHolder<EntityType<EntityRiftBlast>, EntityType<EntityRiftBlast>> RIFT_BLAST = 
             ENTITY_TYPES.register("rift_blast", () -> 
@@ -162,7 +165,7 @@ public class ModEntities {
                     .sized(0.3f, 0.3f)
                     .clientTrackingRange(8)
                     .updateInterval(5)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "rift_blast").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "rift_blast"))));
     
     // ==================== Monster Entities ====================
     
@@ -172,7 +175,7 @@ public class ModEntities {
                     .sized(0.9f, 0.9f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "wisp").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "wisp"))));
     
     public static final DeferredHolder<EntityType<EntityFireBat>, EntityType<EntityFireBat>> FIRE_BAT = 
             ENTITY_TYPES.register("fire_bat", () -> 
@@ -181,7 +184,7 @@ public class ModEntities {
                     .clientTrackingRange(5)
                     .updateInterval(3)
                     .fireImmune()
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "fire_bat").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "fire_bat"))));
     
     public static final DeferredHolder<EntityType<EntityBrainyZombie>, EntityType<EntityBrainyZombie>> BRAINY_ZOMBIE = 
             ENTITY_TYPES.register("brainy_zombie", () -> 
@@ -189,7 +192,7 @@ public class ModEntities {
                     .sized(0.6f, 1.95f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "brainy_zombie").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "brainy_zombie"))));
     
     public static final DeferredHolder<EntityType<EntityMindSpider>, EntityType<EntityMindSpider>> MIND_SPIDER = 
             ENTITY_TYPES.register("mind_spider", () -> 
@@ -197,7 +200,7 @@ public class ModEntities {
                     .sized(0.7f, 0.5f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "mind_spider").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "mind_spider"))));
     
     public static final DeferredHolder<EntityType<EntityThaumicSlime>, EntityType<EntityThaumicSlime>> THAUMIC_SLIME = 
             ENTITY_TYPES.register("thaumic_slime", () -> 
@@ -205,7 +208,7 @@ public class ModEntities {
                     .sized(2.04f, 2.04f)
                     .clientTrackingRange(10)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "thaumic_slime").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "thaumic_slime"))));
     
     public static final DeferredHolder<EntityType<EntityGiantBrainyZombie>, EntityType<EntityGiantBrainyZombie>> GIANT_BRAINY_ZOMBIE = 
             ENTITY_TYPES.register("giant_brainy_zombie", () -> 
@@ -213,7 +216,7 @@ public class ModEntities {
                     .sized(0.6f, 1.95f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "giant_brainy_zombie").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "giant_brainy_zombie"))));
     
     public static final DeferredHolder<EntityType<EntityInhabitedZombie>, EntityType<EntityInhabitedZombie>> INHABITED_ZOMBIE = 
             ENTITY_TYPES.register("inhabited_zombie", () -> 
@@ -221,7 +224,7 @@ public class ModEntities {
                     .sized(0.6f, 1.95f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "inhabited_zombie").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "inhabited_zombie"))));
     
     public static final DeferredHolder<EntityType<EntityEldritchCrab>, EntityType<EntityEldritchCrab>> ELDRITCH_CRAB = 
             ENTITY_TYPES.register("eldritch_crab", () -> 
@@ -229,7 +232,7 @@ public class ModEntities {
                     .sized(0.8f, 0.6f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_crab").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_crab"))));
     
     public static final DeferredHolder<EntityType<EntitySpellBat>, EntityType<EntitySpellBat>> SPELL_BAT = 
             ENTITY_TYPES.register("spell_bat", () -> 
@@ -237,7 +240,7 @@ public class ModEntities {
                     .sized(0.5f, 0.9f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "spell_bat").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "spell_bat"))));
     
     public static final DeferredHolder<EntityType<EntityEldritchGuardian>, EntityType<EntityEldritchGuardian>> ELDRITCH_GUARDIAN = 
             ENTITY_TYPES.register("eldritch_guardian", () -> 
@@ -245,7 +248,7 @@ public class ModEntities {
                     .sized(0.8f, 2.25f)
                     .clientTrackingRange(10)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_guardian").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_guardian"))));
     
     // ==================== Cult Entities ====================
     
@@ -255,7 +258,7 @@ public class ModEntities {
                     .sized(0.6f, 1.8f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist"))));
     
     public static final DeferredHolder<EntityType<EntityCultistKnight>, EntityType<EntityCultistKnight>> CULTIST_KNIGHT = 
             ENTITY_TYPES.register("cultist_knight", () -> 
@@ -263,7 +266,7 @@ public class ModEntities {
                     .sized(0.6f, 1.8f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_knight").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_knight"))));
     
     public static final DeferredHolder<EntityType<EntityCultistCleric>, EntityType<EntityCultistCleric>> CULTIST_CLERIC = 
             ENTITY_TYPES.register("cultist_cleric", () -> 
@@ -271,7 +274,7 @@ public class ModEntities {
                     .sized(0.6f, 1.8f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_cleric").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_cleric"))));
     
     public static final DeferredHolder<EntityType<EntityCultistPortalLesser>, EntityType<EntityCultistPortalLesser>> CULTIST_PORTAL_LESSER = 
             ENTITY_TYPES.register("cultist_portal_lesser", () -> 
@@ -280,7 +283,7 @@ public class ModEntities {
                     .clientTrackingRange(10)
                     .updateInterval(3)
                     .fireImmune()
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_portal_lesser").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_portal_lesser"))));
     
     public static final DeferredHolder<EntityType<EntityPech>, EntityType<EntityPech>> PECH = 
             ENTITY_TYPES.register("pech", () -> 
@@ -288,7 +291,7 @@ public class ModEntities {
                     .sized(0.6f, 1.2f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "pech").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "pech"))));
     
     // ==================== Tainted Entities ====================
     
@@ -298,7 +301,7 @@ public class ModEntities {
                     .sized(0.5f, 0.4f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_crawler").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_crawler"))));
     
     public static final DeferredHolder<EntityType<EntityTaintSwarm>, EntityType<EntityTaintSwarm>> TAINT_SWARM = 
             ENTITY_TYPES.register("taint_swarm", () -> 
@@ -306,7 +309,7 @@ public class ModEntities {
                     .sized(2.0f, 2.0f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_swarm").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_swarm"))));
     
     public static final DeferredHolder<EntityType<EntityTaintacle>, EntityType<EntityTaintacle>> TAINTACLE = 
             ENTITY_TYPES.register("taintacle", () -> 
@@ -314,7 +317,7 @@ public class ModEntities {
                     .sized(0.8f, 3.0f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle"))));
     
     public static final DeferredHolder<EntityType<EntityTaintacleSmall>, EntityType<EntityTaintacleSmall>> TAINTACLE_SMALL = 
             ENTITY_TYPES.register("taintacle_small", () -> 
@@ -322,7 +325,7 @@ public class ModEntities {
                     .sized(0.22f, 1.0f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle_small").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle_small"))));
     
     public static final DeferredHolder<EntityType<EntityTaintSeed>, EntityType<EntityTaintSeed>> TAINT_SEED = 
             ENTITY_TYPES.register("taint_seed", () -> 
@@ -330,7 +333,7 @@ public class ModEntities {
                     .sized(1.5f, 1.25f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_seed").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_seed"))));
     
     public static final DeferredHolder<EntityType<EntityTaintSeedPrime>, EntityType<EntityTaintSeedPrime>> TAINT_SEED_PRIME = 
             ENTITY_TYPES.register("taint_seed_prime", () -> 
@@ -338,7 +341,7 @@ public class ModEntities {
                     .sized(2.0f, 2.0f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_seed_prime").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taint_seed_prime"))));
     
     // ==================== Boss Entities ====================
     
@@ -348,7 +351,7 @@ public class ModEntities {
                     .sized(0.75f, 2.25f)
                     .clientTrackingRange(10)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_leader").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_leader"))));
     
     public static final DeferredHolder<EntityType<EntityTaintacleGiant>, EntityType<EntityTaintacleGiant>> TAINTACLE_GIANT = 
             ENTITY_TYPES.register("taintacle_giant", () -> 
@@ -356,7 +359,7 @@ public class ModEntities {
                     .sized(1.1f, 6.0f)
                     .clientTrackingRange(10)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle_giant").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "taintacle_giant"))));
     
     public static final DeferredHolder<EntityType<EntityCultistPortalGreater>, EntityType<EntityCultistPortalGreater>> CULTIST_PORTAL_GREATER = 
             ENTITY_TYPES.register("cultist_portal_greater", () -> 
@@ -365,7 +368,7 @@ public class ModEntities {
                     .clientTrackingRange(10)
                     .updateInterval(3)
                     .fireImmune()
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_portal_greater").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "cultist_portal_greater"))));
     
     public static final DeferredHolder<EntityType<EntityEldritchGolem>, EntityType<EntityEldritchGolem>> ELDRITCH_GOLEM = 
             ENTITY_TYPES.register("eldritch_golem", () -> 
@@ -374,7 +377,7 @@ public class ModEntities {
                     .clientTrackingRange(10)
                     .updateInterval(3)
                     .fireImmune()
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_golem").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_golem"))));
     
     public static final DeferredHolder<EntityType<EntityEldritchWarden>, EntityType<EntityEldritchWarden>> ELDRITCH_WARDEN = 
             ENTITY_TYPES.register("eldritch_warden", () -> 
@@ -382,7 +385,7 @@ public class ModEntities {
                     .sized(1.5f, 3.5f)
                     .clientTrackingRange(10)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_warden").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "eldritch_warden"))));
     
     // ==================== Construct Entities ====================
     
@@ -392,7 +395,7 @@ public class ModEntities {
                     .sized(0.95f, 1.25f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "turret_crossbow").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "turret_crossbow"))));
     
     public static final DeferredHolder<EntityType<EntityTurretCrossbowAdvanced>, EntityType<EntityTurretCrossbowAdvanced>> TURRET_CROSSBOW_ADVANCED = 
             ENTITY_TYPES.register("turret_crossbow_advanced", () -> 
@@ -400,7 +403,7 @@ public class ModEntities {
                     .sized(0.95f, 1.5f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "turret_crossbow_advanced").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "turret_crossbow_advanced"))));
     
     public static final DeferredHolder<EntityType<EntityThaumcraftGolem>, EntityType<EntityThaumcraftGolem>> THAUMCRAFT_GOLEM = 
             ENTITY_TYPES.register("thaumcraft_golem", () -> 
@@ -408,7 +411,7 @@ public class ModEntities {
                     .sized(0.7f, 1.0f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "thaumcraft_golem").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "thaumcraft_golem"))));
     
     public static final DeferredHolder<EntityType<EntityArcaneBore>, EntityType<EntityArcaneBore>> ARCANE_BORE = 
             ENTITY_TYPES.register("arcane_bore", () -> 
@@ -416,7 +419,7 @@ public class ModEntities {
                     .sized(0.9f, 0.9f)
                     .clientTrackingRange(8)
                     .updateInterval(3)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "arcane_bore").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "arcane_bore"))));
     
     // ==================== Misc Entities ====================
     
@@ -426,7 +429,7 @@ public class ModEntities {
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(6)
                     .updateInterval(20)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "special_item").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "special_item"))));
     
     public static final DeferredHolder<EntityType<EntityFollowingItem>, EntityType<EntityFollowingItem>> FOLLOWING_ITEM = 
             ENTITY_TYPES.register("following_item", () -> 
@@ -434,7 +437,7 @@ public class ModEntities {
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(6)
                     .updateInterval(20)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "following_item").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "following_item"))));
     
     public static final DeferredHolder<EntityType<EntityFluxRift>, EntityType<EntityFluxRift>> FLUX_RIFT = 
             ENTITY_TYPES.register("flux_rift", () -> 
@@ -443,7 +446,7 @@ public class ModEntities {
                     .clientTrackingRange(10)
                     .updateInterval(3)
                     .fireImmune()
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "flux_rift").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "flux_rift"))));
     
     public static final DeferredHolder<EntityType<EntityFallingTaint>, EntityType<EntityFallingTaint>> FALLING_TAINT = 
             ENTITY_TYPES.register("falling_taint", () -> 
@@ -451,5 +454,5 @@ public class ModEntities {
                     .sized(0.98f, 0.98f)
                     .clientTrackingRange(10)
                     .updateInterval(20)
-                    .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "falling_taint").toString()));
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "falling_taint"))));
 }

@@ -143,7 +143,7 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            MobSpawnType spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
+            EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag tag) {
         
         spawnTimer = 100;
         return super.finalizeSpawn(level, difficulty, spawnType, spawnData, tag);

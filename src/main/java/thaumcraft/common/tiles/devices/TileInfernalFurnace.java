@@ -24,6 +24,8 @@ import thaumcraft.init.ModBlockEntities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileInfernalFurnace - A magical furnace that smelts items using aura.
@@ -51,17 +53,17 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
     // ==================== NBT ====================
     
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        tag.putShort("CookTime", (short) furnaceCookTime);
-        tag.putShort("SpeedyTime", (short) speedyTime);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        output.putShort("CookTime", (short) furnaceCookTime);
+        output.putShort("SpeedyTime", (short) speedyTime);
     }
     
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        furnaceCookTime = tag.getShortOr("CookTime", (short)0);
-        speedyTime = tag.getShortOr("SpeedyTime", (short)0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        furnaceCookTime = (short) input.getShortOr("CookTime", (short)0);
+        speedyTime = (short) input.getShortOr("SpeedyTime", (short)0);
     }
     
     // ==================== Tick ====================

@@ -26,6 +26,8 @@ import thaumcraft.common.tiles.devices.TileBellows;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileThaumatorium - An automated alchemical crafting machine.
@@ -81,41 +83,39 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
-        storedAspects.writeToNBT(tag, "StoredAspects");
-        tag.putBoolean("Crafting", crafting);
-        tag.putInt("CraftingProgress", craftingProgress);
-        tag.putInt("CraftingTime", craftingTime);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
+        storedAspects.writeToNBT(output, "StoredAspects");
+        output.putBoolean("Crafting", crafting);
+        output.putInt("CraftingProgress", craftingProgress);
+        output.putInt("CraftingTime", craftingTime);
 
         if (recipeAspects != null) {
-            recipeAspects.writeToNBT(tag, "RecipeAspects");
+            recipeAspects.writeToNBT(output, "RecipeAspects");
         }
         if (recipeResult != null && !recipeResult.isEmpty()) {
-            CompoundTag resultTag = new CompoundTag();
-            recipeResult.save(resultTag);
-            tag.put("RecipeResult", resultTag);
+            output.store("RecipeResult", ItemStack.OPTIONAL_CODEC, recipeResult);
         }
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
         storedAspects = new AspectList();
-        storedAspects.readFromNBT(tag, "StoredAspects");
-        crafting = tag.getBooleanOr("Crafting", false);
-        craftingProgress = tag.getIntOr("CraftingProgress", 0);
-        craftingTime = tag.getIntOr("CraftingTime", 0);
+        storedAspects.readFromNBT(input, "StoredAspects");
+        crafting = input.getBooleanOr("Crafting", false);
+        craftingProgress = input.getIntOr("CraftingProgress", 0);
+        craftingTime = input.getIntOr("CraftingTime", 0);
 
-        if (tag.contains("RecipeAspects")) {
+        if (input.keySet().contains("RecipeAspects")) {
             recipeAspects = new AspectList();
-            recipeAspects.readFromNBT(tag, "RecipeAspects");
+            recipeAspects.readFromNBT(input, "RecipeAspects");
         } else {
             recipeAspects = null;
         }
 
-        if (tag.contains("RecipeResult")) {
-            recipeResult = ItemStack.of(tag.getCompoundOrEmpty("RecipeResult"));
+        if (input.keySet().contains("RecipeResult")) {
+            recipeResult = input.read("RecipeResult", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         } else {
             recipeResult = null;
         }

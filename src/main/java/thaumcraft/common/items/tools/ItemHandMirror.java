@@ -32,6 +32,8 @@ import thaumcraft.init.ModSounds;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Hand Mirror - Links to a magic mirror block for remote inventory access.
@@ -214,7 +216,7 @@ public class ItemHandMirror extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             if (tag != null && tag.contains("linkX")) {
@@ -222,11 +224,11 @@ public class ItemHandMirror extends Item {
                 int ly = tag.getIntOr("linkY", 0);
                 int lz = tag.getIntOr("linkZ", 0);
                 String dim = tag.getStringOr("linkDim", "");
-                tooltip.add(Component.translatable("tc.handmirrorlinkedto",
+                builder.accept(Component.translatable("tc.handmirrorlinkedto",
                         lx + "," + ly + "," + lz + " in " + dim)
                         .withStyle(style -> style.withColor(0x808080)));
             }
         }
-        super.appendHoverText(stack, level, tooltip, flag);
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

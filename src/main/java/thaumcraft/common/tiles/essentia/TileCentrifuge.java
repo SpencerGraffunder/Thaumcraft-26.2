@@ -16,6 +16,8 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.common.tiles.devices.TileBellows;
 import thaumcraft.init.ModBlockEntities;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * TileCentrifuge - Separates compound aspects into their component primal aspects.
@@ -57,21 +59,21 @@ public class TileCentrifuge extends TileThaumcraft implements IAspectContainer, 
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
         if (aspect != null) {
-            tag.putString("Aspect", aspect.getTag());
+            output.putString("Aspect", aspect.getTag());
         }
-        tag.putShort("Amount", (short) amount);
-        tag.putShort("Progress", (short) progress);
+        output.putShort("Amount", (short) amount);
+        output.putShort("Progress", (short) progress);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        aspect = Aspect.getAspect(tag.getStringOr("Aspect", ""));
-        amount = tag.getShortOr("Amount", (short)0);
-        progress = tag.getShortOr("Progress", (short)0);
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        aspect = Aspect.getAspect(input.getStringOr("Aspect", ""));
+        amount = (short) input.getShortOr("Amount", (short)0);
+        progress = (short) input.getShortOr("Progress", (short)0);
     }
 
     // ==================== Tick ====================

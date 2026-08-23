@@ -16,6 +16,8 @@ import thaumcraft.api.items.IWarpingGear;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Voidseer Charm - A charm that converts accumulated warp into vis discount.
@@ -62,10 +64,10 @@ public class ItemVoidseerCharm extends Item implements IVisDiscountGear, IWarpin
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.thaumcraft.voidseer_charm.text")
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("item.thaumcraft.voidseer_charm.text")
                 .withStyle(ChatFormatting.DARK_BLUE, ChatFormatting.ITALIC));
-        tooltip.add(Component.translatable("item.thaumcraft.voidseer_charm.desc")
+        builder.accept(Component.translatable("item.thaumcraft.voidseer_charm.desc")
                 .withStyle(ChatFormatting.GRAY));
     }
 }

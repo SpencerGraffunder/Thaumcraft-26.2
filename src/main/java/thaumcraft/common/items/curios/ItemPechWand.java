@@ -19,6 +19,8 @@ import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Pech Wand - A rare curio that grants research knowledge when used.
@@ -84,8 +86,8 @@ public class ItemPechWand extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.curio.text").withStyle(style -> style.withColor(0x808080)));
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        builder.accept(Component.translatable("item.curio.text").withStyle(style -> style.withColor(0x808080)));
+        super.appendHoverText(stack, context, display, builder, flag);
     }
 }

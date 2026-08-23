@@ -24,6 +24,8 @@ import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * Phial item - holds 10 essentia of a single aspect.
@@ -84,13 +86,13 @@ public class ItemPhial extends ItemEssentiaContainer {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         if (filled) {
             AspectList aspects = getAspects(stack);
             if (aspects != null && aspects.size() > 0) {
                 Aspect aspect = aspects.getAspects()[0];
                 int amount = aspects.getAmount(aspect);
-                tooltip.add(Component.literal(aspect.getName() + ": " + amount)
+                builder.accept(Component.literal(aspect.getName() + ": " + amount)
                         .withStyle(ChatFormatting.GRAY));
             }
         }

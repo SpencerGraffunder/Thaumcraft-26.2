@@ -17,6 +17,8 @@ import net.minecraft.world.phys.Vec3;
 import thaumcraft.api.research.ScanningManager;
 import thaumcraft.common.items.ItemTC;
 import thaumcraft.init.ModSounds;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
 
 /**
  * Thaumometer - the basic scanning tool of Thaumcraft.
@@ -53,10 +55,10 @@ public class ItemThaumometer extends ItemTC {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         if (!(entity instanceof Player player)) return;
         
-        boolean held = isSelected || slotId == 0; // Main hand or offhand slot
+        boolean held = slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND; // Main hand or offhand slot
         
         if (!held) return;
 

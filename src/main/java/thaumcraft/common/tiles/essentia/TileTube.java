@@ -60,30 +60,30 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
     // ==================== NBT ====================
 
     @Override
-    protected void writeSyncNBT(CompoundTag tag) {
-        super.writeSyncNBT(tag);
+    protected void writeSyncNBT(ValueOutput output) {
+        super.writeSyncNBT(output);
         if (essentiaType != null) {
-            tag.putString("Type", essentiaType.getTag());
+            output.putString("Type", essentiaType.getTag());
         }
-        tag.putInt("Amount", essentiaAmount);
-        tag.putInt("Side", facing.ordinal());
+        output.putInt("Amount", essentiaAmount);
+        output.putInt("Side", facing.ordinal());
         
-        byte[] sides = new byte[6];
+        int[] sides = new int[6];
         for (int i = 0; i < 6; i++) {
-            sides[i] = (byte) (openSides[i] ? 1 : 0);
+            sides[i] = openSides[i] ? 1 : 0;
         }
-        tag.putByteArray("Open", sides);
+        output.putIntArray("Open", sides);
     }
 
     @Override
-    protected void readSyncNBT(CompoundTag tag) {
-        super.readSyncNBT(tag);
-        essentiaType = Aspect.getAspect(tag.getStringOr("Type", ""));
-        essentiaAmount = tag.getIntOr("Amount", 0);
-        facing = Direction.values()[tag.getIntOr("Side", 0)];
+    protected void readSyncNBT(ValueInput input) {
+        super.readSyncNBT(input);
+        essentiaType = Aspect.getAspect(input.getStringOr("Type", ""));
+        essentiaAmount = input.getIntOr("Amount", 0);
+        facing = Direction.values()[input.getIntOr("Side", 0)];
         
-        byte[] sides = tag.getByteArray("Open").orElse(new byte[0]);
-        if (sides != null && sides.length == 6) {
+        int[] sides = input.getIntArray("Open").orElse(new int[0]);
+        if (sides.length == 6) {
             for (int i = 0; i < 6; i++) {
                 openSides[i] = sides[i] == 1;
             }

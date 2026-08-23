@@ -16,6 +16,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 /**
  * ItemCreativePlacer - Creative-only item for placing special structures.
@@ -37,11 +39,11 @@ public class ItemCreativePlacer extends Item {
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
-        tooltip.add(Component.literal("Structure placer tool").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.literal("Creative only").withStyle(ChatFormatting.DARK_PURPLE));
-        tooltip.add(Component.literal("Not yet implemented").withStyle(ChatFormatting.RED));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, builder, flag);
+        builder.accept(Component.literal("Structure placer tool").withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.literal("Creative only").withStyle(ChatFormatting.DARK_PURPLE));
+        builder.accept(Component.literal("Not yet implemented").withStyle(ChatFormatting.RED));
     }
     
     @Override

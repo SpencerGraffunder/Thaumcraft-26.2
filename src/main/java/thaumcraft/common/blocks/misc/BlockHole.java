@@ -20,6 +20,7 @@ import thaumcraft.common.tiles.misc.TileHole;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
+import net.minecraft.core.registries.Registries;
 
 /**
  * BlockHole - The portable hole block.
