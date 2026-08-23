@@ -44,9 +44,9 @@ import java.util.Set;
  * - PlayerEvent.Clone same
  * - EntityPlayer -> Player
  * - EntityPlayerMP -> ServerPlayer
- * - world.isRemote -> level.isClientSide
+ * - world.isRemote -> level.isClientSide()
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
 public class PlayerEvents {
     
     // Players that need their knowledge synced
@@ -91,7 +91,7 @@ public class PlayerEvents {
      */
     @SubscribeEvent
     public static void playerJoin(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide && event.getEntity() instanceof ServerPlayer player) {
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof ServerPlayer player) {
             IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
             IPlayerWarp warp = ThaumcraftCapabilities.getWarp(player);
             
@@ -114,7 +114,7 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void livingTick(LivingEvent.LivingTickEvent event) {
         if (event.getEntity() instanceof Player player) {
-            if (!player.level().isClientSide) {
+            if (!player.level().isClientSide()) {
                 // Periodic knowledge sync (every 20 ticks)
                 if (player.tickCount % 20 == 0 && player instanceof ServerPlayer serverPlayer) {
                     String playerName = player.getName().getString();
@@ -154,7 +154,7 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void onPlayerWakeUp(PlayerWakeUpEvent event) {
         Player player = event.getEntity();
-        if (player.level().isClientSide || !(player instanceof ServerPlayer serverPlayer)) {
+        if (player.level().isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
         
@@ -188,7 +188,7 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void onItemPickup(PlayerEvent.ItemPickupEvent event) {
         Player player = event.getEntity();
-        if (player == null || player.level().isClientSide) {
+        if (player == null || player.level().isClientSide()) {
             return;
         }
         
@@ -269,7 +269,7 @@ public class PlayerEvents {
         }
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("TC.RUNIC")) {
-            return tag.getByte("TC.RUNIC");
+            return tag.getByteOr("TC.RUNIC", (byte)0);
         }
         return 0;
     }
@@ -292,7 +292,7 @@ public class PlayerEvents {
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             if (tag != null && tag.contains("TC.WARP")) {
-                warp += tag.getByte("TC.WARP");
+                warp += tag.getByteOr("TC.WARP", (byte)0);
             }
         }
         

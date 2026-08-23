@@ -32,7 +32,7 @@ import thaumcraft.common.world.structures.RuinedTowerFeature;
 public class ModFeatures {
     
     public static final DeferredRegister<Feature<?>> FEATURES = 
-            DeferredRegister.create(ForgeRegistries.FEATURES, Thaumcraft.MODID);
+            DeferredRegister.create(BuiltInRegistries.FEATURE, Thaumcraft.MODID);
     
     // ==================== Tree Features ====================
     

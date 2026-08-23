@@ -1,4 +1,5 @@
 package thaumcraft.common.entities.monster;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -10,7 +11,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -43,9 +44,9 @@ public class EntityGiantBrainyZombie extends EntityBrainyZombie {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ANGER, 1.0f);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ANGER, 1.0f);
     }
     
     public static AttributeSupplier.Builder createAttributes() {
@@ -73,7 +74,7 @@ public class EntityGiantBrainyZombie extends EntityBrainyZombie {
         }
         
         // Update attack damage based on anger
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             double baseDamage = 7.0 + (getAnger() - 1.0f) * 5.0;
             getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(baseDamage);
         }
@@ -113,7 +114,7 @@ public class EntityGiantBrainyZombie extends EntityBrainyZombie {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
         // Drop lots of rotten flesh
         for (int a = 0; a < 6; a++) {
             if (random.nextBoolean()) {

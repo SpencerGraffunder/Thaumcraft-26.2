@@ -135,6 +135,6 @@ public abstract class TheorycraftCard {
      */
     public void deserialize(CompoundTag nbt) {
         if (nbt == null) return;
-        seed = nbt.getLong("seed");
+        seed = nbt.getLongOr("seed", 0L);
     }
 }

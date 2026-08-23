@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.monster.boss;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -70,9 +72,9 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_HEADLESS, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_HEADLESS, false);
     }
     
     @Override
@@ -122,15 +124,15 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("headless", isHeadless());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("headless", isHeadless());
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setHeadless(tag.getBoolean("headless"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setHeadless(input.getBooleanOr("headless", false));
         if (isHeadless()) {
             makeHeadless();
         }
@@ -172,7 +174,7 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
         }
         
         // Destroy soft blocks underfoot
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             BlockPos pos = blockPosition();
             BlockState bs = level().getBlockState(pos);
             float hardness = bs.getDestroySpeed(level(), pos);
@@ -194,7 +196,7 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
         
         super.tick();
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Beam charging for headless mode
             if (isHeadless() && beamCharge <= 0) {
                 chargingBeam = true;
@@ -210,7 +212,7 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
         }
         
         // Client-side visual effects for headless mode
-        if (level().isClientSide && isHeadless()) {
+        if (level().isClientSide() && isHeadless()) {
             setXRot(0.0f);
             // Spark particles from neck
             if (random.nextInt(20) == 0) {
@@ -238,7 +240,7 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
     @Override
     public boolean hurt(DamageSource source, float amount) {
         // When about to die, become headless instead
-        if (!level().isClientSide && amount > getHealth() && !isHeadless()) {
+        if (!level().isClientSide() && amount > getHealth() && !isHeadless()) {
             setHeadless(true);
             spawnTimer = 100;
             
@@ -256,7 +258,7 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
     // ==================== Attack ====================
     
     @Override
-    public boolean doHurtTarget(Entity target) {
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
         if (attackTimer > 0) {
             return false;
         }

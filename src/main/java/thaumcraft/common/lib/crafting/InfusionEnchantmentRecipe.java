@@ -57,11 +57,11 @@ public class InfusionEnchantmentRecipe extends InfusionRecipeType {
             
             if (!cool && central.getItem() instanceof TieredItem) {
                 // Simplified check matching the previous implementation
-                if (enchantment.toolClasses.contains("axe") && central.canPerformAction(net.minecraftforge.common.ToolActions.AXE_DIG)) cool = true;
-                if (enchantment.toolClasses.contains("pickaxe") && central.canPerformAction(net.minecraftforge.common.ToolActions.PICKAXE_DIG)) cool = true;
-                if (enchantment.toolClasses.contains("shovel") && central.canPerformAction(net.minecraftforge.common.ToolActions.SHOVEL_DIG)) cool = true;
-                if (enchantment.toolClasses.contains("sword") && central.canPerformAction(net.minecraftforge.common.ToolActions.SWORD_DIG)) cool = true;
-                if (enchantment.toolClasses.contains("hoe") && central.canPerformAction(net.minecraftforge.common.ToolActions.HOE_DIG)) cool = true;
+                if (enchantment.toolClasses.contains("axe") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.AXE_DIG)) cool = true;
+                if (enchantment.toolClasses.contains("pickaxe") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.PICKAXE_DIG)) cool = true;
+                if (enchantment.toolClasses.contains("shovel") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.SHOVEL_DIG)) cool = true;
+                if (enchantment.toolClasses.contains("sword") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.SWORD_DIG)) cool = true;
+                if (enchantment.toolClasses.contains("hoe") && central.canPerformAction(net.neoforged.neoforge.common.ToolActions.HOE_DIG)) cool = true;
             }
             
             if (!cool && central.getItem() instanceof ArmorItem armorItem) {
@@ -122,7 +122,7 @@ public class InfusionEnchantmentRecipe extends InfusionRecipeType {
         if (rand.nextInt(10) < el.size()) {
             int base = 1;
             if (input.hasTag()) {
-                base += input.getTag().getByte("TC.WARP");
+                base += input.getTag().getByteOr("TC.WARP", (byte)0);
             }
             out.addTagElement("TC.WARP", ByteTag.valueOf((byte)base));
         }

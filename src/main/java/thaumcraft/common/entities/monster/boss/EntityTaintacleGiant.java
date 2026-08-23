@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster.boss;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -58,9 +61,9 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ANGER, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ANGER, 0);
     }
     
     public static AttributeSupplier.Builder createAttributes() {
@@ -106,7 +109,7 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
         }
         
         // Angry particles on client
-        if (level().isClientSide && random.nextInt(15) == 0 && getAnger() > 0) {
+        if (level().isClientSide() && random.nextInt(15) == 0 && getAnger() > 0) {
             double dx = random.nextGaussian() * 0.02;
             double dy = random.nextGaussian() * 0.02;
             double dz = random.nextGaussian() * 0.02;
@@ -118,14 +121,14 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
         }
         
         // Slow regeneration
-        if (!level().isClientSide && tickCount % 30 == 0) {
+        if (!level().isClientSide() && tickCount % 30 == 0) {
             heal(1.0f);
         }
     }
     
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
         this.bossEvent.setProgress(getHealth() / getMaxHealth());
     }
     
@@ -133,7 +136,7 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
     
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Damage cap with enrage mechanic
             if (amount > 35.0f) {
                 if (getAnger() == 0) {
@@ -199,30 +202,30 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
     // ==================== Loot ====================
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
         // Only drop primordial pearl if no other giant taintacles nearby
         AABB searchBox = getBoundingBox().inflate(48.0);
         List<EntityTaintacleGiant> others = level().getEntitiesOfClass(EntityTaintacleGiant.class, searchBox,
                 e -> e != this && e.isAlive());
         
         if (others.isEmpty()) {
-            spawnAtLocation(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()));
+            spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.PRIMORDIAL_PEARL.get()));
         }
     }
     
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putInt("Anger", getAnger());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("Anger", getAnger());
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains("Anger")) {
-            setAnger(tag.getInt("Anger"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        if (input.contains("Anger")) {
+            setAnger(input.getIntOr("Anger", 0));
         }
         
         if (hasCustomName()) {

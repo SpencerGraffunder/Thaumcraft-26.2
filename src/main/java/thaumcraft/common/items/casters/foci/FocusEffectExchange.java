@@ -170,7 +170,7 @@ public class FocusEffectExchange extends FocusEffect {
         if (caster != null && caster.level() != null) {
             caster.level().playSound(null, caster.blockPosition().above(), 
                 SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 
-                0.2f, 2.0f + (float)(caster.level().random.nextGaussian() * 0.05));
+                0.2f, 2.0f + (float)(caster.level().getRandom().nextGaussian() * 0.05));
         }
     }
     

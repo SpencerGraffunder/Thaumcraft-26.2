@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster.tainted;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -73,10 +76,10 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
     }
     
     @Override
-    public boolean doHurtTarget(Entity target) {
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
         level().broadcastEntityEvent(this, (byte) 16);
         playSound(ModSounds.TENTACLE.get(), getSoundVolume(), getVoicePitch());
-        return super.doHurtTarget(target);
+        return super.doHurtTarget(level, target);
     }
     
     @Override
@@ -123,7 +126,7 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
     public void tick() {
         super.tick();
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Register with taint system
             if (!firstRun || tickCount % 1200 == 0) {
                 // TODO: TaintHelper.removeTaintSeed/addTaintSeed
@@ -166,7 +169,7 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
                     
                     for (LivingEntity entity : nearby) {
                         // Apply flux taint effect
-                        entity.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), 100, getArea() - 1, false, true));
+                        entity.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT, 100, getArea() - 1, false, true));
                     }
                 }
             }
@@ -242,9 +245,9 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
         // Drop flux crystal
-        spawnAtLocation(new ItemStack(ModItems.FLUX_CRYSTAL.get()));
+        spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.FLUX_CRYSTAL.get()));
     }
     
     @Override
@@ -292,14 +295,14 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putInt("boost", boost);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("boost", boost);
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        boost = tag.getInt("boost");
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        boost = input.getIntOr("boost", 0);
     }
 }

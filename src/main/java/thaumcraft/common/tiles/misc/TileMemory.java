@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.misc;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -65,26 +67,26 @@ public class TileMemory extends BlockEntity {
     }
     
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         // Save block state using NbtUtils
-        tag.put("oldBlock", NbtUtils.writeBlockState(oldBlock));
+        output.put("oldBlock", NbtUtils.writeBlockState(oldBlock));
         if (tileEntityCompound != null) {
-            tag.put("tileData", tileEntityCompound);
+            output.put("tileData", tileEntityCompound);
         }
     }
     
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         // Load block state using NbtUtils
-        if (tag.contains("oldBlock")) {
-            oldBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("oldBlock"));
+        if (input.contains("oldBlock")) {
+            oldBlock = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), input.getCompoundOrEmpty("oldBlock"));
         } else {
             oldBlock = Blocks.AIR.defaultBlockState();
         }
-        if (tag.contains("tileData")) {
-            tileEntityCompound = tag.getCompound("tileData");
+        if (input.contains("tileData")) {
+            tileEntityCompound = input.getCompoundOrEmpty("tileData");
         }
     }
 }

@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  */
 public class BlockVisGenerator extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
 
     private static final VoxelShape SHAPE = Block.box(4.0, 0.0, 4.0, 12.0, 14.0, 12.0);

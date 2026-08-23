@@ -30,14 +30,14 @@ public class ChampionModWarded implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void showFX(LivingEntity champion) {
-        if (champion.level().random.nextInt(4) != 0) {
+        if (champion.level().getRandom().nextInt(4) != 0) {
             return;
         }
         
         // Enchantment/magic particles
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight();
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight();
         
         champion.level().addParticle(ParticleTypes.ENCHANT,
                 champion.getBoundingBox().minX + w,

@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.crafting;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,7 +43,7 @@ import javax.annotation.Nullable;
  */
 public class BlockPatternCrafter extends Block implements EntityBlock {
     
-    public static final EnumProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
     
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 16, 16);
@@ -85,20 +86,20 @@ public class BlockPatternCrafter extends Block implements EntityBlock {
                                   InteractionHand hand, BlockHitResult hit) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof TilePatternCrafter crafter) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 crafter.cycle();
                 level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         ModSounds.KEY.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
         return InteractionResult.PASS;
     }
     
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block,
-                                 BlockPos fromPos, boolean isMoving) {
-        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+                                 Orientation orientation, boolean isMoving) {
+        super.neighborChanged(state, level, pos, block, orientation, isMoving);
         
         // Update enabled state based on redstone
         boolean powered = level.hasNeighborSignal(pos);
@@ -118,7 +119,7 @@ public class BlockPatternCrafter extends Block implements EntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                     BlockEntityType<T> type) {
         if (type == ModBlockEntities.PATTERN_CRAFTER.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TilePatternCrafter.clientTick(lvl, pos, st, (TilePatternCrafter) be);
             } else {
                 return (lvl, pos, st, be) -> TilePatternCrafter.serverTick(lvl, pos, st, (TilePatternCrafter) be);

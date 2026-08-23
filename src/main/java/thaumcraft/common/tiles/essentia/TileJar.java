@@ -56,11 +56,11 @@ public class TileJar extends TileThaumcraft implements IAspectSource, IEssentiaT
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        aspect = Aspect.getAspect(tag.getString("Aspect"));
-        aspectFilter = Aspect.getAspect(tag.getString("AspectFilter"));
-        amount = tag.getShort("Amount");
-        facing = tag.getByte("Facing");
-        blocked = tag.getBoolean("Blocked");
+        aspect = Aspect.getAspect(tag.getStringOr("Aspect", ""));
+        aspectFilter = Aspect.getAspect(tag.getStringOr("AspectFilter", ""));
+        amount = tag.getShortOr("Amount", (short)0);
+        facing = tag.getByteOr("Facing", (byte)0);
+        blocked = tag.getBooleanOr("Blocked", false);
     }
 
     // ==================== Tick ====================
@@ -75,7 +75,7 @@ public class TileJar extends TileThaumcraft implements IAspectSource, IEssentiaT
      * Try to pull essentia from connected tube above.
      */
     protected void fillFromAbove() {
-        if (level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide()) return;
 
         var te = level.getBlockEntity(worldPosition.above());
         if (te instanceof IEssentiaTransport transport) {

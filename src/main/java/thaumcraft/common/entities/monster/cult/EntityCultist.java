@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.monster.cult;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
@@ -131,7 +133,7 @@ public class EntityCultist extends Monster {
     // ==================== Spawn Particles ====================
     
     public void spawnExplosionParticle() {
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             // TODO: FXDispatcher.INSTANCE.cultistSpawn particles
             for (int i = 0; i < 20; ++i) {
                 double dx = random.nextGaussian() * 0.05;
@@ -160,25 +162,25 @@ public class EntityCultist extends Monster {
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
         if (homePos != null && homeDistance > 0) {
-            tag.putInt("HomeD", homeDistance);
-            tag.putInt("HomeX", homePos.getX());
-            tag.putInt("HomeY", homePos.getY());
-            tag.putInt("HomeZ", homePos.getZ());
+            output.putInt("HomeD", homeDistance);
+            output.putInt("HomeX", homePos.getX());
+            output.putInt("HomeY", homePos.getY());
+            output.putInt("HomeZ", homePos.getZ());
         }
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains("HomeD")) {
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        if (input.contains("HomeD")) {
             setHomePos(new BlockPos(
-                    tag.getInt("HomeX"),
-                    tag.getInt("HomeY"),
-                    tag.getInt("HomeZ")),
-                    tag.getInt("HomeD"));
+                    input.getIntOr("HomeX", 0),
+                    input.getIntOr("HomeY", 0),
+                    input.getIntOr("HomeZ", 0)),
+                    input.getIntOr("HomeD", 0));
         }
     }
 }

@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.devices;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -50,23 +52,23 @@ public class TileArcaneEar extends TileThaumcraft {
     // ==================== NBT ====================
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putByte("Note", note);
-        tag.putByte("Instrument", instrument);
-        tag.putBoolean("Toggle", isToggle);
-        tag.putBoolean("ToggleState", toggleState);
+    public void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putByte("Note", note);
+        output.putByte("Instrument", instrument);
+        output.putBoolean("Toggle", isToggle);
+        output.putBoolean("ToggleState", toggleState);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        note = tag.getByte("Note");
-        instrument = tag.getByte("Instrument");
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        note = input.getByteOr("Note", (byte)0);
+        instrument = input.getByteOr("Instrument", (byte)0);
         if (note < 0) note = 0;
         if (note > MAX_NOTE) note = MAX_NOTE;
-        isToggle = tag.getBoolean("Toggle");
-        toggleState = tag.getBoolean("ToggleState");
+        isToggle = input.getBooleanOr("Toggle", false);
+        toggleState = input.getBooleanOr("ToggleState", false);
     }
 
     // ==================== Tick ====================

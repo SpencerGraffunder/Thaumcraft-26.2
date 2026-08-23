@@ -21,7 +21,7 @@ import thaumcraft.common.lib.crafting.InfusionRecipeType;
 public class ModRecipeTypes {
     
     public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = 
-            DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, Thaumcraft.MODID);
+            DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, Thaumcraft.MODID);
     
     /**
      * Arcane Workbench recipe type.

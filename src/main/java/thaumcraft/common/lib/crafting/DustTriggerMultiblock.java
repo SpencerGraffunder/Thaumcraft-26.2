@@ -205,7 +205,7 @@ public class DustTriggerMultiblock implements IDustTrigger {
         // Fire crafting event
         // Note: In 1.12.2 this used infernal furnace as the result, but we don't know
         // what the actual result is here. The event is mainly for statistics/advancements.
-        MinecraftForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(player, ItemStack.EMPTY, null));
+        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(player, ItemStack.EMPTY, null));
         
         BlockPos p2 = pos.offset(placement.xOffset, placement.yOffset, placement.zOffset);
         

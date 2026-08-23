@@ -1,4 +1,5 @@
 package thaumcraft.common.entities.projectile;
+import net.minecraft.network.syncher.SynchedEntityData;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,7 +28,7 @@ public class EntityAlumentum extends ThrowableProjectile {
     }
     
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
         // No additional synced data needed
     }
     
@@ -36,7 +37,7 @@ public class EntityAlumentum extends ThrowableProjectile {
         super.tick();
         
         // Client-side particle effects
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             // TODO: Add particle effects via FXDispatcher when implemented
             // For now, spawn basic flame particles
             for (int i = 0; i < 3; i++) {
@@ -60,7 +61,7 @@ public class EntityAlumentum extends ThrowableProjectile {
     protected void onHit(HitResult result) {
         super.onHit(result);
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Create explosion at impact point
             // Explosion size 1.1f - small but noticeable
             level().explode(this, getX(), getY(), getZ(), 1.1f, Level.ExplosionInteraction.TNT);

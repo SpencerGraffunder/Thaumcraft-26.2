@@ -59,22 +59,22 @@ public class TileMirrorEssentia extends TileThaumcraft implements IAspectSource 
         tag.putInt("LinkX", linkX);
         tag.putInt("LinkY", linkY);
         tag.putInt("LinkZ", linkZ);
-        tag.putString("LinkDim", linkDimension.location().toString());
+        tag.putString("LinkDim", linkDimension.identifier().toString());
         tag.putInt("Instability", instability);
     }
 
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        linked = tag.getBoolean("Linked");
-        linkX = tag.getInt("LinkX");
-        linkY = tag.getInt("LinkY");
-        linkZ = tag.getInt("LinkZ");
+        linked = tag.getBooleanOr("Linked", false);
+        linkX = tag.getIntOr("LinkX", 0);
+        linkY = tag.getIntOr("LinkY", 0);
+        linkZ = tag.getIntOr("LinkZ", 0);
         if (tag.contains("LinkDim")) {
             linkDimension = ResourceKey.create(Registries.DIMENSION,
-                Identifier.withDefaultNamespace(tag.getString("LinkDim")));
+                Identifier.withDefaultNamespace(tag.getStringOr("LinkDim", "")));
         }
-        instability = tag.getInt("Instability");
+        instability = tag.getIntOr("Instability", 0);
     }
 
     // ==================== Tick ====================

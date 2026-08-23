@@ -58,7 +58,7 @@ import java.util.List;
  * 
  * Ported from Thaumcraft 1.12.2 to 1.20.1
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
 public class ToolEvents {
     
     // Track last clicked face per player for DESTRUCTIVE enchantment
@@ -126,7 +126,7 @@ public class ToolEvents {
                             ++count;
                             
                             // Send slash effect packet (TODO: implement PacketFXSlash)
-                            // if (!player.level().isClientSide) {
+                            // if (!player.level().isClientSide()) {
                             //     PacketHandler.sendToAllAround(new PacketFXSlash(...), ...);
                             // }
                         }
@@ -136,10 +136,10 @@ public class ToolEvents {
                 }
                 
                 // Play wind sound if we hit anything
-                if (count > 0 && !player.level().isClientSide) {
+                if (count > 0 && !player.level().isClientSide()) {
                     player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                             ModSounds.WIND.get(), SoundSource.PLAYERS,
-                            1.0f, 0.9f + player.level().random.nextFloat() * 0.2f);
+                            1.0f, 0.9f + player.level().getRandom().nextFloat() * 0.2f);
                 }
             }
         }
@@ -150,7 +150,7 @@ public class ToolEvents {
      */
     @SubscribeEvent
     public static void playerRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getLevel().isClientSide || event.getEntity() == null) return;
+        if (event.getLevel().isClientSide() || event.getEntity() == null) return;
         
         Player player = event.getEntity();
         InteractionHand usedHand = player.getUsedItemHand();
@@ -168,7 +168,7 @@ public class ToolEvents {
             BlockPos pos = event.getPos();
             event.getLevel().playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                     ModSounds.WAND_FAIL.get(), SoundSource.BLOCKS,
-                    0.2f, 0.2f + event.getLevel().random.nextFloat() * 0.2f);
+                    0.2f, 0.2f + event.getLevel().getRandom().nextFloat() * 0.2f);
             
             // Send scan source packet to reveal ores (TODO: implement PacketFXScanSource)
             int level = EnumInfusionEnchantment.getInfusionEnchantmentLevel(heldItem, EnumInfusionEnchantment.SOUNDING);
@@ -192,7 +192,7 @@ public class ToolEvents {
      * Add a blocked position to prevent mining during recursive operations.
      */
     public static void addBlockedBlock(Level level, BlockPos pos) {
-        String dimKey = level.dimension().location().toString();
+        String dimKey = level.dimension().identifier().toString();
         blockedBlocks.computeIfAbsent(dimKey, k -> new ArrayList<>());
         ArrayList<BlockPos> list = blockedBlocks.get(dimKey);
         if (!list.contains(pos)) {
@@ -204,7 +204,7 @@ public class ToolEvents {
      * Remove a blocked position.
      */
     public static void clearBlockedBlock(Level level, BlockPos pos) {
-        String dimKey = level.dimension().location().toString();
+        String dimKey = level.dimension().identifier().toString();
         blockedBlocks.computeIfAbsent(dimKey, k -> new ArrayList<>());
         blockedBlocks.get(dimKey).remove(pos);
     }
@@ -216,7 +216,7 @@ public class ToolEvents {
     public static void breakBlockEvent(BlockEvent.BreakEvent event) {
         if (!(event.getLevel() instanceof Level level)) return;
         
-        String dimKey = level.dimension().location().toString();
+        String dimKey = level.dimension().identifier().toString();
         
         // Check if this block is being blocked from breaking
         if (blockedBlocks.containsKey(dimKey)) {
@@ -227,7 +227,7 @@ public class ToolEvents {
             }
         }
         
-        if (level.isClientSide || event.getPlayer() == null) return;
+        if (level.isClientSide() || event.getPlayer() == null) return;
         
         Player player = event.getPlayer();
         InteractionHand usedHand = player.getUsedItemHand();

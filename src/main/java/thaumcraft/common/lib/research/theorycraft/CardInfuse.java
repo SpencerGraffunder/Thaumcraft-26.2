@@ -55,8 +55,8 @@ public class CardInfuse extends TheorycraftCard {
     @Override
     public void deserialize(CompoundTag nbt) {
         super.deserialize(nbt);
-        aspect = Aspect.getAspect(nbt.getString("aspect"));
-        stack = ItemStack.of(nbt.getCompound("stack"));
+        aspect = Aspect.getAspect(nbt.getStringOr("aspect", ""));
+        stack = ItemStack.of(nbt.getCompoundOrEmpty("stack"));
     }
 
     @Override

@@ -25,7 +25,7 @@ public class PotionInfectiousVisExhaust extends MobEffect {
     
     @Override
     public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide) return;
+        if (target.level().isClientSide()) return;
         
         Level level = target.level();
         AABB searchBox = target.getBoundingBox().inflate(4.0, 4.0, 4.0);
@@ -35,11 +35,11 @@ public class PotionInfectiousVisExhaust extends MobEffect {
             if (entity == target) continue;
             
             // Don't infect entities that already have this effect
-            if (!entity.hasEffect(ModEffects.INFECTIOUS_VIS_EXHAUST.get())) {
+            if (!entity.hasEffect(ModEffects.INFECTIOUS_VIS_EXHAUST)) {
                 if (amplifier > 0) {
                     // Spread with reduced amplifier
                     entity.addEffect(new MobEffectInstance(
-                            ModEffects.INFECTIOUS_VIS_EXHAUST.get(), 
+                            ModEffects.INFECTIOUS_VIS_EXHAUST, 
                             6000, 
                             amplifier - 1, 
                             false, 
@@ -48,7 +48,7 @@ public class PotionInfectiousVisExhaust extends MobEffect {
                 } else {
                     // Spread as regular vis exhaust
                     entity.addEffect(new MobEffectInstance(
-                            ModEffects.VIS_EXHAUST.get(), 
+                            ModEffects.VIS_EXHAUST, 
                             6000, 
                             0, 
                             false, 

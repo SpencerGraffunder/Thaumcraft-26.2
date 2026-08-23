@@ -8,14 +8,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.server.level.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
@@ -51,7 +51,7 @@ import thaumcraft.init.ModItems;
  * 
  * Ported from Thaumcraft 1.12.2 to 1.20.1
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
 public class EntityEvents {
 
     /**
@@ -117,7 +117,7 @@ public class EntityEvents {
      * Handle player being hurt - research triggers and armor effects.
      */
     private static void handlePlayerHurt(Player player, DamageSource source, float amount) {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
         
         // Fire damage research trigger
         if (source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) {
@@ -191,14 +191,14 @@ public class EntityEvents {
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
-        if (entity.level().isClientSide) return;
+        if (entity.level().isClientSide()) return;
         
         DamageSource source = event.getSource();
         boolean fakePlayer = source.getEntity() instanceof FakePlayer;
         
         // Zombie brain drops
         if (entity instanceof Zombie && !(entity.getType().getDescriptionId().contains("brainy"))) {
-            if (event.isRecentlyHit() && entity.level().random.nextInt(10) - event.getLootingLevel() < 1) {
+            if (event.isRecentlyHit() && entity.level().getRandom().nextInt(10) - event.getLootingLevel() < 1) {
                 if (ModItems.ZOMBIE_BRAIN != null) {
                     ItemEntity brainDrop = new ItemEntity(
                             entity.level(),
@@ -217,10 +217,10 @@ public class EntityEvents {
             if (aspects != null && aspects.size() > 0) {
                 Aspect[] aspectArray = aspects.getAspects();
                 int dropCount = Math.min(1 + aspects.visSize() / 10, 5);
-                dropCount = Math.max(1, entity.level().random.nextInt(dropCount + 1));
+                dropCount = Math.max(1, entity.level().getRandom().nextInt(dropCount + 1));
                 
                 for (int i = 0; i < dropCount && aspectArray.length > 0; i++) {
-                    Aspect aspect = aspectArray[entity.level().random.nextInt(aspectArray.length)];
+                    Aspect aspect = aspectArray[entity.level().getRandom().nextInt(aspectArray.length)];
                     ItemStack crystal = ThaumcraftApiHelper.makeCrystal(aspect);
                     if (!crystal.isEmpty()) {
                         ItemEntity crystalDrop = new ItemEntity(

@@ -79,7 +79,7 @@ import thaumcraft.common.items.misc.ItemCreativePlacer;
 public class ModItems {
 
     public static final DeferredRegister<Item> ITEMS = 
-            DeferredRegister.create(ForgeRegistries.ITEMS, Thaumcraft.MODID);
+            DeferredRegister.create(BuiltInRegistries.ITEM, Thaumcraft.MODID);
 
     // ==================== Tools ====================
 

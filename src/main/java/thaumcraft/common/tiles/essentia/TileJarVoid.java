@@ -121,7 +121,7 @@ public class TileJarVoid extends TileJar {
 
     @Override
     protected void fillFromAbove() {
-        if (level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide()) return;
 
         var te = level.getBlockEntity(worldPosition.above());
         if (te instanceof IEssentiaTransport transport) {

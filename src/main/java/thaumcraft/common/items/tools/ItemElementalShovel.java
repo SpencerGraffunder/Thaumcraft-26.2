@@ -191,7 +191,7 @@ public class ItemElementalShovel extends ShovelItem {
     public static byte getOrientation(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("or")) {
-            return tag.getByte("or");
+            return tag.getByteOr("or", (byte)0);
         }
         return 0;
     }

@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.devices;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -78,11 +80,11 @@ public class TileWaterJug extends TileThaumcraft {
     }
     
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         handlers.clear();
-        if (tag.contains("handlers")) {
-            int[] arr = tag.getIntArray("handlers");
+        if (input.contains("handlers")) {
+            int[] arr = input.getIntArray("handlers").orElse(new int[0]);
             for (int h : arr) {
                 handlers.add(h);
             }
@@ -90,9 +92,9 @@ public class TileWaterJug extends TileThaumcraft {
     }
     
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putIntArray("handlers", handlers.stream().mapToInt(i -> i).toArray());
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putIntArray("handlers", handlers.stream().mapToInt(i -> i).toArray());
     }
     
     // ==================== Tick ====================
@@ -256,7 +258,7 @@ public class TileWaterJug extends TileThaumcraft {
     @Override
     public boolean triggerEvent(int id, int param) {
         if (id == 1) {
-            if (level != null && level.isClientSide) {
+            if (level != null && level.isClientSide()) {
                 visualZone = param;
                 visualCounter = 5;
             }

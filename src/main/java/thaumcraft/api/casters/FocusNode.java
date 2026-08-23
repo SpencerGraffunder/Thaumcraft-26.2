@@ -185,10 +185,10 @@ public abstract class FocusNode implements IFocusElement {
     public void deserialize(CompoundTag tag) {
         // Deserialize settings
         if (tag.contains("settings")) {
-            CompoundTag settingsTag = tag.getCompound("settings");
+            CompoundTag settingsTag = tag.getCompoundOrEmpty("settings");
             for (String key : settings.keySet()) {
                 if (settingsTag.contains(key)) {
-                    settings.get(key).setValue(settingsTag.getInt(key));
+                    settings.get(key).setValue(settingsTag.getIntOr(key, 0));
                 }
             }
         }

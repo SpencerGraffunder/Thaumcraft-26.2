@@ -107,7 +107,7 @@ public class TaintHelper {
      * @param ignore If true, ignores wuss mode and rate checks
      */
     public static void spreadFibres(Level level, BlockPos pos, boolean ignore) {
-        if (level.isClientSide) return;
+        if (level.isClientSide()) return;
         
         // Check wuss mode
         if (!ignore && ModConfig.wussMode) {

@@ -23,7 +23,7 @@ import thaumcraft.common.golems.seals.SealHandler;
  * 
  * Ported to 1.20.1
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
 public class ThaumcraftCapabilities {
     
     // Capability instances

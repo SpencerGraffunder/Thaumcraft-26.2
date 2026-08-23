@@ -31,7 +31,7 @@ public class ItemZombieBrain extends Item {
     
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        if (!level.isClientSide && entity instanceof Player player) {
+        if (!level.isClientSide() && entity instanceof Player player) {
             // Small chance for permanent warp, otherwise temporary
             if (level.getRandom().nextFloat() < 0.1f) {
                 ThaumcraftApi.internalMethods.addWarpToPlayer(player, 1, IPlayerWarp.EnumWarpType.NORMAL);

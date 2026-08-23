@@ -58,7 +58,7 @@ public class ItemBootsTraveller extends Item implements IRechargable {
         // Energy management - consume charge periodically
         if (!level.isClientSide() && player.tickCount % 20 == 0) {
             CompoundTag tag = stack.getOrCreateTag();
-            int energy = tag.getInt("energy");
+            int energy = tag.getIntOr("energy", 0);
             
             if (energy > 0) {
                 energy--;

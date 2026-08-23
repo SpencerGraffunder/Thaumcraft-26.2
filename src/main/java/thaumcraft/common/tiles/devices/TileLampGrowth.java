@@ -61,8 +61,8 @@ public class TileLampGrowth extends TileThaumcraft implements IEssentiaTransport
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        reserve = tag.getBoolean("Reserve");
-        charges = tag.getInt("Charges");
+        reserve = tag.getBooleanOr("Reserve", false);
+        charges = tag.getIntOr("Charges", 0);
     }
 
     // ==================== Tick ====================

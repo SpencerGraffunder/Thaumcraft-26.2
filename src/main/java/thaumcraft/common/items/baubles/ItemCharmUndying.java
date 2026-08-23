@@ -28,7 +28,7 @@ public class ItemCharmUndying extends Item {
      */
     public static ItemStack findCharm(net.minecraft.world.entity.player.Player player) {
         // Check main inventory
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getItems()) {
             if (!stack.isEmpty() && stack.getItem() instanceof ItemCharmUndying) {
                 return stack;
             }

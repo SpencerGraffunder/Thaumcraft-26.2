@@ -35,7 +35,7 @@ public class CrystalClusterFeature extends Feature<NoneFeatureConfiguration> {
         
         private final java.util.function.Supplier<Block> blockSupplier;
         
-        CrystalType(net.minecraftforge.registries.DeferredHolder<Block, Block> block) {
+        CrystalType(net.neoforged.neoforge.registries.DeferredHolder<Block, Block> block) {
             this.blockSupplier = block::get;
         }
         
@@ -63,7 +63,7 @@ public class CrystalClusterFeature extends Feature<NoneFeatureConfiguration> {
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
         BlockPos origin = context.origin();
-        RandomSource random = context.getRandom()();
+        RandomSource random = context.random();
         
         placeCallCount++;
         boolean shouldLog = (placeCallCount % LOG_INTERVAL == 1);

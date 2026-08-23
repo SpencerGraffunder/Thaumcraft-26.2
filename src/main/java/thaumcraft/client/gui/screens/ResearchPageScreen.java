@@ -252,7 +252,7 @@ public class ResearchPageScreen extends Screen {
      */
     private boolean playerHasItem(ItemStack required) {
         int count = 0;
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getItems()) {
             if (ItemStack.isSameItemSameTags(stack, required)) {
                 count += stack.getCount();
                 if (count >= required.getCount()) {

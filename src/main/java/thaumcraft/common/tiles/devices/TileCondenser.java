@@ -64,8 +64,8 @@ public class TileCondenser extends TileThaumcraft implements IEssentiaTransport 
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        essentia = tag.getShort("Essentia");
-        flux = tag.getShort("Flux");
+        essentia = tag.getShortOr("Essentia", (short)0);
+        flux = tag.getShortOr("Flux", (short)0);
     }
 
     // ==================== Tick ====================

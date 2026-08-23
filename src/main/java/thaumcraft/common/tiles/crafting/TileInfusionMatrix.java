@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.crafting;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -149,16 +151,16 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        active = tag.getBoolean("Active");
-        crafting = tag.getBoolean("Crafting");
-        stability = tag.getFloat("Stability");
-        recipeInstability = tag.getInt("RecipeInstability");
+        active = tag.getBooleanOr("Active", false);
+        crafting = tag.getBooleanOr("Crafting", false);
+        stability = tag.getFloatOr("Stability", 0.0F);
+        recipeInstability = tag.getIntOr("RecipeInstability", 0);
         recipeEssentia.readFromNBT(tag);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         
         // Save recipe ingredients
         if (recipeIngredients != null && !recipeIngredients.isEmpty()) {
@@ -170,48 +172,48 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                     ingredientList.add(itemTag);
                 }
             }
-            tag.put("RecipeIngredients", ingredientList);
+            output.put("RecipeIngredients", ingredientList);
         }
         
         if (!recipeInput.isEmpty()) {
-            tag.put("RecipeInput", recipeInput.save(new CompoundTag()));
+            output.put("RecipeInput", recipeInput.save(new CompoundTag()));
         }
         if (recipeOutput != null && recipeOutput instanceof ItemStack outStack) {
-            tag.putString("RecipeOutputType", "@");
-            tag.put("RecipeOutput", outStack.save(new CompoundTag()));
+            output.putString("RecipeOutputType", "@");
+            output.put("RecipeOutput", outStack.save(new CompoundTag()));
         }
         if (recipePlayer != null) {
-            tag.putString("RecipePlayer", recipePlayer);
+            output.putString("RecipePlayer", recipePlayer);
         }
-        tag.putInt("RecipeType", recipeType);
-        tag.putInt("RecipeXP", recipeXP);
+        output.putInt("RecipeType", recipeType);
+        output.putInt("RecipeXP", recipeXP);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         
         recipeIngredients = new ArrayList<>();
-        if (tag.contains("RecipeIngredients")) {
-            ListTag ingredientList = tag.getList("RecipeIngredients", 10);
+        if (input.contains("RecipeIngredients")) {
+            ListTag ingredientList = input.getListOrEmpty("RecipeIngredients");
             for (int i = 0; i < ingredientList.size(); i++) {
-                recipeIngredients.add(ItemStack.of(ingredientList.getCompound(i)));
+                recipeIngredients.add(ItemStack.of(ingredientList.getCompoundOrEmpty(i)));
             }
         }
         
-        if (tag.contains("RecipeInput")) {
-            recipeInput = ItemStack.of(tag.getCompound("RecipeInput"));
+        if (input.contains("RecipeInput")) {
+            recipeInput = ItemStack.of(input.getCompoundOrEmpty("RecipeInput"));
         }
-        String outputType = tag.getString("RecipeOutputType");
-        if (outputType.equals("@") && tag.contains("RecipeOutput")) {
-            recipeOutput = ItemStack.of(tag.getCompound("RecipeOutput"));
+        String outputType = input.getStringOr("RecipeOutputType", "");
+        if (outputType.equals("@") && input.contains("RecipeOutput")) {
+            recipeOutput = ItemStack.of(input.getCompoundOrEmpty("RecipeOutput"));
         }
-        recipePlayer = tag.getString("RecipePlayer");
+        recipePlayer = input.getStringOr("RecipePlayer", "");
         if (recipePlayer.isEmpty()) {
             recipePlayer = null;
         }
-        recipeType = tag.getInt("RecipeType");
-        recipeXP = tag.getInt("RecipeXP");
+        recipeType = input.getIntOr("RecipeType", 0);
+        recipeXP = input.getIntOr("RecipeXP", 0);
     }
 
     // ==================== Tick ====================
@@ -550,7 +552,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                     }
                 }
                 if (p != null) {
-                    MinecraftForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(p, pedestal.getItem(0), null));
+                    NeoForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(p, pedestal.getItem(0), null));
                 }
             }
             
@@ -606,12 +608,12 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
             if (level.getRandom().nextBoolean()) {
                 // Flux taint effect
                 if (ModEffects.FLUX_TAINT != null) {
-                    target.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), 120, 0, false, true));
+                    target.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT, 120, 0, false, true));
                 }
             } else {
                 // Vis exhaust effect
                 if (ModEffects.VIS_EXHAUST != null) {
-                    MobEffectInstance pe = new MobEffectInstance(ModEffects.VIS_EXHAUST.get(), 2400, 0, true, true);
+                    MobEffectInstance pe = new MobEffectInstance(ModEffects.VIS_EXHAUST, 2400, 0, true, true);
                     target.addEffect(pe);
                 }
             }
@@ -850,16 +852,16 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
      * Called when player right-clicks with a caster.
      */
     public boolean onCasterRightClick(Player player) {
-        if (level.isClientSide && active && !crafting) {
+        if (level.isClientSide() && active && !crafting) {
             checkSurroundings = true;
         }
         
-        if (!level.isClientSide && active && !crafting) {
+        if (!level.isClientSide() && active && !crafting) {
             startCrafting(player);
             return true;
         }
         
-        if (!level.isClientSide && !active && validLocation()) {
+        if (!level.isClientSide() && !active && validLocation()) {
             level.playSound(null, worldPosition, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 0.5f, 1.0f);
             active = true;
             syncTile(false);

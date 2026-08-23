@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
  */
 public class BlockSmelter extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public BlockSmelter() {
@@ -69,7 +69,7 @@ public class BlockSmelter extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -152,7 +152,7 @@ public class BlockSmelter extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.SMELTER.get()) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileSmelter.serverTick(lvl, pos, st, (TileSmelter) be);
             }
         }

@@ -20,7 +20,7 @@ public class ChampionModUndying implements IChampionModifierEffect {
     @Override
     public float performEffect(LivingEntity champion, LivingEntity target, DamageSource source, float amount) {
         // Regenerate health periodically
-        if (!champion.level().isClientSide && champion.tickCount % 20 == 0) {
+        if (!champion.level().isClientSide() && champion.tickCount % 20 == 0) {
             float currentHealth = champion.getHealth();
             float maxHealth = champion.getMaxHealth();
             if (currentHealth < maxHealth) {
@@ -33,14 +33,14 @@ public class ChampionModUndying implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void showFX(LivingEntity champion) {
-        if (champion.level().random.nextInt(10) != 0) {
+        if (champion.level().getRandom().nextInt(10) != 0) {
             return;
         }
         
         // Heart particles
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight();
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight();
         
         champion.level().addParticle(ParticleTypes.HEART,
                 champion.getBoundingBox().minX + w,

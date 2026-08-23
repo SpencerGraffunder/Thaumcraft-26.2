@@ -1,11 +1,14 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.common.menu.LogisticsMenu;
 
-import java.util.function.Supplier;
 
 /**
  * Packet for sending misc string data from client to server.
@@ -17,7 +20,18 @@ import java.util.function.Supplier;
  * 
  * Ported from 1.12.2.
  */
-public class PacketMiscStringToServer {
+public class PacketMiscStringToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketMiscStringToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetmiscstringtoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketMiscStringToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketMiscStringToServer::encode, PacketMiscStringToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int messageId;
     private final String text;
@@ -38,9 +52,9 @@ public class PacketMiscStringToServer {
         return new PacketMiscStringToServer(messageId, text);
     }
     
-    public static void handle(PacketMiscStringToServer packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketMiscStringToServer packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
             
             switch (packet.messageId) {
@@ -53,6 +67,5 @@ public class PacketMiscStringToServer {
                 // Add more message IDs as needed
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

@@ -64,8 +64,8 @@ public class CasterManager {
         }
         
         // Apply vis exhaustion penalty
-        MobEffectInstance exhaustEffect = player.getEffect(ModEffects.VIS_EXHAUST.get());
-        MobEffectInstance infectiousEffect = player.getEffect(ModEffects.INFECTIOUS_VIS_EXHAUST.get());
+        MobEffectInstance exhaustEffect = player.getEffect(ModEffects.VIS_EXHAUST);
+        MobEffectInstance infectiousEffect = player.getEffect(ModEffects.INFECTIOUS_VIS_EXHAUST);
         
         if (exhaustEffect != null || infectiousEffect != null) {
             int level1 = exhaustEffect != null ? exhaustEffect.getAmplifier() : 0;
@@ -82,8 +82,8 @@ public class CasterManager {
      * Used when the player needs vis but isn't holding a caster.
      */
     public static boolean consumeVisFromInventory(Player player, float cost) {
-        for (int slot = player.getInventory().items.size() - 1; slot >= 0; slot--) {
-            ItemStack item = player.getInventory().items.get(slot);
+        for (int slot = player.getInventory().getItems().size() - 1; slot >= 0; slot--) {
+            ItemStack item = player.getInventory().getItems().get(slot);
             if (!item.isEmpty() && item.getItem() instanceof ICaster caster) {
                 if (caster.consumeVis(item, player, cost, true, false)) {
                     return true;
@@ -116,7 +116,7 @@ public class CasterManager {
         
         // Check player inventory for foci and focus pouches
         for (int slot = 0; slot < 36; slot++) {
-            ItemStack item = player.getInventory().items.get(slot);
+            ItemStack item = player.getInventory().getItems().get(slot);
             if (item.isEmpty()) continue;
             
             if (item.getItem() instanceof ItemFocus focus) {
@@ -173,8 +173,8 @@ public class CasterManager {
             
             if (location >= 0 && location < 1000) {
                 // Focus is in player inventory
-                newFocus = player.getInventory().items.get(location).copy();
-                player.getInventory().items.set(location, ItemStack.EMPTY);
+                newFocus = player.getInventory().getItems().get(location).copy();
+                player.getInventory().getItems().set(location, ItemStack.EMPTY);
             } else {
                 // Focus is in a pouch
                 int pouchId = location / 1000;
@@ -209,11 +209,11 @@ public class CasterManager {
      */
     private static ItemStack fetchFocusFromPouch(Player player, int focusSlot, int pouchSlot) {
         // Negative slot numbers were used for Curios slots (no longer supported)
-        if (pouchSlot < 0 || pouchSlot >= player.getInventory().items.size()) {
+        if (pouchSlot < 0 || pouchSlot >= player.getInventory().getItems().size()) {
             return ItemStack.EMPTY;
         }
         
-        ItemStack pouch = player.getInventory().items.get(pouchSlot);
+        ItemStack pouch = player.getInventory().getItems().get(pouchSlot);
         
         if (pouch.isEmpty() || !(pouch.getItem() instanceof ItemFocusPouch focusPouch)) {
             return ItemStack.EMPTY;
@@ -233,7 +233,7 @@ public class CasterManager {
         inv.set(focusSlot, ItemStack.EMPTY);
         focusPouch.setInventory(pouch, inv);
         
-        player.getInventory().items.set(pouchSlot, pouch);
+        player.getInventory().getItems().set(pouchSlot, pouch);
         player.getInventory().setChanged();
         
         return result;
@@ -247,11 +247,11 @@ public class CasterManager {
             int pouchSlot = entry.getValue();
             
             // Negative slot numbers were used for Curios slots (no longer supported)
-            if (pouchSlot < 0 || pouchSlot >= player.getInventory().items.size()) {
+            if (pouchSlot < 0 || pouchSlot >= player.getInventory().getItems().size()) {
                 continue;
             }
             
-            ItemStack pouch = player.getInventory().items.get(pouchSlot);
+            ItemStack pouch = player.getInventory().getItems().get(pouchSlot);
             
             if (pouch.isEmpty() || !(pouch.getItem() instanceof ItemFocusPouch focusPouch)) {
                 continue;
@@ -263,7 +263,7 @@ public class CasterManager {
                     inv.set(q, focus.copy());
                     focusPouch.setInventory(pouch, inv);
                     
-                    player.getInventory().items.set(pouchSlot, pouch);
+                    player.getInventory().getItems().set(pouchSlot, pouch);
                     player.getInventory().setChanged();
                     return true;
                 }
@@ -330,7 +330,7 @@ public class CasterManager {
     public static int getAreaDim(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("aread")) {
-            return tag.getInt("aread");
+            return tag.getIntOr("aread", 0);
         }
         return 0;
     }
@@ -338,7 +338,7 @@ public class CasterManager {
     public static int getAreaX(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("areax")) {
-            return Math.min(tag.getInt("areax"), getAreaSize(stack));
+            return Math.min(tag.getIntOr("areax", 0), getAreaSize(stack));
         }
         return getAreaSize(stack);
     }
@@ -346,7 +346,7 @@ public class CasterManager {
     public static int getAreaY(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("areay")) {
-            return Math.min(tag.getInt("areay"), getAreaSize(stack));
+            return Math.min(tag.getIntOr("areay", 0), getAreaSize(stack));
         }
         return getAreaSize(stack);
     }
@@ -354,7 +354,7 @@ public class CasterManager {
     public static int getAreaZ(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("areaz")) {
-            return Math.min(tag.getInt("areaz"), getAreaSize(stack));
+            return Math.min(tag.getIntOr("areaz", 0), getAreaSize(stack));
         }
         return getAreaSize(stack);
     }

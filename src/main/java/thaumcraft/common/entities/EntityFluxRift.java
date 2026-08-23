@@ -1,6 +1,8 @@
 package thaumcraft.common.entities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -85,11 +87,11 @@ public class EntityFluxRift extends Entity {
     }
     
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_SEED, 0);
-        this.entityData.define(DATA_SIZE, 5);
-        this.entityData.define(DATA_STABILITY, 0.0f);
-        this.entityData.define(DATA_COLLAPSE, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_SEED, 0);
+        builder.define(DATA_SIZE, 5);
+        builder.define(DATA_STABILITY, 0.0f);
+        builder.define(DATA_COLLAPSE, false);
     }
     
     // ==================== Data Accessors ====================
@@ -237,7 +239,7 @@ public class EntityFluxRift extends Entity {
             recalculateShape();
         }
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             serverTick();
         } else {
             clientTick();
@@ -398,12 +400,12 @@ public class EntityFluxRift extends Entity {
         
         // Chance to drop primordial pearl
         if (random.nextInt(100) < dropAmount) {
-            spawnAtLocation(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()));
+            spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.PRIMORDIAL_PEARL.get()));
         }
         
         // Drop void seeds
         for (int i = 0; i < dropAmount; i++) {
-            spawnAtLocation(new ItemStack(ModItems.VOID_SEED.get()));
+            spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.VOID_SEED.get()));
         }
         
         // Apply effects based on stability
@@ -417,7 +419,7 @@ public class EntityFluxRift extends Entity {
                     double dist = e.distanceToSqr(this);
                     int duration = (int)((1.0 - dist / 1024.0) * 120.0);
                     if (duration > 0) {
-                        e.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), duration * 20, 0));
+                        e.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT, duration * 20, 0));
                     }
                 }
                 // Fall through
@@ -462,7 +464,7 @@ public class EntityFluxRift extends Entity {
      * Attempt to create a new flux rift at or near the given position.
      */
     public static void createRift(Level level, BlockPos pos) {
-        if (level.isClientSide) return;
+        if (level.isClientSide()) return;
         
         // Randomize position slightly
         pos = pos.offset(level.getRandom().nextInt(16), 0, level.getRandom().nextInt(16));
@@ -524,21 +526,21 @@ public class EntityFluxRift extends Entity {
     // ==================== NBT ====================
     
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        maxSize = tag.getInt("MaxSize");
-        setRiftSize(tag.getInt("RiftSize"));
-        setRiftSeed(tag.getInt("RiftSeed"));
-        setRiftStability(tag.getFloat("Stability"));
-        setCollapsing(tag.getBoolean("Collapse"));
+    protected void readAdditionalSaveData(ValueInput input) {
+        maxSize = input.getIntOr("MaxSize", 0);
+        setRiftSize(input.getIntOr("RiftSize", 0));
+        setRiftSeed(input.getIntOr("RiftSeed", 0));
+        setRiftStability(input.getFloatOr("Stability", 0.0F));
+        setCollapsing(input.getBooleanOr("Collapse", false));
     }
     
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.putInt("MaxSize", maxSize);
-        tag.putInt("RiftSize", getRiftSize());
-        tag.putInt("RiftSeed", getRiftSeed());
-        tag.putFloat("Stability", getRiftStability());
-        tag.putBoolean("Collapse", isCollapsing());
+    protected void addAdditionalSaveData(ValueOutput output) {
+        output.putInt("MaxSize", maxSize);
+        output.putInt("RiftSize", getRiftSize());
+        output.putInt("RiftSeed", getRiftSeed());
+        output.putFloat("Stability", getRiftStability());
+        output.putBoolean("Collapse", isCollapsing());
     }
     
     // ==================== Enums ====================

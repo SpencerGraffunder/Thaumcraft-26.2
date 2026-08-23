@@ -28,7 +28,7 @@ public class CardConcentrate extends TheorycraftCard {
     @Override
     public void deserialize(CompoundTag nbt) {
         super.deserialize(nbt);
-        aspect = Aspect.getAspect(nbt.getString("aspect"));
+        aspect = Aspect.getAspect(nbt.getStringOr("aspect", ""));
     }
 
     @Override

@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.construct;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -53,10 +55,10 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS, (byte) 0);
-        this.entityData.define(DATA_OWNER_UUID, Optional.empty());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS, (byte) 0);
+        builder.define(DATA_OWNER_UUID, Optional.empty());
     }
     
     public static AttributeSupplier.Builder createAttributes() {
@@ -154,7 +156,7 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
         }
         
         // Remove if not spawned properly
-        if (!level().isClientSide && !validSpawn) {
+        if (!level().isClientSide() && !validSpawn) {
             discard();
         }
     }
@@ -212,7 +214,7 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
         }
         
         // Only owner can interact
-        if (!level().isClientSide && !isOwner(player)) {
+        if (!level().isClientSide() && !isOwner(player)) {
             player.displayClientMessage(Component.translatable("tc.notowned"), true);
             return InteractionResult.SUCCESS;
         }
@@ -225,7 +227,7 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
     @Override
     public void die(DamageSource source) {
         // Send death message to owner if named
-        if (!level().isClientSide && level().getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_SHOWDEATHMESSAGES) 
+        if (!level().isClientSide() && level().getGameRules().getBooleanOr(net.minecraft.world.level.GameRules.RULE_SHOWDEATHMESSAGES, false) 
                 && hasCustomName() && getOwner() instanceof ServerPlayer serverPlayer) {
             serverPlayer.sendSystemMessage(getCombatTracker().getDeathMessage());
         }
@@ -235,27 +237,27 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("ValidSpawn", validSpawn);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("ValidSpawn", validSpawn);
         
         UUID uuid = getOwnerUUID();
         if (uuid != null) {
-            tag.putUUID("Owner", uuid);
+            output.putUUID("Owner", uuid);
         }
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        validSpawn = tag.getBoolean("ValidSpawn");
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        validSpawn = input.getBooleanOr("ValidSpawn", false);
         
-        if (tag.hasUUID("Owner")) {
-            setOwnerUUID(tag.getUUID("Owner"));
+        if (input.hasUUID("Owner")) {
+            setOwnerUUID(input.getUUID("Owner"));
             setOwned(true);
-        } else if (tag.contains("OwnerUUID", 8)) {
+        } else if (input.contains("OwnerUUID")) {
             // Legacy support
-            String uuidStr = tag.getString("OwnerUUID");
+            String uuidStr = input.getStringOr("OwnerUUID", "");
             if (!uuidStr.isEmpty()) {
                 try {
                     setOwnerUUID(UUID.fromString(uuidStr));

@@ -3,7 +3,7 @@ package thaumcraft.init;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
@@ -16,7 +16,7 @@ import thaumcraft.common.entities.monster.EntityWisp;
 /**
  * ModSpawnPlacements - Registers spawn placement rules for Thaumcraft entities.
  * 
- * In 1.20.1, spawn rules are registered via SpawnPlacementRegisterEvent.
+ * In 1.20.1, spawn rules are registered via RegisterSpawnPlacementsEvent.
  * Actual biome-based spawning is handled via BiomeModifier JSONs in:
  * data/thaumcraft/forge/biome_modifier/
  */
@@ -24,7 +24,7 @@ import thaumcraft.common.entities.monster.EntityWisp;
 public class ModSpawnPlacements {
 
     @SubscribeEvent
-    public static void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
+    public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
         Thaumcraft.LOGGER.info("Registering Thaumcraft spawn placements");
 
         // Brainy Zombie - spawns like regular zombies (on ground, in dark)
@@ -32,8 +32,7 @@ public class ModSpawnPlacements {
             ModEntities.BRAINY_ZOMBIE.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         // Giant Brainy Zombie
@@ -41,8 +40,7 @@ public class ModSpawnPlacements {
             ModEntities.GIANT_BRAINY_ZOMBIE.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         // Wisp - spawns in the air
@@ -50,8 +48,7 @@ public class ModSpawnPlacements {
             ModEntities.WISP.get(),
             SpawnPlacements.Type.NO_RESTRICTIONS,
             Heightmap.Types.MOTION_BLOCKING,
-            EntityWisp::checkWispSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            EntityWisp::checkWispSpawnRules
         );
 
         // Fire Bat - spawns in the Nether
@@ -59,8 +56,7 @@ public class ModSpawnPlacements {
             ModEntities.FIRE_BAT.get(),
             SpawnPlacements.Type.NO_RESTRICTIONS,
             Heightmap.Types.MOTION_BLOCKING,
-            EntityFireBat::checkFireBatSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            EntityFireBat::checkFireBatSpawnRules
         );
 
         // Pech - spawns in magical biomes
@@ -68,8 +64,7 @@ public class ModSpawnPlacements {
             ModEntities.PECH.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            EntityPech::checkPechSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            EntityPech::checkPechSpawnRules
         );
 
         // Taint Crawler
@@ -77,8 +72,7 @@ public class ModSpawnPlacements {
             ModEntities.TAINT_CRAWLER.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         // Thaumic Slime - Note: doesn't spawn naturally, only from flux effects
@@ -86,8 +80,7 @@ public class ModSpawnPlacements {
             ModEntities.THAUMIC_SLIME.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            EntityThaumicSlime::checkThaumicSlimeSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            EntityThaumicSlime::checkThaumicSlimeSpawnRules
         );
 
         // Mind Spider
@@ -95,8 +88,7 @@ public class ModSpawnPlacements {
             ModEntities.MIND_SPIDER.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         // Eldritch Crab
@@ -104,8 +96,7 @@ public class ModSpawnPlacements {
             ModEntities.ELDRITCH_CRAB.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         // Eldritch Guardian
@@ -113,8 +104,7 @@ public class ModSpawnPlacements {
             ModEntities.ELDRITCH_GUARDIAN.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         // Cultist entities
@@ -122,24 +112,21 @@ public class ModSpawnPlacements {
             ModEntities.CULTIST.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         event.register(
             ModEntities.CULTIST_KNIGHT.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         event.register(
             ModEntities.CULTIST_CLERIC.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         // Inhabited Zombie
@@ -147,8 +134,7 @@ public class ModSpawnPlacements {
             ModEntities.INHABITED_ZOMBIE.get(),
             SpawnPlacements.Type.ON_GROUND,
             Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            Monster::checkMonsterSpawnRules,
-            SpawnPlacementRegisterEvent.Operation.AND
+            Monster::checkMonsterSpawnRules
         );
 
         Thaumcraft.LOGGER.info("Registered Thaumcraft spawn placements");

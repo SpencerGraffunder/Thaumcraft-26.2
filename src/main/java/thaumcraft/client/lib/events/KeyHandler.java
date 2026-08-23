@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
@@ -91,10 +91,7 @@ public class KeyHandler {
      * This runs every client tick to check key states.
      */
     @OnlyIn(Dist.CLIENT)
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.START) {
-            return;
-        }
+    public static void onClientTick(ClientTickEvent.Pre event) {
         
         Minecraft mc = Minecraft.getInstance();
         

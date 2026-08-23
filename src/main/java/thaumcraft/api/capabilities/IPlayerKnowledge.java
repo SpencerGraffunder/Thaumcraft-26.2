@@ -4,7 +4,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.util.INBTSerializable;
 
 /**
  * IPlayerKnowledge - Capability interface for tracking player research progress.
@@ -18,7 +17,14 @@ import net.minecraftforge.common.util.INBTSerializable;
  * @author Azanor
  * Ported to 1.20.1
  */
-public interface IPlayerKnowledge extends INBTSerializable<CompoundTag> {
+public interface IPlayerKnowledge {
+
+    /** Serialize this capability to NBT. */
+    CompoundTag serializeNBT();
+
+    /** Restore this capability from NBT. */
+    void deserializeNBT(CompoundTag tag);
+
 
     /**
      * Clears all research and knowledge.

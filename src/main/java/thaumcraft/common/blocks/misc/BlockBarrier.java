@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.misc;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -115,7 +116,7 @@ public class BlockBarrier extends Block {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, Orientation orientation, boolean isMoving) {
         // Check if the supporting structure is still valid
         BlockState below1 = level.getBlockState(pos.below(1));
         if (!below1.is(ModBlocks.PAVING_STONE_BARRIER.get()) && !below1.is(this)) {

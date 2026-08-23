@@ -20,7 +20,7 @@ public class ChampionModVampire implements IChampionModifierEffect {
     @Override
     public float performEffect(LivingEntity champion, LivingEntity target, DamageSource source, float amount) {
         // Heal based on damage dealt
-        if (target != null && !champion.level().isClientSide && amount > 0) {
+        if (target != null && !champion.level().isClientSide() && amount > 0) {
             float healAmount = amount * 0.25f;
             champion.heal(healAmount);
         }
@@ -30,14 +30,14 @@ public class ChampionModVampire implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void showFX(LivingEntity champion) {
-        if (champion.level().random.nextInt(4) != 0) {
+        if (champion.level().getRandom().nextInt(4) != 0) {
             return;
         }
         
         // Crimson/blood particles
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight();
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight();
         
         champion.level().addParticle(ParticleTypes.DAMAGE_INDICATOR,
                 champion.getBoundingBox().minX + w,

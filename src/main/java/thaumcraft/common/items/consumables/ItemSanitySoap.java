@@ -77,7 +77,7 @@ public class ItemSanitySoap extends Item {
                     int amountToRemove = 1;
 
                     // Check for Warp Ward potion effect - adds +1
-                    if (player.hasEffect(ModEffects.WARP_WARD.get())) {
+                    if (player.hasEffect(ModEffects.WARP_WARD)) {
                         amountToRemove++;
                     }
                     

@@ -41,7 +41,7 @@ import thaumcraft.init.ModBlocks;
  */
 public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
 
-    public static final EnumProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 
     // Bounding boxes for each facing direction
     private static final VoxelShape SHAPE_DOWN = Block.box(2, 10, 2, 14, 16, 14);
@@ -142,7 +142,7 @@ public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock()) && !level.isClientSide) {
+        if (!state.is(newState.getBlock()) && !level.isClientSide()) {
             RandomSource random = level.getRandom();
             if (random.nextFloat() < 0.333f) {
                 // Spawn a taint crawler

@@ -25,8 +25,8 @@ public class CardInspired extends TheorycraftCard {
     @Override
     public void deserialize(CompoundTag nbt) {
         super.deserialize(nbt);
-        cat = nbt.getString("cat");
-        amt = nbt.getInt("amt");
+        cat = nbt.getStringOr("cat", "");
+        amt = nbt.getIntOr("amt", 0);
     }
 
     @Override

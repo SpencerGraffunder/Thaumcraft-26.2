@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -81,10 +84,10 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_HELM, false);
-        this.entityData.define(DATA_RIDING, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_HELM, false);
+        builder.define(DATA_RIDING, -1);
     }
     
     public static AttributeSupplier.Builder createAttributes() {
@@ -160,7 +163,7 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
             fallDistance = 0.0f;
         }
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Try to ride on target's head
             if (getVehicle() == null && getTarget() != null && !getTarget().isVehicle() && 
                     !onGround() && !hasHelm() && getTarget().isAlive() &&
@@ -200,8 +203,8 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
     }
     
     @Override
-    public boolean doHurtTarget(Entity target) {
-        if (super.doHurtTarget(target)) {
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
+        if (super.doHurtTarget(level, target)) {
             playSound(ModSounds.CRAB_CLAW.get(), 1.0f, 0.9f + random.nextFloat() * 0.2f);
             return true;
         }
@@ -222,12 +225,12 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
-        super.dropCustomDeathLoot(source, lootingLevel, wasRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
+        super.dropCustomDeathLoot(level, source, wasRecentlyHit);
         
         // Chance to drop ender pearl
-        if (wasRecentlyHit && (random.nextInt(3) == 0 || random.nextInt(1 + lootingLevel) > 0)) {
-            spawnAtLocation(new ItemStack(Items.ENDER_PEARL));
+        if (wasRecentlyHit && (random.nextInt(3) == 0 || random.nextInt(1 + 0) > 0)) {
+            spawnAtLocation((ServerLevel) this.level(), new ItemStack(Items.ENDER_PEARL));
         }
     }
     
@@ -280,14 +283,14 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("helm", hasHelm());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("helm", hasHelm());
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setHelm(tag.getBoolean("helm"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setHelm(input.getBooleanOr("helm", false));
     }
 }

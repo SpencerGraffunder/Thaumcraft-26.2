@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.crafting;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -344,7 +346,7 @@ public class TilePatternCrafter extends TileThaumcraft {
     @Override
     public boolean triggerEvent(int id, int param) {
         if (id == 1) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 rotTicks = 10;
             }
             return true;
@@ -363,19 +365,19 @@ public class TilePatternCrafter extends TileThaumcraft {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        type = tag.getByte("type");
+        type = tag.getByteOr("type", (byte)0);
     }
     
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putFloat("power", power);
+    public void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putFloat("power", power);
     }
     
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        power = tag.getFloat("power");
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        power = input.getFloatOr("power", 0.0F);
         initCraftMatrix(); // Ensure matrix is initialized after load
     }
 }

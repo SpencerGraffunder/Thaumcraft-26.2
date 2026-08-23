@@ -22,7 +22,7 @@ public class ChampionModGrim implements IChampionModifierEffect {
     @Override
     public float performEffect(LivingEntity champion, LivingEntity target, DamageSource source, float amount) {
         // Apply wither effect to target
-        if (target != null && !target.level().isClientSide) {
+        if (target != null && !target.level().isClientSide()) {
             target.addEffect(new MobEffectInstance(MobEffects.WITHER, 100, 1)); // 5 seconds, level II
         }
         return amount;
@@ -31,14 +31,14 @@ public class ChampionModGrim implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void showFX(LivingEntity champion) {
-        if (champion.level().random.nextInt(3) != 0) {
+        if (champion.level().getRandom().nextInt(3) != 0) {
             return;
         }
         
         // Dark soul particles
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight();
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight();
         
         champion.level().addParticle(ParticleTypes.SOUL,
                 champion.getBoundingBox().minX + w,

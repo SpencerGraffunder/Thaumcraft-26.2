@@ -22,7 +22,7 @@ import thaumcraft.common.lib.potions.PotionWarpWard;
 public class ModEffects {
     
     public static final DeferredRegister<MobEffect> MOB_EFFECTS = 
-            DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Thaumcraft.MODID);
+            DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, Thaumcraft.MODID);
     
     // ==================== API Effects ====================
     

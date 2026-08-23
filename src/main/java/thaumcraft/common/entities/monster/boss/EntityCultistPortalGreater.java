@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster.boss;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -71,15 +74,15 @@ public class EntityCultistPortalGreater extends Monster {
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putInt("stage", stage);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("stage", stage);
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        stage = tag.getInt("stage");
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        stage = input.getIntOr("stage", 0);
         if (hasCustomName()) {
             this.bossEvent.setName(getDisplayName());
         }
@@ -123,7 +126,7 @@ public class EntityCultistPortalGreater extends Monster {
     }
     
     @Override
-    protected void customServerAiStep() {
+    protected void customServerAiStep(ServerLevel level) {
         // No AI
     }
     
@@ -143,7 +146,7 @@ public class EntityCultistPortalGreater extends Monster {
     public void tick() {
         super.tick();
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (stageCounter > 0) {
                 --stageCounter;
                 
@@ -214,7 +217,7 @@ public class EntityCultistPortalGreater extends Monster {
         }
         
         // Client-side particles
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             // Portal particles
             if (random.nextInt(2) == 0) {
                 double dx = (random.nextDouble() - 0.5) * getBbWidth();
@@ -342,9 +345,9 @@ public class EntityCultistPortalGreater extends Monster {
     // ==================== Loot ====================
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
         // Drop primordial pearl
-        spawnAtLocation(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()));
+        spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.PRIMORDIAL_PEARL.get()));
     }
     
     // ==================== Status Effects ====================
@@ -379,7 +382,7 @@ public class EntityCultistPortalGreater extends Monster {
     
     @Override
     public void die(DamageSource source) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             level().explode(this, getX(), getY(), getZ(), 2.0f, Level.ExplosionInteraction.NONE);
         }
         super.die(source);

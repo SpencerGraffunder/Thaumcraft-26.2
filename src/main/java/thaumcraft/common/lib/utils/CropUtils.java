@@ -169,7 +169,7 @@ public class CropUtils {
             // If it can't grow anymore, it's fully grown
             // (unless it's a stem which never stops being bonemealable)
             if (!(block instanceof StemBlock)) {
-                if (!bonemealable.isValidBonemealTarget(level, pos, state, level.isClientSide)) {
+                if (!bonemealable.isValidBonemealTarget(level, pos, state, level.isClientSide())) {
                     return true;
                 }
             }
@@ -231,7 +231,7 @@ public class CropUtils {
      * Get the block's registry ID as a string.
      */
     private static String getBlockId(Block block) {
-        Identifier key = ForgeRegistries.BLOCKS.getKey(block);
+        Identifier key = BuiltInRegistries.BLOCK.getKey(block);
         return key != null ? key.toString() : null;
     }
     

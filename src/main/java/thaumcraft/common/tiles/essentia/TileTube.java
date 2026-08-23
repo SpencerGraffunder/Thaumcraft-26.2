@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.essentia;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
@@ -76,11 +78,11 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        essentiaType = Aspect.getAspect(tag.getString("Type"));
-        essentiaAmount = tag.getInt("Amount");
-        facing = Direction.values()[tag.getInt("Side")];
+        essentiaType = Aspect.getAspect(tag.getStringOr("Type", ""));
+        essentiaAmount = tag.getIntOr("Amount", 0);
+        facing = Direction.values()[tag.getIntOr("Side", 0)];
         
-        byte[] sides = tag.getByteArray("Open");
+        byte[] sides = tag.getByteArray("Open").orElse(new byte[0]);
         if (sides != null && sides.length == 6) {
             for (int i = 0; i < 6; i++) {
                 openSides[i] = sides[i] == 1;
@@ -89,19 +91,19 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         if (suctionType != null) {
-            tag.putString("SType", suctionType.getTag());
+            output.putString("SType", suctionType.getTag());
         }
-        tag.putInt("SAmount", suction);
+        output.putInt("SAmount", suction);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        suctionType = Aspect.getAspect(tag.getString("SType"));
-        suction = tag.getInt("SAmount");
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        suctionType = Aspect.getAspect(input.getStringOr("SType", ""));
+        suction = input.getIntOr("SAmount", 0);
     }
 
     // ==================== Tick ====================
@@ -347,7 +349,7 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
     public boolean triggerEvent(int id, int param) {
         if (id == 0) {
             // Creak sound
-            if (level != null && level.isClientSide) {
+            if (level != null && level.isClientSide()) {
                 // TODO: Play SoundsTC.creak
                 level.playLocalSound(
                         worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
@@ -359,7 +361,7 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
         }
         if (id == 1) {
             // Vent effect
-            if (level != null && level.isClientSide) {
+            if (level != null && level.isClientSide()) {
                 if (venting <= 0) {
                     level.playLocalSound(
                             worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,

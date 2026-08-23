@@ -53,16 +53,16 @@ public class FocusElementNode {
      * Deserialize this node from NBT
      */
     public void deserialize(CompoundTag nbt) {
-        x = nbt.getInt("x");
-        y = nbt.getInt("y");
-        id = nbt.getInt("id");
-        target = nbt.getBoolean("target");
-        trajectory = nbt.getBoolean("trajectory");
-        parent = nbt.getInt("parent");
-        children = nbt.getIntArray("children");
-        complexityMultiplier = nbt.getFloat("complexity");
+        x = nbt.getIntOr("x", 0);
+        y = nbt.getIntOr("y", 0);
+        id = nbt.getIntOr("id", 0);
+        target = nbt.getBooleanOr("target", false);
+        trajectory = nbt.getBooleanOr("trajectory", false);
+        parent = nbt.getIntOr("parent", 0);
+        children = nbt.getIntArray("children").orElse(new int[0]);
+        complexityMultiplier = nbt.getFloatOr("complexity", 0.0F);
         
-        IFocusElement fe = FocusEngine.getElement(nbt.getString("key"));
+        IFocusElement fe = FocusEngine.getElement(nbt.getStringOr("key", ""));
         if (fe instanceof FocusNode focusNode) {
             // Create a new instance by cloning
             try {
@@ -73,7 +73,7 @@ public class FocusElementNode {
                 if (node.getSettingList() != null) {
                     for (String settingKey : node.getSettingList()) {
                         if (nbt.contains("setting." + settingKey)) {
-                            node.getSetting(settingKey).setValue(nbt.getInt("setting." + settingKey));
+                            node.getSetting(settingKey).setValue(nbt.getIntOr("setting." + settingKey, 0));
                         }
                     }
                 }

@@ -96,13 +96,13 @@ public class FocusPackage {
      */
     public void deserialize(CompoundTag tag) {
         nodes.clear();
-        complexity = tag.getInt("complexity");
+        complexity = tag.getIntOr("complexity", 0);
         
-        if (tag.contains("nodes", Tag.TAG_LIST)) {
-            ListTag nodeList = tag.getList("nodes", Tag.TAG_COMPOUND);
+        if (tag.contains("nodes")) {
+            ListTag nodeList = tag.getListOrEmpty("nodes");
             for (int i = 0; i < nodeList.size(); i++) {
-                CompoundTag nodeTag = nodeList.getCompound(i);
-                String key = nodeTag.getString("key");
+                CompoundTag nodeTag = nodeList.getCompoundOrEmpty(i);
+                String key = nodeTag.getStringOr("key", "");
                 
                 FocusNode node = FocusEngine.createFocusNode(key);
                 if (node != null) {

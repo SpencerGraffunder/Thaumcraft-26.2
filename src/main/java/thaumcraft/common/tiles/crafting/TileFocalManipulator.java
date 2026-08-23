@@ -89,16 +89,16 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        vis = tag.getFloat("vis");
-        focusName = tag.getString("focusName");
+        vis = tag.getFloatOr("vis", 0.0F);
+        focusName = tag.getStringOr("focusName", "");
         crystalsSync = new AspectList();
         crystalsSync.readFromNBT(tag, "crystals");
         
         // Deserialize node data
-        ListTag nodeList = tag.getList("nodes", Tag.TAG_COMPOUND);
+        ListTag nodeList = tag.getListOrEmpty("nodes");
         data.clear();
         for (int i = 0; i < nodeList.size(); i++) {
-            CompoundTag nodeTag = nodeList.getCompound(i);
+            CompoundTag nodeTag = nodeList.getCompoundOrEmpty(i);
             FocusElementNode node = new FocusElementNode();
             node.deserialize(nodeTag);
             data.put(node.id, node);
@@ -114,7 +114,7 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
         
         // Reset focus data when focus is changed
         if (stack.isEmpty() || !ItemStack.isSameItemSameTags(stack, prev)) {
-            if (level != null && level.isClientSide) {
+            if (level != null && level.isClientSide()) {
                 data.clear();
                 doGuiReset = true;
             } else {
@@ -308,7 +308,7 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
      * @return true if crafting started successfully
      */
     public boolean startCraft(int id, Player player) {
-        if (level == null || level.isClientSide) return false;
+        if (level == null || level.isClientSide()) return false;
         if (data == null || data.isEmpty() || vis > 0.0f) return false;
         
         ItemStack focus = getItem(0);
@@ -396,7 +396,7 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
      */
     private boolean playerHasItem(Player player, ItemStack required) {
         int needed = required.getCount();
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getItems()) {
             if (ItemStack.isSameItem(stack, required)) {
                 needed -= stack.getCount();
                 if (needed <= 0) return true;
@@ -410,8 +410,8 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
      */
     private void consumePlayerItem(Player player, ItemStack required) {
         int needed = required.getCount();
-        for (int i = 0; i < player.getInventory().items.size() && needed > 0; i++) {
-            ItemStack stack = player.getInventory().items.get(i);
+        for (int i = 0; i < player.getInventory().getItems().size() && needed > 0; i++) {
+            ItemStack stack = player.getInventory().getItems().get(i);
             if (ItemStack.isSameItem(stack, required)) {
                 int take = Math.min(needed, stack.getCount());
                 stack.shrink(take);

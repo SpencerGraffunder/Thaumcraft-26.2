@@ -102,7 +102,7 @@ public abstract class TileThaumcraftInventory extends TileThaumcraft implements 
      * Drop all inventory contents into the world.
      */
     public void dropContents() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             for (ItemStack stack : items) {
                 if (!stack.isEmpty()) {
                     net.minecraft.world.Containers.dropItemStack(level, 

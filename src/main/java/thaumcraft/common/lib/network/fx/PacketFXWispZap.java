@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -6,12 +11,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
 
 import java.awt.Color;
-import java.util.function.Supplier;
 
 /**
  * Packet to spawn a wisp zap lightning effect between two entities.
@@ -21,7 +24,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketFXWispZap {
+public class PacketFXWispZap implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXWispZap> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxwispzap"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXWispZap> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXWispZap::encode, PacketFXWispZap::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int sourceEntityId;
     private final int targetEntityId;
@@ -40,9 +54,8 @@ public class PacketFXWispZap {
         return new PacketFXWispZap(buf.readInt(), buf.readInt());
     }
     
-    public static void handle(PacketFXWispZap packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> handleClient(packet));
-        ctx.get().setPacketHandled(true);
+    public static void handle(PacketFXWispZap packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> handleClient(packet));
     }
     
     @OnlyIn(Dist.CLIENT)

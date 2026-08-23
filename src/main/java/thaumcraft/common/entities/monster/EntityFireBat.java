@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -61,7 +64,7 @@ public class EntityFireBat extends Monster {
     }
     
     /**
-     * Static spawn rule check for use with SpawnPlacementRegisterEvent.
+     * Static spawn rule check for use with RegisterSpawnPlacementsEvent.
      * Fire bats spawn in dark areas, typically in the Nether.
      */
     public static boolean checkFireBatSpawnRules(EntityType<? extends EntityFireBat> type, ServerLevelAccessor level,
@@ -72,9 +75,9 @@ public class EntityFireBat extends Monster {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_HANGING, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_HANGING, false);
     }
     
     @Override
@@ -150,8 +153,8 @@ public class EntityFireBat extends Monster {
     }
     
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
         
         if (attackTime > 0) {
             attackTime--;
@@ -223,7 +226,7 @@ public class EntityFireBat extends Monster {
                         discard();
                     } else {
                         playSound(SoundEvents.BAT_HURT, 0.5f, 0.9f + random.nextFloat() * 0.2f);
-                        doHurtTarget(target);
+                        doHurtTarget((ServerLevel) this.level(), target);
                     }
                 }
             } else if (!target.isAlive()) {
@@ -271,12 +274,12 @@ public class EntityFireBat extends Monster {
     
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo(source) || source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE) || 
+        if (isInvulnerableTo((ServerLevel) this.level(), source) || source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE) || 
                 source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION)) {
             return false;
         }
         
-        if (!level().isClientSide && getIsBatHanging()) {
+        if (!level().isClientSide() && getIsBatHanging()) {
             setIsBatHanging(false);
         }
         
@@ -284,26 +287,26 @@ public class EntityFireBat extends Monster {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
-        super.dropCustomDeathLoot(source, lootingLevel, wasRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
+        super.dropCustomDeathLoot(level, source, wasRecentlyHit);
         // Drop gunpowder
         if (random.nextInt(3) == 0) {
-            spawnAtLocation(new ItemStack(Items.GUNPOWDER));
+            spawnAtLocation((ServerLevel) this.level(), new ItemStack(Items.GUNPOWDER));
         }
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("BatHanging", getIsBatHanging());
-        tag.putByte("DamBonus", (byte)damBonus);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("BatHanging", getIsBatHanging());
+        output.putByte("DamBonus", (byte)damBonus);
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setIsBatHanging(tag.getBoolean("BatHanging"));
-        damBonus = tag.getByte("DamBonus");
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setIsBatHanging(input.getBooleanOr("BatHanging", false));
+        damBonus = input.getByteOr("DamBonus", (byte)0);
     }
     
     @Override

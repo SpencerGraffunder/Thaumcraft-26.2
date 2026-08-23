@@ -108,7 +108,7 @@ public class FocusEffectFlux extends FocusEffect {
         if (caster != null && caster.level() != null) {
             caster.level().playSound(null, caster.blockPosition().above(), 
                 SoundEvents.CHORUS_FLOWER_GROW, SoundSource.PLAYERS, 
-                2.0f, 2.0f + (float)(caster.level().random.nextGaussian() * 0.1));
+                2.0f, 2.0f + (float)(caster.level().getRandom().nextGaussian() * 0.1));
         }
     }
     

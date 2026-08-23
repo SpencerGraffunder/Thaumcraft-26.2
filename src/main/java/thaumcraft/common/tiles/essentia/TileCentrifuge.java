@@ -69,9 +69,9 @@ public class TileCentrifuge extends TileThaumcraft implements IAspectContainer, 
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        aspect = Aspect.getAspect(tag.getString("Aspect"));
-        amount = tag.getShort("Amount");
-        progress = tag.getShort("Progress");
+        aspect = Aspect.getAspect(tag.getStringOr("Aspect", ""));
+        amount = tag.getShortOr("Amount", (short)0);
+        progress = tag.getShortOr("Progress", (short)0);
     }
 
     // ==================== Tick ====================

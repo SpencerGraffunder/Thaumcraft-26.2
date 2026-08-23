@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
  */
 public class BlockMirror extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LINKED = BooleanProperty.create("linked");
 
     private static final VoxelShape SHAPE_NORTH = Block.box(2.0, 2.0, 0.0, 14.0, 14.0, 4.0);
@@ -93,7 +93,7 @@ public class BlockMirror extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 

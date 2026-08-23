@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster.tainted;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -49,9 +52,9 @@ public class EntityTaintSwarm extends Monster {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_SUMMONED, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_SUMMONED, false);
     }
     
     public static AttributeSupplier.Builder createAttributes() {
@@ -134,7 +137,7 @@ public class EntityTaintSwarm extends Monster {
         setDeltaMovement(motion.x, motion.y * 0.6, motion.z);
         
         // Client-side swarm particles
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             for (int i = 0; i < 3; i++) {
                 double offsetX = (random.nextDouble() - 0.5) * getBbWidth() * 2;
                 double offsetY = random.nextDouble() * getBbHeight();
@@ -150,8 +153,8 @@ public class EntityTaintSwarm extends Monster {
     }
     
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
         
         if (attackTime > 0) {
             attackTime--;
@@ -213,7 +216,7 @@ public class EntityTaintSwarm extends Monster {
                     // Preserve target's momentum (swarm doesn't knock back)
                     Vec3 targetMotion = target.getDeltaMovement();
                     
-                    if (doHurtTarget(target)) {
+                    if (doHurtTarget((ServerLevel) this.level(), target)) {
                         // Apply weakness (target is already LivingEntity from getTarget())
                         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0));
                     }
@@ -258,26 +261,26 @@ public class EntityTaintSwarm extends Monster {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
-        super.dropCustomDeathLoot(source, lootingLevel, wasRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
+        super.dropCustomDeathLoot(level, source, wasRecentlyHit);
         
         // 50% chance to drop flux crystal
         if (random.nextBoolean()) {
-            this.spawnAtLocation(new ItemStack(ModItems.FLUX_CRYSTAL.get()));
+            this.spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.FLUX_CRYSTAL.get()));
         }
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("Summoned", isSummoned());
-        tag.putByte("DamBonus", (byte)damBonus);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("Summoned", isSummoned());
+        output.putByte("DamBonus", (byte)damBonus);
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setSummoned(tag.getBoolean("Summoned"));
-        damBonus = tag.getByte("DamBonus");
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setSummoned(input.getBooleanOr("Summoned", false));
+        damBonus = input.getByteOr("DamBonus", (byte)0);
     }
 }

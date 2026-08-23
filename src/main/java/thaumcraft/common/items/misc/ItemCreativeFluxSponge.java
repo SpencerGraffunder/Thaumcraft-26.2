@@ -47,7 +47,7 @@ public class ItemCreativeFluxSponge extends Item {
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             player.swing(hand);
             level.playLocalSound(player.getX(), player.getY(), player.getZ(), 
                     ModSounds.CRAFT_START.get(), SoundSource.PLAYERS, 0.15f, 1.0f, false);

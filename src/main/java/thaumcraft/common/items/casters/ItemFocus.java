@@ -42,7 +42,7 @@ public class ItemFocus extends Item {
         
         CompoundTag tag = focusStack.getTag();
         if (tag != null && tag.contains("color")) {
-            return tag.getInt("color");
+            return tag.getIntOr("color", 0);
         }
         
         // Calculate color from effects and cache it
@@ -67,7 +67,7 @@ public class ItemFocus extends Item {
         }
         
         CompoundTag tag = focusStack.getTag();
-        int sh = tag != null ? tag.getInt("srt") : 0;
+        int sh = tag != null ? tag.getIntOr("srt", 0) : 0;
         
         if (sh == 0) {
             FocusPackage pack = getPackage(focusStack);

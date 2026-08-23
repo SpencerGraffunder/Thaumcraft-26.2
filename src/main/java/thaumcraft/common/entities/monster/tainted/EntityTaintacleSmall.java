@@ -1,4 +1,5 @@
 package thaumcraft.common.entities.monster.tainted;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -38,7 +39,7 @@ public class EntityTaintacleSmall extends EntityTaintacle {
         super.tick();
         
         // Die after lifetime expires
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (lifetime-- <= 0) {
                 hurt(damageSources().magic(), 10.0f);
             }
@@ -51,7 +52,7 @@ public class EntityTaintacleSmall extends EntityTaintacle {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
         // No drops
     }
     

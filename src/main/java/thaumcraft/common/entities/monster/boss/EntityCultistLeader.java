@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster.boss;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -74,9 +77,9 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TITLE, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TITLE, (byte) 0);
     }
     
     @Override
@@ -116,15 +119,15 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putByte("title", this.entityData.get(DATA_TITLE));
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putByte("title", this.entityData.get(DATA_TITLE));
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setTitle(tag.getByte("title"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setTitle(input.getByteOr("title", (byte)0));
     }
     
     /**
@@ -194,8 +197,8 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
     // ==================== AI Updates ====================
     
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
         
         // Provide regeneration to nearby cultists
         if (tickCount % 20 == 0) {
@@ -243,7 +246,7 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
     // ==================== Spawn Particles ====================
     
     public void spawnExplosionParticle() {
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             for (int i = 0; i < 20; ++i) {
                 double dx = random.nextGaussian() * 0.05;
                 double dy = random.nextGaussian() * 0.05;
@@ -271,9 +274,9 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
     // ==================== Loot ====================
     
     @Override
-    protected void dropCustomDeathLoot(net.minecraft.world.damagesource.DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
-        super.dropCustomDeathLoot(source, lootingLevel, wasRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, boolean wasRecentlyHit) {
+        super.dropCustomDeathLoot(level, source, wasRecentlyHit);
         // Drop tier 2 (uncommon) loot bag
-        spawnAtLocation(new ItemStack(ModItems.LOOT_BAG_UNCOMMON.get()));
+        spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.LOOT_BAG_UNCOMMON.get()));
     }
 }

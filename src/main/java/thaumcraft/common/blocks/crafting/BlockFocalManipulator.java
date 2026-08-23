@@ -70,7 +70,7 @@ public class BlockFocalManipulator extends BlockTCDevice {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.FOCAL_MANIPULATOR.get()) {
             return (lvl, pos, st, be) -> {
-                if (lvl.isClientSide) {
+                if (lvl.isClientSide()) {
                     TileFocalManipulator.clientTick(lvl, pos, st, (TileFocalManipulator) be);
                 } else {
                     TileFocalManipulator.serverTick(lvl, pos, st, (TileFocalManipulator) be);
@@ -83,7 +83,7 @@ public class BlockFocalManipulator extends BlockTCDevice {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         

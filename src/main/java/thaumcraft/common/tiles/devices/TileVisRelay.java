@@ -77,13 +77,13 @@ public class TileVisRelay extends TileThaumcraft {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        storedVis = tag.getFloat("StoredVis");
+        storedVis = tag.getFloatOr("StoredVis", 0.0F);
         
         // Load linked positions
         linkedRelays.clear();
-        int[] linkX = tag.getIntArray("LinkX");
-        int[] linkY = tag.getIntArray("LinkY");
-        int[] linkZ = tag.getIntArray("LinkZ");
+        int[] linkX = tag.getIntArray("LinkX").orElse(new int[0]);
+        int[] linkY = tag.getIntArray("LinkY").orElse(new int[0]);
+        int[] linkZ = tag.getIntArray("LinkZ").orElse(new int[0]);
         for (int i = 0; i < linkX.length && i < linkY.length && i < linkZ.length; i++) {
             linkedRelays.add(new BlockPos(linkX[i], linkY[i], linkZ[i]));
         }

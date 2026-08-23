@@ -4,7 +4,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -72,7 +72,7 @@ public class ArcaneWorkbenchResultSlot extends Slot {
     protected void checkTakeAchievements(ItemStack stack) {
         if (amountCrafted > 0) {
             stack.onCraftedBy(player.level(), player, amountCrafted);
-            net.minecraftforge.event.ForgeEventFactory.firePlayerCraftingEvent(player, stack, craftMatrix);
+            net.neoforged.neoforge.event.NeoForgeEventFactory.firePlayerCraftingEvent(player, stack, craftMatrix);
         }
         
         Container container = this.container;

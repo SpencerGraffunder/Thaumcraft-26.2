@@ -1,14 +1,17 @@
 package thaumcraft.common.lib.network.playerdata;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.common.tiles.crafting.TileFocalManipulator;
 
-import java.util.function.Supplier;
 
 /**
  * Packet sent from client to update the name of a focus being crafted
@@ -16,7 +19,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketFocusNameToServer {
+public class PacketFocusNameToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFocusNameToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfocusnametoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFocusNameToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFocusNameToServer::encode, PacketFocusNameToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final long pos;
     private final String name;
@@ -43,9 +57,9 @@ public class PacketFocusNameToServer {
         );
     }
     
-    public static void handle(PacketFocusNameToServer packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketFocusNameToServer packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
             
             Level level = player.level();
@@ -57,6 +71,5 @@ public class PacketFocusNameToServer {
                 focalManipulator.setChanged();
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

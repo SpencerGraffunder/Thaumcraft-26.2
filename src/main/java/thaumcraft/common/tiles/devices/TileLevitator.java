@@ -5,7 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -79,7 +79,7 @@ public class TileLevitator extends TileThaumcraft {
         counter++;
         
         // Drain vis from aura on server
-        if (!level.isClientSide && vis < 10) {
+        if (!level.isClientSide() && vis < 10) {
             vis += (int)(AuraHelper.drainVis(level, worldPosition, 1.0f, false) * 1200.0f);
             setChanged();
             syncTile(false);
@@ -101,7 +101,7 @@ public class TileLevitator extends TileThaumcraft {
             lifted = true;
             
             // Draw effects
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 drawFXAt(entity);
                 drawFX(facing, 0.6);
             }
@@ -149,11 +149,11 @@ public class TileLevitator extends TileThaumcraft {
         }
         
         // Ambient particles
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             drawFX(facing, 0.1);
         }
         
-        if (lifted && !level.isClientSide && counter % 20 == 0) {
+        if (lifted && !level.isClientSide() && counter % 20 == 0) {
             setChanged();
         }
     }
@@ -174,7 +174,7 @@ public class TileLevitator extends TileThaumcraft {
     }
     
     private void drawFX(Direction facing, double chance) {
-        if (level.isClientSide && level.getRandom().nextFloat() < chance) {
+        if (level.isClientSide() && level.getRandom().nextFloat() < chance) {
             float x = worldPosition.getX() + 0.25f + level.getRandom().nextFloat() * 0.5f;
             float y = worldPosition.getY() + 0.25f + level.getRandom().nextFloat() * 0.5f;
             float z = worldPosition.getZ() + 0.25f + level.getRandom().nextFloat() * 0.5f;
@@ -186,7 +186,7 @@ public class TileLevitator extends TileThaumcraft {
     }
     
     private void drawFXAt(Entity entity) {
-        if (level.isClientSide && level.getRandom().nextFloat() < 0.1f) {
+        if (level.isClientSide() && level.getRandom().nextFloat() < 0.1f) {
             float x = (float)(entity.getX() + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * entity.getBbWidth());
             float y = (float)(entity.getY() + level.getRandom().nextFloat() * entity.getBbHeight());
             float z = (float)(entity.getZ() + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * entity.getBbWidth());
@@ -222,7 +222,7 @@ public class TileLevitator extends TileThaumcraft {
      */
     public void increaseRange(Player player) {
         rangeActual = 0;
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             rangeIndex++;
             if (rangeIndex >= RANGES.length) {
                 rangeIndex = 0;
@@ -266,10 +266,10 @@ public class TileLevitator extends TileThaumcraft {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        rangeIndex = tag.getByte("range");
+        rangeIndex = tag.getByteOr("range", (byte)0);
         if (rangeIndex < 0 || rangeIndex >= RANGES.length) {
             rangeIndex = 1;
         }
-        vis = tag.getInt("vis");
+        vis = tag.getIntOr("vis", 0);
     }
 }

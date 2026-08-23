@@ -53,7 +53,7 @@ public class TileVisGenerator extends TileThaumcraft implements IEnergyStorage {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        energy = tag.getInt("Energy");
+        energy = tag.getIntOr("Energy", 0);
     }
 
     // ==================== Tick ====================

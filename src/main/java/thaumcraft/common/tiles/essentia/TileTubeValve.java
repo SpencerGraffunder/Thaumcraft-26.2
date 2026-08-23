@@ -43,8 +43,8 @@ public class TileTubeValve extends TileTube {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        allowFlow = tag.getBoolean("Flow");
-        wasPoweredLastTick = tag.getBoolean("HadPower");
+        allowFlow = tag.getBooleanOr("Flow", false);
+        wasPoweredLastTick = tag.getBooleanOr("HadPower", false);
     }
 
     // ==================== Tick ====================

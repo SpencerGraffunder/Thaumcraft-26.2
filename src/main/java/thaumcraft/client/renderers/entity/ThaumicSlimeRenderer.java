@@ -1,7 +1,7 @@
 package thaumcraft.client.renderers.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.SlimeModel;
+import net.minecraft.client.model.monster.slime.SlimeModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

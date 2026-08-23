@@ -25,7 +25,7 @@ public class ChampionModTainted implements IChampionModifierEffect {
     @Override
     public float performEffect(LivingEntity champion, LivingEntity target, DamageSource source, float amount) {
         // If this is a non-monster mob, convert it to be aggressive
-        if (champion instanceof Mob mob && !champion.level().isClientSide) {
+        if (champion instanceof Mob mob && !champion.level().isClientSide()) {
             // Ensure the mob has attack damage
             AttributeInstance attackDamage = mob.getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamage == null || attackDamage.getBaseValue() <= 0) {
@@ -36,7 +36,7 @@ public class ChampionModTainted implements IChampionModifierEffect {
         }
         
         // Check if this damage will kill the champion
-        if (!champion.level().isClientSide && champion.getHealth() - amount <= 0) {
+        if (!champion.level().isClientSide() && champion.getHealth() - amount <= 0) {
             // Pollute aura on death
             AuraHelper.polluteAura(champion.level(), champion.blockPosition(), 5.0f, true);
         }
@@ -48,9 +48,9 @@ public class ChampionModTainted implements IChampionModifierEffect {
     @Override
     public void showFX(LivingEntity champion) {
         // Purple taint particles
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight();
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight();
         
         champion.level().addParticle(ParticleTypes.WITCH,
                 champion.getBoundingBox().minX + w,

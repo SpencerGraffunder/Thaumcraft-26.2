@@ -59,7 +59,7 @@ public class BlockVisRelay extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -117,7 +117,7 @@ public class BlockVisRelay extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.VIS_RELAY.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileVisRelay.clientTick(lvl, pos, st, (TileVisRelay) be);
             } else {
                 return (lvl, pos, st, be) -> TileVisRelay.serverTick(lvl, pos, st, (TileVisRelay) be);

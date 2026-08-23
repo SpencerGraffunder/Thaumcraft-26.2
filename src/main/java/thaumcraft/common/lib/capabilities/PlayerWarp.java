@@ -116,10 +116,10 @@ public class PlayerWarp {
             if (tag == null) {
                 return;
             }
-            permanentWarp = tag.getInt("perm");
-            normalWarp = tag.getInt("norm");
-            temporaryWarp = tag.getInt("temp");
-            counter = tag.getInt("counter");
+            permanentWarp = tag.getIntOr("perm", 0);
+            normalWarp = tag.getIntOr("norm", 0);
+            temporaryWarp = tag.getIntOr("temp", 0);
+            counter = tag.getIntOr("counter", 0);
         }
     }
     

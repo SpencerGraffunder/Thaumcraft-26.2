@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.projectile;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -63,8 +65,8 @@ public class EntityFocusMine extends ThrowableProjectile {
     }
     
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_ARMED, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_ARMED, false);
     }
     
     public boolean isArmed() {
@@ -117,7 +119,7 @@ public class EntityFocusMine extends ThrowableProjectile {
         }
         
         // Expire if owner is gone (server only)
-        if (!level().isClientSide && getOwner() == null) {
+        if (!level().isClientSide() && getOwner() == null) {
             discard();
             return;
         }
@@ -131,7 +133,7 @@ public class EntityFocusMine extends ThrowableProjectile {
             
             // Check for targets every 5 ticks
             if (tickCount % 5 == 0) {
-                if (level().isClientSide) {
+                if (level().isClientSide()) {
                     renderMineParticles();
                 } else {
                     checkForTargets();
@@ -210,26 +212,26 @@ public class EntityFocusMine extends ThrowableProjectile {
     }
     
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("armed", isArmed());
-        tag.putBoolean("friendly", targetFriendly);
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("armed", isArmed());
+        output.putBoolean("friendly", targetFriendly);
         if (focusPackage != null) {
-            tag.put("pack", focusPackage.serialize());
+            output.put("pack", focusPackage.serialize());
         }
     }
     
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        targetFriendly = tag.getBoolean("friendly");
-        setArmed(tag.getBoolean("armed"));
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        targetFriendly = input.getBooleanOr("friendly", false);
+        setArmed(input.getBooleanOr("armed", false));
         if (isArmed()) {
             armingCountdown = 0;
         }
-        if (tag.contains("pack")) {
+        if (input.contains("pack")) {
             focusPackage = new FocusPackage();
-            focusPackage.deserialize(tag.getCompound("pack"));
+            focusPackage.deserialize(input.getCompoundOrEmpty("pack"));
         }
     }
     

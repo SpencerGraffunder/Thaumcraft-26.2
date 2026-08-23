@@ -3,7 +3,7 @@ package thaumcraft.common.menu;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerListener;
+import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -168,7 +168,7 @@ public class FocusPouchMenu extends AbstractContainerMenu implements ContainerLi
         super.removed(player);
         
         // Save contents back to the pouch
-        if (!player.level().isClientSide && pouch.getItem() instanceof ItemFocusPouch pouchItem) {
+        if (!player.level().isClientSide() && pouch.getItem() instanceof ItemFocusPouch pouchItem) {
             NonNullList<ItemStack> contents = NonNullList.withSize(POUCH_SIZE, ItemStack.EMPTY);
             for (int i = 0; i < POUCH_SIZE; i++) {
                 contents.set(i, pouchInventory.getItem(i));

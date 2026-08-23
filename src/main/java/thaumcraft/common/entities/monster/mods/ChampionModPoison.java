@@ -22,7 +22,7 @@ public class ChampionModPoison implements IChampionModifierEffect {
     @Override
     public float performEffect(LivingEntity champion, LivingEntity target, DamageSource source, float amount) {
         // Apply poison to target
-        if (target != null && !target.level().isClientSide) {
+        if (target != null && !target.level().isClientSide()) {
             target.addEffect(new MobEffectInstance(MobEffects.POISON, 160, 1)); // 8 seconds, level II
         }
         return amount;
@@ -31,14 +31,14 @@ public class ChampionModPoison implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void showFX(LivingEntity champion) {
-        if (champion.level().random.nextInt(3) != 0) {
+        if (champion.level().getRandom().nextInt(3) != 0) {
             return;
         }
         
         // Poison particles (dark green)
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight();
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight();
         
         champion.level().addParticle(ParticleTypes.ENTITY_EFFECT,
                 champion.getBoundingBox().minX + w,

@@ -49,7 +49,7 @@ import java.util.List;
  */
 public class BlockInfernalFurnace extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     // The furnace is larger than a single block visually
     private static final VoxelShape SHAPE = Shapes.box(0, 0, 0, 1, 1.5, 1);
@@ -91,7 +91,7 @@ public class BlockInfernalFurnace extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -173,7 +173,7 @@ public class BlockInfernalFurnace extends Block implements EntityBlock {
      * Handle items thrown into the furnace by picking them up from nearby.
      */
     public void entityInside(BlockState state, Level level, BlockPos pos, net.minecraft.world.entity.Entity entity) {
-        if (!level.isClientSide && entity instanceof ItemEntity itemEntity) {
+        if (!level.isClientSide() && entity instanceof ItemEntity itemEntity) {
             if (itemEntity.isAlive() && !itemEntity.getItem().isEmpty()) {
                 BlockEntity blockEntity = level.getBlockEntity(pos);
                 if (blockEntity instanceof TileInfernalFurnace furnace) {
@@ -199,7 +199,7 @@ public class BlockInfernalFurnace extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.INFERNAL_FURNACE.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return null; // No client tick needed for now
             } else {
                 return (lvl, pos, st, be) -> TileInfernalFurnace.serverTick(lvl, pos, st, (TileInfernalFurnace) be);

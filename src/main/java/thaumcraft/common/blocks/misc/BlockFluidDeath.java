@@ -86,7 +86,7 @@ public class BlockFluidDeath extends Block {
         entity.setDeltaMovement(motion.x * slowFactor, motion.y, motion.z * slowFactor);
         
         // Deal dissolve damage to living entities
-        if (!level.isClientSide && entity instanceof LivingEntity living) {
+        if (!level.isClientSide() && entity instanceof LivingEntity living) {
             float damage = (4 - fluidLevel) + 1; // More damage at lower levels (concentrated)
             living.hurt(DamageSourceThaumcraft.createDissolve(level), damage);
         }

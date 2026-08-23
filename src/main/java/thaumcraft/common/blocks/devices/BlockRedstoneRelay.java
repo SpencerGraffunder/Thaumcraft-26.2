@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.devices;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,7 +45,7 @@ import javax.annotation.Nullable;
  */
 public class BlockRedstoneRelay extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
 
     private static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
@@ -81,7 +82,7 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (shouldBePowered(level, pos, state)) {
                 level.scheduleTick(pos, this, 1);
             }
@@ -103,8 +104,8 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if (!level.isClientSide) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, Orientation orientation, boolean isMoving) {
+        if (!level.isClientSide()) {
             if (!canSurvive(state, level, pos)) {
                 dropResources(state, level, pos);
                 level.removeBlock(pos, false);
@@ -187,21 +188,21 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
             boolean clickedInput = isInputDialHit(hitVec, facing);
             
             if (clickedOutput) {
-                if (!level.isClientSide) {
+                if (!level.isClientSide()) {
                     relay.increaseOutput();
                     level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.5f, 1.0f);
                     updateState(level, pos, state);
                     notifyNeighbors(level, pos, state);
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                return InteractionResult.sidedSuccess(level.isClientSide());
             } else if (clickedInput) {
-                if (!level.isClientSide) {
+                if (!level.isClientSide()) {
                     relay.increaseInput();
                     level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.5f, 1.0f);
                     updateState(level, pos, state);
                     notifyNeighbors(level, pos, state);
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                return InteractionResult.sidedSuccess(level.isClientSide());
             }
         }
         return InteractionResult.PASS;

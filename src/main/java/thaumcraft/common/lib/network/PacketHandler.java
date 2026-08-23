@@ -1,14 +1,24 @@
 package thaumcraft.common.lib.network;
 
+import java.util.Optional;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.NetworkDirection;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.Nullable;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.lib.network.misc.PacketAuraToClient;
 import thaumcraft.common.lib.network.misc.PacketBiomeChange;
@@ -20,6 +30,8 @@ import thaumcraft.common.lib.network.misc.PacketSealFilterToClient;
 import thaumcraft.common.lib.network.misc.PacketSealToClient;
 import thaumcraft.common.lib.network.misc.PacketSelectThaumotoriumRecipeToServer;
 import thaumcraft.common.lib.network.misc.PacketStartTheoryToServer;
+import thaumcraft.common.lib.network.misc.PacketFocusChangeToServer;
+import thaumcraft.common.lib.network.misc.PacketItemKeyToServer;
 import thaumcraft.common.lib.network.playerdata.PacketFocusNameToServer;
 import thaumcraft.common.lib.network.playerdata.PacketFocusNodesToServer;
 import thaumcraft.common.lib.network.playerdata.PacketPlayerFlagToServer;
@@ -28,6 +40,8 @@ import thaumcraft.common.lib.network.playerdata.PacketSyncProgressToServer;
 import thaumcraft.common.lib.network.playerdata.PacketSyncResearchFlagsToServer;
 import thaumcraft.common.lib.network.playerdata.PacketSyncWarp;
 import thaumcraft.common.lib.network.playerdata.PacketWarpMessage;
+import thaumcraft.common.lib.network.tiles.PacketTileToClient;
+import thaumcraft.common.lib.network.tiles.PacketTileToServer;
 import thaumcraft.common.lib.network.fx.PacketFXBlockArc;
 import thaumcraft.common.lib.network.fx.PacketFXBlockBamf;
 import thaumcraft.common.lib.network.fx.PacketFXBlockMist;
@@ -44,359 +58,137 @@ import thaumcraft.common.lib.network.fx.PacketFXSlash;
 import thaumcraft.common.lib.network.fx.PacketFXSonic;
 import thaumcraft.common.lib.network.fx.PacketFXWispZap;
 import thaumcraft.common.lib.network.fx.PacketFXZap;
-import thaumcraft.common.lib.network.misc.PacketFocusChangeToServer;
-import thaumcraft.common.lib.network.misc.PacketItemKeyToServer;
-import thaumcraft.common.lib.network.tiles.PacketTileToClient;
-import thaumcraft.common.lib.network.tiles.PacketTileToServer;
 
 /**
  * PacketHandler - Manages network communication for Thaumcraft.
- * Uses Forge's SimpleChannel system for packet registration and handling.
- * 
- * Ported to 1.20.1
+ * <p>
+ * Migrated to the NeoForge 26.2 {@link CustomPacketPayload} model. Each packet declares
+ * its own {@code TYPE} and {@code STREAM_CODEC}; all registration happens in
+ * {@link #register(RegisterPayloadHandlersEvent)} from the mod event bus.
+ * <p>
+ * Static send helpers keep the legacy call shapes so call sites do not need to change.
  */
 public class PacketHandler {
-    
-    private static final String PROTOCOL_VERSION = "1";
-    
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "main"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
-    );
-    
-    private static int packetId = 0;
-    
-    private static int nextId() {
-        return packetId++;
-    }
-    
+
+    private static final String CHANNEL = Thaumcraft.MODID + "main";
+
     /**
-     * Register all packets
-     * Called during mod initialization
+     * Register all payload handlers. Invoked by the mod event bus for
+     * {@link RegisterPayloadHandlersEvent}.
      */
+    public static void register(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar reg = event.registrar(CHANNEL);
+
+        // ---- Server -> Client ----
+        reg.playToClient(PacketSealToClient.TYPE, PacketSealToClient.STREAM_CODEC, PacketSealToClient::handle);
+        reg.playToClient(PacketSyncKnowledge.TYPE, PacketSyncKnowledge.STREAM_CODEC, PacketSyncKnowledge::handle);
+        reg.playToClient(PacketSyncWarp.TYPE, PacketSyncWarp.STREAM_CODEC, PacketSyncWarp::handle);
+        reg.playToClient(PacketWarpMessage.TYPE, PacketWarpMessage.STREAM_CODEC, PacketWarpMessage::handle);
+        reg.playToClient(PacketAuraToClient.TYPE, PacketAuraToClient.STREAM_CODEC, PacketAuraToClient::handle);
+        reg.playToClient(PacketTileToClient.TYPE, PacketTileToClient.STREAM_CODEC, PacketTileToClient::handle);
+        reg.playToClient(PacketFXSlash.TYPE, PacketFXSlash.STREAM_CODEC, PacketFXSlash::handle);
+        reg.playToClient(PacketFXBlockArc.TYPE, PacketFXBlockArc.STREAM_CODEC, PacketFXBlockArc::handle);
+        reg.playToClient(PacketFXBlockBamf.TYPE, PacketFXBlockBamf.STREAM_CODEC, PacketFXBlockBamf::handle);
+        reg.playToClient(PacketFXZap.TYPE, PacketFXZap.STREAM_CODEC, PacketFXZap::handle);
+        reg.playToClient(PacketFXEssentiaSource.TYPE, PacketFXEssentiaSource.STREAM_CODEC, PacketFXEssentiaSource::handle);
+        reg.playToClient(PacketFXShield.TYPE, PacketFXShield.STREAM_CODEC, PacketFXShield::handle);
+        reg.playToClient(PacketFXWispZap.TYPE, PacketFXWispZap.STREAM_CODEC, PacketFXWispZap::handle);
+        reg.playToClient(PacketFXFocusEffect.TYPE, PacketFXFocusEffect.STREAM_CODEC, PacketFXFocusEffect::handle);
+        reg.playToClient(PacketFXFocusPartImpact.TYPE, PacketFXFocusPartImpact.STREAM_CODEC, PacketFXFocusPartImpact::handle);
+        reg.playToClient(PacketFXFocusPartImpactBurst.TYPE, PacketFXFocusPartImpactBurst.STREAM_CODEC, PacketFXFocusPartImpactBurst::handle);
+        reg.playToClient(PacketFXInfusionSource.TYPE, PacketFXInfusionSource.STREAM_CODEC, PacketFXInfusionSource::handle);
+        reg.playToClient(PacketFXPollute.TYPE, PacketFXPollute.STREAM_CODEC, PacketFXPollute::handle);
+        reg.playToClient(PacketFXBoreDig.TYPE, PacketFXBoreDig.STREAM_CODEC, PacketFXBoreDig::handle);
+        reg.playToClient(PacketFXScanSource.TYPE, PacketFXScanSource.STREAM_CODEC, PacketFXScanSource::handle);
+        reg.playToClient(PacketFXSonic.TYPE, PacketFXSonic.STREAM_CODEC, PacketFXSonic::handle);
+        reg.playToClient(PacketFXBlockMist.TYPE, PacketFXBlockMist.STREAM_CODEC, PacketFXBlockMist::handle);
+        reg.playToClient(PacketMiscEvent.TYPE, PacketMiscEvent.STREAM_CODEC, PacketMiscEvent::handle);
+        reg.playToClient(PacketKnowledgeGain.TYPE, PacketKnowledgeGain.STREAM_CODEC, PacketKnowledgeGain::handle);
+        reg.playToClient(PacketSealFilterToClient.TYPE, PacketSealFilterToClient.STREAM_CODEC, PacketSealFilterToClient::handle);
+        reg.playToClient(PacketBiomeChange.TYPE, PacketBiomeChange.STREAM_CODEC, PacketBiomeChange::handle);
+
+        // ---- Client -> Server ----
+        reg.playToServer(PacketTileToServer.TYPE, PacketTileToServer.STREAM_CODEC, PacketTileToServer::handle);
+        reg.playToServer(PacketSyncProgressToServer.TYPE, PacketSyncProgressToServer.STREAM_CODEC, PacketSyncProgressToServer::handle);
+        reg.playToServer(PacketSyncResearchFlagsToServer.TYPE, PacketSyncResearchFlagsToServer.STREAM_CODEC, PacketSyncResearchFlagsToServer::handle);
+        reg.playToServer(PacketFocusChangeToServer.TYPE, PacketFocusChangeToServer.STREAM_CODEC, PacketFocusChangeToServer::handle);
+        reg.playToServer(PacketItemKeyToServer.TYPE, PacketItemKeyToServer.STREAM_CODEC, PacketItemKeyToServer::handle);
+        reg.playToServer(PacketFocusNodesToServer.TYPE, PacketFocusNodesToServer.STREAM_CODEC, PacketFocusNodesToServer::handle);
+        reg.playToServer(PacketPlayerFlagToServer.TYPE, PacketPlayerFlagToServer.STREAM_CODEC, PacketPlayerFlagToServer::handle);
+        reg.playToServer(PacketLogisticsRequestToServer.TYPE, PacketLogisticsRequestToServer.STREAM_CODEC, PacketLogisticsRequestToServer::handle);
+        reg.playToServer(PacketMiscStringToServer.TYPE, PacketMiscStringToServer.STREAM_CODEC, PacketMiscStringToServer::handle);
+        reg.playToServer(PacketStartTheoryToServer.TYPE, PacketStartTheoryToServer.STREAM_CODEC, PacketStartTheoryToServer::handle);
+        reg.playToServer(PacketSelectThaumotoriumRecipeToServer.TYPE, PacketSelectThaumotoriumRecipeToServer.STREAM_CODEC, PacketSelectThaumotoriumRecipeToServer::handle);
+        reg.playToServer(PacketFocusNameToServer.TYPE, PacketFocusNameToServer.STREAM_CODEC, PacketFocusNameToServer::handle);
+    }
+
+    /** Legacy init hook. No-op: registration is handled by {@link #register(RegisterPayloadHandlersEvent)}. */
     public static void init() {
-        Thaumcraft.LOGGER.info("Registering Thaumcraft network packets");
-        
-        // Seal sync packets (server -> client)
-        INSTANCE.messageBuilder(PacketSealToClient.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketSealToClient::encode)
-                .decoder(PacketSealToClient::decode)
-                .consumerMainThread(PacketSealToClient::handle)
-                .add();
-        
-        // Player data sync packets (server -> client)
-        INSTANCE.messageBuilder(PacketSyncKnowledge.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketSyncKnowledge::encode)
-                .decoder(PacketSyncKnowledge::decode)
-                .consumerMainThread(PacketSyncKnowledge::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketSyncWarp.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketSyncWarp::encode)
-                .decoder(PacketSyncWarp::decode)
-                .consumerMainThread(PacketSyncWarp::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketWarpMessage.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketWarpMessage::encode)
-                .decoder(PacketWarpMessage::decode)
-                .consumerMainThread(PacketWarpMessage::handle)
-                .add();
-        
-        // Aura sync packets (server -> client)
-        INSTANCE.messageBuilder(PacketAuraToClient.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketAuraToClient::encode)
-                .decoder(PacketAuraToClient::decode)
-                .consumerMainThread(PacketAuraToClient::handle)
-                .add();
-        
-        // Tile entity sync packets (server -> client)
-        INSTANCE.messageBuilder(PacketTileToClient.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketTileToClient::encode)
-                .decoder(PacketTileToClient::decode)
-                .consumerMainThread(PacketTileToClient::handle)
-                .add();
-        
-        // Tile entity update packets (client -> server)
-        INSTANCE.messageBuilder(PacketTileToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketTileToServer::encode)
-                .decoder(PacketTileToServer::decode)
-                .consumerMainThread(PacketTileToServer::handle)
-                .add();
-        
-        // FX packets (server -> client)
-        INSTANCE.messageBuilder(PacketFXSlash.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXSlash::encode)
-                .decoder(PacketFXSlash::decode)
-                .consumerMainThread(PacketFXSlash::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXBlockArc.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXBlockArc::encode)
-                .decoder(PacketFXBlockArc::decode)
-                .consumerMainThread(PacketFXBlockArc::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXBlockBamf.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXBlockBamf::encode)
-                .decoder(PacketFXBlockBamf::decode)
-                .consumerMainThread(PacketFXBlockBamf::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXZap.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXZap::encode)
-                .decoder(PacketFXZap::decode)
-                .consumerMainThread(PacketFXZap::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXEssentiaSource.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXEssentiaSource::encode)
-                .decoder(PacketFXEssentiaSource::decode)
-                .consumerMainThread(PacketFXEssentiaSource::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXShield.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXShield::encode)
-                .decoder(PacketFXShield::decode)
-                .consumerMainThread(PacketFXShield::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXWispZap.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXWispZap::encode)
-                .decoder(PacketFXWispZap::decode)
-                .consumerMainThread(PacketFXWispZap::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXFocusEffect.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXFocusEffect::encode)
-                .decoder(PacketFXFocusEffect::decode)
-                .consumerMainThread(PacketFXFocusEffect::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXFocusPartImpact.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXFocusPartImpact::encode)
-                .decoder(PacketFXFocusPartImpact::decode)
-                .consumerMainThread(PacketFXFocusPartImpact::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXFocusPartImpactBurst.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXFocusPartImpactBurst::encode)
-                .decoder(PacketFXFocusPartImpactBurst::decode)
-                .consumerMainThread(PacketFXFocusPartImpactBurst::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXInfusionSource.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXInfusionSource::encode)
-                .decoder(PacketFXInfusionSource::decode)
-                .consumerMainThread(PacketFXInfusionSource::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXPollute.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXPollute::encode)
-                .decoder(PacketFXPollute::decode)
-                .consumerMainThread(PacketFXPollute::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXBoreDig.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXBoreDig::encode)
-                .decoder(PacketFXBoreDig::decode)
-                .consumerMainThread(PacketFXBoreDig::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXScanSource.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXScanSource::encode)
-                .decoder(PacketFXScanSource::decode)
-                .consumerMainThread(PacketFXScanSource::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXSonic.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXSonic::encode)
-                .decoder(PacketFXSonic::decode)
-                .consumerMainThread(PacketFXSonic::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketFXBlockMist.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketFXBlockMist::encode)
-                .decoder(PacketFXBlockMist::decode)
-                .consumerMainThread(PacketFXBlockMist::handle)
-                .add();
-        
-        // Research packets (client -> server)
-        INSTANCE.messageBuilder(PacketSyncProgressToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketSyncProgressToServer::encode)
-                .decoder(PacketSyncProgressToServer::decode)
-                .consumerMainThread(PacketSyncProgressToServer::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketSyncResearchFlagsToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketSyncResearchFlagsToServer::encode)
-                .decoder(PacketSyncResearchFlagsToServer::decode)
-                .consumerMainThread(PacketSyncResearchFlagsToServer::handle)
-                .add();
-        
-        // Key action packets (client -> server)
-        INSTANCE.messageBuilder(PacketFocusChangeToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketFocusChangeToServer::encode)
-                .decoder(PacketFocusChangeToServer::decode)
-                .consumerMainThread(PacketFocusChangeToServer::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketItemKeyToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketItemKeyToServer::encode)
-                .decoder(PacketItemKeyToServer::decode)
-                .consumerMainThread(PacketItemKeyToServer::handle)
-                .add();
-        
-        // Focus packets (client -> server)
-        INSTANCE.messageBuilder(PacketFocusNodesToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketFocusNodesToServer::encode)
-                .decoder(PacketFocusNodesToServer::decode)
-                .consumerMainThread(PacketFocusNodesToServer::handle)
-                .add();
-        
-        // Player flag packets (client -> server)
-        INSTANCE.messageBuilder(PacketPlayerFlagToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketPlayerFlagToServer::encode)
-                .decoder(PacketPlayerFlagToServer::decode)
-                .consumerMainThread(PacketPlayerFlagToServer::handle)
-                .add();
-        
-        // Misc event packets
-        INSTANCE.messageBuilder(PacketMiscEvent.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketMiscEvent::encode)
-                .decoder(PacketMiscEvent::decode)
-                .consumerMainThread(PacketMiscEvent::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketKnowledgeGain.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketKnowledgeGain::encode)
-                .decoder(PacketKnowledgeGain::decode)
-                .consumerMainThread(PacketKnowledgeGain::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketSealFilterToClient.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketSealFilterToClient::encode)
-                .decoder(PacketSealFilterToClient::decode)
-                .consumerMainThread(PacketSealFilterToClient::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketBiomeChange.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(PacketBiomeChange::encode)
-                .decoder(PacketBiomeChange::decode)
-                .consumerMainThread(PacketBiomeChange::handle)
-                .add();
-        
-        // Logistics packets (client -> server)
-        INSTANCE.messageBuilder(PacketLogisticsRequestToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketLogisticsRequestToServer::encode)
-                .decoder(PacketLogisticsRequestToServer::decode)
-                .consumerMainThread(PacketLogisticsRequestToServer::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketMiscStringToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketMiscStringToServer::encode)
-                .decoder(PacketMiscStringToServer::decode)
-                .consumerMainThread(PacketMiscStringToServer::handle)
-                .add();
-        
-        // Research/Crafting packets (client -> server)
-        INSTANCE.messageBuilder(PacketStartTheoryToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketStartTheoryToServer::encode)
-                .decoder(PacketStartTheoryToServer::decode)
-                .consumerMainThread(PacketStartTheoryToServer::handle)
-                .add();
-        
-        INSTANCE.messageBuilder(PacketSelectThaumotoriumRecipeToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketSelectThaumotoriumRecipeToServer::encode)
-                .decoder(PacketSelectThaumotoriumRecipeToServer::decode)
-                .consumerMainThread(PacketSelectThaumotoriumRecipeToServer::handle)
-                .add();
-        
-        // Focus manipulator packets (client -> server)
-        INSTANCE.messageBuilder(PacketFocusNameToServer.class, nextId(), NetworkDirection.PLAY_TO_SERVER)
-                .encoder(PacketFocusNameToServer::encode)
-                .decoder(PacketFocusNameToServer::decode)
-                .consumerMainThread(PacketFocusNameToServer::handle)
-                .add();
-        
-        Thaumcraft.LOGGER.info("Thaumcraft network packets registered");
+        Thaumcraft.LOGGER.info("Thaumcraft network registration is handled via RegisterPayloadHandlersEvent");
     }
-    
-    /**
-     * Send a packet to a specific player
-     * @param packet the packet to send
-     * @param player the player to send to
-     */
-    public static <MSG> void sendToPlayer(MSG packet, ServerPlayer player) {
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
+
+    // ------------------------------------------------------------------
+    // Send helpers (preserve legacy call shapes)
+    // ------------------------------------------------------------------
+
+    /** Send a payload to a specific player. */
+    public static void sendToPlayer(Object payload, ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, (CustomPacketPayload) payload);
     }
-    
-    /**
-     * Send a packet to all players
-     * @param packet the packet to send
-     */
-    public static <MSG> void sendToAll(MSG packet) {
-        INSTANCE.send(PacketDistributor.ALL.noArg(), packet);
+
+    /** Send a payload to all players in the given dimension. */
+    public static void sendToDimension(Object payload, ResourceKey<Level> dimension) {
+        ServerLevel level = serverLevelOrNull(dimension);
+        if (level == null) {
+            return;
+        }
+        PacketDistributor.sendToPlayersInDimension(level, (CustomPacketPayload) payload);
     }
-    
-    /**
-     * Send a packet to all players tracking a specific entity
-     * @param packet the packet to send
-     * @param entity the entity being tracked
-     */
-    public static <MSG> void sendToAllTracking(MSG packet, net.minecraft.world.entity.Entity entity) {
-        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), packet);
+
+    /** Send a payload to all players tracking the given entity. */
+    public static void sendToAllTracking(Object payload, Entity entity) {
+        PacketDistributor.sendToPlayersTrackingEntity(entity, (CustomPacketPayload) payload);
     }
-    
-    /**
-     * Send a packet to the server
-     * @param packet the packet to send
-     */
-    public static <MSG> void sendToServer(MSG packet) {
-        INSTANCE.sendToServer(packet);
-    }
-    
-    /**
-     * Send a packet to all players near a point
-     * @param packet the packet to send
-     * @param targetPoint the point to check distance from
-     */
-    public static <MSG> void sendToNear(MSG packet, PacketDistributor.TargetPoint targetPoint) {
-        INSTANCE.send(PacketDistributor.NEAR.with(() -> targetPoint), packet);
-    }
-    
-    /**
-     * Send a packet to all players in a dimension
-     * @param packet the packet to send
-     * @param dimension the dimension key
-     */
-    public static <MSG> void sendToDimension(MSG packet, net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension) {
-        INSTANCE.send(PacketDistributor.DIMENSION.with(() -> dimension), packet);
-    }
-    
-    /**
-     * Send a packet to all players tracking a specific block entity
-     * @param packet the packet to send
-     * @param blockEntity the block entity being tracked
-     */
-    public static <MSG> void sendToAllTracking(MSG packet, BlockEntity blockEntity) {
-        if (blockEntity.getLevel() instanceof ServerLevel serverLevel) {
-            BlockPos pos = blockEntity.getBlockPos();
-            serverLevel.getChunkSource().chunkMap.getPlayers(
-                new net.minecraft.world.level.ChunkPos(pos), false
-            ).forEach(player -> sendToPlayer(packet, player));
+
+    /** Send a payload to the server (client only). */
+    @OnlyIn(Dist.CLIENT)
+    public static void sendToServer(Object payload) {
+        net.minecraft.client.multiplayer.ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        if (connection != null) {
+            connection.send((CustomPacketPayload) payload);
         }
     }
-    
+
     /**
-     * Send a packet to all players tracking a specific chunk
-     * @param packet the packet to send
-     * @param level the server level
-     * @param pos the block position to find the chunk for
+     * Send a payload to all players within {@code radius} blocks around {@code pos} in {@code level}.
+     * Falls back to "all players in the dimension" when no nearby player exists to anchor the query.
      */
-    public static <MSG> void sendToAllTrackingChunk(MSG packet, ServerLevel level, BlockPos pos) {
-        INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(pos)), packet);
+    public static void sendToAllAround(Object payload, ServerLevel level, BlockPos pos, double radius) {
+        Optional<ServerPlayer> nearest = level.players().stream().findFirst();
+        if (nearest.isEmpty()) {
+            // No players in dimension; nothing to reach.
+            return;
+        }
+        final double r2 = radius * radius;
+        Optional<ServerPlayer> inRange = level.players().stream()
+                .filter(p -> p.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= r2)
+                .findFirst();
+        Optional<ServerPlayer> nearest2 = inRange.isPresent() ? inRange : nearest;
+        PacketDistributor.sendToPlayersNear(level, nearest2.get(),
+                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, radius,
+                (CustomPacketPayload) payload);
+    }
+
+    /** Send a payload to all players tracking the chunk containing {@code pos}. */
+    public static void sendToAllTrackingChunk(Object payload, ServerLevel level, BlockPos pos) {
+        PacketDistributor.sendToPlayersTrackingChunk(level, ChunkPos.containing(pos), (CustomPacketPayload) payload);
+    }
+
+    private static @Nullable ServerLevel serverLevelOrNull(ResourceKey<Level> dimension) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) {
+            return null;
+        }
+        return server.getLevel(dimension);
     }
 }

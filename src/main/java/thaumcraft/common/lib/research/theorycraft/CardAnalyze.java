@@ -27,7 +27,7 @@ public class CardAnalyze extends TheorycraftCard {
     @Override
     public void deserialize(CompoundTag nbt) {
         super.deserialize(nbt);
-        cat = nbt.getString("cat");
+        cat = nbt.getStringOr("cat", "");
     }
 
     @Override

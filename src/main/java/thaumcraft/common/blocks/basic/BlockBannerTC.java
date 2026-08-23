@@ -144,7 +144,7 @@ public class BlockBannerTC extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
             InteractionHand hand, BlockHitResult hit) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof TileBanner banner && dyeColor != null) {
                 ItemStack heldItem = player.getItemInHand(hand);
@@ -170,7 +170,7 @@ public class BlockBannerTC extends Block implements EntityBlock {
                 }
             }
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
     
     private void syncBanner(Level level, BlockPos pos, BlockState state, TileBanner banner) {

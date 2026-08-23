@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster.cult;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,7 +35,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.SmallFireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -64,9 +67,9 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_RITUALIST, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_RITUALIST, false);
     }
     
     @Override
@@ -168,7 +171,7 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
     
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo(source)) {
+        if (isInvulnerableTo((ServerLevel) this.level(), source)) {
             return false;
         }
         // Attacking a ritualist interrupts the ritual
@@ -181,7 +184,7 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
         super.tick();
         
         // Look at home position when ritualist
-        if (level().isClientSide && isRitualist() && hasHome()) {
+        if (level().isClientSide() && isRitualist() && hasHome()) {
             BlockPos home = getHomePos();
             double dx = home.getX() + 0.5 - getX();
             double dy = home.getY() + 1.5 - (getY() + getEyeHeight());
@@ -196,7 +199,7 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
         }
         
         // Stop ritualist mode if too angry
-        if (!level().isClientSide && isRitualist() && rage >= 5) {
+        if (!level().isClientSide() && isRitualist() && rage >= 5) {
             setRitualist(false);
         }
     }
@@ -238,15 +241,15 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("ritualist", isRitualist());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("ritualist", isRitualist());
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setRitualist(tag.getBoolean("ritualist"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setRitualist(input.getBooleanOr("ritualist", false));
     }
     
     @Override

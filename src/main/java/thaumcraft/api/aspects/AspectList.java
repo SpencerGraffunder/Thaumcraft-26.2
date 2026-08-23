@@ -6,6 +6,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * AspectList - A container for multiple aspects and their amounts.
@@ -262,13 +264,13 @@ public class AspectList implements Serializable {
      */
     public void readFromNBT(CompoundTag nbt) {
         aspects.clear();
-        ListTag tlist = nbt.getList("Aspects", Tag.TAG_COMPOUND);
+        ListTag tlist = nbt.getListOrEmpty("Aspects");
         for (int j = 0; j < tlist.size(); j++) {
-            CompoundTag rs = tlist.getCompound(j);
+            CompoundTag rs = tlist.getCompoundOrEmpty(j);
             if (rs.contains("key")) {
-                Aspect aspect = Aspect.getAspect(rs.getString("key"));
+                Aspect aspect = Aspect.getAspect(rs.getStringOr("key", ""));
                 if (aspect != null) {
-                    add(aspect, rs.getInt("amount"));
+                    add(aspect, rs.getIntOr("amount", 0));
                 }
             }
         }
@@ -276,13 +278,13 @@ public class AspectList implements Serializable {
     
     public void readFromNBT(CompoundTag nbt, String label) {
         aspects.clear();
-        ListTag tlist = nbt.getList(label, Tag.TAG_COMPOUND);
+        ListTag tlist = nbt.getListOrEmpty(label);
         for (int j = 0; j < tlist.size(); j++) {
-            CompoundTag rs = tlist.getCompound(j);
+            CompoundTag rs = tlist.getCompoundOrEmpty(j);
             if (rs.contains("key")) {
-                Aspect aspect = Aspect.getAspect(rs.getString("key"));
+                Aspect aspect = Aspect.getAspect(rs.getStringOr("key", ""));
                 if (aspect != null) {
-                    add(aspect, rs.getInt("amount"));
+                    add(aspect, rs.getIntOr("amount", 0));
                 }
             }
         }
@@ -314,6 +316,37 @@ public class AspectList implements Serializable {
                 f.putString("key", aspect.getTag());
                 f.putInt("amount", getAmount(aspect));
                 tlist.add(f);
+            }
+        }
+    }
+    
+public void writeToNBT(ValueOutput output) {
+        writeToNBT(output, "Aspects");
+    }
+
+    public void writeToNBT(ValueOutput output, String label) {
+        ValueOutput.ValueOutputList tlist = output.childrenList(label);
+        for (Aspect aspect : getAspects()) {
+            if (aspect != null) {
+                ValueOutput f = tlist.addChild();
+                f.putString("key", aspect.getTag());
+                f.putInt("amount", getAmount(aspect));
+            }
+        }
+    }
+
+    public void readFromNBT(ValueInput input) {
+        readFromNBT(input, "Aspects");
+    }
+
+    public void readFromNBT(ValueInput input, String label) {
+        aspects.clear();
+        for (ValueInput rs : input.childrenListOrEmpty(label)) {
+            if (rs.keySet().contains("key")) {
+                Aspect aspect = Aspect.getAspect(rs.getStringOr("key", ""));
+                if (aspect != null) {
+                    add(aspect, rs.getIntOr("amount", 0));
+                }
             }
         }
     }

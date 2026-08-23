@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -6,10 +11,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXSonic - Sonic boom visual effect.
@@ -18,7 +21,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXSonic {
+public class PacketFXSonic implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXSonic> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxsonic"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXSonic> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXSonic::encode, PacketFXSonic::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int sourceId;
     
@@ -39,11 +53,10 @@ public class PacketFXSonic {
         return new PacketFXSonic(sourceId);
     }
     
-    public static void handle(PacketFXSonic packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXSonic packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

@@ -117,7 +117,7 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
      * Returns true if crafting started successfully.
      */
     public boolean startCraft(long golemId) {
-        if (level == null || level.isClientSide) return false;
+        if (level == null || level.isClientSide()) return false;
         
         IGolemProperties props = GolemProperties.fromLong(golemId);
         
@@ -259,7 +259,7 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
      * Attempt to craft the currently selected golem.
      */
     public void tryCraft(Player player) {
-        if (level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide()) return;
         if (cost > 0) return; // Already crafting
         
         // Build the golem properties from current selections
@@ -358,14 +358,14 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        golemProps = tag.getLong("golem");
-        cost = tag.getInt("cost");
-        maxCost = tag.getInt("maxCost");
-        selectedMaterial = tag.getInt("selMat");
-        selectedHead = tag.getInt("selHead");
-        selectedArms = tag.getInt("selArms");
-        selectedLegs = tag.getInt("selLegs");
-        selectedAddon = tag.getInt("selAddon");
+        golemProps = tag.getLongOr("golem", 0L);
+        cost = tag.getIntOr("cost", 0);
+        maxCost = tag.getIntOr("maxCost", 0);
+        selectedMaterial = tag.getIntOr("selMat", 0);
+        selectedHead = tag.getIntOr("selHead", 0);
+        selectedArms = tag.getIntOr("selArms", 0);
+        selectedLegs = tag.getIntOr("selLegs", 0);
+        selectedAddon = tag.getIntOr("selAddon", 0);
     }
     
     // ==================== Rendering ====================

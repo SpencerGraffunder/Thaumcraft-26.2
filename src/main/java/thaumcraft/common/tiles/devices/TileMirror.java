@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.devices;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -67,27 +69,27 @@ public class TileMirror extends TileThaumcraft implements Container {
         tag.putInt("LinkX", linkX);
         tag.putInt("LinkY", linkY);
         tag.putInt("LinkZ", linkZ);
-        tag.putString("LinkDim", linkDimension.location().toString());
+        tag.putString("LinkDim", linkDimension.identifier().toString());
         tag.putInt("Instability", instability);
     }
 
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        linked = tag.getBoolean("Linked");
-        linkX = tag.getInt("LinkX");
-        linkY = tag.getInt("LinkY");
-        linkZ = tag.getInt("LinkZ");
+        linked = tag.getBooleanOr("Linked", false);
+        linkX = tag.getIntOr("LinkX", 0);
+        linkY = tag.getIntOr("LinkY", 0);
+        linkZ = tag.getIntOr("LinkZ", 0);
         if (tag.contains("LinkDim")) {
             linkDimension = ResourceKey.create(Registries.DIMENSION, 
-                Identifier.withDefaultNamespace(tag.getString("LinkDim")));
+                Identifier.withDefaultNamespace(tag.getStringOr("LinkDim", "")));
         }
-        instability = tag.getInt("Instability");
+        instability = tag.getIntOr("Instability", 0);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         
         // Save output stacks
         ListTag itemList = new ListTag();
@@ -100,18 +102,18 @@ public class TileMirror extends TileThaumcraft implements Container {
                 itemList.add(itemTag);
             }
         }
-        tag.put("Items", itemList);
+        output.put("Items", itemList);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         
         // Load output stacks
         outputStacks.clear();
-        ListTag itemList = tag.getList("Items", Tag.TAG_COMPOUND);
+        ListTag itemList = input.getListOrEmpty("Items");
         for (int i = 0; i < itemList.size(); i++) {
-            CompoundTag itemTag = itemList.getCompound(i);
+            CompoundTag itemTag = itemList.getCompoundOrEmpty(i);
             ItemStack stack = ItemStack.of(itemTag);
             if (!stack.isEmpty()) {
                 outputStacks.add(stack);

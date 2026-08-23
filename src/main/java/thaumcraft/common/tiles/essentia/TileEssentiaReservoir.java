@@ -62,10 +62,10 @@ public class TileEssentiaReservoir extends TileThaumcraft implements IAspectSour
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        aspect = Aspect.getAspect(tag.getString("Aspect"));
-        aspectFilter = Aspect.getAspect(tag.getString("AspectFilter"));
-        amount = tag.getShort("Amount");
-        facing = tag.getByte("Facing");
+        aspect = Aspect.getAspect(tag.getStringOr("Aspect", ""));
+        aspectFilter = Aspect.getAspect(tag.getStringOr("AspectFilter", ""));
+        amount = tag.getShortOr("Amount", (short)0);
+        facing = tag.getByteOr("Facing", (byte)0);
     }
 
     // ==================== Tick ====================
@@ -85,7 +85,7 @@ public class TileEssentiaReservoir extends TileThaumcraft implements IAspectSour
      * Try to pull essentia from connected tubes.
      */
     private void pullFromConnections() {
-        if (level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide()) return;
 
         for (Direction dir : Direction.values()) {
             if (amount >= CAPACITY) break;
@@ -119,7 +119,7 @@ public class TileEssentiaReservoir extends TileThaumcraft implements IAspectSour
      * Balance essentia with adjacent reservoirs of the same type.
      */
     private void balanceWithNeighbors() {
-        if (level == null || level.isClientSide || amount <= 0) return;
+        if (level == null || level.isClientSide() || amount <= 0) return;
 
         for (Direction dir : Direction.Plane.HORIZONTAL) {
             BlockEntity te = level.getBlockEntity(worldPosition.relative(dir));

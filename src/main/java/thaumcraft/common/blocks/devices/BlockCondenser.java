@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.devices;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -55,8 +56,8 @@ public class BlockCondenser extends Block implements EntityBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if (!level.isClientSide) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, Orientation orientation, boolean isMoving) {
+        if (!level.isClientSide()) {
             // Redstone can disable the condenser
             boolean powered = level.hasNeighborSignal(pos);
             boolean enabled = state.getValue(ENABLED);
@@ -77,7 +78,7 @@ public class BlockCondenser extends Block implements EntityBlock {
 
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
-        if (!level.isClientSide && !state.is(oldState.getBlock())) {
+        if (!level.isClientSide() && !state.is(oldState.getBlock())) {
             BlockEntity te = level.getBlockEntity(pos);
             if (te instanceof TileCondenser condenser) {
                 condenser.triggerCheck();

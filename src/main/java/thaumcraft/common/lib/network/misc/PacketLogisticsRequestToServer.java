@@ -1,4 +1,10 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -6,10 +12,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.golems.GolemHelper;
 
-import java.util.function.Supplier;
 
 /**
  * Packet sent from client to server to request item provisioning via golems.
@@ -17,7 +21,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketLogisticsRequestToServer {
+public class PacketLogisticsRequestToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketLogisticsRequestToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetlogisticsrequesttoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketLogisticsRequestToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketLogisticsRequestToServer::encode, PacketLogisticsRequestToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final BlockPos pos;
     private final Direction side;
@@ -52,7 +67,7 @@ public class PacketLogisticsRequestToServer {
             buf.writeLong(packet.pos.asLong());
             buf.writeByte(packet.side.ordinal());
         }
-        buf.writeItem(packet.stack);
+        net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.encode((net.minecraft.network.RegistryFriendlyByteBuf) buf, packet.stack);
         buf.writeInt(packet.stackSize);
     }
     
@@ -64,7 +79,7 @@ public class PacketLogisticsRequestToServer {
             pos = BlockPos.of(buf.readLong());
             side = Direction.values()[buf.readByte()];
         }
-        ItemStack stack = buf.readItem();
+        ItemStack stack = net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.decode((net.minecraft.network.RegistryFriendlyByteBuf) buf);
         int stackSize = buf.readInt();
         
         if (pos != null) {
@@ -74,9 +89,9 @@ public class PacketLogisticsRequestToServer {
         }
     }
     
-    public static void handle(PacketLogisticsRequestToServer packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketLogisticsRequestToServer packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
             
             Level level = player.level();
@@ -100,6 +115,5 @@ public class PacketLogisticsRequestToServer {
                 uniqueId++;
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

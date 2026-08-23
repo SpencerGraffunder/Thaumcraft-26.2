@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.devices;
+import net.minecraft.world.level.redstone.Orientation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -223,7 +224,7 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
 
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
-        if (!level.isClientSide && !oldState.is(state.getBlock())) {
+        if (!level.isClientSide() && !oldState.is(state.getBlock())) {
             updateSurroundingInlay(level, pos, state);
             for (Direction dir : Direction.Plane.HORIZONTAL) {
                 notifyInlayNeighborsOfStateChange(level, pos.relative(dir));
@@ -233,7 +234,7 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!level.isClientSide && !state.is(newState.getBlock())) {
+        if (!level.isClientSide() && !state.is(newState.getBlock())) {
             super.onRemove(state, level, pos, newState, isMoving);
             for (Direction dir : Direction.Plane.HORIZONTAL) {
                 level.updateNeighborsAt(pos.relative(dir), this);
@@ -246,8 +247,8 @@ public class BlockInlay extends Block implements IInfusionStabiliserExt {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if (!level.isClientSide) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, Orientation orientation, boolean isMoving) {
+        if (!level.isClientSide()) {
             if (state.canSurvive(level, pos)) {
                 updateSurroundingInlay(level, pos, state);
             } else {

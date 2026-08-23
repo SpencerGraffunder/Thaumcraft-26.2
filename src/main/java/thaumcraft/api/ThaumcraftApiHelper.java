@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.crafting.StrictNBTItemStack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import thaumcraft.api.aspects.Aspect;
@@ -78,7 +78,7 @@ public class ThaumcraftApiHelper {
         ByteBuffer bb = ByteBuffer.allocate(4);
         bb.putInt(0, data);
         bb.put(index, b);
-        return bb.getInt(0);
+        return bb.getIntOr(0, 0);
     }
 
     public static byte getByteInInt(int data, int index) {
@@ -91,7 +91,7 @@ public class ThaumcraftApiHelper {
         ByteBuffer bb = ByteBuffer.allocate(8);
         bb.putLong(0, data);
         bb.put(index, b);
-        return bb.getLong(0);
+        return bb.getLongOr(0, 0L);
     }
 
     public static byte getByteInLong(long data, int index) {
@@ -122,7 +122,7 @@ public class ThaumcraftApiHelper {
         if (aspect == null) return ItemStack.EMPTY;
         
         // Get the crystal essence item from the registry
-        Item crystalItem = ForgeRegistries.ITEMS.getValue(
+        Item crystalItem = BuiltInRegistries.ITEM.getValue(
                 Identifier.fromNamespaceAndPath("thaumcraft", "crystal_essence"));
         
         if (crystalItem == null) return ItemStack.EMPTY;

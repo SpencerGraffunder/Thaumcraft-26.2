@@ -76,7 +76,7 @@ public class BigMagicTreeFeature extends Feature<NoneFeatureConfiguration> {
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
         BlockPos pos = context.origin();
-        RandomSource random = context.getRandom()();
+        RandomSource random = context.random();
         
         return generate(level, random, pos);
     }

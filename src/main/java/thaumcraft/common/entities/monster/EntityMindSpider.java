@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.monster;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -11,7 +13,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -50,10 +52,10 @@ public class EntityMindSpider extends Spider {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_HARMLESS, false);
-        this.entityData.define(DATA_VIEWER, "");
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_HARMLESS, false);
+        builder.define(DATA_VIEWER, "");
     }
     
     public String getViewer() {
@@ -90,7 +92,7 @@ public class EntityMindSpider extends Spider {
         super.tick();
         
         // Despawn after lifespan expires
-        if (!level().isClientSide && tickCount > lifeSpan) {
+        if (!level().isClientSide() && tickCount > lifeSpan) {
             discard();
         }
     }
@@ -101,11 +103,11 @@ public class EntityMindSpider extends Spider {
     }
     
     @Override
-    public boolean doHurtTarget(Entity target) {
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
         if (isHarmless()) {
             return false;
         }
-        return super.doHurtTarget(target);
+        return super.doHurtTarget(level, target);
     }
     
     @Override
@@ -119,17 +121,17 @@ public class EntityMindSpider extends Spider {
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("Harmless", isHarmless());
-        tag.putString("Viewer", getViewer());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("Harmless", isHarmless());
+        output.putString("Viewer", getViewer());
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setHarmless(tag.getBoolean("Harmless"));
-        setViewer(tag.getString("Viewer"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setHarmless(input.getBooleanOr("Harmless", false));
+        setViewer(input.getStringOr("Viewer", ""));
     }
     
     @Nullable

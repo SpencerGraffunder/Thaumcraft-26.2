@@ -29,7 +29,7 @@ import thaumcraft.common.lib.utils.PosXY;
  * 
  * Aura is generated based on biome modifiers and nearby chunks.
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
 public class AuraChunkHandler {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(AuraChunkHandler.class);
@@ -64,13 +64,13 @@ public class AuraChunkHandler {
         ChunkPos chunkPos = chunk.getPos();
         
         if (data.contains(TAG_THAUMCRAFT)) {
-            CompoundTag tcData = data.getCompound(TAG_THAUMCRAFT);
+            CompoundTag tcData = data.getCompoundOrEmpty(TAG_THAUMCRAFT);
             if (tcData.contains(TAG_AURA)) {
-                CompoundTag auraData = tcData.getCompound(TAG_AURA);
+                CompoundTag auraData = tcData.getCompoundOrEmpty(TAG_AURA);
                 
-                short base = auraData.getShort(TAG_BASE);
-                float vis = auraData.getFloat(TAG_VIS);
-                float flux = auraData.getFloat(TAG_FLUX);
+                short base = auraData.getShortOr(TAG_BASE, (short)0);
+                float vis = auraData.getFloatOr(TAG_VIS, 0.0F);
+                float flux = auraData.getFloatOr(TAG_FLUX, 0.0F);
                 
                 // Restore aura chunk data
                 AuraHandler.addAuraChunk(dimension, chunk, base, vis, flux);
@@ -99,7 +99,7 @@ public class AuraChunkHandler {
         ResourceKey<Level> dimension = level.dimension();
         ChunkPos chunkPos = event.getChunk().getPos();
         
-        AuraChunk auraChunk = AuraHandler.getAuraChunk(dimension, chunkPos.x, chunkPos.z);
+        AuraChunk auraChunk = AuraHandler.getAuraChunk(dimension, chunkPos.x(), chunkPos.z());
         if (auraChunk == null) {
             return;
         }
@@ -107,7 +107,7 @@ public class AuraChunkHandler {
         CompoundTag data = event.getData();
         
         CompoundTag tcData = data.contains(TAG_THAUMCRAFT) ? 
-                data.getCompound(TAG_THAUMCRAFT) : new CompoundTag();
+                data.getCompoundOrEmpty(TAG_THAUMCRAFT) : new CompoundTag();
         
         CompoundTag auraData = new CompoundTag();
         auraData.putShort(TAG_BASE, auraChunk.getBase());
@@ -145,7 +145,7 @@ public class AuraChunkHandler {
         ChunkPos chunkPos = chunk.getPos();
         
         // Check if this chunk already has aura data
-        AuraChunk existingAura = AuraHandler.getAuraChunk(dimension, chunkPos.x, chunkPos.z);
+        AuraChunk existingAura = AuraHandler.getAuraChunk(dimension, chunkPos.x(), chunkPos.z());
         if (existingAura != null && existingAura.getBase() > 0) {
             // Chunk already has aura, skip generation
             return;
@@ -173,7 +173,7 @@ public class AuraChunkHandler {
         ChunkPos chunkPos = event.getChunk().getPos();
         
         // Remove from memory (already saved by ChunkDataEvent.Save)
-        AuraHandler.removeAuraChunk(dimension, chunkPos.x, chunkPos.z);
+        AuraHandler.removeAuraChunk(dimension, chunkPos.x(), chunkPos.z());
     }
     
     /**

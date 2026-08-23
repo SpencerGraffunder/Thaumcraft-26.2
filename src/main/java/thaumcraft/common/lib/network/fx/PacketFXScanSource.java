@@ -1,21 +1,26 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.BlockItemTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.common.lib.utils.Utils;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
 /**
  * PacketFXScanSource - Visual effect for ore/resource scanning.
@@ -25,7 +30,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXScanSource {
+public class PacketFXScanSource implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXScanSource> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxscansource"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXScanSource> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXScanSource::encode, PacketFXScanSource::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     // Ore type color constants
     private static final int C_QUARTZ = 15064789;    // Light pink/white
@@ -67,11 +83,10 @@ public class PacketFXScanSource {
         return new PacketFXScanSource(loc, size);
     }
     
-    public static void handle(PacketFXScanSource packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXScanSource packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)
@@ -189,28 +204,28 @@ public class PacketFXScanSource {
         }
         
         // Check by block tags (1.20.1 way)
-        if (state.is(BlockTags.IRON_ORES)) {
+        if (state.is(BlockItemTags.IRON_ORES.block())) {
             return C_IRON;
         }
-        if (state.is(BlockTags.COAL_ORES)) {
+        if (state.is(BlockItemTags.COAL_ORES.block())) {
             return C_COAL;
         }
-        if (state.is(BlockTags.REDSTONE_ORES)) {
+        if (state.is(BlockItemTags.REDSTONE_ORES.block())) {
             return C_REDSTONE;
         }
-        if (state.is(BlockTags.GOLD_ORES)) {
+        if (state.is(BlockItemTags.GOLD_ORES.block())) {
             return C_GOLD;
         }
-        if (state.is(BlockTags.LAPIS_ORES)) {
+        if (state.is(BlockItemTags.LAPIS_ORES.block())) {
             return C_LAPIS;
         }
-        if (state.is(BlockTags.DIAMOND_ORES)) {
+        if (state.is(BlockItemTags.DIAMOND_ORES.block())) {
             return C_DIAMOND;
         }
-        if (state.is(BlockTags.EMERALD_ORES)) {
+        if (state.is(BlockItemTags.EMERALD_ORES.block())) {
             return C_EMERALD;
         }
-        if (state.is(BlockTags.COPPER_ORES)) {
+        if (state.is(BlockItemTags.COPPER_ORES.block())) {
             return C_COPPER;
         }
         

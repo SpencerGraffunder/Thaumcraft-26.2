@@ -1,6 +1,7 @@
 package thaumcraft.common.tiles.devices;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -78,10 +79,10 @@ public class TileSpa extends TileThaumcraft implements Container {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        charge = tag.getInt("Charge");
-        mixMode = tag.getBoolean("MixMode");
+        charge = tag.getIntOr("Charge", 0);
+        mixMode = tag.getBooleanOr("MixMode", false);
         if (tag.contains("BathSalts")) {
-            bathSalts = ItemStack.of(tag.getCompound("BathSalts"));
+            bathSalts = ItemStack.of(tag.getCompoundOrEmpty("BathSalts"));
         } else {
             bathSalts = ItemStack.EMPTY;
         }
@@ -180,20 +181,20 @@ public class TileSpa extends TileThaumcraft implements Container {
      */
     private boolean removeNegativeEffect(LivingEntity entity) {
         // List of negative effects to cleanse
-        MobEffect[] negativeEffects = {
+        List<Holder<MobEffect>> negativeEffects = List.of(
                 MobEffects.POISON,
                 MobEffects.WITHER,
                 MobEffects.HUNGER,
                 MobEffects.WEAKNESS,
-                MobEffects.MOVEMENT_SLOWDOWN,
-                MobEffects.DIG_SLOWDOWN,
+                MobEffects.SLOWNESS,
+                MobEffects.MINING_FATIGUE,
                 MobEffects.BLINDNESS,
-                MobEffects.CONFUSION,
+                MobEffects.NAUSEA,
                 MobEffects.UNLUCK,
                 MobEffects.BAD_OMEN
-        };
+        );
 
-        for (MobEffect effect : negativeEffects) {
+        for (Holder<MobEffect> effect : negativeEffects) {
             if (entity.hasEffect(effect)) {
                 entity.removeEffect(effect);
                 return true;

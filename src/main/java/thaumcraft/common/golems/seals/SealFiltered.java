@@ -54,16 +54,16 @@ public abstract class SealFiltered implements ISeal, ISealConfigFilter {
             }
         }
         
-        blacklist = nbt.getBoolean("bl");
+        blacklist = nbt.getBooleanOr("bl", false);
         
         // Load filter sizes
         filterSize = NonNullList.withSize(getFilterSize(), 0);
-        ListTag sizeList = nbt.getList("Sizes", 10); // 10 = CompoundTag
+        ListTag sizeList = nbt.getListOrEmpty("Sizes"); // 10 = CompoundTag
         for (int i = 0; i < sizeList.size(); i++) {
-            CompoundTag sizeTag = sizeList.getCompound(i);
-            int slot = sizeTag.getByte("Slot") & 0xFF;
+            CompoundTag sizeTag = sizeList.getCompoundOrEmpty(i);
+            int slot = sizeTag.getByteOr("Slot", (byte)0) & 0xFF;
             if (slot >= 0 && slot < filterSize.size()) {
-                filterSize.set(slot, sizeTag.getInt("Size"));
+                filterSize.set(slot, sizeTag.getIntOr("Size", 0));
             }
         }
     }

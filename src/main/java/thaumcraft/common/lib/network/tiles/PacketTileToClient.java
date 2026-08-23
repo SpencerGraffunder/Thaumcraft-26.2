@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.tiles;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -8,10 +13,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.common.tiles.TileThaumcraft;
 
-import java.util.function.Supplier;
 
 /**
  * PacketTileToClient - Sends custom tile entity messages from server to client.
@@ -23,7 +26,18 @@ import java.util.function.Supplier;
  * 
  * Ported from 1.12.2
  */
-public class PacketTileToClient {
+public class PacketTileToClient implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketTileToClient> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packettiletoclient"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketTileToClient> STREAM_CODEC =
+        StreamCodec.ofMember(PacketTileToClient::encode, PacketTileToClient::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private long pos;
     private CompoundTag nbt;
@@ -48,10 +62,9 @@ public class PacketTileToClient {
         return msg;
     }
     
-    public static void handle(PacketTileToClient msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(PacketTileToClient msg, IPayloadContext ctxSupplier) {
+        IPayloadContext ctx = ctxSupplier;
         ctx.enqueueWork(() -> handleOnClient(msg));
-        ctx.setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

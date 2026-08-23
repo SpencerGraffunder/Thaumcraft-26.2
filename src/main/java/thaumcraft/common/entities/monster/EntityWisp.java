@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -69,7 +72,7 @@ public class EntityWisp extends FlyingMob implements Enemy {
     }
     
     /**
-     * Static spawn rule check for use with SpawnPlacementRegisterEvent.
+     * Static spawn rule check for use with RegisterSpawnPlacementsEvent.
      * Wisps spawn in dark areas and not in peaceful mode.
      */
     public static boolean checkWispSpawnRules(EntityType<? extends EntityWisp> type, ServerLevelAccessor level, 
@@ -97,9 +100,9 @@ public class EntityWisp extends FlyingMob implements Enemy {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE, "");
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE, "");
     }
     
     public String getWispType() {
@@ -151,7 +154,7 @@ public class EntityWisp extends FlyingMob implements Enemy {
         super.die(source);
         
         // Particle burst on death (client-side)
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             for (int i = 0; i < 20; i++) {
                 level().addParticle(ParticleTypes.WITCH,
                         getX() + (random.nextDouble() - 0.5) * 0.9,
@@ -167,7 +170,7 @@ public class EntityWisp extends FlyingMob implements Enemy {
         super.tick();
         
         // Initial spawn burst
-        if (level().isClientSide && tickCount <= 1) {
+        if (level().isClientSide() && tickCount <= 1) {
             for (int i = 0; i < 30; i++) {
                 level().addParticle(ParticleTypes.WITCH,
                         getX() + (random.nextDouble() - 0.5),
@@ -178,7 +181,7 @@ public class EntityWisp extends FlyingMob implements Enemy {
         }
         
         // Ambient particles
-        if (level().isClientSide && random.nextBoolean()) {
+        if (level().isClientSide() && random.nextBoolean()) {
             Aspect aspect = getAspect();
             if (aspect != null) {
                 // Spawn colored particles based on aspect
@@ -196,8 +199,8 @@ public class EntityWisp extends FlyingMob implements Enemy {
     }
     
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
         
         // Initialize aspect type if not set
         if (getWispType().isEmpty()) {
@@ -352,8 +355,8 @@ public class EntityWisp extends FlyingMob implements Enemy {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
-        super.dropCustomDeathLoot(source, lootingLevel, wasRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
+        super.dropCustomDeathLoot(level, source, wasRecentlyHit);
         
         // Drop crystal of wisp's aspect type
         Aspect aspect = getAspect();
@@ -397,14 +400,14 @@ public class EntityWisp extends FlyingMob implements Enemy {
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putString("WispType", getWispType());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putString("WispType", getWispType());
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setWispType(tag.getString("WispType"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setWispType(input.getStringOr("WispType", ""));
     }
 }

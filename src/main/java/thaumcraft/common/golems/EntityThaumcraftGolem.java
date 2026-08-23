@@ -1,6 +1,8 @@
 package thaumcraft.common.golems;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -92,12 +94,12 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_PROPS1, 0);
-        this.entityData.define(DATA_PROPS2, 0);
-        this.entityData.define(DATA_PROPS3, 0);
-        this.entityData.define(DATA_CLIMBING, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_PROPS1, 0);
+        builder.define(DATA_PROPS2, 0);
+        builder.define(DATA_PROPS3, 0);
+        builder.define(DATA_CLIMBING, (byte) 0);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -120,7 +122,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         ByteBuffer bb = ByteBuffer.allocate(8);
         bb.putInt(this.entityData.get(DATA_PROPS1));
         bb.putInt(this.entityData.get(DATA_PROPS2));
-        return GolemProperties.fromLong(bb.getLong(0));
+        return GolemProperties.fromLong(bb.getLongOr(0, 0L));
     }
 
     @Override
@@ -268,7 +270,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
             setNoGravity(true);
         }
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (firstRun) {
                 firstRun = false;
                 if (hasRestriction() && !blockPosition().equals(getRestrictCenter())) {
@@ -450,7 +452,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     }
 
     @Override
-    public boolean doHurtTarget(Entity target) {
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
         float damage = (float) getAttribute(Attributes.ATTACK_DAMAGE).getValue();
         
         boolean hit = target.hurt(damageSources().mobAttack(this), damage);
@@ -499,7 +501,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         setFlags(flags);
         
         // Rebuild AI if follow state changed (server-side only)
-        if (!level().isClientSide && wasFollowing != following) {
+        if (!level().isClientSide() && wasFollowing != following) {
             // Clear current task when switching modes
             if (task != null) {
                 task.setReserved(false);
@@ -535,7 +537,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
 
     @Override
     public void addRankXp(int xp) {
-        if (!getProperties().hasTrait(EnumGolemTrait.SMART) || level().isClientSide) {
+        if (!getProperties().hasTrait(EnumGolemTrait.SMART) || level().isClientSide()) {
             return;
         }
         
@@ -702,7 +704,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         if (isRemoved()) return InteractionResult.PASS;
         if (player.getItemInHand(hand).getItem() == Items.NAME_TAG) return InteractionResult.PASS;
         
-        if (!level().isClientSide && isOwner(player)) {
+        if (!level().isClientSide() && isOwner(player)) {
             ItemStack heldItem = player.getItemInHand(hand);
             
             if (player.isShiftKeyDown()) {
@@ -717,7 +719,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
                 ItemStack placer = new ItemStack(ModItems.GOLEM_PLACER.get());
                 placer.getOrCreateTag().putLong("props", getProperties().toLong());
                 placer.getTag().putInt("xp", rankXp);
-                spawnAtLocation(placer, 0.5f);
+                spawnAtLocation((ServerLevel) this.level(), placer, 0.5f);
                 
                 discard();
                 player.swing(hand);
@@ -750,7 +752,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     private void dropCarried() {
         for (ItemStack stack : getCarrying()) {
             if (!stack.isEmpty()) {
-                spawnAtLocation(stack, 0.25f);
+                spawnAtLocation((ServerLevel) this.level(), stack, 0.25f);
             }
         }
         // Clear inventory
@@ -768,15 +770,15 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
             task.setReserved(false);
         }
         super.die(source);
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             dropCarried();
         }
     }
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
-        super.dropCustomDeathLoot(source, looting, recentlyHit);
-        float bonus = looting * 0.15f;
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, source, recentlyHit);
+        float bonus = 0 * 0.15f;
         
         for (ItemStack stack : getProperties().generateComponents()) {
             ItemStack drop = stack.copy();
@@ -784,7 +786,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
                 if (drop.getCount() > 1) {
                     drop.shrink(random.nextInt(drop.getCount()));
                 }
-                spawnAtLocation(drop, 0.25f);
+                spawnAtLocation((ServerLevel) this.level(), drop, 0.25f);
             }
         }
     }
@@ -792,23 +794,23 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     // ==================== NBT ====================
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putLong("props", getProperties().toLong());
-        tag.putLong("homepos", getRestrictCenter().asLong());
-        tag.putByte("gflags", getFlags());
-        tag.putInt("rankXP", rankXp);
-        tag.putByte("color", getGolemColor());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putLong("props", getProperties().toLong());
+        output.putLong("homepos", getRestrictCenter().asLong());
+        output.putByte("gflags", getFlags());
+        output.putInt("rankXP", rankXp);
+        output.putByte("color", getGolemColor());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setProperties(GolemProperties.fromLong(tag.getLong("props")));
-        restrictTo(BlockPos.of(tag.getLong("homepos")), 32);
-        setFlags(tag.getByte("gflags"));
-        rankXp = tag.getInt("rankXP");
-        setGolemColor(tag.getByte("color"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setProperties(GolemProperties.fromLong(input.getLongOr("props", 0L)));
+        restrictTo(BlockPos.of(input.getLongOr("homepos", 0L)), 32);
+        setFlags(input.getByteOr("gflags", (byte)0));
+        rankXp = input.getIntOr("rankXP", 0);
+        setGolemColor(input.getByteOr("color", (byte)0));
         updateEntityAttributes();
     }
 

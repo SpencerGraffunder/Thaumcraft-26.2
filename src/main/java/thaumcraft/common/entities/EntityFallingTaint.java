@@ -1,4 +1,7 @@
 package thaumcraft.common.entities;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -56,7 +59,7 @@ public class EntityFallingTaint extends Entity implements IEntityAdditionalSpawn
     }
     
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
         // No synched data needed
     }
     
@@ -92,7 +95,7 @@ public class EntityFallingTaint extends Entity implements IEntityAdditionalSpawn
         
         BlockPos currentPos = blockPosition();
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // First tick - remove original block
             if (fallTime == 1) {
                 if (oldPos != null && !level().getBlockState(oldPos).equals(fallTile)) {
@@ -150,32 +153,32 @@ public class EntityFallingTaint extends Entity implements IEntityAdditionalSpawn
     }
     
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    protected void addAdditionalSaveData(ValueOutput output) {
         if (fallTile != null) {
-            tag.put("BlockState", NbtUtils.writeBlockState(fallTile));
+            output.put("BlockState", NbtUtils.writeBlockState(fallTile));
         }
-        tag.putInt("Time", fallTime);
-        tag.putFloat("FallHurtAmount", fallHurtAmount);
-        tag.putInt("FallHurtMax", fallHurtMax);
+        output.putInt("Time", fallTime);
+        output.putFloat("FallHurtAmount", fallHurtAmount);
+        output.putInt("FallHurtMax", fallHurtMax);
         if (oldPos != null) {
-            tag.putLong("Old", oldPos.asLong());
+            output.putLong("Old", oldPos.asLong());
         }
     }
     
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        if (tag.contains("BlockState")) {
-            fallTile = NbtUtils.readBlockState(level().holderLookup(net.minecraft.core.registries.Registries.BLOCK), tag.getCompound("BlockState"));
+    protected void readAdditionalSaveData(ValueInput input) {
+        if (input.contains("BlockState")) {
+            fallTile = NbtUtils.readBlockState(level().holderLookup(net.minecraft.core.registries.Registries.BLOCK), input.getCompoundOrEmpty("BlockState"));
         } else {
             fallTile = Blocks.SAND.defaultBlockState();
         }
-        fallTime = tag.getInt("Time");
-        if (tag.contains("FallHurtAmount")) {
-            fallHurtAmount = tag.getFloat("FallHurtAmount");
-            fallHurtMax = tag.getInt("FallHurtMax");
+        fallTime = input.getIntOr("Time", 0);
+        if (input.contains("FallHurtAmount")) {
+            fallHurtAmount = input.getFloatOr("FallHurtAmount", 0.0F);
+            fallHurtMax = input.getIntOr("FallHurtMax", 0);
         }
-        if (tag.contains("Old")) {
-            oldPos = BlockPos.of(tag.getLong("Old"));
+        if (input.contains("Old")) {
+            oldPos = BlockPos.of(input.getLongOr("Old", 0L));
         }
     }
     

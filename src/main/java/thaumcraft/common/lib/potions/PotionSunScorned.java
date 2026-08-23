@@ -21,7 +21,7 @@ public class PotionSunScorned extends MobEffect {
     
     @Override
     public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide) return;
+        if (target.level().isClientSide()) return;
         
         Level level = target.level();
         float brightness = target.getLightLevelDependentMagicValue();

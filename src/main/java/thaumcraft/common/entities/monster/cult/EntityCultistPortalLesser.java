@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster.cult;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -52,9 +55,9 @@ public class EntityCultistPortalLesser extends Monster {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ACTIVE, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ACTIVE, false);
     }
     
     public boolean isActive() {
@@ -84,15 +87,15 @@ public class EntityCultistPortalLesser extends Monster {
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("active", isActive());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("active", isActive());
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setActive(tag.getBoolean("active"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setActive(input.getBooleanOr("active", false));
     }
     
     @Override
@@ -111,7 +114,7 @@ public class EntityCultistPortalLesser extends Monster {
     }
     
     @Override
-    protected void customServerAiStep() {
+    protected void customServerAiStep(ServerLevel level) {
         // Override to prevent default AI behavior
     }
     
@@ -133,7 +136,7 @@ public class EntityCultistPortalLesser extends Monster {
             ++activeCounter;
         }
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (!isActive()) {
                 // Check for nearby player every 10 ticks
                 if (tickCount % 10 == 0) {
@@ -182,7 +185,7 @@ public class EntityCultistPortalLesser extends Monster {
         }
         
         // Client-side visual effects
-        if (level().isClientSide && isActive()) {
+        if (level().isClientSide() && isActive()) {
             // Portal particles
             if (random.nextInt(3) == 0) {
                 double dx = (random.nextDouble() - 0.5) * getBbWidth();
@@ -272,7 +275,7 @@ public class EntityCultistPortalLesser extends Monster {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
         // No drops
     }
     
@@ -308,7 +311,7 @@ public class EntityCultistPortalLesser extends Monster {
     
     @Override
     public void die(DamageSource source) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Create explosion on death
             level().explode(this, getX(), getY(), getZ(), 1.5f, Level.ExplosionInteraction.NONE);
         }

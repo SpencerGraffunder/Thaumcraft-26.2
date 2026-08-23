@@ -18,7 +18,7 @@ public class ScanBlock implements IScanThing {
      * @param block The block to scan for
      */
     public ScanBlock(Block block) {
-        this("!" + block.builtInRegistryHolder().key().location().toString(), block);
+        this("!" + block.builtInRegistryHolder().key().identifier().toString(), block);
     }
     
     /**

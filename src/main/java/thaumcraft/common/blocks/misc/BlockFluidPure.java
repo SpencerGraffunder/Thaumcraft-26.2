@@ -93,9 +93,9 @@ public class BlockFluidPure extends Block {
         entity.setDeltaMovement(motion.x * slowFactor, motion.y, motion.z * slowFactor);
         
         // Grant warp ward to players at source blocks (level 7)
-        if (!level.isClientSide && fluidLevel == 7 && entity instanceof Player player) {
+        if (!level.isClientSide() && fluidLevel == 7 && entity instanceof Player player) {
             // Check if player doesn't already have warp ward active
-            if (!player.hasEffect(ModEffects.WARP_WARD.get())) {
+            if (!player.hasEffect(ModEffects.WARP_WARD)) {
                 // Calculate duration based on permanent warp
                 IPlayerWarp warpCap = ThaumcraftCapabilities.getWarp(player);
                 int permWarp = warpCap != null ? warpCap.get(IPlayerWarp.EnumWarpType.PERMANENT) : 0;
@@ -108,7 +108,7 @@ public class BlockFluidPure extends Block {
                 
                 // Grant warp ward effect
                 int duration = Math.min(32000, 200000 / div);
-                player.addEffect(new MobEffectInstance(ModEffects.WARP_WARD.get(), duration, 0, true, true));
+                player.addEffect(new MobEffectInstance(ModEffects.WARP_WARD, duration, 0, true, true));
                 
                 // Consume the fluid
                 level.removeBlock(pos, false);

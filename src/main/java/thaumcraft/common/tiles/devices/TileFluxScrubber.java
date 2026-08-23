@@ -62,8 +62,8 @@ public class TileFluxScrubber extends TileThaumcraft implements IEssentiaTranspo
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        storedFlux = tag.getInt("StoredFlux");
-        active = tag.getBoolean("Active");
+        storedFlux = tag.getIntOr("StoredFlux", 0);
+        active = tag.getBooleanOr("Active", false);
     }
 
     // ==================== Tick ====================

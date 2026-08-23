@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.construct;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -86,9 +89,9 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FLAGS, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FLAGS, (byte) 0);
     }
     
     public static AttributeSupplier.Builder createAttributes() {
@@ -196,7 +199,7 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
     public void tick() {
         super.tick();
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Check PvP and clear player targets if needed
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server != null && !server.isPvpAllowed() && getTarget() instanceof Player && getTarget() != getOwner()) {
@@ -215,13 +218,13 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
     
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (!level().isClientSide && isOwner(player) && !isRemoved()) {
+        if (!level().isClientSide() && isOwner(player) && !isRemoved()) {
             if (player.isShiftKeyDown()) {
                 // Pick up turret
                 playSound(SoundEvents.ITEM_PICKUP, 1.0f, 1.0f);
                 dropAmmo();
                 // Drop advanced turret placer
-                spawnAtLocation(new ItemStack(ModItems.TURRET_PLACER_ADVANCED.get()), 0.5f);
+                spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.TURRET_PLACER_ADVANCED.get()), 0.5f);
                 discard();
                 player.swing(hand);
                 return InteractionResult.SUCCESS;
@@ -243,15 +246,15 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
     // ==================== Death ====================
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
-        float bonus = looting * 0.15f;
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+        float bonus = 0 * 0.15f;
         
         // TODO: Drop Thaumcraft items when implemented
         // Advanced turret drops more/better items
         // if (random.nextFloat() < 0.2f + bonus) spawnAtLocation(new ItemStack(ItemsTC.mind, 1, 1));
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation(ItemsTC.mechanismSimple);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation(BlocksTC.plankGreatwood);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation(BlocksTC.plankGreatwood);
+        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), ItemsTC.mechanismSimple);
+        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), BlocksTC.plankGreatwood);
+        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), BlocksTC.plankGreatwood);
         // if (random.nextFloat() < 0.3f + bonus) spawnAtLocation(new ItemStack(ItemsTC.plate, 1, 0));
         // if (random.nextFloat() < 0.4f + bonus) spawnAtLocation(new ItemStack(ItemsTC.plate, 1, 1));
         // if (random.nextFloat() < 0.4f + bonus) spawnAtLocation(new ItemStack(ItemsTC.plate, 1, 1));
@@ -260,16 +263,16 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putByte("targets", getFlags());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putByte("targets", getFlags());
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains("targets")) {
-            setFlags(tag.getByte("targets"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        if (input.contains("targets")) {
+            setFlags(input.getByteOr("targets", (byte)0));
         }
     }
     

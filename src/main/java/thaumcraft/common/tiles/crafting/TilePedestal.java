@@ -37,7 +37,7 @@ public class TilePedestal extends TileThaumcraftInventory {
     public void setItemFromInfusion(ItemStack stack) {
         setItem(0, stack);
         setChanged();
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             syncTile(false);
         }
     }

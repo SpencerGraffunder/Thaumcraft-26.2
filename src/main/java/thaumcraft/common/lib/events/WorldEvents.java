@@ -27,7 +27,7 @@ import java.util.HashMap;
  * 
  * Ported from Thaumcraft 1.12.2 to 1.20.1
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
 public class WorldEvents {
     
     public static final WorldEvents INSTANCE = new WorldEvents();
@@ -42,7 +42,7 @@ public class WorldEvents {
     public static void onWorldLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
             AuraHandler.addAuraWorld(serverLevel.dimension());
-            Thaumcraft.LOGGER.debug("Loaded aura for dimension: {}", serverLevel.dimension().location());
+            Thaumcraft.LOGGER.debug("Loaded aura for dimension: {}", serverLevel.dimension().identifier());
         }
     }
     
@@ -60,7 +60,7 @@ public class WorldEvents {
     @SubscribeEvent
     public static void onWorldUnload(LevelEvent.Unload event) {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
-            String dimKey = serverLevel.dimension().location().toString();
+            String dimKey = serverLevel.dimension().identifier().toString();
             
             // Clean up seal entities for this dimension
             // TODO: SealHandler.sealEntities.remove(dimKey);
@@ -110,7 +110,7 @@ public class WorldEvents {
     public static void onNoteBlockPlay(NoteBlockEvent.Play event) {
         if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
         
-        String dimKey = serverLevel.dimension().location().toString();
+        String dimKey = serverLevel.dimension().identifier().toString();
         
         noteBlockEvents.computeIfAbsent(dimKey, k -> new ArrayList<>());
         ArrayList<NoteBlockData> list = noteBlockEvents.get(dimKey);

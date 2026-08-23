@@ -1,12 +1,15 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.common.world.aura.AuraChunk;
 
-import java.util.function.Supplier;
 
 /**
  * PacketAuraToClient - Syncs aura data for a chunk from server to client.
@@ -18,7 +21,18 @@ import java.util.function.Supplier;
  * 
  * Ported from 1.12.2
  */
-public class PacketAuraToClient {
+public class PacketAuraToClient implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketAuraToClient> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetauratoclient"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketAuraToClient> STREAM_CODEC =
+        StreamCodec.ofMember(PacketAuraToClient::encode, PacketAuraToClient::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private short base;
     private float vis;
@@ -57,10 +71,9 @@ public class PacketAuraToClient {
         return msg;
     }
     
-    public static void handle(PacketAuraToClient msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(PacketAuraToClient msg, IPayloadContext ctxSupplier) {
+        IPayloadContext ctx = ctxSupplier;
         ctx.enqueueWork(() -> handleOnClient(msg));
-        ctx.setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

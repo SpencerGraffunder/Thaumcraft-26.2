@@ -76,7 +76,7 @@ public class BlockJar extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -124,14 +124,14 @@ public class BlockJar extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide && jarType != JarType.BRAIN) {
+        if (level.isClientSide() && jarType != JarType.BRAIN) {
             return null;
         }
         
         return switch (jarType) {
             case BRAIN -> {
                 if (type == ModBlockEntities.JAR_BRAIN.get()) {
-                    if (level.isClientSide) {
+                    if (level.isClientSide()) {
                         yield (lvl, pos, st, te) -> TileJarBrain.clientTick(lvl, pos, st, (TileJarBrain) te);
                     } else {
                         yield (lvl, pos, st, te) -> TileJarBrain.serverTick(lvl, pos, st, (TileJarBrain) te);

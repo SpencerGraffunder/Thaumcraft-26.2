@@ -79,7 +79,7 @@ public class BlockGolemBuilder extends BlockTCDevice {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return createTickerHelper(type, ModBlockEntities.GOLEM_BUILDER.get(), TileGolemBuilder::clientTick);
         } else {
             return createTickerHelper(type, ModBlockEntities.GOLEM_BUILDER.get(), TileGolemBuilder::serverTick);
@@ -89,7 +89,7 @@ public class BlockGolemBuilder extends BlockTCDevice {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         

@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -8,9 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 
-import java.util.function.Supplier;
 
 /**
  * Packet to spawn shield rune visual effects on an entity.
@@ -24,7 +27,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketFXShield {
+public class PacketFXShield implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXShield> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxshield"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXShield> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXShield::encode, PacketFXShield::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int sourceEntityId;
     private final int targetEntityId;
@@ -43,9 +57,8 @@ public class PacketFXShield {
         return new PacketFXShield(buf.readInt(), buf.readInt());
     }
     
-    public static void handle(PacketFXShield packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> handleClient(packet));
-        ctx.get().setPacketHandled(true);
+    public static void handle(PacketFXShield packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> handleClient(packet));
     }
     
     @OnlyIn(Dist.CLIENT)

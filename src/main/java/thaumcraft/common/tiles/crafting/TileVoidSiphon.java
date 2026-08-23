@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.crafting;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.WorldlyContainer;
@@ -143,7 +145,7 @@ public class TileVoidSiphon extends TileThaumcraftInventory implements WorldlyCo
     @Override
     public boolean triggerEvent(int id, int param) {
         if (id == 5) {
-            if (level != null && level.isClientSide) {
+            if (level != null && level.isClientSide()) {
                 List<EntityFluxRift> rifts = getValidRifts();
                 for (EntityFluxRift rift : rifts) {
                     FXDispatcher.INSTANCE.voidStreak(
@@ -160,15 +162,15 @@ public class TileVoidSiphon extends TileThaumcraftInventory implements WorldlyCo
     // ==================== NBT ====================
     
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putShort("progress", (short)progress);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putShort("progress", (short)progress);
     }
     
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        progress = tag.getShort("progress");
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        progress = input.getShortOr("progress", (short)0);
     }
     
     // ==================== Inventory ====================

@@ -130,7 +130,7 @@ public class FocusEffectFire extends FocusEffect {
         if (caster != null && caster.level() != null) {
             caster.level().playSound(null, caster.blockPosition().above(), 
                 SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 
-                1.0f, 1.0f + (float)(caster.level().random.nextGaussian() * 0.05));
+                1.0f, 1.0f + (float)(caster.level().getRandom().nextGaussian() * 0.05));
         }
     }
     

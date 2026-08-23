@@ -2,7 +2,9 @@ package thaumcraft.common.tiles.devices;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.WorldlyContainer;
@@ -114,12 +116,12 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
                     for (LivingEntity target : targets) {
                         if (target.isAlive() && target.canBeAffected(new MobEffectInstance(effects.get(0).getEffect(), 1))) {
                             for (MobEffectInstance effect : effects) {
-                                MobEffect potion = effect.getEffect();
-                                if (potion.isInstantenous()) {
-                                    potion.applyInstantenousEffect(null, null, target, 
+                                Holder<MobEffect> potion = effect.getEffect();
+                                if (potion.value().isInstantaneous()) {
+                                    potion.value().applyInstantaneousEffect((ServerLevel) level, null, null, target,
                                             effect.getAmplifier(), 1.0);
                                 } else {
-                                    target.addEffect(new MobEffectInstance(potion, 
+                                    target.addEffect(new MobEffectInstance(potion,
                                             effect.getDuration(), effect.getAmplifier()));
                                 }
                             }
@@ -176,7 +178,7 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
     @Override
     public boolean triggerEvent(int id, int param) {
         if (id >= 0) {
-            if (level != null && level.isClientSide) {
+            if (level != null && level.isClientSide()) {
                 venting = 15;
             }
             return true;
@@ -238,7 +240,7 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
     }
     
     private void recalcAspects() {
-        if (level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide()) return;
         
         ItemStack stack = getItem(0);
         color = 0x333333;
@@ -270,8 +272,8 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
                 aspects.add(Aspect.ALCHEMY, 2 + effect.getAmplifier());
                 
                 // Add aspects based on effect type
-                MobEffect potion = effect.getEffect();
-                if (potion.isBeneficial()) {
+                Holder<MobEffect> potion = effect.getEffect();
+                if (potion.value().isBeneficial()) {
                     aspects.add(Aspect.LIFE, 1);
                 } else {
                     aspects.add(Aspect.AVERSION, 1);
@@ -310,8 +312,8 @@ public class TilePotionSprayer extends TileThaumcraftInventory implements IAspec
         recipe.readFromNBT(tag, "recipe");
         recipeProgress = new AspectList();
         recipeProgress.readFromNBT(tag, "progress");
-        charges = tag.getInt("charges");
-        color = tag.getInt("color");
+        charges = tag.getIntOr("charges", 0);
+        color = tag.getIntOr("color", 0);
     }
     
     // ==================== WorldlyContainer ====================

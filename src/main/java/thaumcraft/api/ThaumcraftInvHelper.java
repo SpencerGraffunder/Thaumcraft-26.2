@@ -259,8 +259,8 @@ public class ThaumcraftInvHelper {
         
         // Mod-based matching
         if (filter.useMod) {
-            String mod0 = stack0.getItem().builtInRegistryHolder().key().location().getNamespace();
-            String mod1 = stack1.getItem().builtInRegistryHolder().key().location().getNamespace();
+            String mod0 = stack0.getItem().builtInRegistryHolder().key().identifier().getNamespace();
+            String mod1 = stack1.getItem().builtInRegistryHolder().key().identifier().getNamespace();
             return mod0.equals(mod1);
         }
         

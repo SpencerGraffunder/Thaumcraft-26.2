@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
@@ -29,10 +29,10 @@ public class AuraScheduler {
     private static final Random rand = new Random();
 
     @SubscribeEvent
-    public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.side.isClient() || event.phase == TickEvent.Phase.START) return;
+    public static void onLevelTick(LevelTickEvent.Post event) {
+        if (event.getLevel().isClientSide()) return;
         
-        if (event.level instanceof ServerLevel level) {
+        if (event.getLevel() instanceof ServerLevel level) {
             ResourceKey<Level> dim = level.dimension();
             
             // Only run once per second-ish (20 ticks) per dimension
@@ -100,8 +100,8 @@ public class AuraScheduler {
         List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.Plane.HORIZONTAL.stream().toArray(Direction[]::new)));
         Collections.shuffle(directions, rand);
         
-        int x = auraChunk.getLoc().x;
-        int z = auraChunk.getLoc().z;
+        int x = auraChunk.getLoc().x();
+        int z = auraChunk.getLoc().z();
         
         float base = auraChunk.getBase() * phaseMax;
         boolean dirty = false;

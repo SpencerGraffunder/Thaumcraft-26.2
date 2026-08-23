@@ -40,8 +40,8 @@ public class TileRedstoneRelay extends TileThaumcraft {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        setInputThreshold(tag.getByte("In"));
-        setOutputStrength(tag.getByte("Out"));
+        setInputThreshold(tag.getByteOr("In", (byte)0));
+        setOutputStrength(tag.getByteOr("Out", (byte)0));
     }
 
     // ==================== Configuration ====================

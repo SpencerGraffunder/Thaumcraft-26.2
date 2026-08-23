@@ -38,7 +38,7 @@ public class TileTubeFilter extends TileTube implements IAspectContainer {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        aspectFilter = Aspect.getAspect(tag.getString("AspectFilter"));
+        aspectFilter = Aspect.getAspect(tag.getStringOr("AspectFilter", ""));
     }
 
     // ==================== Suction Override ====================

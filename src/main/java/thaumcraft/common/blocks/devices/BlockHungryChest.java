@@ -48,7 +48,7 @@ import javax.annotation.Nullable;
  */
 public class BlockHungryChest extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 
@@ -87,7 +87,7 @@ public class BlockHungryChest extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -112,7 +112,7 @@ public class BlockHungryChest extends Block implements EntityBlock {
 
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (level.isClientSide || !(entity instanceof ItemEntity itemEntity)) {
+        if (level.isClientSide() || !(entity instanceof ItemEntity itemEntity)) {
             return;
         }
 
@@ -172,7 +172,7 @@ public class BlockHungryChest extends Block implements EntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.HUNGRY_CHEST.get()) {
             return (lvl, pos, blockState, tile) -> {
-                if (lvl.isClientSide) {
+                if (lvl.isClientSide()) {
                     TileHungryChest.clientTick(lvl, pos, blockState, (TileHungryChest) tile);
                 } else {
                     TileHungryChest.serverTick(lvl, pos, blockState, (TileHungryChest) tile);

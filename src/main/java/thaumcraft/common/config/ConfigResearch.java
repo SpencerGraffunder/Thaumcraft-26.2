@@ -4,11 +4,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ambient.Bat;
-import net.minecraft.world.entity.animal.Parrot;
+import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Ghast;
-import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -306,7 +306,7 @@ public class ConfigResearch {
      * Called from PlayerEvents tick handler.
      */
     public static void checkPeriodicResearch(Player player) {
-        if (player.level().isClientSide || !(player instanceof ServerPlayer serverPlayer)) {
+        if (player.level().isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
         
@@ -314,7 +314,7 @@ public class ConfigResearch {
         if (knowledge == null) return;
         
         // Check for dimension-based research
-        Identifier dimKey = player.level().dimension().location();
+        Identifier dimKey = player.level().dimension().identifier();
         
         // Nether discovery
         if (!knowledge.isResearchKnown("m_hellandback") && dimKey.getPath().contains("nether")) {

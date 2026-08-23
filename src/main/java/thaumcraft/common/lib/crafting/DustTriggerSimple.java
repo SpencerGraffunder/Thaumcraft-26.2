@@ -65,7 +65,7 @@ public class DustTriggerSimple implements IDustTrigger {
         }
         
         // Fire crafting event for advancements
-        MinecraftForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(player, result.copy(), null));
+        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(player, result.copy(), null));
         
         BlockState state = level.getBlockState(pos);
         

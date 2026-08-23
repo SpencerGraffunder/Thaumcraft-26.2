@@ -1,13 +1,16 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXBlockMist - Misty/foggy particle effect at a block.
@@ -16,7 +19,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXBlockMist {
+public class PacketFXBlockMist implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXBlockMist> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxblockmist"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXBlockMist> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXBlockMist::encode, PacketFXBlockMist::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final long loc;
     private final int color;
@@ -42,11 +56,10 @@ public class PacketFXBlockMist {
         return new PacketFXBlockMist(loc, color);
     }
     
-    public static void handle(PacketFXBlockMist packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXBlockMist packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

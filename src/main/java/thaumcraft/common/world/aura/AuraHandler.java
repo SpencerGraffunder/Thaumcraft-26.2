@@ -58,18 +58,18 @@ public class AuraHandler {
     public static void addAuraWorld(ResourceKey<Level> dimension) {
         if (!auras.containsKey(dimension)) {
             auras.put(dimension, new AuraWorld(dimension));
-            LOGGER.info("Creating aura cache for dimension {}", dimension.location());
+            LOGGER.info("Creating aura cache for dimension {}", dimension.identifier());
         }
     }
 
     public static void removeAuraWorld(ResourceKey<Level> dimension) {
         auras.remove(dimension);
-        LOGGER.info("Removing aura cache for dimension {}", dimension.location());
+        LOGGER.info("Removing aura cache for dimension {}", dimension.identifier());
     }
 
     public static void addAuraChunk(ResourceKey<Level> dimension, LevelChunk chunk, short base, float vis, float flux) {
         AuraWorld aw = auras.computeIfAbsent(dimension, AuraWorld::new);
-        aw.setAuraChunk(new PosXY(chunk.getPos().x, chunk.getPos().z), new AuraChunk(chunk, base, vis, flux));
+        aw.setAuraChunk(new PosXY(chunk.getPos().x(), chunk.getPos().z()), new AuraChunk(chunk, base, vis, flux));
     }
 
     public static void removeAuraChunk(ResourceKey<Level> dimension, int x, int z) {
@@ -238,7 +238,7 @@ public class AuraHandler {
      */
     public static void generateAura(LevelChunk chunk, RandomSource rand) {
         Level level = chunk.getLevel();
-        BlockPos center = new BlockPos(chunk.getPos().x * 16 + 8, 50, chunk.getPos().z * 16 + 8);
+        BlockPos center = new BlockPos(chunk.getPos().x() * 16 + 8, 50, chunk.getPos().z() * 16 + 8);
         
         // Get biome aura modifier (TODO: implement BiomeHandler)
         float life = getBiomeAuraModifier(level, center);

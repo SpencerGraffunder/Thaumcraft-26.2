@@ -11,7 +11,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.api.distmarker.Dist;
@@ -45,7 +46,7 @@ import java.util.function.Predicate;
  * 
  * Ported from 1.12.2 with 1.20.1 compatibility updates.
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
 public class ServerEvents {
     
     // Track tick counts per dimension for periodic tasks
@@ -66,82 +67,79 @@ public class ServerEvents {
      * World tick event - called every tick for each loaded dimension
      */
     @SubscribeEvent
-    public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        // Only run on server side
-        if (event.side == LogicalSide.CLIENT) {
-            return;
-        }
-        
+    public static void onLevelTick(LevelTickEvent.Pre event) {
         // Only run on ServerLevel
-        if (!(event.level instanceof ServerLevel level)) {
+        if (!(event.getLevel() instanceof ServerLevel level)) {
             return;
         }
-        
-        String dimKey = level.dimension().location().toString();
-        
-        if (event.phase == TickEvent.Phase.START) {
-            // Start aura thread if not already running
-            if (!AuraThreadManager.hasThread(level.dimension()) && AuraHandler.getAuraWorld(level.dimension()) != null) {
-                AuraThreadManager.startThread(level.dimension());
-            }
-        } else {
-            // End of tick phase
-            if (!serverTicks.containsKey(dimKey)) {
-                serverTicks.put(dimKey, 0);
-            }
-            
-            // Process delayed runnables
-            processRunnables(dimKey);
-            
-            // Process block swaps and breaks
-            tickBlockSwap(level);
-            tickBlockBreak(level);
-            
-            int ticks = serverTicks.get(dimKey);
-            
-            // Periodic cleanup (every 20 ticks = 1 second)
-            if (ticks % 20 == 0) {
-                // Clean up suspended or expired golem tasks
-                TaskHandler.clearSuspendedOrExpiredTasks(level);
-                
-                // Mark dirty aura chunks for saving
-                ResourceKey<Level> dimension = level.dimension();
-                CopyOnWriteArrayList<ChunkPos> dirtyChunks = AuraHandler.dirtyChunks.get(dimension);
-                if (dirtyChunks != null && !dirtyChunks.isEmpty()) {
-                    for (ChunkPos pos : dirtyChunks) {
-                        // Mark the chunk as needing to be saved
-                        level.getChunkSource().getChunk(pos.x, pos.z, false);
-                        // The chunk will be marked dirty automatically when aura data is saved
-                    }
-                    dirtyChunks.clear();
-                }
-                
-                // Handle flux rift triggers (if not in wuss mode)
-                if (AuraHandler.riftTrigger.containsKey(dimension)) {
-                    if (!ModConfig.wussMode) {
-                        BlockPos riftPos = AuraHandler.riftTrigger.get(dimension);
-                        EntityFluxRift.createRift(level, riftPos);
-                    }
-                    AuraHandler.riftTrigger.remove(dimension);
-                }
-            }
-            
-            // Tick all seals in this dimension (every tick)
-            SealHandler.tickSealEntities(level);
-            
-            // Increment tick counter
-            serverTicks.put(dimKey, ticks + 1);
+
+        // Start aura thread if not already running
+        if (!AuraThreadManager.hasThread(level.dimension()) && AuraHandler.getAuraWorld(level.dimension()) != null) {
+            AuraThreadManager.startThread(level.dimension());
         }
+    }
+
+    @SubscribeEvent
+    public static void onLevelTickPost(LevelTickEvent.Post event) {
+        // Only run on ServerLevel
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+
+        String dimKey = level.dimension().identifier().toString();
+
+        if (!serverTicks.containsKey(dimKey)) {
+            serverTicks.put(dimKey, 0);
+        }
+
+        // Process delayed runnables
+        processRunnables(dimKey);
+
+        // Process block swaps and breaks
+        tickBlockSwap(level);
+        tickBlockBreak(level);
+
+        int ticks = serverTicks.get(dimKey);
+
+        // Periodic cleanup (every 20 ticks = 1 second)
+        if (ticks % 20 == 0) {
+            // Clean up suspended or expired golem tasks
+            TaskHandler.clearSuspendedOrExpiredTasks(level);
+
+            // Mark dirty aura chunks for saving
+            ResourceKey<Level> dimension = level.dimension();
+            CopyOnWriteArrayList<ChunkPos> dirtyChunks = AuraHandler.dirtyChunks.get(dimension);
+            if (dirtyChunks != null && !dirtyChunks.isEmpty()) {
+                for (ChunkPos pos : dirtyChunks) {
+                    // Mark the chunk as needing to be saved
+                    level.getChunkSource().getChunk(pos.x(), pos.z(), false);
+                    // The chunk will be marked dirty automatically when aura data is saved
+                }
+                dirtyChunks.clear();
+            }
+
+            // Handle flux rift triggers (if not in wuss mode)
+            if (AuraHandler.riftTrigger.containsKey(dimension)) {
+                if (!ModConfig.wussMode) {
+                    BlockPos riftPos = AuraHandler.riftTrigger.get(dimension);
+                    EntityFluxRift.createRift(level, riftPos);
+                }
+                AuraHandler.riftTrigger.remove(dimension);
+            }
+        }
+
+        // Tick all seals in this dimension (every tick)
+        SealHandler.tickSealEntities(level);
+
+        // Increment tick counter
+        serverTicks.put(dimKey, ticks + 1);
     }
     
     /**
      * Client tick event - process delayed client runnables
      */
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
-            return;
-        }
+    public static void onClientTick(ClientTickEvent.Post event) {
         
         if (!clientRunList.isEmpty()) {
             LinkedBlockingQueue<RunnableEntry> temp = new LinkedBlockingQueue<>();
@@ -199,7 +197,7 @@ public class ServerEvents {
      * Process block swap queue
      */
     private static void tickBlockSwap(ServerLevel level) {
-        String dimKey = level.dimension().location().toString();
+        String dimKey = level.dimension().identifier().toString();
         LinkedBlockingQueue<VirtualSwapper> queue = swapList.get(dimKey);
         if (queue == null || queue.isEmpty()) return;
         
@@ -332,7 +330,7 @@ public class ServerEvents {
      * Process block break queue
      */
     private static void tickBlockBreak(ServerLevel level) {
-        String dimKey = level.dimension().location().toString();
+        String dimKey = level.dimension().identifier().toString();
         LinkedBlockingQueue<BreakData> queue = breakList.get(dimKey);
         if (queue == null || queue.isEmpty()) return;
         
@@ -426,7 +424,7 @@ public class ServerEvents {
             int color, boolean pickup, boolean silk, int fortune,
             Predicate<SwapperPredicate> allowSwap, float visCost) {
         
-        String dimKey = level.dimension().location().toString();
+        String dimKey = level.dimension().identifier().toString();
         LinkedBlockingQueue<VirtualSwapper> queue = swapList.computeIfAbsent(dimKey, k -> new LinkedBlockingQueue<>());
         queue.offer(new VirtualSwapper(pos, source, target, consumeTarget, life, player,
             fx, fancy, color, pickup, silk, fortune, allowSwap, visCost));
@@ -439,7 +437,7 @@ public class ServerEvents {
             boolean fx, boolean silk, int fortune, float strength,
             float durabilityCurrent, float durabilityMax, int delay, float visCost, Runnable onComplete) {
         
-        String dimKey = level.dimension().location().toString();
+        String dimKey = level.dimension().identifier().toString();
         
         if (delay > 0) {
             addRunnableServer(level, () -> addBreaker(level, pos, source, player, fx, silk, fortune,
@@ -461,7 +459,7 @@ public class ServerEvents {
     public static void addRunnableServer(Level level, Runnable runnable, int delay) {
         if (level.isClientSide()) return;
         
-        String dimKey = level.dimension().location().toString();
+        String dimKey = level.dimension().identifier().toString();
         LinkedBlockingQueue<RunnableEntry> rlist = serverRunList.computeIfAbsent(dimKey, k -> new LinkedBlockingQueue<>());
         rlist.add(new RunnableEntry(runnable, delay));
     }
@@ -498,7 +496,7 @@ public class ServerEvents {
      * Server stopping event - clean up resources
      */
     @SubscribeEvent
-    public static void onServerStopping(net.minecraftforge.event.server.ServerStoppingEvent event) {
+    public static void onServerStopping(net.neoforged.neoforge.event.server.ServerStoppingEvent event) {
         // Stop all aura threads
         AuraThreadManager.stopAllThreads();
         

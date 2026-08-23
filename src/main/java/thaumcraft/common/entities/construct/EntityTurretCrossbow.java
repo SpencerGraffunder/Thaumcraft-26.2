@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.construct;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -28,8 +30,8 @@ import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -100,8 +102,8 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
     
     // ==================== Combat ====================
@@ -211,7 +213,7 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
         prevLoadProgress = loadProgress;
         
         // Reload from dispenser below
-        if (!level().isClientSide && (getMainHandItem().isEmpty() || getMainHandItem().getCount() <= 0)) {
+        if (!level().isClientSide() && (getMainHandItem().isEmpty() || getMainHandItem().getCount() <= 0)) {
             BlockPos below = blockPosition().below();
             BlockEntity blockEntity = level().getBlockEntity(below);
             
@@ -246,7 +248,7 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
             setTarget(null);
         }
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             setYRot(yHeadRot);
             
             // Slow health regen
@@ -319,13 +321,13 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (!level().isClientSide && isOwner(player) && !isRemoved()) {
+        if (!level().isClientSide() && isOwner(player) && !isRemoved()) {
             if (player.isShiftKeyDown()) {
                 // Pick up turret
                 playSound(ModSounds.ZAP.get(), 1.0f, 1.0f);
                 dropAmmo();
                 // Drop turret placer item
-                spawnAtLocation(new ItemStack(ModItems.TURRET_PLACER_BASIC.get()), 0.5f);
+                spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.TURRET_PLACER_BASIC.get()), 0.5f);
                 discard();
                 player.swing(hand);
                 return InteractionResult.SUCCESS;
@@ -344,7 +346,7 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     @Override
     public void die(DamageSource source) {
         super.die(source);
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             dropAmmo();
         }
     }
@@ -352,33 +354,33 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     protected void dropAmmo() {
         ItemStack held = getMainHandItem();
         if (!held.isEmpty()) {
-            spawnAtLocation(held, 0.5f);
+            spawnAtLocation((ServerLevel) this.level(), held, 0.5f);
             setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
-        super.dropCustomDeathLoot(source, looting, recentlyHit);
-        float bonus = looting * 0.15f;
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, source, recentlyHit);
+        float bonus = 0 * 0.15f;
         
         // TODO: Drop Thaumcraft items when implemented
-        // if (random.nextFloat() < 0.2f + bonus) spawnAtLocation(ItemsTC.mind);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation(ItemsTC.mechanismSimple);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation(BlocksTC.plankGreatwood);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation(BlocksTC.plankGreatwood);
+        // if (random.nextFloat() < 0.2f + bonus) spawnAtLocation((ServerLevel) this.level(), ItemsTC.mind);
+        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), ItemsTC.mechanismSimple);
+        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), BlocksTC.plankGreatwood);
+        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), BlocksTC.plankGreatwood);
     }
     
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
     }
     
     // ==================== AI Goals ====================

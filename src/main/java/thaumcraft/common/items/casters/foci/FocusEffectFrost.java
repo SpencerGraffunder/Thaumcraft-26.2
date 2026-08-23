@@ -154,7 +154,7 @@ public class FocusEffectFrost extends FocusEffect {
         if (caster != null && caster.level() != null) {
             caster.level().playSound(null, caster.blockPosition().above(), 
                 SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.PLAYERS, 
-                0.2f, 1.0f + (float)(caster.level().random.nextGaussian() * 0.05));
+                0.2f, 1.0f + (float)(caster.level().getRandom().nextGaussian() * 0.05));
         }
     }
     

@@ -11,8 +11,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.server.level.FakePlayer;
-import net.neoforged.neoforge.server.level.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import thaumcraft.api.golems.IGolemAPI;
 import thaumcraft.common.lib.utils.InventoryUtils;
 
@@ -141,20 +141,20 @@ public class GolemInteractionHelper {
      */
     private static void dropSomeItems(FakePlayer fp, IGolemAPI golem) {
         // Transfer main inventory items
-        for (int i = 0; i < fp.getInventory().items.size(); i++) {
-            ItemStack stack = fp.getInventory().items.get(i);
+        for (int i = 0; i < fp.getInventory().getItems().size(); i++) {
+            ItemStack stack = fp.getInventory().getItems().get(i);
             if (!stack.isEmpty()) {
                 // Try to give to golem
                 if (golem.canCarry(stack, true)) {
                     ItemStack remaining = golem.holdItem(stack);
-                    fp.getInventory().items.set(i, remaining);
+                    fp.getInventory().getItems().set(i, remaining);
                 }
                 
                 // Drop anything left over
-                if (!fp.getInventory().items.get(i).isEmpty()) {
+                if (!fp.getInventory().getItems().get(i).isEmpty()) {
                     InventoryUtils.dropItemAtEntity(golem.getGolemWorld(), 
-                            fp.getInventory().items.get(i), golem.getGolemEntity());
-                    fp.getInventory().items.set(i, ItemStack.EMPTY);
+                            fp.getInventory().getItems().get(i), golem.getGolemEntity());
+                    fp.getInventory().getItems().set(i, ItemStack.EMPTY);
                 }
             }
         }

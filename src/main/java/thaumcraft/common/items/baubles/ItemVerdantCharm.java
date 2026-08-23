@@ -94,8 +94,8 @@ public class ItemVerdantCharm extends Item implements IRechargable {
         }
         
         // Remove flux taint effect (costs 5 charge)
-        if (player.hasEffect(ModEffects.FLUX_TAINT.get()) && RechargeHelper.consumeCharge(stack, player, 5)) {
-            player.removeEffect(ModEffects.FLUX_TAINT.get());
+        if (player.hasEffect(ModEffects.FLUX_TAINT) && RechargeHelper.consumeCharge(stack, player, 5)) {
+            player.removeEffect(ModEffects.FLUX_TAINT);
             return;
         }
         

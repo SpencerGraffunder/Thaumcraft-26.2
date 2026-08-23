@@ -31,14 +31,14 @@ public class ChampionModArmored implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void showFX(LivingEntity champion) {
-        if (champion.level().random.nextInt(4) != 0) {
+        if (champion.level().getRandom().nextInt(4) != 0) {
             return;
         }
         
         // Metallic grey particles around the champion
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight();
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight();
         
         // Use ash particles for a metallic effect
         champion.level().addParticle(ParticleTypes.ASH,

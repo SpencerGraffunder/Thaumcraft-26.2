@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.devices;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,7 +43,7 @@ import javax.annotation.Nullable;
  */
 public class BlockArcaneEar extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
 
     // Bounding boxes for each facing direction
@@ -91,7 +92,7 @@ public class BlockArcaneEar extends Block implements EntityBlock {
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, net.minecraft.world.item.ItemStack stack) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockEntity te = level.getBlockEntity(pos);
             if (te instanceof TileArcaneEar ear) {
                 ear.updateInstrument();
@@ -130,8 +131,8 @@ public class BlockArcaneEar extends Block implements EntityBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if (!level.isClientSide) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, Orientation orientation, boolean isMoving) {
+        if (!level.isClientSide()) {
             BlockEntity te = level.getBlockEntity(pos);
             if (te instanceof TileArcaneEar ear) {
                 ear.updateInstrument();
@@ -142,7 +143,7 @@ public class BlockArcaneEar extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 

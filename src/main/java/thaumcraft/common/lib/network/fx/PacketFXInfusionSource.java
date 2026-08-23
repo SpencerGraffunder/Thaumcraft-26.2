@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -7,11 +12,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.common.tiles.crafting.TileInfusionMatrix;
 import thaumcraft.common.tiles.crafting.TilePedestal;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXInfusionSource - Visual effect for infusion crafting.
@@ -19,7 +22,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXInfusionSource {
+public class PacketFXInfusionSource implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXInfusionSource> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxinfusionsource"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXInfusionSource> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXInfusionSource::encode, PacketFXInfusionSource::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final long p1;
     private final long p2;
@@ -50,11 +64,10 @@ public class PacketFXInfusionSource {
         return new PacketFXInfusionSource(p1, p2, color);
     }
     
-    public static void handle(PacketFXInfusionSource packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXInfusionSource packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

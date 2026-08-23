@@ -1,4 +1,5 @@
 package thaumcraft.common.entities.monster.tainted;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvent;
@@ -101,7 +102,7 @@ public class EntityTaintacle extends Monster {
     public void tick() {
         super.tick();
         
-        if (!level().isClientSide && tickCount % 20 == 0) {
+        if (!level().isClientSide() && tickCount % 20 == 0) {
             // TODO: Check if on taint material when implemented
             // For now, tentacles don't take damage from ground
             boolean onTaint = true; // Placeholder
@@ -123,7 +124,7 @@ public class EntityTaintacle extends Monster {
         }
         
         // Client-side effects
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             // Decay flail intensity
             if (flailIntensity > 1.0f) {
                 flailIntensity -= 0.01f;
@@ -224,16 +225,16 @@ public class EntityTaintacle extends Monster {
     }
     
     @Override
-    public boolean doHurtTarget(Entity target) {
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
         // Trigger flail animation
         level().broadcastEntityEvent(this, (byte)16);
         playSound(SoundEvents.SLIME_ATTACK, getSoundVolume(), getVoicePitch());
-        return super.doHurtTarget(target);
+        return super.doHurtTarget(level, target);
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
-        super.dropCustomDeathLoot(source, lootingLevel, wasRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
+        super.dropCustomDeathLoot(level, source, wasRecentlyHit);
         
         // Drop flux crystal
         // TODO: Drop ConfigItems.FLUX_CRYSTAL when implemented

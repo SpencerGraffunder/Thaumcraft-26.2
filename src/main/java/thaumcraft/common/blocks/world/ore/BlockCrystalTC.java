@@ -262,7 +262,7 @@ public class BlockCrystalTC extends Block {
             // Normal drop - vis crystals based on block's aspect
             int fortune = tool != null ? EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool) : 0;
             int baseCount = 1 + state.getValue(SIZE);
-            int count = baseCount + (fortune > 0 ? builder.getLevel().random.nextInt(fortune + 1) : 0);
+            int count = baseCount + (fortune > 0 ? builder.getLevel().getRandom().nextInt(fortune + 1) : 0);
             
             // Get the correct vis crystal item for this aspect
             Item crystalItem = getCrystalItemForAspect(aspect);

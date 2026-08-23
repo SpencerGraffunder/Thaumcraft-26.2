@@ -1,14 +1,17 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXBlockArc - Sends arc lightning visual effect from a block to a target.
@@ -16,7 +19,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXBlockArc {
+public class PacketFXBlockArc implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXBlockArc> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxblockarc"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXBlockArc> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXBlockArc::encode, PacketFXBlockArc::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int x;
     private final int y;
@@ -90,11 +104,10 @@ public class PacketFXBlockArc {
         );
     }
     
-    public static void handle(PacketFXBlockArc packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXBlockArc packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

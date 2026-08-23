@@ -203,12 +203,12 @@ public class SealHarvest implements ISeal, ISealConfigArea, ISealConfigToggles {
     
     @Override
     public void readCustomNBT(CompoundTag nbt) {
-        ListTag list = nbt.getList("replant", 10);
+        ListTag list = nbt.getListOrEmpty("replant");
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag tag = list.getCompound(i);
-            long loc = tag.getLong("taskloc");
-            byte face = tag.getByte("taskface");
-            boolean farmland = tag.getBoolean("farmland");
+            CompoundTag tag = list.getCompoundOrEmpty(i);
+            long loc = tag.getLongOr("taskloc", 0L);
+            byte face = tag.getByteOr("taskface", (byte)0);
+            boolean farmland = tag.getBooleanOr("farmland", false);
             ItemStack seed = ItemStack.of(tag);
             replantTasks.put(loc, new ReplantInfo(BlockPos.of(loc), Direction.values()[face], 0, seed, farmland));
         }

@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -37,7 +40,7 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -111,11 +114,11 @@ public class EntityPech extends Monster implements RangedAttackMob {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE, (byte) 0);
-        this.entityData.define(DATA_ANGER, 0);
-        this.entityData.define(DATA_TAMED, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE, (byte) 0);
+        builder.define(DATA_ANGER, 0);
+        builder.define(DATA_TAMED, false);
     }
     
     @Override
@@ -149,7 +152,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
     }
     
     /**
-     * Static spawn rule check for use with SpawnPlacementRegisterEvent.
+     * Static spawn rule check for use with RegisterSpawnPlacementsEvent.
      * Pechs spawn in magical biomes in moderately lit areas.
      */
     public static boolean checkPechSpawnRules(EntityType<? extends EntityPech> type, ServerLevelAccessor level,
@@ -168,7 +171,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
      * Sets the appropriate combat AI based on held weapon.
      */
     public void setCombatTask() {
-        if (level() != null && !level().isClientSide) {
+        if (level() != null && !level().isClientSide()) {
             goalSelector.removeGoal(aiMeleeAttack);
             goalSelector.removeGoal(aiArrowAttack);
             goalSelector.removeGoal(aiBlastAttack);
@@ -317,7 +320,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
     
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo(source)) {
+        if (isInvulnerableTo((ServerLevel) this.level(), source)) {
             return false;
         }
         
@@ -362,7 +365,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
         }
         
         // Particles when angry (client)
-        if (level().isClientSide && random.nextInt(15) == 0 && getAnger() > 0) {
+        if (level().isClientSide() && random.nextInt(15) == 0 && getAnger() > 0) {
             double dx = random.nextGaussian() * 0.02;
             double dy = random.nextGaussian() * 0.02;
             double dz = random.nextGaussian() * 0.02;
@@ -374,7 +377,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
         }
         
         // Happy particles when tamed (client)
-        if (level().isClientSide && random.nextInt(25) == 0 && isTamed()) {
+        if (level().isClientSide() && random.nextInt(25) == 0 && isTamed()) {
             double dx = random.nextGaussian() * 0.02;
             double dy = random.nextGaussian() * 0.02;
             double dz = random.nextGaussian() * 0.02;
@@ -389,8 +392,8 @@ public class EntityPech extends Monster implements RangedAttackMob {
     }
     
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
         
         // Slow health regeneration
         if (tickCount % 40 == 0) {
@@ -409,7 +412,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
         if (isTamed()) {
             // TODO: Open trade GUI when implemented
             // player.openMenu(...)
-            return InteractionResult.sidedSuccess(level().isClientSide);
+            return InteractionResult.sidedSuccess(level().isClientSide());
         }
         
         return super.mobInteract(player, hand);
@@ -419,7 +422,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
     
     @Override
     public void playAmbientSound() {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Check for nearby pechs to "chat" with
             if (random.nextInt(3) == 0) {
                 AABB searchBox = getBoundingBox().inflate(4.0, 2.0, 4.0);
@@ -501,29 +504,29 @@ public class EntityPech extends Monster implements RangedAttackMob {
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putByte("PechType", (byte) getPechType());
-        tag.putShort("Anger", (short) getAnger());
-        tag.putBoolean("Tamed", isTamed());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putByte("PechType", (byte) getPechType());
+        output.putShort("Anger", (short) getAnger());
+        output.putBoolean("Tamed", isTamed());
         
         // Save loot inventory
-        net.minecraft.world.ContainerHelper.saveAllItems(tag, loot);
+        net.minecraft.world.ContainerHelper.saveAllItems(output, loot);
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
         
-        if (tag.contains("PechType")) {
-            setPechType(tag.getByte("PechType"));
+        if (input.contains("PechType")) {
+            setPechType(input.getByteOr("PechType", (byte)0));
         }
-        setAnger(tag.getShort("Anger"));
-        setTamed(tag.getBoolean("Tamed"));
+        setAnger(input.getShortOr("Anger", (short)0));
+        setTamed(input.getBooleanOr("Tamed", false));
         
         // Load loot inventory
         loot = NonNullList.withSize(9, ItemStack.EMPTY);
-        net.minecraft.world.ContainerHelper.loadAllItems(tag, loot);
+        net.minecraft.world.ContainerHelper.loadAllItems(input, loot);
         
         setCombatTask();
     }

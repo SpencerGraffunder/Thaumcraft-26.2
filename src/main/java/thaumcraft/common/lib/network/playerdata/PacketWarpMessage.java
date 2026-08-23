@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.playerdata;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -7,10 +12,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.init.ModSounds;
 
-import java.util.function.Supplier;
 
 /**
  * PacketWarpMessage - Notifies client when warp is gained or lost.
@@ -24,7 +27,18 @@ import java.util.function.Supplier;
  * 
  * Ported from 1.12.2
  */
-public class PacketWarpMessage {
+public class PacketWarpMessage implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketWarpMessage> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetwarpmessage"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketWarpMessage> STREAM_CODEC =
+        StreamCodec.ofMember(PacketWarpMessage::encode, PacketWarpMessage::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private int change;
     private byte type;
@@ -51,12 +65,11 @@ public class PacketWarpMessage {
         return msg;
     }
     
-    public static void handle(PacketWarpMessage msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(PacketWarpMessage msg, IPayloadContext ctxSupplier) {
+        IPayloadContext ctx = ctxSupplier;
         if (msg.change != 0) {
             ctx.enqueueWork(() -> handleOnClient(msg));
         }
-        ctx.setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)
@@ -92,7 +105,7 @@ public class PacketWarpMessage {
                     textKey = "tc.removewarpsticky";
                     playSound = false;
                 }
-                player.displayClientMessage(Component.translatable(textKey), true);
+                player.sendSystemMessage(Component.translatable(textKey));
             }
             case 2 -> { // Temporary warp
                 if (msg.change > 0) {
@@ -100,7 +113,7 @@ public class PacketWarpMessage {
                 } else {
                     textKey = "tc.removewarptemp";
                 }
-                player.displayClientMessage(Component.translatable(textKey), true);
+                player.sendSystemMessage(Component.translatable(textKey));
             }
             default -> {
                 return;

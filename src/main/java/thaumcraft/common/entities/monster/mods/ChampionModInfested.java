@@ -22,14 +22,14 @@ public class ChampionModInfested implements IChampionModifierEffect {
     @Override
     public float performEffect(LivingEntity champion, LivingEntity target, DamageSource source, float amount) {
         // Check if this damage will kill the champion
-        if (!champion.level().isClientSide && champion.getHealth() - amount <= 0) {
+        if (!champion.level().isClientSide() && champion.getHealth() - amount <= 0) {
             // Spawn silverfish on death
-            int count = 2 + champion.level().random.nextInt(3);
+            int count = 2 + champion.level().getRandom().nextInt(3);
             for (int i = 0; i < count; i++) {
                 Silverfish silverfish = EntityType.SILVERFISH.create(champion.level());
                 if (silverfish != null) {
-                    double offsetX = (champion.level().random.nextDouble() - 0.5) * champion.getBbWidth();
-                    double offsetZ = (champion.level().random.nextDouble() - 0.5) * champion.getBbWidth();
+                    double offsetX = (champion.level().getRandom().nextDouble() - 0.5) * champion.getBbWidth();
+                    double offsetZ = (champion.level().getRandom().nextDouble() - 0.5) * champion.getBbWidth();
                     silverfish.setPos(champion.getX() + offsetX, champion.getY(), champion.getZ() + offsetZ);
                     champion.level().addFreshEntity(silverfish);
                 }
@@ -41,14 +41,14 @@ public class ChampionModInfested implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void showFX(LivingEntity champion) {
-        if (champion.level().random.nextInt(5) != 0) {
+        if (champion.level().getRandom().nextInt(5) != 0) {
             return;
         }
         
         // Crawling/insect particles
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight() * 0.3;
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight() * 0.3;
         
         champion.level().addParticle(ParticleTypes.MYCELIUM,
                 champion.getBoundingBox().minX + w,

@@ -195,66 +195,66 @@ public class ResearchTableData {
     public void deserialize(CompoundTag nbt) {
         if (nbt == null) return;
         
-        inspiration = nbt.getInt("inspiration");
-        inspirationStart = nbt.getInt("inspirationStart");
-        placedCards = nbt.getInt("placedCards");
-        bonusDraws = nbt.getInt("bonusDraws");
-        aidsChosen = nbt.getInt("aidsChosen");
-        penaltyStart = nbt.getInt("penaltyStart");
-        player = nbt.getString("player");
+        inspiration = nbt.getIntOr("inspiration", 0);
+        inspirationStart = nbt.getIntOr("inspirationStart", 0);
+        placedCards = nbt.getIntOr("placedCards", 0);
+        bonusDraws = nbt.getIntOr("bonusDraws", 0);
+        aidsChosen = nbt.getIntOr("aidsChosen", 0);
+        penaltyStart = nbt.getIntOr("penaltyStart", 0);
+        player = nbt.getStringOr("player", "");
         
         // Saved cards
-        ListTag savedTag = nbt.getList("savedCards", Tag.TAG_COMPOUND);
+        ListTag savedTag = nbt.getListOrEmpty("savedCards");
         savedCards = new ArrayList<>();
         for (int x = 0; x < savedTag.size(); x++) {
-            CompoundTag nbtdata = savedTag.getCompound(x);
-            savedCards.add(nbtdata.getLong("card"));
+            CompoundTag nbtdata = savedTag.getCompoundOrEmpty(x);
+            savedCards.add(nbtdata.getLongOr("card", 0L));
         }
         
         // Blocked categories
-        ListTag categoriesBlockedTag = nbt.getList("categoriesBlocked", Tag.TAG_COMPOUND);
+        ListTag categoriesBlockedTag = nbt.getListOrEmpty("categoriesBlocked");
         categoriesBlocked = new ArrayList<>();
         for (int x = 0; x < categoriesBlockedTag.size(); x++) {
-            CompoundTag nbtdata = categoriesBlockedTag.getCompound(x);
-            categoriesBlocked.add(nbtdata.getString("category"));
+            CompoundTag nbtdata = categoriesBlockedTag.getCompoundOrEmpty(x);
+            categoriesBlocked.add(nbtdata.getStringOr("category", ""));
         }
         
         // Category totals
-        ListTag categoryTotalsTag = nbt.getList("categoryTotals", Tag.TAG_COMPOUND);
+        ListTag categoryTotalsTag = nbt.getListOrEmpty("categoryTotals");
         categoryTotals = new TreeMap<>();
         for (int x = 0; x < categoryTotalsTag.size(); x++) {
-            CompoundTag nbtdata = categoryTotalsTag.getCompound(x);
-            categoryTotals.put(nbtdata.getString("category"), nbtdata.getInt("total"));
+            CompoundTag nbtdata = categoryTotalsTag.getCompoundOrEmpty(x);
+            categoryTotals.put(nbtdata.getStringOr("category", ""), nbtdata.getIntOr("total", 0));
         }
         
         // Aid cards
-        ListTag aidCardsTag = nbt.getList("aidCards", Tag.TAG_COMPOUND);
+        ListTag aidCardsTag = nbt.getListOrEmpty("aidCards");
         aidCards = new ArrayList<>();
         for (int x = 0; x < aidCardsTag.size(); x++) {
-            CompoundTag nbtdata = aidCardsTag.getCompound(x);
-            aidCards.add(nbtdata.getString("aidCard"));
+            CompoundTag nbtdata = aidCardsTag.getCompoundOrEmpty(x);
+            aidCards.add(nbtdata.getStringOr("aidCard", ""));
         }
         
         // Card choices
-        ListTag cardChoicesTag = nbt.getList("cardChoices", Tag.TAG_COMPOUND);
+        ListTag cardChoicesTag = nbt.getListOrEmpty("cardChoices");
         cardChoices = new ArrayList<>();
         for (int x = 0; x < cardChoicesTag.size(); x++) {
-            CompoundTag nbtdata = cardChoicesTag.getCompound(x);
+            CompoundTag nbtdata = cardChoicesTag.getCompoundOrEmpty(x);
             CardChoice cc = deserializeCardChoice(nbtdata);
             if (cc != null) cardChoices.add(cc);
         }
         
-        lastDraw = deserializeCardChoice(nbt.getCompound("lastDraw"));
+        lastDraw = deserializeCardChoice(nbt.getCompoundOrEmpty("lastDraw"));
     }
     
     @Nullable
     public CardChoice deserializeCardChoice(CompoundTag nbt) {
         if (nbt == null || nbt.isEmpty()) return null;
-        String key = nbt.getString("cardChoice");
+        String key = nbt.getStringOr("cardChoice", "");
         if (key.isEmpty()) return null;
-        TheorycraftCard tc = generateCardWithNBT(key, nbt.getCompound("cardNBT"));
+        TheorycraftCard tc = generateCardWithNBT(key, nbt.getCompoundOrEmpty("cardNBT"));
         if (tc == null) return null;
-        return new CardChoice(key, tc, nbt.getBoolean("aid"), nbt.getBoolean("select"));
+        return new CardChoice(key, tc, nbt.getBooleanOr("aid", false), nbt.getBooleanOr("select", false));
     }
     
     // ==================== Card Drawing ====================

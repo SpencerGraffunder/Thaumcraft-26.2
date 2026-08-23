@@ -172,7 +172,7 @@ public class FocusEffectEarth extends FocusEffect {
         if (caster != null && caster.level() != null) {
             caster.level().playSound(null, caster.blockPosition().above(), 
                 SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.PLAYERS, 
-                0.25f, 1.0f + (float)(caster.level().random.nextGaussian() * 0.05));
+                0.25f, 1.0f + (float)(caster.level().getRandom().nextGaussian() * 0.05));
         }
     }
     

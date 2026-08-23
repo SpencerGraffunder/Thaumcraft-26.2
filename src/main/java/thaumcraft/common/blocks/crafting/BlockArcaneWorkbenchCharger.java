@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.crafting;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -92,8 +93,8 @@ public class BlockArcaneWorkbenchCharger extends Block {
     }
     
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if (!level.isClientSide) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, Orientation orientation, boolean isMoving) {
+        if (!level.isClientSide()) {
             if (!canSurvive(state, level, pos)) {
                 level.destroyBlock(pos, true);
             }
@@ -103,7 +104,7 @@ public class BlockArcaneWorkbenchCharger extends Block {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         

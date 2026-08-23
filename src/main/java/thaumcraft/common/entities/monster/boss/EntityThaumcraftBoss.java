@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.monster.boss;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -56,9 +58,9 @@ public abstract class EntityThaumcraftBoss extends Monster {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ANGER, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ANGER, 0);
     }
     
     public static AttributeSupplier.Builder createBossAttributes() {
@@ -110,9 +112,9 @@ public abstract class EntityThaumcraftBoss extends Monster {
     // ==================== Update Logic ====================
     
     @Override
-    protected void customServerAiStep() {
+    protected void customServerAiStep(ServerLevel level) {
         if (spawnTimer == 0) {
-            super.customServerAiStep();
+            super.customServerAiStep(level);
         }
         
         if (getTarget() != null && !getTarget().isAlive()) {
@@ -135,7 +137,7 @@ public abstract class EntityThaumcraftBoss extends Monster {
         }
         
         // Angry particles on client
-        if (level().isClientSide && random.nextInt(15) == 0 && getAnger() > 0) {
+        if (level().isClientSide() && random.nextInt(15) == 0 && getAnger() > 0) {
             double dx = random.nextGaussian() * 0.02;
             double dy = random.nextGaussian() * 0.02;
             double dz = random.nextGaussian() * 0.02;
@@ -147,7 +149,7 @@ public abstract class EntityThaumcraftBoss extends Monster {
         }
         
         // Slow regeneration
-        if (!level().isClientSide && tickCount % 30 == 0) {
+        if (!level().isClientSide() && tickCount % 30 == 0) {
             heal(1.0f);
         }
     }
@@ -155,13 +157,13 @@ public abstract class EntityThaumcraftBoss extends Monster {
     // ==================== Damage Handling ====================
     
     @Override
-    public boolean isInvulnerableTo(DamageSource source) {
-        return super.isInvulnerableTo(source) || spawnTimer > 0;
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
+        return super.isInvulnerableTo(level, source) || spawnTimer > 0;
     }
     
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Track aggro
             if (source.getEntity() instanceof LivingEntity living) {
                 int targetId = living.getId();
@@ -257,25 +259,25 @@ public abstract class EntityThaumcraftBoss extends Monster {
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
         if (homePos != null && homeDistance > 0) {
-            tag.putInt("HomeD", homeDistance);
-            tag.putInt("HomeX", homePos.getX());
-            tag.putInt("HomeY", homePos.getY());
-            tag.putInt("HomeZ", homePos.getZ());
+            output.putInt("HomeD", homeDistance);
+            output.putInt("HomeX", homePos.getX());
+            output.putInt("HomeY", homePos.getY());
+            output.putInt("HomeZ", homePos.getZ());
         }
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains("HomeD")) {
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        if (input.contains("HomeD")) {
             setHomePos(new BlockPos(
-                    tag.getInt("HomeX"),
-                    tag.getInt("HomeY"),
-                    tag.getInt("HomeZ")),
-                    tag.getInt("HomeD"));
+                    input.getIntOr("HomeX", 0),
+                    input.getIntOr("HomeY", 0),
+                    input.getIntOr("HomeZ", 0)),
+                    input.getIntOr("HomeD", 0));
         }
         
         if (hasCustomName()) {

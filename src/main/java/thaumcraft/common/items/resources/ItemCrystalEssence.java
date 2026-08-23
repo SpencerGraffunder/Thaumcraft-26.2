@@ -84,7 +84,7 @@ public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
         super.inventoryTick(stack, level, entity, slot, selected);
         
         // Assign random aspect if none set (for items spawned without NBT)
-        if (!level.isClientSide && !stack.hasTag()) {
+        if (!level.isClientSide() && !stack.hasTag()) {
             assignRandomAspect(stack, level);
         }
     }
@@ -93,7 +93,7 @@ public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
     public void onCraftedBy(ItemStack stack, Level level, Player player) {
         super.onCraftedBy(stack, level, player);
         
-        if (!level.isClientSide && !stack.hasTag()) {
+        if (!level.isClientSide() && !stack.hasTag()) {
             assignRandomAspect(stack, level);
         }
     }

@@ -64,7 +64,7 @@ public class ThaumcraftPlantFeature extends Feature<NoneFeatureConfiguration> {
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
         WorldGenLevel level = context.level();
         BlockPos origin = context.origin();
-        RandomSource random = context.getRandom()();
+        RandomSource random = context.random();
         
         return generatePlantCluster(level, random, origin, plantType);
     }

@@ -1,11 +1,16 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.seals.ISeal;
 import thaumcraft.api.golems.seals.ISealConfigArea;
@@ -16,7 +21,6 @@ import thaumcraft.api.golems.seals.SealPos;
 import thaumcraft.common.golems.seals.SealEntity;
 import thaumcraft.common.golems.seals.SealHandler;
 
-import java.util.function.Supplier;
 
 /**
  * PacketSealToClient - Syncs seal data from server to client.
@@ -32,7 +36,18 @@ import java.util.function.Supplier;
  * - EnumFacing -> Direction
  * - Proxy.getClientWorld() -> Thaumcraft.getClientWorld()
  */
-public class PacketSealToClient {
+public class PacketSealToClient implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketSealToClient> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetsealtoclient"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketSealToClient> STREAM_CODEC =
+        StreamCodec.ofMember(PacketSealToClient::encode, PacketSealToClient::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private BlockPos pos;
     private Direction face;
@@ -116,7 +131,7 @@ public class PacketSealToClient {
         
         // Write filter items and sizes
         for (int i = 0; i < msg.filterSize; i++) {
-            buf.writeItem(msg.filter.get(i));
+            net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.encode((net.minecraft.network.RegistryFriendlyByteBuf) buf, msg.filter.get(i));
             buf.writeShort(msg.filterStackSize.get(i));
         }
         
@@ -160,7 +175,7 @@ public class PacketSealToClient {
         msg.filter = NonNullList.withSize(msg.filterSize, ItemStack.EMPTY);
         msg.filterStackSize = NonNullList.withSize(msg.filterSize, 0);
         for (int i = 0; i < msg.filterSize; i++) {
-            msg.filter.set(i, buf.readItem());
+            msg.filter.set(i, net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.decode((net.minecraft.network.RegistryFriendlyByteBuf) buf));
             msg.filterStackSize.set(i, (int) buf.readShort());
         }
         
@@ -185,13 +200,12 @@ public class PacketSealToClient {
     /**
      * Handle the packet on client
      */
-    public static void handle(PacketSealToClient msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(PacketSealToClient msg, IPayloadContext ctxSupplier) {
+        IPayloadContext ctx = ctxSupplier;
         ctx.enqueueWork(() -> {
             // Handle on client main thread
             handleOnClient(msg);
         });
-        ctx.setPacketHandled(true);
     }
     
     /**

@@ -90,7 +90,7 @@ public class BlockUtils {
     public static boolean harvestBlock(Level level, Player player, BlockPos pos, 
             boolean alwaysDrop, boolean silkOverride, int fortuneOverride, boolean skipEvent) {
         
-        if (level.isClientSide || !(player instanceof ServerPlayer serverPlayer)) {
+        if (level.isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
             return false;
         }
 
@@ -167,7 +167,7 @@ public class BlockUtils {
      * @return true if block was broken
      */
     public static boolean breakBlock(Level level, BlockPos pos, ItemStack tool, @Nullable Player player) {
-        if (level.isClientSide) return false;
+        if (level.isClientSide()) return false;
         
         BlockState state = level.getBlockState(pos);
         if (state.isAir() || !isBreakable(level, pos)) {
@@ -190,7 +190,7 @@ public class BlockUtils {
      * Break a block silently without drops.
      */
     public static boolean breakBlockNoDrops(Level level, BlockPos pos) {
-        if (level.isClientSide) return false;
+        if (level.isClientSide()) return false;
         
         BlockState state = level.getBlockState(pos);
         if (state.isAir()) return false;
@@ -455,7 +455,7 @@ public class BlockUtils {
      * Format: "modid:blockname" or "modid:blockname;property=value"
      */
     public static boolean isBlockListed(BlockState state, List<String> list) {
-        String blockName = state.getBlock().builtInRegistryHolder().key().location().toString();
+        String blockName = state.getBlock().builtInRegistryHolder().key().identifier().toString();
         String stateString = state.toString();
         
         for (String key : list) {
@@ -634,7 +634,7 @@ public class BlockUtils {
      * @return true if block was placed
      */
     public static boolean placeBlock(Level level, BlockPos pos, BlockState state) {
-        if (level.isClientSide) return false;
+        if (level.isClientSide()) return false;
         
         BlockState existing = level.getBlockState(pos);
         if (!existing.canBeReplaced()) {

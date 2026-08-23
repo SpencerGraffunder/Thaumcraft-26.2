@@ -74,7 +74,7 @@ public class BlockThaumatoriumTop extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -121,7 +121,7 @@ public class BlockThaumatoriumTop extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.THAUMATORIUM_TOP.get()) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileThaumatoriumTop.serverTick(lvl, pos, st, (TileThaumatoriumTop) be);
             }
         }

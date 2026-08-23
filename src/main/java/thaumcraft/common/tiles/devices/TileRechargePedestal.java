@@ -72,7 +72,7 @@ public class TileRechargePedestal extends TileThaumcraftInventory implements IAs
     public void setInventorySlotContentsFromInfusion(int slot, ItemStack stack) {
         setItem(slot, stack);
         setChanged();
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             syncTile(false);
         }
     }
@@ -155,7 +155,7 @@ public class TileRechargePedestal extends TileThaumcraftInventory implements IAs
     
     public boolean triggerEvent(int id, int param) {
         if (id == 5) {
-            if (level != null && level.isClientSide) {
+            if (level != null && level.isClientSide()) {
                 // Sparkle effect - draw vis sparkles from nearby to the pedestal
                 FXDispatcher.INSTANCE.visSparkle(
                         worldPosition.getX() + level.getRandom().nextInt(3) - level.getRandom().nextInt(3),

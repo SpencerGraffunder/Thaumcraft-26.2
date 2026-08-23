@@ -22,7 +22,7 @@ import thaumcraft.client.renderers.SealRenderer;
  * Ported from 1.12.2 RenderEventHandler.
  */
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientRenderEvents {
     
     /**

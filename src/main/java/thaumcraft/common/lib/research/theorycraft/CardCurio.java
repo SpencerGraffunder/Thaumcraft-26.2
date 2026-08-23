@@ -42,7 +42,7 @@ public class CardCurio extends TheorycraftCard {
     @Override
     public void deserialize(CompoundTag nbt) {
         super.deserialize(nbt);
-        curio = ItemStack.of(nbt.getCompound("stack"));
+        curio = ItemStack.of(nbt.getCompoundOrEmpty("stack"));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class CardCurio extends TheorycraftCard {
         List<ItemStack> curios = new ArrayList<>();
         
         // Look for valuable items in player inventory
-        for (ItemStack stack : player.getInventory().items) {
+        for (ItemStack stack : player.getInventory().getItems()) {
             if (!stack.isEmpty()) {
                 for (ItemStack curioType : CURIO_TYPES) {
                     if (stack.is(curioType.getItem())) {

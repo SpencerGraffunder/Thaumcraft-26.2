@@ -56,7 +56,7 @@ public class FallingTaintRenderer extends EntityRenderer<EntityFallingTaint> {
                 poseStack,
                 buffer.getBuffer(net.minecraft.client.renderer.RenderType.cutout()),
                 false,
-                entity.level().random,
+                entity.level().getRandom(),
                 blockState.getSeed(entity.blockPosition()),
                 OverlayTexture.NO_OVERLAY
         );

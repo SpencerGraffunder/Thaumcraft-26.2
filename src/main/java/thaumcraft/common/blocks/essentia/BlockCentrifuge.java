@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  */
 public class BlockCentrifuge extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 12.0, 15.0);
 
@@ -80,7 +80,7 @@ public class BlockCentrifuge extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.CENTRIFUGE.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileCentrifuge.clientTick(lvl, pos, st, (TileCentrifuge) be);
             } else {
                 return (lvl, pos, st, be) -> TileCentrifuge.serverTick(lvl, pos, st, (TileCentrifuge) be);

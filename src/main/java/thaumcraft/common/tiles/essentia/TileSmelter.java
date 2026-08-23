@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.essentia;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -81,23 +83,23 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        furnaceBurnTime = tag.getShort("BurnTime");
+        furnaceBurnTime = tag.getShortOr("BurnTime", (short)0);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putBoolean("SpeedBoost", speedBoost);
-        tag.putShort("CookTime", (short) furnaceCookTime);
-        aspects.writeToNBT(tag);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putBoolean("SpeedBoost", speedBoost);
+        output.putShort("CookTime", (short) furnaceCookTime);
+        aspects.writeToNBT(output);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        speedBoost = tag.getBoolean("SpeedBoost");
-        furnaceCookTime = tag.getShort("CookTime");
-        aspects.readFromNBT(tag);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        speedBoost = input.getBooleanOr("SpeedBoost", false);
+        furnaceCookTime = input.getShortOr("CookTime", (short)0);
+        aspects.readFromNBT(input);
         vis = aspects.visSize();
         
         // Recalculate current burn time

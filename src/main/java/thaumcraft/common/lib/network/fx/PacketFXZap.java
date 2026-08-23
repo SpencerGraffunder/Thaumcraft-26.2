@@ -1,13 +1,16 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXZap - Electric arc/bolt visual effect between two points.
@@ -15,7 +18,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXZap {
+public class PacketFXZap implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXZap> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxzap"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXZap> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXZap::encode, PacketFXZap::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final Vec3 source;
     private final Vec3 target;
@@ -53,11 +67,10 @@ public class PacketFXZap {
         );
     }
     
-    public static void handle(PacketFXZap packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXZap packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

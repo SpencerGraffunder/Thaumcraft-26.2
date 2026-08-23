@@ -137,14 +137,14 @@ public class LogisticsScreen extends AbstractContainerScreen<LogisticsMenu> {
     
     private void onSearchTextChanged(String text) {
         // Send search text to server
-        PacketHandler.INSTANCE.sendToServer(new PacketMiscStringToServer(0, text));
+        PacketHandler.sendToServer(new PacketMiscStringToServer(0, text));
     }
     
     private void requestItems() {
         if (selectedSlot < 0 || selectedStack.isEmpty()) return;
         
         // Send request to server
-        PacketHandler.INSTANCE.sendToServer(new PacketLogisticsRequestToServer(
+        PacketHandler.sendToServer(new PacketLogisticsRequestToServer(
                 menu.getTargetPos(),
                 menu.getTargetSide(),
                 selectedStack.copy(),

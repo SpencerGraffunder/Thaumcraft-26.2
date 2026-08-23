@@ -1,4 +1,5 @@
 package thaumcraft.common.entities.monster.tainted;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
@@ -134,7 +135,7 @@ public class EntityTaintCrawler extends Monster {
         super.tick();
         
         // Spread taint fibers while moving (server-side)
-        if (!level().isClientSide && isAlive() && tickCount % 40 == 0 && !lastPos.equals(blockPosition())) {
+        if (!level().isClientSide() && isAlive() && tickCount % 40 == 0 && !lastPos.equals(blockPosition())) {
             lastPos = blockPosition();
             
             BlockPos pos = blockPosition();
@@ -150,8 +151,8 @@ public class EntityTaintCrawler extends Monster {
     }
     
     @Override
-    public boolean doHurtTarget(Entity target) {
-        if (super.doHurtTarget(target)) {
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
+        if (super.doHurtTarget(level, target)) {
             // Apply flux taint effect based on difficulty
             if (target instanceof net.minecraft.world.entity.LivingEntity living) {
                 int duration = 0;
@@ -165,7 +166,7 @@ public class EntityTaintCrawler extends Monster {
                 
                 if (duration > 0 && random.nextInt(duration + 1) > 2) {
                     // Apply flux taint effect
-                    living.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), duration * 20, 0));
+                    living.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT, duration * 20, 0));
                 }
             }
             return true;
@@ -174,12 +175,12 @@ public class EntityTaintCrawler extends Monster {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
-        super.dropCustomDeathLoot(source, lootingLevel, wasRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
+        super.dropCustomDeathLoot(level, source, wasRecentlyHit);
         
         // 1/8 chance to drop flux crystal
         if (random.nextInt(8) == 0) {
-            this.spawnAtLocation(new net.minecraft.world.item.ItemStack(ModItems.FLUX_CRYSTAL.get()), getBbHeight() / 2.0f);
+            this.spawnAtLocation((ServerLevel) this.level(), new net.minecraft.world.item.ItemStack(ModItems.FLUX_CRYSTAL.get()), getBbHeight() / 2.0f);
         }
     }
 }

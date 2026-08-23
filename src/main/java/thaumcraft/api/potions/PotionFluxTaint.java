@@ -27,7 +27,7 @@ public class PotionFluxTaint extends MobEffect {
     
     @Override
     public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide) return;
+        if (target.level().isClientSide()) return;
         
         // Check if entity is tainted (heals them)
         if (target instanceof ITaintedMob) {

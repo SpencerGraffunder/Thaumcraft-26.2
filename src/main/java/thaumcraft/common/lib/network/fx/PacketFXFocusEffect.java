@@ -1,16 +1,19 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.casters.FocusEffect;
 import thaumcraft.api.casters.FocusEngine;
 import thaumcraft.api.casters.IFocusElement;
 
-import java.util.function.Supplier;
 
 /**
  * Packet to spawn focus effect particles along a trajectory.
@@ -21,7 +24,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketFXFocusEffect {
+public class PacketFXFocusEffect implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXFocusEffect> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxfocuseffect"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXFocusEffect> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXFocusEffect::encode, PacketFXFocusEffect::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final float x, y, z;
     private final float motionX, motionY, motionZ;
@@ -76,9 +90,8 @@ public class PacketFXFocusEffect {
         );
     }
     
-    public static void handle(PacketFXFocusEffect packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> handleClient(packet));
-        ctx.get().setPacketHandled(true);
+    public static void handle(PacketFXFocusEffect packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> handleClient(packet));
     }
     
     @OnlyIn(Dist.CLIENT)

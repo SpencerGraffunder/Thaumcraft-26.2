@@ -60,7 +60,7 @@ public class WarpEvents {
      * Reduces temporary warp by 1 and may trigger warp effects based on total warp.
      */
     public static void checkWarpEvent(Player player) {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
         
         IPlayerWarp wc = ThaumcraftCapabilities.getWarp(player);
         if (wc == null) return;
@@ -77,7 +77,7 @@ public class WarpEvents {
         warp += gearWarp;
         
         int warpCounter = wc.getCounter();
-        int r = player.level().random.nextInt(100);
+        int r = player.level().getRandom().nextInt(100);
         
         // Check if we should trigger a warp effect
         if (warpCounter > 0 && warp > 0 && r <= Math.sqrt(warpCounter)) {
@@ -85,7 +85,7 @@ public class WarpEvents {
             warpCounter -= (int) Math.max(5.0, Math.sqrt(warpCounter) * 2.0 - gearWarp * 2);
             wc.setCounter(warpCounter);
             
-            int eff = player.level().random.nextInt(warp) + gearWarp;
+            int eff = player.level().getRandom().nextInt(warp) + gearWarp;
             
             // Check for Sanity Checker mask (fortress helm with mask=0)
             // TODO: Implement when armor is ported
@@ -142,21 +142,21 @@ public class WarpEvents {
             player.displayClientMessage(Component.literal("§5§o" + getWarpText(11)), true);
         } else if (eff <= 16) {
             // Vis Exhaustion
-            MobEffectInstance pe = new MobEffectInstance(ModEffects.VIS_EXHAUST.get(), 5000, Math.min(3, warp / 15), true, true);
+            MobEffectInstance pe = new MobEffectInstance(ModEffects.VIS_EXHAUST, 5000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
             player.displayClientMessage(Component.literal("§5§o" + getWarpText(1)), true);
         } else if (eff <= 20) {
             // Thaumarhia
-            MobEffectInstance pe = new MobEffectInstance(ModEffects.THAUMARHIA.get(), Math.min(32000, 10 * warp), 0, true, true);
+            MobEffectInstance pe = new MobEffectInstance(ModEffects.THAUMARHIA, Math.min(32000, 10 * warp), 0, true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
             player.displayClientMessage(Component.literal("§5§o" + getWarpText(15)), true);
         } else if (eff <= 24) {
             // Unnatural Hunger
-            MobEffectInstance pe = new MobEffectInstance(ModEffects.UNNATURAL_HUNGER.get(), 5000, Math.min(3, warp / 15), true, true);
+            MobEffectInstance pe = new MobEffectInstance(ModEffects.UNNATURAL_HUNGER, 5000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
@@ -170,11 +170,11 @@ public class WarpEvents {
         } else if (eff <= 36) {
             // Blurred Vision
             try {
-                player.addEffect(new MobEffectInstance(ModEffects.BLURRED_VISION.get(), Math.min(32000, 10 * warp), 0, true, true));
+                player.addEffect(new MobEffectInstance(ModEffects.BLURRED_VISION, Math.min(32000, 10 * warp), 0, true, true));
             } catch (Exception ignored) {}
         } else if (eff <= 40) {
             // Sun Scorned
-            MobEffectInstance pe = new MobEffectInstance(ModEffects.SUN_SCORNED.get(), 5000, Math.min(3, warp / 15), true, true);
+            MobEffectInstance pe = new MobEffectInstance(ModEffects.SUN_SCORNED, 5000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
@@ -187,7 +187,7 @@ public class WarpEvents {
             player.displayClientMessage(Component.literal("§5§o" + getWarpText(9)), true);
         } else if (eff <= 48) {
             // Infectious Vis Exhaust
-            MobEffectInstance pe = new MobEffectInstance(ModEffects.INFECTIOUS_VIS_EXHAUST.get(), 6000, Math.min(3, warp / 15), true, true);
+            MobEffectInstance pe = new MobEffectInstance(ModEffects.INFECTIOUS_VIS_EXHAUST, 6000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
@@ -198,7 +198,7 @@ public class WarpEvents {
             player.displayClientMessage(Component.literal("§5§o" + getWarpText(10)), true);
         } else if (eff <= 56) {
             // Death Gaze
-            MobEffectInstance pe = new MobEffectInstance(ModEffects.DEATH_GAZE.get(), 6000, Math.min(3, warp / 15), true, true);
+            MobEffectInstance pe = new MobEffectInstance(ModEffects.DEATH_GAZE, 6000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
@@ -225,7 +225,7 @@ public class WarpEvents {
             player.displayClientMessage(Component.literal("§5§o" + getWarpText(14)), true);
         } else if (eff <= 80) {
             // Heavy unnatural hunger
-            MobEffectInstance pe = new MobEffectInstance(ModEffects.UNNATURAL_HUNGER.get(), 6000, Math.min(3, warp / 15), true, true);
+            MobEffectInstance pe = new MobEffectInstance(ModEffects.UNNATURAL_HUNGER, 6000, Math.min(3, warp / 15), true, true);
             try {
                 player.addEffect(pe);
             } catch (Exception ignored) {}
@@ -373,9 +373,9 @@ public class WarpEvents {
      * Check for Death Gaze effect and apply wither to nearby entities the player looks at.
      */
     public static void checkDeathGaze(Player player) {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
         
-        MobEffectInstance effect = player.getEffect(ModEffects.DEATH_GAZE.get());
+        MobEffectInstance effect = player.getEffect(ModEffects.DEATH_GAZE);
         if (effect == null) return;
         
         int amplifier = effect.getAmplifier();

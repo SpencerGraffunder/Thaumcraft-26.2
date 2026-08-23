@@ -1,4 +1,5 @@
 package thaumcraft.common.lib.research;
+import net.minecraft.server.level.ServerLevel;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -69,7 +70,7 @@ public class ResearchManager {
         }
         
         // TODO: Fire ResearchEvent.Knowledge event when event system is implemented
-        // if (MinecraftForge.EVENT_BUS.post(new ResearchEvent.Knowledge(player, type, category, amount))) {
+        // if (NeoForge.EVENT_BUS.post(new ResearchEvent.Knowledge(player, type, category, amount))) {
         //     return false;
         // }
         
@@ -147,7 +148,7 @@ public class ResearchManager {
         }
         
         // TODO: Fire ResearchEvent.Research event
-        // if (MinecraftForge.EVENT_BUS.post(new ResearchEvent.Research(player, researchKey))) {
+        // if (NeoForge.EVENT_BUS.post(new ResearchEvent.Research(player, researchKey))) {
         //     return false;
         // }
         
@@ -191,7 +192,7 @@ public class ResearchManager {
                 }
                 if (stage != null) {
                     warp += stage.getWarp();
-                    if (warp > 0 && !player.level().isClientSide) {
+                    if (warp > 0 && !player.level().isClientSide()) {
                         // Split warp between permanent and normal
                         if (warp > 1) {
                             int w2 = warp / 2;
@@ -221,7 +222,7 @@ public class ResearchManager {
                 if (entry.getRewardItem() != null) {
                     for (ItemStack reward : entry.getRewardItem()) {
                         if (!player.getInventory().add(reward.copy())) {
-                            player.spawnAtLocation(reward.copy(), 1.0f);
+                            player.spawnAtLocation((ServerLevel) player.level(), reward.copy(), 1.0f);
                         }
                     }
                 }
@@ -725,14 +726,14 @@ public class ResearchManager {
         
         try {
             Identifier itemId = Identifier.withDefaultNamespace(name);
-            Item item = ForgeRegistries.ITEMS.getValue(itemId);
+            Item item = BuiltInRegistries.ITEM.getValue(itemId);
             
             if (item == null || item == net.minecraft.world.item.Items.AIR) {
                 // Item not found - try fallback mappings for common old names
                 String mappedName = LEGACY_ITEM_MAPPINGS.get(name);
                 if (mappedName != null) {
                     itemId = Identifier.withDefaultNamespace(mappedName);
-                    item = ForgeRegistries.ITEMS.getValue(itemId);
+                    item = BuiltInRegistries.ITEM.getValue(itemId);
                 }
             }
             

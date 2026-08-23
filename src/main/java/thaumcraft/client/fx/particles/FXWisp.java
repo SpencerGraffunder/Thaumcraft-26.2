@@ -37,7 +37,7 @@ public class FXWisp extends ThaumcraftParticle {
         this.zd = this.getRandom().nextGaussian() * 0.03;
 
         this.quadSize *= 0.4f;
-        this.lifetime = (int) (40.0 / (Math.getRandom()() * 0.3 + 0.7));
+        this.lifetime = (int) (40.0 / (Math.getRandom() * 0.3 + 0.7));
 
         this.setSize(0.01f, 0.01f);
 

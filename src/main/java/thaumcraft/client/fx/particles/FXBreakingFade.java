@@ -72,7 +72,7 @@ public class FXBreakingFade extends ThaumcraftParticle {
     }
     
     public void boom() {
-        float f = (float)(Math.getRandom()() + Math.getRandom()() + 1.0) * 0.15f;
+        float f = (float)(Math.getRandom() + Math.getRandom() + 1.0) * 0.15f;
         float len = Mth.sqrt((float)(this.xd * this.xd + this.yd * this.yd + this.zd * this.zd));
         this.xd = this.xd / len * f * 0.964f;
         this.yd = this.yd / len * f * 0.964f + 0.1f;

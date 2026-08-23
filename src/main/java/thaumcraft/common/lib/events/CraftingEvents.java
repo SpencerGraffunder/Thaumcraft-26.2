@@ -27,7 +27,7 @@ import thaumcraft.init.ModItems;
  * 
  * Ported from Thaumcraft 1.12.2 to 1.20.1
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
 public class CraftingEvents {
 
     /**
@@ -47,7 +47,7 @@ public class CraftingEvents {
         // Apply warp for warped items
         // TODO: Add config option for wuss mode
         int warp = ThaumcraftApi.getWarp(crafted);
-        if (warp > 0 && !player.level().isClientSide) {
+        if (warp > 0 && !player.level().isClientSide()) {
             ThaumcraftApi.internalMethods.addWarpToPlayer(player, warp, IPlayerWarp.EnumWarpType.NORMAL);
         }
         
@@ -59,7 +59,7 @@ public class CraftingEvents {
         }
         
         // Trigger research completion for crafted items
-        if (!player.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
+        if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
             int stackHash = ResearchManager.createItemStackHash(crafted.copy());
             
             if (ResearchManager.craftingReferences.contains(stackHash)) {

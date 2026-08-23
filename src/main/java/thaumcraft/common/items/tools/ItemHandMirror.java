@@ -79,7 +79,7 @@ public class ItemHandMirror extends Item {
             tag.putInt("linkX", pos.getX());
             tag.putInt("linkY", pos.getY());
             tag.putInt("linkZ", pos.getZ());
-            tag.putString("linkDim", level.dimension().location().toString());
+            tag.putString("linkDim", level.dimension().identifier().toString());
 
             player.playSound(ModSounds.JAR.get(), 1.0f, 1.0f);
             player.sendSystemMessage(Component.translatable("tc.handmirrorlinked"));
@@ -96,16 +96,16 @@ public class ItemHandMirror extends Item {
         if (!level.isClientSide() && stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             if (tag != null && tag.contains("linkX")) {
-                int lx = tag.getInt("linkX");
-                int ly = tag.getInt("linkY");
-                int lz = tag.getInt("linkZ");
-                String dimKey = tag.getString("linkDim");
+                int lx = tag.getIntOr("linkX", 0);
+                int ly = tag.getIntOr("linkY", 0);
+                int lz = tag.getIntOr("linkZ", 0);
+                String dimKey = tag.getStringOr("linkDim", "");
 
                 // Try to find the target dimension
                 ServerLevel targetLevel = null;
                 if (level.getServer() != null) {
                     for (ServerLevel serverLevel : level.getServer().getAllLevels()) {
-                        if (serverLevel.dimension().location().toString().equals(dimKey)) {
+                        if (serverLevel.dimension().identifier().toString().equals(dimKey)) {
                             targetLevel = serverLevel;
                             break;
                         }
@@ -171,16 +171,16 @@ public class ItemHandMirror extends Item {
             return false;
         }
 
-        int lx = tag.getInt("linkX");
-        int ly = tag.getInt("linkY");
-        int lz = tag.getInt("linkZ");
-        String dimKey = tag.getString("linkDim");
+        int lx = tag.getIntOr("linkX", 0);
+        int ly = tag.getIntOr("linkY", 0);
+        int lz = tag.getIntOr("linkZ", 0);
+        String dimKey = tag.getStringOr("linkDim", "");
 
         // Find target dimension
         ServerLevel targetLevel = null;
         if (level.getServer() != null) {
             for (ServerLevel serverLevel : level.getServer().getAllLevels()) {
-                if (serverLevel.dimension().location().toString().equals(dimKey)) {
+                if (serverLevel.dimension().identifier().toString().equals(dimKey)) {
                     targetLevel = serverLevel;
                     break;
                 }
@@ -218,10 +218,10 @@ public class ItemHandMirror extends Item {
         if (stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             if (tag != null && tag.contains("linkX")) {
-                int lx = tag.getInt("linkX");
-                int ly = tag.getInt("linkY");
-                int lz = tag.getInt("linkZ");
-                String dim = tag.getString("linkDim");
+                int lx = tag.getIntOr("linkX", 0);
+                int ly = tag.getIntOr("linkY", 0);
+                int lz = tag.getIntOr("linkZ", 0);
+                String dim = tag.getStringOr("linkDim", "");
                 tooltip.add(Component.translatable("tc.handmirrorlinkedto",
                         lx + "," + ly + "," + lz + " in " + dim)
                         .withStyle(style -> style.withColor(0x808080)));

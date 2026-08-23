@@ -61,7 +61,7 @@ import thaumcraft.common.golems.EntityThaumcraftGolem;
 public class ModEntities {
     
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = 
-            DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Thaumcraft.MODID);
+            DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Thaumcraft.MODID);
     
     // ==================== Focus Projectile Entities ====================
     

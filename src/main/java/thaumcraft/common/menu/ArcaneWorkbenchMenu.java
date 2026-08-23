@@ -144,7 +144,7 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
      */
     protected static void slotChangedCraftingGrid(AbstractContainerMenu menu, Level level, 
             Player player, ArcaneWorkbenchCraftingContainer craftMatrix, ResultContainer craftResult) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return;
         }
         

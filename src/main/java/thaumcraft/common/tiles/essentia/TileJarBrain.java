@@ -63,7 +63,7 @@ public class TileJarBrain extends TileThaumcraft {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        xp = tag.getInt("XP");
+        xp = tag.getIntOr("XP", 0);
     }
 
     // ==================== Tick ====================

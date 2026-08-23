@@ -251,17 +251,17 @@ public class PlayerKnowledge {
             }
             clear();
             
-            ListTag researchList = rootTag.getList("research", Tag.TAG_COMPOUND);
+            ListTag researchList = rootTag.getListOrEmpty("research");
             for (int i = 0; i < researchList.size(); i++) {
-                CompoundTag tag = researchList.getCompound(i);
-                String know = tag.getString("key");
+                CompoundTag tag = researchList.getCompoundOrEmpty(i);
+                String know = tag.getStringOr("key", "");
                 if (know != null && !know.isEmpty() && !isResearchKnown(know)) {
                     research.add(know);
-                    int stage = tag.getInt("stage");
+                    int stage = tag.getIntOr("stage", 0);
                     if (stage > 0) {
                         stages.put(know, stage);
                     }
-                    String fs = tag.getString("flags");
+                    String fs = tag.getStringOr("flags", "");
                     if (!fs.isEmpty()) {
                         String[] ss = fs.split(",");
                         for (String s : ss) {
@@ -275,11 +275,11 @@ public class PlayerKnowledge {
                 }
             }
             
-            ListTag knowledgeList = rootTag.getList("knowledge", Tag.TAG_COMPOUND);
+            ListTag knowledgeList = rootTag.getListOrEmpty("knowledge");
             for (int j = 0; j < knowledgeList.size(); j++) {
-                CompoundTag tag = knowledgeList.getCompound(j);
-                String key = tag.getString("key");
-                int amount = tag.getInt("amount");
+                CompoundTag tag = knowledgeList.getCompoundOrEmpty(j);
+                String key = tag.getStringOr("key", "");
+                int amount = tag.getIntOr("amount", 0);
                 if (key != null && !key.isEmpty()) {
                     knowledge.put(key, amount);
                 }

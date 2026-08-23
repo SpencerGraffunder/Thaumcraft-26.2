@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.monster;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -64,9 +66,9 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_FRIENDLY, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_FRIENDLY, false);
     }
     
     public static AttributeSupplier.Builder createAttributes() {
@@ -168,20 +170,20 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
         setDeltaMovement(getDeltaMovement().multiply(1.0, 0.6, 1.0));
         
         // Despawn after timeout or if owner is gone
-        if (!level().isClientSide && (tickCount > 600 || getOwner() == null)) {
+        if (!level().isClientSide() && (tickCount > 600 || getOwner() == null)) {
             discard();
             return;
         }
         
         // Client-side particle effects
-        if (level().isClientSide && isAlive() && focusPackage != null) {
+        if (level().isClientSide() && isAlive() && focusPackage != null) {
             // TODO: Render focus effect particles
         }
     }
     
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
         
         if (attackTime > 0) {
             --attackTime;
@@ -258,7 +260,7 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
             
             attackTime = 40;
             
-            if (!level().isClientSide) {
+            if (!level().isClientSide()) {
                 // Execute focus package on target
                 // TODO: Integrate with FocusEngine when fully implemented
                 // RayTraceResult ray = new RayTraceResult(target);
@@ -340,28 +342,28 @@ public class EntitySpellBat extends Monster implements IEntityAdditionalSpawnDat
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
         if (ownerUUID != null) {
-            tag.putUUID("OwnerUUID", ownerUUID);
+            output.putUUID("OwnerUUID", ownerUUID);
         }
-        tag.putBoolean("friendly", isFriendly());
+        output.putBoolean("friendly", isFriendly());
         if (focusPackage != null) {
-            tag.put("pack", focusPackage.serialize());
+            output.put("pack", focusPackage.serialize());
         }
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.hasUUID("OwnerUUID")) {
-            ownerUUID = tag.getUUID("OwnerUUID");
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        if (input.hasUUID("OwnerUUID")) {
+            ownerUUID = input.getUUID("OwnerUUID");
         }
-        setFriendly(tag.getBoolean("friendly"));
-        if (tag.contains("pack")) {
+        setFriendly(input.getBooleanOr("friendly", false));
+        if (input.contains("pack")) {
             focusPackage = new FocusPackage();
             try {
-                focusPackage.deserialize(tag.getCompound("pack"));
+                focusPackage.deserialize(input.getCompoundOrEmpty("pack"));
             } catch (Exception ignored) {}
         }
     }

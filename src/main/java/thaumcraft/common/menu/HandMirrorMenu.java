@@ -2,7 +2,7 @@ package thaumcraft.common.menu;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerListener;
+import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -76,7 +76,7 @@ public class HandMirrorMenu extends AbstractContainerMenu implements ContainerLi
         }
         
         // Try to transport the item
-        if (!player.level().isClientSide && !stackInSlot.isEmpty()) {
+        if (!player.level().isClientSide() && !stackInSlot.isEmpty()) {
             ItemStack toTransport = stackInSlot.copy();
             transportSlot.setItem(0, ItemStack.EMPTY);
             
@@ -158,7 +158,7 @@ public class HandMirrorMenu extends AbstractContainerMenu implements ContainerLi
         super.removed(player);
         
         // Drop any item left in the transport slot
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             ItemStack remaining = transportSlot.removeItemNoUpdate(0);
             if (!remaining.isEmpty()) {
                 player.drop(remaining, false);

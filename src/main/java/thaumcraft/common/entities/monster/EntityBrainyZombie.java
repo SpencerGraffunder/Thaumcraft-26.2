@@ -1,10 +1,11 @@
 package thaumcraft.common.entities.monster;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import thaumcraft.init.ModEntities;
@@ -33,11 +34,11 @@ public class EntityBrainyZombie extends Zombie {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
-        super.dropCustomDeathLoot(source, lootingLevel, wasRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
+        super.dropCustomDeathLoot(level, source, wasRecentlyHit);
         
-        // Drop zombie brain with chance affected by looting
-        if (random.nextInt(10) - lootingLevel <= 4) {
+        // Drop zombie brain with chance affected by 0
+        if (random.nextInt(10) - 0 <= 4) {
             this.spawnAtLocation(new ItemStack(ModItems.ZOMBIE_BRAIN.get()), 1.5f);
         }
     }

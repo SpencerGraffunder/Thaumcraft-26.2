@@ -57,10 +57,10 @@ public class TileAlembic extends TileThaumcraft implements IAspectContainer, IEs
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        aspect = Aspect.getAspect(tag.getString("Aspect"));
-        aspectFilter = Aspect.getAspect(tag.getString("AspectFilter"));
-        amount = tag.getShort("Amount");
-        facing = tag.getByte("Facing");
+        aspect = Aspect.getAspect(tag.getStringOr("Aspect", ""));
+        aspectFilter = Aspect.getAspect(tag.getStringOr("AspectFilter", ""));
+        amount = tag.getShortOr("Amount", (short)0);
+        facing = tag.getByteOr("Facing", (byte)0);
         facingDir = Direction.values()[facing];
     }
 

@@ -1,12 +1,15 @@
 package thaumcraft.common.lib.network.playerdata;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
 
-import java.util.function.Supplier;
 
 /**
  * PacketSyncResearchFlagsToServer - Syncs research notification flags from client to server.
@@ -19,7 +22,18 @@ import java.util.function.Supplier;
  * 
  * Ported from 1.12.2
  */
-public class PacketSyncResearchFlagsToServer {
+public class PacketSyncResearchFlagsToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketSyncResearchFlagsToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetsyncresearchflagstoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncResearchFlagsToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketSyncResearchFlagsToServer::encode, PacketSyncResearchFlagsToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private String key;
     private byte flags;
@@ -68,10 +82,10 @@ public class PacketSyncResearchFlagsToServer {
         return msg;
     }
     
-    public static void handle(PacketSyncResearchFlagsToServer msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(PacketSyncResearchFlagsToServer msg, IPayloadContext ctxSupplier) {
+        IPayloadContext ctx = ctxSupplier;
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
             
             boolean[] unpacked = unpack(msg.flags);
@@ -102,7 +116,6 @@ public class PacketSyncResearchFlagsToServer {
                 }
             });
         });
-        ctx.setPacketHandled(true);
     }
     
     /**

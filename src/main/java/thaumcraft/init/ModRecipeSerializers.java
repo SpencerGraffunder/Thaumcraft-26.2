@@ -20,7 +20,7 @@ import thaumcraft.common.lib.crafting.ShapelessArcaneRecipe;
 public class ModRecipeSerializers {
     
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = 
-            DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Thaumcraft.MODID);
+            DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, Thaumcraft.MODID);
     
     /**
      * Serializer for shaped arcane workbench recipes.

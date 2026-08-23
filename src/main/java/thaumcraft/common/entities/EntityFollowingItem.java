@@ -1,6 +1,8 @@
 package thaumcraft.common.entities;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -41,7 +43,7 @@ public class EntityFollowingItem extends EntitySpecialItem implements IEntityAdd
         this(ModEntities.FOLLOWING_ITEM.get(), level);
         this.setPos(x, y, z);
         this.setItem(stack);
-        this.setYRot((float)(Math.getRandom()() * 360.0));
+        this.setYRot((float)(Math.random() * 360.0));
     }
     
     /**
@@ -68,9 +70,9 @@ public class EntityFollowingItem extends EntitySpecialItem implements IEntityAdd
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TYPE, 3);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TYPE, 3);
     }
     
     public int getFollowType() {
@@ -116,7 +118,7 @@ public class EntityFollowingItem extends EntitySpecialItem implements IEntityAdd
             }
             
             // Spawn particles on client
-            if (level().isClientSide) {
+            if (level().isClientSide()) {
                 spawnFollowingParticles();
             }
         } else {
@@ -140,21 +142,21 @@ public class EntityFollowingItem extends EntitySpecialItem implements IEntityAdd
     }
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putShort("followType", (short) getFollowType());
-        tag.putDouble("targetX", targetX);
-        tag.putDouble("targetY", targetY);
-        tag.putDouble("targetZ", targetZ);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putShort("followType", (short) getFollowType());
+        output.putDouble("targetX", targetX);
+        output.putDouble("targetY", targetY);
+        output.putDouble("targetZ", targetZ);
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setFollowType(tag.getShort("followType"));
-        targetX = tag.getDouble("targetX");
-        targetY = tag.getDouble("targetY");
-        targetZ = tag.getDouble("targetZ");
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setFollowType(input.getShortOr("followType", (short)0));
+        targetX = input.getDoubleOr("targetX", 0.0D);
+        targetY = input.getDoubleOr("targetY", 0.0D);
+        targetZ = input.getDoubleOr("targetZ", 0.0D);
     }
     
     @Override

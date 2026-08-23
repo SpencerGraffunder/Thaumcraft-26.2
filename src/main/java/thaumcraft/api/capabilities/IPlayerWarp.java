@@ -3,7 +3,6 @@ package thaumcraft.api.capabilities;
 import javax.annotation.Nonnull;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.util.INBTSerializable;
 
 /**
  * IPlayerWarp - Capability interface for tracking player warp (corruption) levels.
@@ -14,7 +13,14 @@ import net.minecraftforge.common.util.INBTSerializable;
  * @author Azanor
  * Ported to 1.20.1
  */
-public interface IPlayerWarp extends INBTSerializable<CompoundTag> {
+public interface IPlayerWarp {
+
+    /** Serialize this capability to NBT. */
+    CompoundTag serializeNBT();
+
+    /** Restore this capability from NBT. */
+    void deserializeNBT(CompoundTag tag);
+
 
     /**
      * Clears all warp.

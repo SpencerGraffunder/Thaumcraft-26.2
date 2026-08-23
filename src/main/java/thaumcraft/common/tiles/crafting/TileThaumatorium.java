@@ -103,9 +103,9 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
         super.readSyncNBT(tag);
         storedAspects = new AspectList();
         storedAspects.readFromNBT(tag, "StoredAspects");
-        crafting = tag.getBoolean("Crafting");
-        craftingProgress = tag.getInt("CraftingProgress");
-        craftingTime = tag.getInt("CraftingTime");
+        crafting = tag.getBooleanOr("Crafting", false);
+        craftingProgress = tag.getIntOr("CraftingProgress", 0);
+        craftingTime = tag.getIntOr("CraftingTime", 0);
 
         if (tag.contains("RecipeAspects")) {
             recipeAspects = new AspectList();
@@ -115,7 +115,7 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
         }
 
         if (tag.contains("RecipeResult")) {
-            recipeResult = ItemStack.of(tag.getCompound("RecipeResult"));
+            recipeResult = ItemStack.of(tag.getCompoundOrEmpty("RecipeResult"));
         } else {
             recipeResult = null;
         }

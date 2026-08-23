@@ -36,7 +36,7 @@ import thaumcraft.common.tiles.misc.TileHole;
 public class ModBlockEntities {
 
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Thaumcraft.MODID);
+            DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Thaumcraft.MODID);
 
     // ==================== Essentia ====================
 

@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.projectile;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -69,12 +71,12 @@ public class EntityFocusCloud extends Entity {
     }
     
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_RADIUS, 0.5f);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_RADIUS, 0.5f);
     }
     
     public void setRadius(float radius) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             this.entityData.set(DATA_RADIUS, radius);
         }
         // Update bounding box
@@ -120,13 +122,13 @@ public class EntityFocusCloud extends Entity {
         int durationTicks = duration * 20;
         
         // Expire after duration
-        if (!level().isClientSide && (tickCount > durationTicks || getOwner() == null)) {
+        if (!level().isClientSide() && (tickCount > durationTicks || getOwner() == null)) {
             discard();
             return;
         }
         
         if (isAlive()) {
-            if (level().isClientSide) {
+            if (level().isClientSide()) {
                 // Client-side: render particles
                 renderCloudParticles(radius);
             } else {
@@ -224,29 +226,29 @@ public class EntityFocusCloud extends Entity {
     }
     
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.putInt("Age", tickCount);
-        tag.putInt("Duration", duration);
-        tag.putFloat("Radius", getRadius());
+    protected void addAdditionalSaveData(ValueOutput output) {
+        output.putInt("Age", tickCount);
+        output.putInt("Duration", duration);
+        output.putFloat("Radius", getRadius());
         if (ownerUUID != null) {
-            tag.putUUID("OwnerUUID", ownerUUID);
+            output.putUUID("OwnerUUID", ownerUUID);
         }
         if (focusPackage != null) {
-            tag.put("pack", focusPackage.serialize());
+            output.put("pack", focusPackage.serialize());
         }
     }
     
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        tickCount = tag.getInt("Age");
-        duration = tag.getInt("Duration");
-        setRadius(tag.getFloat("Radius"));
-        if (tag.hasUUID("OwnerUUID")) {
-            ownerUUID = tag.getUUID("OwnerUUID");
+    protected void readAdditionalSaveData(ValueInput input) {
+        tickCount = input.getIntOr("Age", 0);
+        duration = input.getIntOr("Duration", 0);
+        setRadius(input.getFloatOr("Radius", 0.0F));
+        if (input.hasUUID("OwnerUUID")) {
+            ownerUUID = input.getUUID("OwnerUUID");
         }
-        if (tag.contains("pack")) {
+        if (input.contains("pack")) {
             focusPackage = new FocusPackage();
-            focusPackage.deserialize(tag.getCompound("pack"));
+            focusPackage.deserialize(input.getCompoundOrEmpty("pack"));
         }
     }
     

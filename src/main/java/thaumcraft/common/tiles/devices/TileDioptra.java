@@ -98,7 +98,7 @@ public class TileDioptra extends TileThaumcraft {
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
         if (tag.contains("grid_a")) {
-            byte[] data = tag.getByteArray("grid_a");
+            byte[] data = tag.getByteArray("grid_a").orElse(new byte[0]);
             if (data.length == 169) {
                 grid_amt = data;
             }

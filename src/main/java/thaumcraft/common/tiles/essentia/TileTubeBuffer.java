@@ -61,21 +61,21 @@ public class TileTubeBuffer extends TileTube implements IAspectContainer {
         // Don't call super - buffer has different sync data
         aspects.readFromNBT(tag);
         
-        byte[] sides = tag.getByteArray("Open");
+        byte[] sides = tag.getByteArray("Open").orElse(new byte[0]);
         if (sides != null && sides.length == 6) {
             for (int i = 0; i < 6; i++) {
                 openSides[i] = sides[i] == 1;
             }
         }
         
-        byte[] choke = tag.getByteArray("Choke");
+        byte[] choke = tag.getByteArray("Choke").orElse(new byte[0]);
         if (choke != null && choke.length == 6) {
             chokedSides = choke;
         } else {
             chokedSides = new byte[] { 0, 0, 0, 0, 0, 0 };
         }
         
-        facing = Direction.values()[tag.getInt("Side")];
+        facing = Direction.values()[tag.getIntOr("Side", 0)];
     }
 
     // ==================== Tick ====================

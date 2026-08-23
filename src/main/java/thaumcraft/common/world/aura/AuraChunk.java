@@ -82,6 +82,6 @@ public class AuraChunk {
      * Get the chunk location as a PosXY (for use as map key).
      */
     public PosXY getLocXY() {
-        return loc != null ? new PosXY(loc.x, loc.z) : null;
+        return loc != null ? new PosXY(loc.x(), loc.z()) : null;
     }
 }

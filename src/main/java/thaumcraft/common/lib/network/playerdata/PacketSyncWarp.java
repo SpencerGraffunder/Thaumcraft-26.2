@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.playerdata;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -6,11 +11,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.capabilities.IPlayerWarp;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 
-import java.util.function.Supplier;
 
 /**
  * PacketSyncWarp - Syncs all player warp data from server to client.
@@ -21,7 +24,18 @@ import java.util.function.Supplier;
  * 
  * Ported from 1.12.2
  */
-public class PacketSyncWarp {
+public class PacketSyncWarp implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketSyncWarp> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetsyncwarp"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncWarp> STREAM_CODEC =
+        StreamCodec.ofMember(PacketSyncWarp::encode, PacketSyncWarp::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private CompoundTag data;
     
@@ -48,10 +62,9 @@ public class PacketSyncWarp {
         return msg;
     }
     
-    public static void handle(PacketSyncWarp msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(PacketSyncWarp msg, IPayloadContext ctxSupplier) {
+        IPayloadContext ctx = ctxSupplier;
         ctx.enqueueWork(() -> handleOnClient(msg));
-        ctx.setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

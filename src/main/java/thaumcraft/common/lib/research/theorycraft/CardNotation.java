@@ -25,8 +25,8 @@ public class CardNotation extends TheorycraftCard {
     @Override
     public void deserialize(CompoundTag nbt) {
         super.deserialize(nbt);
-        cat1 = nbt.getString("cat1");
-        cat2 = nbt.getString("cat2");
+        cat1 = nbt.getStringOr("cat1", "");
+        cat2 = nbt.getStringOr("cat2", "");
     }
 
     @Override

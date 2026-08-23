@@ -27,14 +27,14 @@ public class ChampionModBold implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void showFX(LivingEntity champion) {
-        if (champion.level().random.nextBoolean()) {
+        if (champion.level().getRandom().nextBoolean()) {
             return;
         }
         
         // Golden spark particles around the champion
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight() / 3.0;
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight() / 3.0;
         
         champion.level().addParticle(ParticleTypes.ELECTRIC_SPARK,
                 champion.getBoundingBox().minX + w,

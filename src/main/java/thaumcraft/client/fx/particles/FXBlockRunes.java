@@ -52,7 +52,7 @@ public class FXBlockRunes extends ThaumcraftParticle {
         this.setSize(0.01f, 0.01f);
 
         // Random rune index (224-240 range in sprite sheet)
-        this.runeIndex = (int) (Math.getRandom()() * 16.0 + 224.0);
+        this.runeIndex = (int) (Math.getRandom() * 16.0 + 224.0);
 
         // Random offsets for position variation
         this.offsetX = this.getRandom().nextFloat() * 0.2;

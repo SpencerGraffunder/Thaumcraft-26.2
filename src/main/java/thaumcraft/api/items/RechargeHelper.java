@@ -22,7 +22,7 @@ public class RechargeHelper {
             return 0;
         }
         CompoundTag tag = stack.getTag();
-        return tag != null ? tag.getInt(CHARGE_KEY) : 0;
+        return tag != null ? tag.getIntOr(CHARGE_KEY, 0) : 0;
     }
     
     /**

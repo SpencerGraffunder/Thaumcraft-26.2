@@ -66,8 +66,8 @@ import java.util.function.Supplier;
  */
 public class ModBlocks {
 
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Thaumcraft.MODID);
-    public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Thaumcraft.MODID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Thaumcraft.MODID);
+    public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Thaumcraft.MODID);
 
     // ==================== Stone Blocks ====================
 

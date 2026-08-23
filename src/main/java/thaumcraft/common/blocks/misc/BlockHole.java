@@ -84,7 +84,7 @@ public class BlockHole extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return createTickerHelper(type, ModBlockEntities.HOLE.get(), TileHole::clientTick);
         } else {
             return createTickerHelper(type, ModBlockEntities.HOLE.get(), TileHole::serverTick);
@@ -104,7 +104,7 @@ public class BlockHole extends BaseEntityBlock {
      */
     public static boolean createHole(Level level, BlockPos pos, BlockState originalBlock, 
                                      short duration, byte depth, @Nullable net.minecraft.core.Direction direction) {
-        if (level.isClientSide) return false;
+        if (level.isClientSide()) return false;
         
         // Don't replace air or existing holes
         if (originalBlock.isAir()) return false;
@@ -121,7 +121,7 @@ public class BlockHole extends BaseEntityBlock {
         
         // Place the hole block
         // We need to get the block from the registry since ModBlocks.HOLE might cause circular reference
-        Block holeBlock = net.minecraftforge.registries.ForgeRegistries.BLOCKS.getValue(
+        Block holeBlock = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getValue(
             new net.minecraft.resources.Identifier("thaumcraft", "hole"));
         
         if (holeBlock == null) return false;

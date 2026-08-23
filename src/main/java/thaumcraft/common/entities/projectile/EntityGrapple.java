@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.projectile;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -54,9 +56,9 @@ public class EntityGrapple extends ThrowableProjectile {
     }
     
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_PULLING, false);
-        this.entityData.define(DATA_OWNER_ID, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_PULLING, false);
+        builder.define(DATA_OWNER_ID, -1);
     }
     
     public void setPulling(boolean pulling) {
@@ -104,7 +106,7 @@ public class EntityGrapple extends ThrowableProjectile {
         
         if (owner != null) {
             // Server-side: manage grapple tracking
-            if (!level().isClientSide && !isRemoved() && !added) {
+            if (!level().isClientSide() && !isRemoved() && !added) {
                 // Remove any existing grapple for this player
                 if (grapples.containsKey(owner.getId())) {
                     int existingId = grapples.get(owner.getId());
@@ -201,7 +203,7 @@ public class EntityGrapple extends ThrowableProjectile {
             }
             
             // Client-side animation amplitude
-            if (level().isClientSide) {
+            if (level().isClientSide()) {
                 if (!isPulling()) {
                     ampl += 0.02f;
                 } else {
@@ -222,7 +224,7 @@ public class EntityGrapple extends ThrowableProjectile {
     
     @Override
     protected void onHit(HitResult result) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             setPulling(true);
             setDeltaMovement(Vec3.ZERO);
             
@@ -236,18 +238,18 @@ public class EntityGrapple extends ThrowableProjectile {
     }
     
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("Pulling", isPulling());
-        tag.putBoolean("Boost", boost);
-        tag.putByte("Hand", (byte)(hand == InteractionHand.MAIN_HAND ? 0 : 1));
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("Pulling", isPulling());
+        output.putBoolean("Boost", boost);
+        output.putByte("Hand", (byte)(hand == InteractionHand.MAIN_HAND ? 0 : 1));
     }
     
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setPulling(tag.getBoolean("Pulling"));
-        boost = tag.getBoolean("Boost");
-        hand = tag.getByte("Hand") == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setPulling(input.getBooleanOr("Pulling", false));
+        boost = input.getBooleanOr("Boost", false);
+        hand = input.getByteOr("Hand", (byte)0) == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
     }
 }

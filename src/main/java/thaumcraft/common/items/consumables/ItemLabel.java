@@ -39,7 +39,7 @@ public class ItemLabel extends Item {
      */
     public Aspect getAspect(ItemStack stack) {
         if (isFilled && stack.hasTag() && stack.getTag().contains("aspect")) {
-            return Aspect.getAspect(stack.getTag().getString("aspect"));
+            return Aspect.getAspect(stack.getTag().getStringOr("aspect", ""));
         }
         return null;
     }

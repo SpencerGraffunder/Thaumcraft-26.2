@@ -169,7 +169,7 @@ public class FocusEffectCurse extends FocusEffect {
         if (caster != null && caster.level() != null) {
             caster.level().playSound(null, caster.blockPosition().above(), 
                 SoundEvents.ELDER_GUARDIAN_CURSE, SoundSource.PLAYERS, 
-                0.15f, 1.0f + caster.level().random.nextFloat() / 2.0f);
+                0.15f, 1.0f + caster.level().getRandom().nextFloat() / 2.0f);
         }
     }
     

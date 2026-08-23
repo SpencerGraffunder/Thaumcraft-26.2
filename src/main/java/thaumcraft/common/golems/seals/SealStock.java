@@ -141,8 +141,8 @@ public class SealStock extends SealFiltered implements ISealConfigToggles {
             }
             // Check mod matching
             if (props[3].getValue()) {
-                String stackMod = stack.getItem().builtInRegistryHolder().key().location().getNamespace();
-                String filterMod = filter.getItem().builtInRegistryHolder().key().location().getNamespace();
+                String stackMod = stack.getItem().builtInRegistryHolder().key().identifier().getNamespace();
+                String filterMod = filter.getItem().builtInRegistryHolder().key().identifier().getNamespace();
                 return stackMod.equals(filterMod);
             }
             return false;

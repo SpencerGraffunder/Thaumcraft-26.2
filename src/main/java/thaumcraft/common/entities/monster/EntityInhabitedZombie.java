@@ -13,7 +13,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -90,7 +90,7 @@ public class EntityInhabitedZombie extends Zombie {
     @Override
     protected void tickDeath() {
         // Custom death - spawn crab immediately and remove
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // TODO: Spawn EntityEldritchCrab when implemented
             // EntityEldritchCrab crab = new EntityEldritchCrab(level());
             // crab.moveTo(getX(), getY() + getEyeHeight(), getZ(), getYRot(), getXRot());
@@ -99,7 +99,7 @@ public class EntityInhabitedZombie extends Zombie {
             
             // Drop XP
             if ((lastHurtByPlayerTime > 0 || isAlwaysExperienceDropper()) && 
-                    level().getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_DOMOBLOOT)) {
+                    level().getGameRules().getBooleanOr(net.minecraft.world.level.GameRules.RULE_DOMOBLOOT, false)) {
                 int xp = getExperienceReward();
                 net.minecraft.world.entity.ExperienceOrb.award((net.minecraft.server.level.ServerLevel)level(), position(), xp);
             }

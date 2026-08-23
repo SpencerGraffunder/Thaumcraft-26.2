@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.misc;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -77,24 +79,24 @@ public class TileBanner extends BlockEntity {
     // ==================== NBT ====================
     
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putByte("facing", facing);
-        tag.putString("aspect", aspect != null ? aspect.getTag() : "");
-        tag.putBoolean("wall", onWall);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putByte("facing", facing);
+        output.putString("aspect", aspect != null ? aspect.getTag() : "");
+        output.putBoolean("wall", onWall);
     }
     
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        facing = tag.getByte("facing");
-        String as = tag.getString("aspect");
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        facing = input.getByteOr("facing", (byte)0);
+        String as = input.getStringOr("aspect", "");
         if (as != null && !as.isEmpty()) {
             aspect = Aspect.getAspect(as);
         } else {
             aspect = null;
         }
-        onWall = tag.getBoolean("wall");
+        onWall = input.getBooleanOr("wall", false);
     }
     
     // ==================== Sync ====================

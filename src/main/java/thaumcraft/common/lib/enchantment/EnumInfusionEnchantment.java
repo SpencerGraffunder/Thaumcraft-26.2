@@ -62,10 +62,10 @@ public enum EnumInfusionEnchantment {
             return null;
         }
         CompoundTag tag = stack.getTag();
-        if (tag == null || !tag.contains(NBT_KEY, Tag.TAG_LIST)) {
+        if (tag == null || !tag.contains(NBT_KEY)) {
             return null;
         }
-        return tag.getList(NBT_KEY, Tag.TAG_COMPOUND);
+        return tag.getListOrEmpty(NBT_KEY);
     }
 
     /**
@@ -80,8 +80,8 @@ public enum EnumInfusionEnchantment {
         
         if (nbttaglist != null) {
             for (int j = 0; j < nbttaglist.size(); ++j) {
-                CompoundTag tag = nbttaglist.getCompound(j);
-                int k = tag.getShort("id");
+                CompoundTag tag = nbttaglist.getCompoundOrEmpty(j);
+                int k = tag.getShortOr("id", (short)0);
                 if (k >= 0 && k < values().length) {
                     list.add(values()[k]);
                 }
@@ -102,9 +102,9 @@ public enum EnumInfusionEnchantment {
         
         if (nbttaglist != null) {
             for (int j = 0; j < nbttaglist.size(); ++j) {
-                CompoundTag tag = nbttaglist.getCompound(j);
-                int k = tag.getShort("id");
-                int l = tag.getShort("lvl");
+                CompoundTag tag = nbttaglist.getCompoundOrEmpty(j);
+                int k = tag.getShortOr("id", (short)0);
+                int l = tag.getShortOr("lvl", (short)0);
                 if (k >= 0 && k < values().length && values()[k] == enchantment) {
                     return l;
                 }
@@ -140,14 +140,14 @@ public enum EnumInfusionEnchantment {
         CompoundTag stackTag = stack.getOrCreateTag();
         ListTag nbttaglist;
         
-        if (stackTag.contains(NBT_KEY, Tag.TAG_LIST)) {
-            nbttaglist = stackTag.getList(NBT_KEY, Tag.TAG_COMPOUND);
+        if (stackTag.contains(NBT_KEY)) {
+            nbttaglist = stackTag.getListOrEmpty(NBT_KEY);
             
             // Check if enchantment already exists
             for (int j = 0; j < nbttaglist.size(); ++j) {
-                CompoundTag tag = nbttaglist.getCompound(j);
-                int k = tag.getShort("id");
-                int l = tag.getShort("lvl");
+                CompoundTag tag = nbttaglist.getCompoundOrEmpty(j);
+                int k = tag.getShortOr("id", (short)0);
+                int l = tag.getShortOr("lvl", (short)0);
                 
                 if (k == ie.ordinal()) {
                     // Enchantment exists - only upgrade if new level is higher
@@ -185,14 +185,14 @@ public enum EnumInfusionEnchantment {
         }
 
         CompoundTag stackTag = stack.getTag();
-        if (stackTag == null || !stackTag.contains(NBT_KEY, Tag.TAG_LIST)) {
+        if (stackTag == null || !stackTag.contains(NBT_KEY)) {
             return;
         }
 
-        ListTag nbttaglist = stackTag.getList(NBT_KEY, Tag.TAG_COMPOUND);
+        ListTag nbttaglist = stackTag.getListOrEmpty(NBT_KEY);
         for (int j = nbttaglist.size() - 1; j >= 0; --j) {
-            CompoundTag tag = nbttaglist.getCompound(j);
-            int k = tag.getShort("id");
+            CompoundTag tag = nbttaglist.getCompoundOrEmpty(j);
+            int k = tag.getShortOr("id", (short)0);
             if (k == ie.ordinal()) {
                 nbttaglist.remove(j);
                 break;

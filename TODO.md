@@ -1,3 +1,80 @@
+# Thaumcraft 6 — Minecraft 26.2 (NeoForge) Migration Status
+
+> Everything below this header tracks the **26.2 NeoForge port** (NeoForge
+> 26.2.0.59, Java 25). The historical 1.20.1 plan is preserved further down.
+
+## 26.2 Current Wave — BlockEntity Sync NBT → ValueIO
+
+**Goal:** convert the `writeSyncNBT(CompoundTag)` / `readSyncNBT(CompoundTag)`
+sync chain (36 block-entity subclasses, inherited from `TileThaumcraft`) to the
+26.2 ValueIO API (`ValueOutput` / `ValueInput`). This cascades from the 26.2
+`BlockEntity` signatures `saveAdditional(ValueOutput)` /
+`loadAdditional(ValueInput)` — there is no `CompoundTag` variant left.
+
+### Verified 26.2 API surface (ground truth from transformSource/classes)
+
+- `ValueOutput`: `<T> store(String, Codec<T>, T)` / `storeNullable`, primitives
+  (`putBoolean/Byte/Short/Int/Long/Float/Double/String`), `putIntArray`,
+  `child(String)`, `childrenList(String)`, `list(String, Codec<T>)`, `discard(String)`
+  - **No** `putByteArray` / `long[]` / `double[]` — byte arrays need an alternative
+  - NeoForge extensions: `store(CompoundTag)` (merges via `CompoundTag.CODEC`),
+    `putChild(String, ValueIOSerializable)`
+- `ValueInput`: mirrors read side — `read(String, Codec<T>)` → `Optional<T>`,
+  `getBooleanOr/getByteOr/getShortOr/getIntOr/getLongOr/getFloatOr/getDoubleOr/
+  getStringOr`, `getIntArray`, `childOrEmpty`, `listOrEmpty`, plus extension
+  `keySet()`, `readChild(String, ValueIOSerializable)`
+- `TagValueOutput.createWithContext(...)` / `buildResult()` bridges ValueOutput →
+  `CompoundTag` (used by `saveWithFullMetadata` etc.)
+- MC `ContainerHelper` is already ValueIO: `saveAllItems(ValueOutput, NonNullList)`,
+  `loadAllItems(ValueInput, NonNullList)`
+- `FluidTank` implements `ValueIOSerializable` → replaces `writeToNBT`/`readFromNBT`
+- `ItemStack` old CompoundTag API is **removed** in 26.2 — use `MAP_CODEC`,
+  `OPTIONAL_CODEC` (= `ExtraCodecs.optionalEmptyMap`), `lenientOptionalFieldOf`
+- Network read path is unified on `loadAdditional(ValueInput)`;
+  `getUpdateTag(HolderLookup.Provider)` (no no-arg overload)
+- `AspectList` — ValueIO overloads added ✅ (both `CompoundTag` and `ValueIO`
+  variants coexist)
+
+### Progress
+
+- [x] Add `AspectList` ValueIO overloads (`writeToNBT`/`readFromNBT` for both
+      `ValueOutput`/`ValueInput`)
+- [ ] Migrate `AspectList` callers to the ValueIO overloads: `TileCrucible`,
+      `TileWaterJug`, `TileInfusionMatrix`, `TileSmelter`, `TileTubeBuffer`,
+      `TilePotionSprayer`, `TileFocalManipulator`, `TileThaumatorium`
+- [ ] Migrate the 36 `writeSyncNBT`/`readSyncNBT` decls (basic op renames) via
+      script — `tag.putX` → `output.putX`, `tag.getXOr` → `input.getXOr`
+      (ValueInput already uses the same `*Or(name, default)` naming)
+- [ ] Hand-fix special cases:
+  - [ ] `byte[]` grids (TileDioptra `grid_a` [169], tube coords) — `putByteArray`
+        missing; decide int-array / `store(CompoundTag)` / list strategy
+  - [ ] `contains(...)` → `input.keySet()` / `read(...).isPresent()`
+  - [ ] Focus-node `ListTag` loop (`TileFocalManipulator`) — nodes
+        `serialize()`/`deserialize(CompoundTag)` need a ValueIO treatment
+  - [ ] Aspect stores (`TileCrucible`, `TileThaumatorium`, `TilePotionSprayer`)
+        → ValueIO overloads
+  - [ ] ItemStack save/load (`TileThaumatorium`, `TileInfusionMatrix`, `TileSpa`,
+        `TileMirror`) → `ItemStack.OPTIONAL_CODEC` / `lenientOptionalFieldOf`
+  - [ ] `ResearchTableData` (`TileResearchTable` note) — currently
+        `CompoundTag.serialize()/deserialize()`, needs ValueIO
+- [ ] Rewrite `TileThaumcraft` base class: `writeSyncNBT(ValueOutput)` /
+      `readSyncNBT(ValueInput)` decls + `getUpdateTag(HolderLookup.Provider)`
+      (no-arg override removed)
+- [ ] Fix `TileSmelter` `saveAdditional`/`loadAdditional` + `writeSyncNBT`
+- [ ] Fix `TileBanner` `getUpdateTag` signature (no-arg → `(HolderLookup.Provider)`)
+- [ ] Fix `SealFiltered` / `ItemFocusPouch` item-level NBT callers
+- [ ] Recompile (`./gradlew compileJava`) and verify all ValueIO errors cleared
+
+## 26.2 Wave 2 (scoped, not started) — ItemStack old NBT removal
+
+`hasTag()` / `setTag()` / `getOrCreateTag()` / `getTag()` and `ItemStack.of(...)`
+are gone in 26.2. ~50 files affected (incl. `ThaumcraftInvHelper`, `AspectList`,
+`IEssentiaContainerItem`, `TileTube*`, `TileJar`, `TileCentrifuge`, `TileAlembic`,
+`TileEssentiaReservoir`, `LogisticsMenu`, `ResearchManager`, casters, cards,
+golems, tools, armor, consumables). Replace with 26.2 `DataComponentMap` / codecs.
+
+---
+
 # Thaumcraft 6 - Minecraft 1.20.1 Migration Plan
 
 > **Original Version:** Minecraft 1.12.2 with Forge 14.23.5.x  

@@ -146,19 +146,19 @@ public class SealEntity implements ISealEntity {
     
     @Override
     public void readNBT(CompoundTag nbt) {
-        BlockPos pos = BlockPos.of(nbt.getLong("pos"));
-        Direction face = Direction.values()[nbt.getByte("face")];
+        BlockPos pos = BlockPos.of(nbt.getLongOr("pos", 0L));
+        Direction face = Direction.values()[nbt.getByteOr("face", (byte)0)];
         sealPos = new SealPos(pos, face);
         
-        setPriority(nbt.getByte("priority"));
-        setColor(nbt.getByte("color"));
-        setLocked(nbt.getBoolean("locked"));
-        setRedstoneSensitive(nbt.getBoolean("redstone"));
-        setOwner(nbt.getString("owner"));
+        setPriority(nbt.getByteOr("priority", (byte)0));
+        setColor(nbt.getByteOr("color", (byte)0));
+        setLocked(nbt.getBooleanOr("locked", false));
+        setRedstoneSensitive(nbt.getBooleanOr("redstone", false));
+        setOwner(nbt.getStringOr("owner", ""));
         
         // Reconstruct seal from type key
         try {
-            ISeal template = SealHandler.getSeal(nbt.getString("type"));
+            ISeal template = SealHandler.getSeal(nbt.getStringOr("type", ""));
             if (template != null) {
                 seal = template.getClass().getDeclaredConstructor().newInstance();
             }
@@ -170,7 +170,7 @@ public class SealEntity implements ISealEntity {
             seal.readCustomNBT(nbt);
             
             if (seal instanceof ISealConfigArea) {
-                area = BlockPos.of(nbt.getLong("area"));
+                area = BlockPos.of(nbt.getLongOr("area", 0L));
             }
             
             if (seal instanceof ISealConfigToggles toggleSeal) {
@@ -215,7 +215,7 @@ public class SealEntity implements ISealEntity {
     
     @Override
     public void syncToClient(Level level) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             PacketHandler.sendToDimension(new PacketSealToClient(this), level.dimension());
         }
     }

@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.projectile;
 
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -73,9 +75,9 @@ public class EntityHomingShard extends ThrowableProjectile {
     }
     
     @Override
-    protected void defineSynchedData() {
-        entityData.define(DATA_STRENGTH, (byte)0);
-        entityData.define(DATA_TARGET_ID, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_STRENGTH, (byte)0);
+        builder.define(DATA_TARGET_ID, -1);
     }
     
     public void setStrength(int strength) {
@@ -96,7 +98,7 @@ public class EntityHomingShard extends ThrowableProjectile {
         super.tick();
         
         // Client-side: spawn particles
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             level().addParticle(ParticleTypes.WITCH,
                 getX(), getY(), getZ(),
                 (random.nextFloat() - 0.5) * 0.1,
@@ -105,7 +107,7 @@ public class EntityHomingShard extends ThrowableProjectile {
         }
         
         // Server-side: target management
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Try to resolve target from synced ID
             if (target == null) {
                 int targetId = entityData.get(DATA_TARGET_ID);
@@ -132,7 +134,7 @@ public class EntityHomingShard extends ThrowableProjectile {
         
         // Die after 15 seconds
         if (tickCount > 300) {
-            if (!level().isClientSide) {
+            if (!level().isClientSide()) {
                 level().broadcastEntityEvent(this, (byte)16);
             }
             discard();
@@ -184,7 +186,7 @@ public class EntityHomingShard extends ThrowableProjectile {
     
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             Entity hit = result.getEntity();
             Entity owner = getOwner();
             
@@ -225,25 +227,25 @@ public class EntityHomingShard extends ThrowableProjectile {
     }
     
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putByte("Strength", (byte)getStrength());
-        tag.putBoolean("Persistent", persistent);
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putByte("Strength", (byte)getStrength());
+        output.putBoolean("Persistent", persistent);
         if (target != null) {
-            tag.putInt("TargetId", target.getId());
+            output.putInt("TargetId", target.getId());
         }
         if (targetClass != null) {
-            tag.putString("TargetClass", targetClass.getName());
+            output.putString("TargetClass", targetClass.getName());
         }
     }
     
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setStrength(tag.getByte("Strength"));
-        persistent = tag.getBoolean("Persistent");
-        if (tag.contains("TargetId")) {
-            entityData.set(DATA_TARGET_ID, tag.getInt("TargetId"));
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setStrength(input.getByteOr("Strength", (byte)0));
+        persistent = input.getBooleanOr("Persistent", false);
+        if (input.contains("TargetId")) {
+            entityData.set(DATA_TARGET_ID, input.getIntOr("TargetId", 0));
         }
         // Note: targetClass restoration would require reflection, skipping for safety
     }

@@ -73,7 +73,7 @@ public class BlockDioptra extends Block implements EntityBlock {
         // Toggle between vis and flux display
         boolean currentMode = state.getValue(ENABLED);
         level.setBlock(pos, state.setValue(ENABLED, !currentMode), 3);
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
     
     @Override
@@ -103,7 +103,7 @@ public class BlockDioptra extends Block implements EntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                     BlockEntityType<T> type) {
         if (type == ModBlockEntities.DIOPTRA.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileDioptra.clientTick(lvl, pos, st, (TileDioptra) be);
             } else {
                 return (lvl, pos, st, be) -> TileDioptra.serverTick(lvl, pos, st, (TileDioptra) be);

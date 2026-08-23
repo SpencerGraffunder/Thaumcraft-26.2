@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -6,10 +11,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.init.ModSounds;
 
-import java.util.function.Supplier;
 
 /**
  * Packet for miscellaneous client-side events.
@@ -17,7 +20,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketMiscEvent {
+public class PacketMiscEvent implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketMiscEvent> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetmiscevent"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketMiscEvent> STREAM_CODEC =
+        StreamCodec.ofMember(PacketMiscEvent::encode, PacketMiscEvent::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     // Event type constants
     public static final byte WARP_EVENT = 0;
@@ -53,9 +67,8 @@ public class PacketMiscEvent {
         return new PacketMiscEvent(type, value);
     }
     
-    public static void handle(PacketMiscEvent packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> handleClient(packet));
-        ctx.get().setPacketHandled(true);
+    public static void handle(PacketMiscEvent packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> handleClient(packet));
     }
     
     @OnlyIn(Dist.CLIENT)

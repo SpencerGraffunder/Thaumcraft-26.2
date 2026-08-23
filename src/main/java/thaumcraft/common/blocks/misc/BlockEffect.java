@@ -70,7 +70,7 @@ public class BlockEffect extends Block {
     
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (level.isClientSide) return;
+        if (level.isClientSide()) return;
         
         if (effectType == EffectType.SHOCK) {
             if (entity instanceof LivingEntity living) {

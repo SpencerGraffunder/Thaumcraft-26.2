@@ -876,7 +876,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
     private boolean playerHasItem(ItemStack required) {
         if (minecraft == null || minecraft.player == null) return false;
         int needed = required.getCount();
-        for (ItemStack stack : minecraft.player.getInventory().items) {
+        for (ItemStack stack : minecraft.player.getInventory().getItems()) {
             if (ItemStack.isSameItem(stack, required)) {
                 needed -= stack.getCount();
                 if (needed <= 0) return true;

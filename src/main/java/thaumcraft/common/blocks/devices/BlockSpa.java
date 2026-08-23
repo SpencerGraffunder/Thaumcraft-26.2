@@ -97,7 +97,7 @@ public class BlockSpa extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.SPA.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileSpa.clientTick(lvl, pos, st, (TileSpa) be);
             } else {
                 return (lvl, pos, st, be) -> TileSpa.serverTick(lvl, pos, st, (TileSpa) be);

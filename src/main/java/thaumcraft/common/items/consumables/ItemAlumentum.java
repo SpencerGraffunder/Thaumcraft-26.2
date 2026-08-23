@@ -37,7 +37,7 @@ public class ItemAlumentum extends Item {
                 0.3f, 0.4f / (level.getRandom().nextFloat() * 0.4f + 0.8f));
         
         // Spawn projectile on server
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             EntityAlumentum alumentum = new EntityAlumentum(level, player);
             alumentum.shootFromRotation(player, player.getXRot(), player.getYRot(), -5.0f, 0.4f, 2.0f);
             level.addFreshEntity(alumentum);

@@ -239,8 +239,8 @@ public class InventoryUtils {
         }
         
         int count = item.getCount();
-        for (int slot = 0; slot < player.getInventory().items.size(); slot++) {
-            ItemStack slotStack = player.getInventory().items.get(slot);
+        for (int slot = 0; slot < player.getInventory().getItems().size(); slot++) {
+            ItemStack slotStack = player.getInventory().getItems().get(slot);
             ThaumcraftInvHelper.InvFilter filter = new ThaumcraftInvHelper.InvFilter(false, !item.hasTag(), useTagMatch, false)
                     .setRelaxedNBT();
             
@@ -250,7 +250,7 @@ public class InventoryUtils {
                     count = 0;
                 } else {
                     count -= slotStack.getCount();
-                    player.getInventory().items.set(slot, ItemStack.EMPTY);
+                    player.getInventory().getItems().set(slot, ItemStack.EMPTY);
                 }
                 if (count <= 0) {
                     return true;
@@ -269,15 +269,15 @@ public class InventoryUtils {
         }
         
         int remaining = amount;
-        for (int slot = 0; slot < player.getInventory().items.size(); slot++) {
-            ItemStack slotStack = player.getInventory().items.get(slot);
+        for (int slot = 0; slot < player.getInventory().getItems().size(); slot++) {
+            ItemStack slotStack = player.getInventory().getItems().get(slot);
             if (slotStack.is(item)) {
                 if (slotStack.getCount() > remaining) {
                     slotStack.shrink(remaining);
                     remaining = 0;
                 } else {
                     remaining -= slotStack.getCount();
-                    player.getInventory().items.set(slot, ItemStack.EMPTY);
+                    player.getInventory().getItems().set(slot, ItemStack.EMPTY);
                 }
                 if (remaining <= 0) {
                     return true;
@@ -299,8 +299,8 @@ public class InventoryUtils {
         ThaumcraftInvHelper.InvFilter filter = new ThaumcraftInvHelper.InvFilter(false, !stack.hasTag(), useTagMatch, false)
                 .setRelaxedNBT();
         
-        for (int slot = 0; slot < player.getInventory().items.size(); slot++) {
-            ItemStack slotStack = player.getInventory().items.get(slot);
+        for (int slot = 0; slot < player.getInventory().getItems().size(); slot++) {
+            ItemStack slotStack = player.getInventory().getItems().get(slot);
             if (areItemStacksEqual(slotStack, stack, filter)) {
                 needed -= slotStack.getCount();
                 if (needed <= 0) {
@@ -349,8 +349,8 @@ public class InventoryUtils {
      * Get the player inventory slot containing a matching item.
      */
     public static int getPlayerSlotFor(Player player, ItemStack stack) {
-        for (int i = 0; i < player.getInventory().items.size(); i++) {
-            ItemStack slotStack = player.getInventory().items.get(i);
+        for (int i = 0; i < player.getInventory().getItems().size(); i++) {
+            ItemStack slotStack = player.getInventory().getItems().get(i);
             if (!slotStack.isEmpty() && ItemStack.isSameItemSameTags(stack, slotStack)) {
                 return i;
             }
@@ -391,8 +391,8 @@ public class InventoryUtils {
         
         // Mod-based matching (compare namespaces)
         if (filter.useMod) {
-            String mod0 = stack0.getItem().builtInRegistryHolder().key().location().getNamespace();
-            String mod1 = stack1.getItem().builtInRegistryHolder().key().location().getNamespace();
+            String mod0 = stack0.getItem().builtInRegistryHolder().key().identifier().getNamespace();
+            String mod1 = stack1.getItem().builtInRegistryHolder().key().identifier().getNamespace();
             return mod0.equals(mod1);
         }
         
@@ -511,7 +511,7 @@ public class InventoryUtils {
     public static void dropHarvestsAtPos(Level level, BlockPos pos, List<ItemStack> items,
             boolean followItem, int color, @Nullable Entity target) {
         if (level.isClientSide()) return;
-        if (!level.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_DOBLOCKDROPS)) return;
+        if (!level.getGameRules().getBooleanOr(net.minecraft.world.level.GameRules.RULE_DOBLOCKDROPS, false)) return;
         
         for (ItemStack item : items) {
             if (item.isEmpty()) continue;

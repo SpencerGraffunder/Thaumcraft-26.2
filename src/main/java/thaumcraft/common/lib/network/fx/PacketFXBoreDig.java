@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -9,10 +14,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXBoreDig - Visual effect for arcane bore digging blocks.
@@ -21,7 +24,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXBoreDig {
+public class PacketFXBoreDig implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXBoreDig> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxboredig"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXBoreDig> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXBoreDig::encode, PacketFXBoreDig::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int x;
     private final int y;
@@ -62,11 +76,10 @@ public class PacketFXBoreDig {
         return new PacketFXBoreDig(x, y, z, boreId, delay);
     }
     
-    public static void handle(PacketFXBoreDig packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXBoreDig packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

@@ -71,7 +71,7 @@ public class BlockWaterJug extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -154,7 +154,7 @@ public class BlockWaterJug extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.WATER_JUG.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, p, s, be) -> TileWaterJug.clientTick(lvl, p, s, (TileWaterJug) be);
             } else {
                 return (lvl, p, s, be) -> TileWaterJug.serverTick(lvl, p, s, (TileWaterJug) be);

@@ -1,16 +1,19 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.common.tiles.crafting.TileResearchTable;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * Packet sent from client to start a new research theory at a research table.
@@ -18,7 +21,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketStartTheoryToServer {
+public class PacketStartTheoryToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketStartTheoryToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetstarttheorytoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketStartTheoryToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketStartTheoryToServer::encode, PacketStartTheoryToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final long pos;
     private final Set<String> aids;
@@ -51,9 +65,9 @@ public class PacketStartTheoryToServer {
         return new PacketStartTheoryToServer(pos, aids);
     }
     
-    public static void handle(PacketStartTheoryToServer packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketStartTheoryToServer packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
             
             Level level = player.level();
@@ -64,6 +78,5 @@ public class PacketStartTheoryToServer {
                 researchTable.startNewTheory(player, packet.aids);
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

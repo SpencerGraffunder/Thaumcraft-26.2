@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -6,13 +11,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchCategory;
 import thaumcraft.init.ModSounds;
 
-import java.util.function.Supplier;
 
 /**
  * Packet sent to client when player gains knowledge (observation, theory, etc).
@@ -20,7 +23,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketKnowledgeGain {
+public class PacketKnowledgeGain implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketKnowledgeGain> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetknowledgegain"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketKnowledgeGain> STREAM_CODEC =
+        StreamCodec.ofMember(PacketKnowledgeGain::encode, PacketKnowledgeGain::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final byte type;
     private final String category;
@@ -47,9 +61,8 @@ public class PacketKnowledgeGain {
         );
     }
     
-    public static void handle(PacketKnowledgeGain packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> handleClient(packet));
-        ctx.get().setPacketHandled(true);
+    public static void handle(PacketKnowledgeGain packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> handleClient(packet));
     }
     
     @OnlyIn(Dist.CLIENT)

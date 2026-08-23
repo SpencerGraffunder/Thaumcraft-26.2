@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -27,15 +29,15 @@ public abstract class TileThaumcraft extends BlockEntity {
     // ==================== NBT Serialization ====================
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        writeSyncNBT(tag);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        writeSyncNBT(output);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        readSyncNBT(tag);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        readSyncNBT(input);
     }
 
     /**
@@ -73,7 +75,7 @@ public abstract class TileThaumcraft extends BlockEntity {
      * Mark this tile entity as needing sync to clients.
      */
     public void syncTile(boolean rerender) {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             setChanged();
             BlockState state = getBlockState();
             level.sendBlockUpdated(worldPosition, state, state, rerender ? 3 : 2);
@@ -114,7 +116,7 @@ public abstract class TileThaumcraft extends BlockEntity {
      * @param nbt The message data
      */
     public void sendMessageToClients(CompoundTag nbt) {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             PacketHandler.sendToAllTracking(new PacketTileToClient(worldPosition, nbt), this);
         }
     }
@@ -124,7 +126,7 @@ public abstract class TileThaumcraft extends BlockEntity {
      * @param nbt The message data
      */
     public void sendMessageToServer(CompoundTag nbt) {
-        if (level != null && level.isClientSide) {
+        if (level != null && level.isClientSide()) {
             PacketHandler.sendToServer(new thaumcraft.common.lib.network.tiles.PacketTileToServer(worldPosition, nbt));
         }
     }

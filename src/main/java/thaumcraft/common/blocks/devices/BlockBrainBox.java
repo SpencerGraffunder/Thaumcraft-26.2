@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.devices;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,7 +30,7 @@ import thaumcraft.init.ModBlocks;
  */
 public class BlockBrainBox extends Block {
     
-    public static final EnumProperty FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
+    public static final EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
     
     // Smaller bounding box (centered, slightly smaller than full block)
     private static final VoxelShape SHAPE = Block.box(3, 3, 3, 13, 13, 13);
@@ -98,7 +99,7 @@ public class BlockBrainBox extends Block {
     }
     
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, Orientation orientation, boolean isMoving) {
         Direction facing = state.getValue(FACING);
         BlockPos thaumatoriumPos = pos.relative(facing);
         

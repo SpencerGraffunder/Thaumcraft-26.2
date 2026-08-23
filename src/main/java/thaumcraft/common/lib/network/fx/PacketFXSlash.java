@@ -1,14 +1,17 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXSlash - Sends slash visual effect between two entities.
@@ -16,7 +19,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXSlash {
+public class PacketFXSlash implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXSlash> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxslash"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXSlash> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXSlash::encode, PacketFXSlash::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int sourceId;
     private final int targetId;
@@ -40,11 +54,10 @@ public class PacketFXSlash {
         return new PacketFXSlash(buffer.readInt(), buffer.readInt());
     }
     
-    public static void handle(PacketFXSlash packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXSlash packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

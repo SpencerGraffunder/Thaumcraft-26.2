@@ -1,13 +1,16 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXPollute - Visual effect for aura pollution.
@@ -15,7 +18,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXPollute {
+public class PacketFXPollute implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXPollute> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxpollute"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXPollute> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXPollute::encode, PacketFXPollute::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int x;
     private final int y;
@@ -55,11 +69,10 @@ public class PacketFXPollute {
         return new PacketFXPollute(x, y, z, amount);
     }
     
-    public static void handle(PacketFXPollute packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXPollute packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

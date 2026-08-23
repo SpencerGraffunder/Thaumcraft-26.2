@@ -20,7 +20,7 @@ public class WorldCoordinates implements Comparable<WorldCoordinates> {
     
     public WorldCoordinates() {
         this.pos = BlockPos.ZERO;
-        this.dim = Level.OVERWORLD.location().toString();
+        this.dim = Level.OVERWORLD.identifier().toString();
     }
     
     public WorldCoordinates(BlockPos pos, String dim) {
@@ -30,19 +30,19 @@ public class WorldCoordinates implements Comparable<WorldCoordinates> {
     
     public WorldCoordinates(BlockPos pos, ResourceKey<Level> dimension) {
         this.pos = pos;
-        this.dim = dimension.location().toString();
+        this.dim = dimension.identifier().toString();
     }
     
     public WorldCoordinates(BlockPos pos, Level level) {
         this.pos = pos;
-        this.dim = level.dimension().location().toString();
+        this.dim = level.dimension().identifier().toString();
     }
     
     public WorldCoordinates(BlockEntity tile) {
         this.pos = tile.getBlockPos();
         this.dim = tile.getLevel() != null ? 
-                tile.getLevel().dimension().location().toString() : 
-                Level.OVERWORLD.location().toString();
+                tile.getLevel().dimension().identifier().toString() : 
+                Level.OVERWORLD.identifier().toString();
     }
     
     public WorldCoordinates(WorldCoordinates other) {
@@ -77,7 +77,7 @@ public class WorldCoordinates implements Comparable<WorldCoordinates> {
     
     public void set(BlockPos pos, Level level) {
         this.pos = pos;
-        this.dim = level.dimension().location().toString();
+        this.dim = level.dimension().identifier().toString();
     }
     
     /**
@@ -104,13 +104,13 @@ public class WorldCoordinates implements Comparable<WorldCoordinates> {
      * Read from NBT.
      */
     public void readNBT(CompoundTag nbt) {
-        int x = nbt.getInt("w_x");
-        int y = nbt.getInt("w_y");
-        int z = nbt.getInt("w_z");
+        int x = nbt.getIntOr("w_x", 0);
+        int y = nbt.getIntOr("w_y", 0);
+        int z = nbt.getIntOr("w_z", 0);
         pos = new BlockPos(x, y, z);
-        dim = nbt.getString("w_d");
+        dim = nbt.getStringOr("w_d", "");
         if (dim.isEmpty()) {
-            dim = Level.OVERWORLD.location().toString();
+            dim = Level.OVERWORLD.identifier().toString();
         }
     }
     

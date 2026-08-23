@@ -6,6 +6,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
@@ -65,6 +66,9 @@ public class Thaumcraft {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
+        // Register network payload handlers on the mod bus
+        modEventBus.addListener(this::registerPayloadHandlers);
+
         // Register Deferred Registers to the mod event bus
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlocks.BLOCK_ITEMS.register(modEventBus);
@@ -81,7 +85,7 @@ public class Thaumcraft {
         ModStructures.STRUCTURE_TYPES.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         // ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ThaumcraftConfig.SPEC);
@@ -98,9 +102,9 @@ public class Thaumcraft {
         // Initialize the internal API handler - this enables all ThaumcraftApi methods
         ThaumcraftApi.internalMethods = new InternalMethodHandler();
         LOGGER.info("Initialized ThaumcraftApi internal methods");
-        
-        // Initialize network system
-        PacketHandler.init();
+
+        // Network payload handlers are registered via RegisterPayloadHandlersEvent
+        // (see registerPayloadHandlers below).
         
         // Perform setup that must happen after all registry events
         event.enqueueWork(() -> {
@@ -129,6 +133,11 @@ public class Thaumcraft {
             
             LOGGER.info("Thaumcraft setup complete!");
         });
+    }
+
+    // Register every CustomPacketPayload (both directions) on the payload registry.
+    private void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
+        PacketHandler.register(event);
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
@@ -528,7 +537,7 @@ public class Thaumcraft {
         }
         
         @SubscribeEvent
-        public static void onRegisterLayerDefinitions(net.minecraftforge.client.event.EntityRenderersEvent.RegisterLayerDefinitions event) {
+        public static void onRegisterLayerDefinitions(net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterLayerDefinitions event) {
             // Register entity model layers
             event.registerLayerDefinition(
                 thaumcraft.client.models.entity.GolemModel.LAYER_LOCATION,
@@ -592,7 +601,7 @@ public class Thaumcraft {
         }
         
         @SubscribeEvent
-        public static void onRegisterRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+        public static void onRegisterRenderers(net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
             // Register block entity renderers
             
             // Jar renderers
@@ -678,13 +687,13 @@ public class Thaumcraft {
         }
         
         @SubscribeEvent
-        public static void onRegisterKeyMappings(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
+        public static void onRegisterKeyMappings(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) {
             // Register Thaumcraft key bindings
             KeyHandler.registerKeyMappings(event);
         }
         
         @SubscribeEvent
-        public static void onRegisterItemColors(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
+        public static void onRegisterItemColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item event) {
             // Register vis crystal color handlers - tint based on aspect color
             event.register(
                 (stack, tintIndex) -> {

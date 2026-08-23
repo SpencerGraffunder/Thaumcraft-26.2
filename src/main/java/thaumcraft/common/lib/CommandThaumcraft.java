@@ -61,9 +61,9 @@ public class CommandThaumcraft {
                                 .executes(context -> resetResearch(context.getSource(), EntityArgument.getPlayer(context, "player"))))
                         .then(Commands.argument("research", StringArgumentType.string())
                                 .suggests(RESEARCH_SUGGESTIONS)
-                                .executes(context -> giveResearch(context.getSource(), EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "research")))
+                                .executes(context -> giveResearch(context.getSource(), EntityArgument.getPlayer(context, "player"), StringArgumentType.getStringOr(context, "research", "")))
                                 .then(Commands.literal("revoke")
-                                        .executes(context -> revokeResearch(context.getSource(), EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "research"))))
+                                        .executes(context -> revokeResearch(context.getSource(), EntityArgument.getPlayer(context, "player"), StringArgumentType.getStringOr(context, "research", ""))))
                         )
                 )
         );

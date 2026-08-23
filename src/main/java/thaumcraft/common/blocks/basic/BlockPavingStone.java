@@ -110,7 +110,7 @@ public class BlockPavingStone extends Block implements EntityBlock {
     @Override
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
         // Travel stone gives speed and jump boost
-        if (!level.isClientSide && type == Type.TRAVEL && entity instanceof LivingEntity living) {
+        if (!level.isClientSide() && type == Type.TRAVEL && entity instanceof LivingEntity living) {
             living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40, 1, false, false));
             living.addEffect(new MobEffectInstance(MobEffects.JUMP, 40, 0, false, false));
         }
@@ -186,7 +186,7 @@ public class BlockPavingStone extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         if (type == Type.BARRIER && blockEntityType == ModBlockEntities.BARRIER_STONE.get()) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileBarrierStone.serverTick(lvl, pos, st, (TileBarrierStone) be);
             }
         }

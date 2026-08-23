@@ -36,9 +36,9 @@ public class CardCelestial extends TheorycraftCard {
     @Override
     public void deserialize(CompoundTag nbt) {
         super.deserialize(nbt);
-        noteType1 = nbt.getInt("md1");
-        noteType2 = nbt.getInt("md2");
-        category = nbt.getString("cat");
+        noteType1 = nbt.getIntOr("md1", 0);
+        noteType2 = nbt.getIntOr("md2", 0);
+        category = nbt.getStringOr("cat", "");
     }
 
     @Override

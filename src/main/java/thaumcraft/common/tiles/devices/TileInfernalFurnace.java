@@ -60,8 +60,8 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        furnaceCookTime = tag.getShort("CookTime");
-        speedyTime = tag.getShort("SpeedyTime");
+        furnaceCookTime = tag.getShortOr("CookTime", (short)0);
+        speedyTime = tag.getShortOr("SpeedyTime", (short)0);
     }
     
     // ==================== Tick ====================
@@ -343,7 +343,7 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
     @Override
     public boolean triggerEvent(int id, int param) {
         if (id == 3) {
-            if (level != null && level.isClientSide) {
+            if (level != null && level.isClientSide()) {
                 // TODO: Add particle effects when FX system is ported
                 // FXDispatcher.INSTANCE.furnaceLavaFx(...)
                 level.playLocalSound(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,

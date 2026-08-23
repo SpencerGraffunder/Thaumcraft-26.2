@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.projectile;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -84,9 +86,9 @@ public class EntityFocusProjectile extends ThrowableProjectile {
     }
     
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_SPECIAL, 0);
-        this.entityData.define(DATA_OWNER_ID, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_SPECIAL, 0);
+        builder.define(DATA_OWNER_ID, 0);
     }
     
     public void setSpecial(int special) {
@@ -146,7 +148,7 @@ public class EntityFocusProjectile extends ThrowableProjectile {
                 
                 // Die if too slow
                 if (newMotion.length() < 0.2) {
-                    if (!level().isClientSide) {
+                    if (!level().isClientSide()) {
                         discard();
                     }
                 }
@@ -155,7 +157,7 @@ public class EntityFocusProjectile extends ThrowableProjectile {
         }
         
         // Normal impact - execute focus effects
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             executeFocusPackage(result);
             discard();
         }
@@ -197,7 +199,7 @@ public class EntityFocusProjectile extends ThrowableProjectile {
         }
         
         // Expire if owner is gone (server only)
-        if (!level().isClientSide && getOwner() == null) {
+        if (!level().isClientSide() && getOwner() == null) {
             discard();
             return;
         }
@@ -310,21 +312,21 @@ public class EntityFocusProjectile extends ThrowableProjectile {
     }
     
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putInt("special", getSpecial());
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("special", getSpecial());
         if (focusPackage != null) {
-            tag.put("pack", focusPackage.serialize());
+            output.put("pack", focusPackage.serialize());
         }
     }
     
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setSpecial(tag.getInt("special"));
-        if (tag.contains("pack")) {
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setSpecial(input.getIntOr("special", 0));
+        if (input.contains("pack")) {
             focusPackage = new FocusPackage();
-            focusPackage.deserialize(tag.getCompound("pack"));
+            focusPackage.deserialize(input.getCompoundOrEmpty("pack"));
         }
         if (getOwner() != null) {
             setOwnerId(getOwner().getId());

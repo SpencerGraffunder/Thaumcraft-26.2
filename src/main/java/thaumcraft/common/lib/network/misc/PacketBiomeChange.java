@@ -1,4 +1,8 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -14,9 +18,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 
-import java.util.function.Supplier;
 
 /**
  * Packet to update biome at a specific position on the client.
@@ -26,7 +28,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketBiomeChange {
+public class PacketBiomeChange implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketBiomeChange> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetbiomechange"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketBiomeChange> STREAM_CODEC =
+        StreamCodec.ofMember(PacketBiomeChange::encode, PacketBiomeChange::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int x;
     private final int y;
@@ -37,7 +50,7 @@ public class PacketBiomeChange {
         this.x = pos.getX();
         this.y = pos.getY();
         this.z = pos.getZ();
-        this.biomeId = biome.location().toString();
+        this.biomeId = biome.identifier().toString();
     }
     
     public PacketBiomeChange(int x, int y, int z, String biomeId) {
@@ -63,9 +76,8 @@ public class PacketBiomeChange {
         );
     }
     
-    public static void handle(PacketBiomeChange packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> handleClient(packet));
-        ctx.get().setPacketHandled(true);
+    public static void handle(PacketBiomeChange packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> handleClient(packet));
     }
     
     @OnlyIn(Dist.CLIENT)
@@ -78,8 +90,8 @@ public class PacketBiomeChange {
         
         // Get the biome from registry
         Identifier biomeRL = Identifier.withDefaultNamespace(packet.biomeId);
-        var biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
-        Holder<Biome> biomeHolder = biomeRegistry.getHolder(ResourceKey.create(Registries.BIOME, biomeRL)).orElse(null);
+        var biomeRegistry = level.registryAccess().lookupOrThrow(Registries.BIOME);
+        Holder<Biome> biomeHolder = biomeRegistry.get(ResourceKey.create(Registries.BIOME, biomeRL)).orElse(null);
         
         if (biomeHolder == null) return;
         
@@ -102,11 +114,8 @@ public class PacketBiomeChange {
             }
             
             // Mark chunk for re-render
-            mc.levelRenderer.setSectionDirty(
-                pos.getX() >> 4, 
-                pos.getY() >> 4, 
-                pos.getZ() >> 4
-            );
+            // TODO(feature-review): re-add client render refresh for the changed
+            // biome section (26.2 removed public LevelRenderer.setSectionDirty).
         }
     }
 }

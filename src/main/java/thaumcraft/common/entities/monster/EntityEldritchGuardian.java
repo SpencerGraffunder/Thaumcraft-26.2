@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.monster;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -118,7 +120,7 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
     public void tick() {
         super.tick();
         
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             // Decay arm lift animation
             if (armLiftL > 0.0f) {
                 armLiftL -= 0.05f;
@@ -132,8 +134,8 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
     }
     
     @Override
-    public boolean doHurtTarget(Entity target) {
-        boolean hit = super.doHurtTarget(target);
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
+        boolean hit = super.doHurtTarget(level, target);
         if (hit) {
             // Chance to set target on fire
             int difficulty = level().getDifficulty().getId();
@@ -283,25 +285,25 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
         if (homePos != null && homeDistance > 0) {
-            tag.putInt("HomeD", homeDistance);
-            tag.putInt("HomeX", homePos.getX());
-            tag.putInt("HomeY", homePos.getY());
-            tag.putInt("HomeZ", homePos.getZ());
+            output.putInt("HomeD", homeDistance);
+            output.putInt("HomeX", homePos.getX());
+            output.putInt("HomeY", homePos.getY());
+            output.putInt("HomeZ", homePos.getZ());
         }
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains("HomeD")) {
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        if (input.contains("HomeD")) {
             setHomePos(new BlockPos(
-                    tag.getInt("HomeX"),
-                    tag.getInt("HomeY"),
-                    tag.getInt("HomeZ")),
-                    tag.getInt("HomeD"));
+                    input.getIntOr("HomeX", 0),
+                    input.getIntOr("HomeY", 0),
+                    input.getIntOr("HomeZ", 0)),
+                    input.getIntOr("HomeD", 0));
         }
     }
 }

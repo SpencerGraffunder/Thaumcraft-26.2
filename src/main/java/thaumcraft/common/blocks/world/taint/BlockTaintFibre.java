@@ -176,10 +176,10 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         // Apply flux taint to non-tainted living entities
-        if (!level.isClientSide && entity instanceof LivingEntity living) {
+        if (!level.isClientSide() && entity instanceof LivingEntity living) {
             if (!(living instanceof ITaintedMob) && !living.isInvertedHealAndHarm()) {
                 if (level.getRandom().nextInt(750) == 0) {
-                    living.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), 200, 0, false, true));
+                    living.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT, 200, 0, false, true));
                 }
             }
         }

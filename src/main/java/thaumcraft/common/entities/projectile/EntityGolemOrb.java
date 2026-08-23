@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.projectile;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -49,9 +52,9 @@ public class EntityGolemOrb extends ThrowableProjectile {
     }
     
     @Override
-    protected void defineSynchedData() {
-        entityData.define(DATA_RED, false);
-        entityData.define(DATA_TARGET_ID, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_RED, false);
+        builder.define(DATA_TARGET_ID, -1);
     }
     
     public boolean isRed() {
@@ -106,7 +109,7 @@ public class EntityGolemOrb extends ThrowableProjectile {
         }
         
         // Client particles
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             int color = isRed() ? 0xFF0000 : 0x00FFFF;
             float r = ((color >> 16) & 0xFF) / 255.0f;
             float g = ((color >> 8) & 0xFF) / 255.0f;
@@ -126,7 +129,7 @@ public class EntityGolemOrb extends ThrowableProjectile {
         // Play sound and burst particles
         playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
         
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             for (int i = 0; i < 8; i++) {
                 level().addParticle(ParticleTypes.WITCH,
                     getX(), getY(), getZ(),
@@ -141,7 +144,7 @@ public class EntityGolemOrb extends ThrowableProjectile {
     
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             Entity owner = getOwner();
             if (owner instanceof LivingEntity livingOwner) {
                 // Damage based on owner's attack damage
@@ -156,7 +159,7 @@ public class EntityGolemOrb extends ThrowableProjectile {
     
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo(source)) {
+        if (isInvulnerableTo((ServerLevel) this.level(), source)) {
             return false;
         }
         
@@ -172,20 +175,20 @@ public class EntityGolemOrb extends ThrowableProjectile {
     }
     
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("Red", isRed());
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("Red", isRed());
         if (target != null) {
-            tag.putInt("TargetId", target.getId());
+            output.putInt("TargetId", target.getId());
         }
     }
     
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        entityData.set(DATA_RED, tag.getBoolean("Red"));
-        if (tag.contains("TargetId")) {
-            entityData.set(DATA_TARGET_ID, tag.getInt("TargetId"));
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        entityData.set(DATA_RED, input.getBooleanOr("Red", false));
+        if (input.contains("TargetId")) {
+            entityData.set(DATA_TARGET_ID, input.getIntOr("TargetId", 0));
         }
     }
 }

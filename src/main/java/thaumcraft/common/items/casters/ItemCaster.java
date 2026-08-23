@@ -201,7 +201,7 @@ public class ItemCaster extends Item implements ICaster {
     @Nullable
     public ItemStack getFocusStack(ItemStack stack) {
         if (stack.hasTag() && stack.getTag().contains("focus")) {
-            CompoundTag focusTag = stack.getTag().getCompound("focus");
+            CompoundTag focusTag = stack.getTag().getCompoundOrEmpty("focus");
             return ItemStack.of(focusTag);
         }
         return null;
@@ -221,7 +221,7 @@ public class ItemCaster extends Item implements ICaster {
     @Override
     public ItemStack getPickedBlock(ItemStack stack) {
         if (stack.hasTag() && stack.getTag().contains("picked")) {
-            return ItemStack.of(stack.getTag().getCompound("picked"));
+            return ItemStack.of(stack.getTag().getCompoundOrEmpty("picked"));
         }
         return ItemStack.EMPTY;
     }

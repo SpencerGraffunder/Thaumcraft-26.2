@@ -1,10 +1,13 @@
 package thaumcraft.common.lib.network.playerdata;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 
-import java.util.function.Supplier;
 
 /**
  * Packet sent from client to server to update player flags.
@@ -16,7 +19,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketPlayerFlagToServer {
+public class PacketPlayerFlagToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketPlayerFlagToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetplayerflagtoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketPlayerFlagToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketPlayerFlagToServer::encode, PacketPlayerFlagToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     // Flag constants
     public static final byte FLAG_RESET_FALL_DISTANCE = 1;
@@ -39,9 +53,9 @@ public class PacketPlayerFlagToServer {
         return new PacketPlayerFlagToServer(buf.readByte());
     }
     
-    public static void handle(PacketPlayerFlagToServer packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketPlayerFlagToServer packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
             
             switch (packet.flag) {
@@ -52,6 +66,5 @@ public class PacketPlayerFlagToServer {
                 // Add additional flag handlers here as needed
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

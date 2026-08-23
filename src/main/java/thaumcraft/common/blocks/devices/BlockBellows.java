@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  */
 public class BlockBellows extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
 
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 10.0, 15.0);
@@ -81,7 +81,7 @@ public class BlockBellows extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.BELLOWS.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileBellows.clientTick(lvl, pos, st, (TileBellows) be);
             } else {
                 return (lvl, pos, st, be) -> TileBellows.serverTick(lvl, pos, st, (TileBellows) be);

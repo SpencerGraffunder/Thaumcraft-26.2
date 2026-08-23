@@ -290,7 +290,7 @@ public class ThaumcraftApi {
         try {
             Identifier tagLoc = Identifier.withDefaultNamespace(tagName);
             net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.ItemTags.create(tagLoc);
-            var tag = net.minecraftforge.registries.ForgeRegistries.ITEMS.tags().getTag(tagKey);
+            var tag = net.minecraft.core.registries.BuiltInRegistries.ITEM.tags().getTag(tagKey);
             if (tag.isBound()) {
                 for (Item item : tag) {
                     registerObjectTag(new ItemStack(item), aspects.copy());
@@ -333,7 +333,7 @@ public class ThaumcraftApi {
         try {
             Identifier tagLoc = Identifier.withDefaultNamespace(tagName);
             net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.ItemTags.create(tagLoc);
-            var tag = net.minecraftforge.registries.ForgeRegistries.ITEMS.tags().getTag(tagKey);
+            var tag = net.minecraft.core.registries.BuiltInRegistries.ITEM.tags().getTag(tagKey);
             if (tag.isBound()) {
                 for (Item item : tag) {
                     registerComplexObjectTag(new ItemStack(item), aspects.copy());

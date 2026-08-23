@@ -59,7 +59,7 @@ public class SealRenderer {
         if (player == null || player.level() == null) return;
         
         // Get seals in player's dimension
-        String dimKey = player.level().dimension().location().toString();
+        String dimKey = player.level().dimension().identifier().toString();
         ConcurrentHashMap<SealPos, SealEntity> seals = SealHandler.sealEntities.get(dimKey);
         
         if (seals == null || seals.isEmpty()) return;

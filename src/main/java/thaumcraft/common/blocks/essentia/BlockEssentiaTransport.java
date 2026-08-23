@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  */
 public class BlockEssentiaTransport extends Block implements EntityBlock {
     
-    public static final EnumProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     
     // Bounding boxes for each facing direction (pipe extending from center)
     private static final VoxelShape SHAPE_DOWN = Block.box(4.0, 8.0, 4.0, 12.0, 16.0, 12.0);
@@ -101,7 +101,7 @@ public class BlockEssentiaTransport extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return null;
         }
         

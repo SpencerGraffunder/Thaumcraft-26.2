@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -6,10 +11,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.common.tiles.crafting.TileThaumatorium;
 
-import java.util.function.Supplier;
 
 /**
  * Packet sent from client to select/deselect a recipe in the Thaumatorium.
@@ -20,7 +23,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketSelectThaumotoriumRecipeToServer {
+public class PacketSelectThaumotoriumRecipeToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketSelectThaumotoriumRecipeToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetselectthaumotoriumrecipetoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketSelectThaumotoriumRecipeToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketSelectThaumotoriumRecipeToServer::encode, PacketSelectThaumotoriumRecipeToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final long pos;
     private final int recipeHash;
@@ -47,9 +61,9 @@ public class PacketSelectThaumotoriumRecipeToServer {
         );
     }
     
-    public static void handle(PacketSelectThaumotoriumRecipeToServer packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketSelectThaumotoriumRecipeToServer packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
             
             Level level = player.level();
@@ -70,6 +84,5 @@ public class PacketSelectThaumotoriumRecipeToServer {
                 thaumatorium.setChanged();
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

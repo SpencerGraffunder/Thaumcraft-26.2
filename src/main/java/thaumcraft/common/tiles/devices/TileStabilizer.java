@@ -46,7 +46,7 @@ public class TileStabilizer extends TileThaumcraft {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        energy = Math.min(tag.getInt("Energy"), CAPACITY);
+        energy = Math.min(tag.getIntOr("Energy", 0), CAPACITY);
     }
 
     // ==================== Tick ====================

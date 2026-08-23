@@ -77,12 +77,12 @@ public class AuraThread implements Runnable {
 
     @Override
     public void run() {
-        LOGGER.info("Starting aura thread for dimension {}", dimension.location());
+        LOGGER.info("Starting aura thread for dimension {}", dimension.identifier());
         
         while (!stop) {
             // Check if aura system has any data
             if (AuraHandler.getAuraWorld(dimension) == null) {
-                LOGGER.warn("No aura world found for dimension {}!", dimension.location());
+                LOGGER.warn("No aura world found for dimension {}!", dimension.identifier());
                 break;
             }
             
@@ -91,7 +91,7 @@ public class AuraThread implements Runnable {
             try {
                 processAuras();
             } catch (Exception e) {
-                LOGGER.error("Error processing auras in dimension {}", dimension.location(), e);
+                LOGGER.error("Error processing auras in dimension {}", dimension.identifier(), e);
             }
             
             long executionTime = System.currentTimeMillis() - startTime;
@@ -99,7 +99,7 @@ public class AuraThread implements Runnable {
             // Log warning if processing takes too long
             if (executionTime > INTERVAL) {
                 LOGGER.warn("Aura processing took {}ms longer than normal in dimension {}", 
-                    executionTime - INTERVAL, dimension.location());
+                    executionTime - INTERVAL, dimension.identifier());
             }
             
             // Sleep for remainder of interval
@@ -111,13 +111,13 @@ public class AuraThread implements Runnable {
             }
         }
         
-        LOGGER.info("Stopping aura thread for dimension {}", dimension.location());
+        LOGGER.info("Stopping aura thread for dimension {}", dimension.identifier());
         
         // Clean up from thread registry
         try {
             AuraThreadManager.removeThread(dimension);
         } catch (Exception e) {
-            LOGGER.error("Error removing aura thread for dimension {}", dimension.location(), e);
+            LOGGER.error("Error removing aura thread for dimension {}", dimension.identifier(), e);
         }
     }
 
@@ -177,8 +177,8 @@ public class AuraThread implements Runnable {
         ChunkPos loc = auraChunk.getLoc();
         if (loc == null) return;
         
-        int x = loc.x;
-        int z = loc.z;
+        int x = loc.x();
+        int z = loc.z();
         
         float base = auraChunk.getBase() * phaseMax;
         boolean dirty = false;

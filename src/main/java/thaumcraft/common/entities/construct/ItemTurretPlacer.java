@@ -77,7 +77,7 @@ public class ItemTurretPlacer extends Item {
             return InteractionResult.PASS;
         }
         
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             // Clear the blocks
             level.removeBlock(placePos, false);
             level.removeBlock(upperPos, false);
@@ -103,7 +103,7 @@ public class ItemTurretPlacer extends Item {
             }
         }
         
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
     
     /**

@@ -20,7 +20,7 @@ public class PotionUnnaturalHunger extends MobEffect {
     
     @Override
     public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide) return;
+        if (target.level().isClientSide()) return;
         
         if (target instanceof Player player) {
             // Add exhaustion to drain food faster

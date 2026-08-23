@@ -1,4 +1,5 @@
 package thaumcraft.common.entities.projectile;
+import net.minecraft.network.syncher.SynchedEntityData;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -39,7 +40,7 @@ public class EntityEldritchOrb extends ThrowableProjectile {
     }
     
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
         // No additional synced data
     }
     
@@ -59,7 +60,7 @@ public class EntityEldritchOrb extends ThrowableProjectile {
         }
         
         // Client particles - dark purple/void themed
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             for (int i = 0; i < 2; i++) {
                 level().addParticle(ParticleTypes.PORTAL,
                     getX() + (random.nextDouble() - 0.5) * 0.5,
@@ -74,7 +75,7 @@ public class EntityEldritchOrb extends ThrowableProjectile {
     
     @Override
     protected void onHit(HitResult result) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             Entity owner = getOwner();
             
             // Find all entities in 2 block radius (excluding owner)
@@ -108,7 +109,7 @@ public class EntityEldritchOrb extends ThrowableProjectile {
         }
         
         // Client-side impact particles
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             for (int i = 0; i < 20; i++) {
                 level().addParticle(ParticleTypes.PORTAL,
                     getX(), getY(), getZ(),

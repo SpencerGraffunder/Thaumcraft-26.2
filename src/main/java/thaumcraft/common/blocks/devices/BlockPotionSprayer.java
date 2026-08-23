@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.devices;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -41,7 +42,7 @@ import javax.annotation.Nullable;
  */
 public class BlockPotionSprayer extends Block implements EntityBlock {
     
-    public static final EnumProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
     
     private static final VoxelShape SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 14.0, 14.0);
@@ -82,7 +83,7 @@ public class BlockPotionSprayer extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         
@@ -99,8 +100,8 @@ public class BlockPotionSprayer extends Block implements EntityBlock {
     
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block,
-                                 BlockPos fromPos, boolean isMoving) {
-        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+                                 Orientation orientation, boolean isMoving) {
+        super.neighborChanged(state, level, pos, block, orientation, isMoving);
         
         // Update enabled state based on redstone
         boolean powered = level.hasNeighborSignal(pos);
@@ -136,7 +137,7 @@ public class BlockPotionSprayer extends Block implements EntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                     BlockEntityType<T> type) {
         if (type == ModBlockEntities.POTION_SPRAYER.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TilePotionSprayer.clientTick(lvl, pos, st, (TilePotionSprayer) be);
             } else {
                 return (lvl, pos, st, be) -> TilePotionSprayer.serverTick(lvl, pos, st, (TilePotionSprayer) be);

@@ -88,13 +88,13 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
             
             // Load properties from NBT
             if (stack.hasTag() && stack.getTag().contains("props")) {
-                IGolemProperties props = GolemProperties.fromLong(stack.getTag().getLong("props"));
+                IGolemProperties props = GolemProperties.fromLong(stack.getTag().getLongOr("props", 0L));
                 golem.setProperties(props);
             }
             
             // Load XP for smart golems
             if (stack.hasTag() && stack.getTag().contains("xp")) {
-                golem.setRankXp(stack.getTag().getInt("xp"));
+                golem.setRankXp(stack.getTag().getIntOr("xp", 0));
             }
             
             // Set home position
@@ -121,7 +121,7 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         if (stack.hasTag() && stack.getTag().contains("props")) {
-            IGolemProperties props = GolemProperties.fromLong(stack.getTag().getLong("props"));
+            IGolemProperties props = GolemProperties.fromLong(stack.getTag().getLongOr("props", 0L));
             
             // Show rank for smart golems
             if (props.hasTrait(EnumGolemTrait.SMART)) {
@@ -131,7 +131,7 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
                             .append(" " + rank)
                             .withStyle(ChatFormatting.GOLD));
                 } else {
-                    int xp = stack.getTag().contains("xp") ? stack.getTag().getInt("xp") : 0;
+                    int xp = stack.getTag().contains("xp") ? stack.getTag().getIntOr("xp", 0) : 0;
                     int xpNeeded = (rank + 1) * (rank + 1) * EntityThaumcraftGolem.XP_MULTIPLIER;
                     tooltip.add(Component.translatable("golem.rank")
                             .append(" " + rank + " ")

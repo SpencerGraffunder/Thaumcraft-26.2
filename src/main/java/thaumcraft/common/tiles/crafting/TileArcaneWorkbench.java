@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.crafting;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -49,16 +51,16 @@ public class TileArcaneWorkbench extends TileThaumcraft implements MenuProvider 
     // ==================== NBT ====================
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        ContainerHelper.saveAllItems(tag, craftMatrix);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, craftMatrix);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         craftMatrix = NonNullList.withSize(TOTAL_SLOTS, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(tag, craftMatrix);
+        ContainerHelper.loadAllItems(input, craftMatrix);
     }
 
     @Override
@@ -111,7 +113,7 @@ public class TileArcaneWorkbench extends TileThaumcraft implements MenuProvider 
      * Called periodically or when crafting.
      */
     public void updateAura() {
-        if (level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide()) return;
 
         int totalVis = 0;
         
@@ -144,7 +146,7 @@ public class TileArcaneWorkbench extends TileThaumcraft implements MenuProvider 
      * @param visCost The amount of vis to spend
      */
     public void spendAura(int visCost) {
-        if (level == null || level.isClientSide || visCost <= 0) return;
+        if (level == null || level.isClientSide() || visCost <= 0) return;
 
         BlockState above = level.getBlockState(worldPosition.above());
         // TODO: Check for charger block
@@ -179,7 +181,7 @@ public class TileArcaneWorkbench extends TileThaumcraft implements MenuProvider 
      * Drop all items in the crafting matrix.
      */
     public void dropContents() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             for (int i = 0; i < TOTAL_SLOTS; i++) {
                 ItemStack stack = craftMatrix.get(i);
                 if (!stack.isEmpty()) {

@@ -44,14 +44,14 @@ public class AuraThreadManager {
         
         // Only start if there's aura data for this dimension
         if (AuraHandler.getAuraWorld(dimension) == null) {
-            LOGGER.debug("Not starting aura thread for {} - no aura world exists", dimension.location());
+            LOGGER.debug("Not starting aura thread for {} - no aura world exists", dimension.identifier());
             return;
         }
         
-        LOGGER.info("Starting aura thread for dimension {}", dimension.location());
+        LOGGER.info("Starting aura thread for dimension {}", dimension.identifier());
         
         AuraThread auraThread = new AuraThread(dimension);
-        Thread thread = new Thread(auraThread, "Thaumcraft-Aura-" + dimension.location().toString().replace(':', '-'));
+        Thread thread = new Thread(auraThread, "Thaumcraft-Aura-" + dimension.identifier().toString().replace(':', '-'));
         thread.setDaemon(true);
         thread.start();
         
@@ -66,7 +66,7 @@ public class AuraThreadManager {
     public static void stopThread(ResourceKey<Level> dimension) {
         AuraThread auraThread = auraThreads.get(dimension);
         if (auraThread != null) {
-            LOGGER.info("Stopping aura thread for dimension {}", dimension.location());
+            LOGGER.info("Stopping aura thread for dimension {}", dimension.identifier());
             auraThread.stop();
         }
         
@@ -117,7 +117,7 @@ public class AuraThreadManager {
             try {
                 entry.getValue().join(1000);
             } catch (InterruptedException e) {
-                LOGGER.warn("Interrupted while waiting for aura thread {} to stop", entry.getKey().location());
+                LOGGER.warn("Interrupted while waiting for aura thread {} to stop", entry.getKey().identifier());
             }
         }
         

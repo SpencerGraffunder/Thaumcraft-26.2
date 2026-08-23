@@ -33,7 +33,7 @@ public class TaskHandler {
      * Get the string key for a dimension
      */
     private static String getDimKey(ResourceKey<Level> dim) {
-        return dim.location().toString();
+        return dim.identifier().toString();
     }
     
     /**

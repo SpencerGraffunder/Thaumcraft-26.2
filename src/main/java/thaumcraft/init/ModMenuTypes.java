@@ -34,7 +34,7 @@ import thaumcraft.common.menu.LogisticsMenu;
 public class ModMenuTypes {
     
     public static final DeferredRegister<MenuType<?>> MENU_TYPES = 
-            DeferredRegister.create(ForgeRegistries.MENU_TYPES, Thaumcraft.MODID);
+            DeferredRegister.create(BuiltInRegistries.MENU, Thaumcraft.MODID);
     
     // ==================== Golem System ====================
     

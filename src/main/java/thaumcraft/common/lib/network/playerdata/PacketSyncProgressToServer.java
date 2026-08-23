@@ -1,9 +1,14 @@
 package thaumcraft.common.lib.network.playerdata;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchEntry;
@@ -11,7 +16,6 @@ import thaumcraft.api.research.ResearchStage;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
 import thaumcraft.common.lib.research.ResearchManager;
 
-import java.util.function.Supplier;
 
 /**
  * PacketSyncProgressToServer - Client requests research progress from server.
@@ -24,7 +28,18 @@ import java.util.function.Supplier;
  * 
  * Ported from 1.12.2
  */
-public class PacketSyncProgressToServer {
+public class PacketSyncProgressToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketSyncProgressToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetsyncprogresstoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncProgressToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketSyncProgressToServer::encode, PacketSyncProgressToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private String key;
     private boolean first;      // true if starting research for first time
@@ -61,10 +76,10 @@ public class PacketSyncProgressToServer {
         return msg;
     }
     
-    public static void handle(PacketSyncProgressToServer msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(PacketSyncProgressToServer msg, IPayloadContext ctxSupplier) {
+        IPayloadContext ctx = ctxSupplier;
         ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) return;
             
             // Validate: check if this is a valid state change
@@ -84,7 +99,6 @@ public class PacketSyncProgressToServer {
                 ResearchManager.progressResearch(player, msg.key);
             }
         });
-        ctx.setPacketHandled(true);
     }
     
     /**
@@ -182,37 +196,35 @@ public class PacketSyncProgressToServer {
         return true;
     }
     
-    /**
-     * Check if player has the required amount of an item.
-     */
-    private static boolean isPlayerCarryingAmount(ServerPlayer player, ItemStack required) {
-        int count = 0;
-        for (ItemStack stack : player.getInventory().items) {
-            if (ItemStack.isSameItemSameTags(stack, required)) {
-                count += stack.getCount();
-                if (count >= required.getCount()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     
-    /**
-     * Consume an item from the player's inventory.
-     */
-    private static void consumePlayerItem(ServerPlayer player, ItemStack required) {
-        int remaining = required.getCount();
-        for (int i = 0; i < player.getInventory().items.size() && remaining > 0; i++) {
-            ItemStack stack = player.getInventory().items.get(i);
-            if (ItemStack.isSameItemSameTags(stack, required)) {
-                int toRemove = Math.min(remaining, stack.getCount());
-                stack.shrink(toRemove);
-                remaining -= toRemove;
-                if (stack.isEmpty()) {
-                    player.getInventory().items.set(i, ItemStack.EMPTY);
-                }
+
+    /** Count how many of the given item the player carries in their main inventory. */
+    private static int countCarried(Player player, ItemStack required) {
+        int total = 0;
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+            if (!stack.isEmpty() && ItemStack.isSameItemSameComponents(stack, required)) {
+                total += stack.getCount();
+            }
+        }
+        return total;
+    }
+
+    /** True if the player carries at least {@code required.getCount()} of the item. */
+    private static boolean isPlayerCarryingAmount(Player player, ItemStack required) {
+        return countCarried(player, required) >= required.getCount();
+    }
+
+    /** Remove up to {@code required.getCount()} of the item from the player's main inventory. */
+    private static void consumePlayerItem(Player player, ItemStack required) {
+        int toRemove = required.getCount();
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+            if (toRemove <= 0) break;
+            if (!stack.isEmpty() && ItemStack.isSameItemSameComponents(stack, required)) {
+                int take = Math.min(toRemove, stack.getCount());
+                stack.shrink(take);
+                toRemove -= take;
             }
         }
     }
+
 }

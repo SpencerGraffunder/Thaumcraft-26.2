@@ -1,4 +1,7 @@
 package thaumcraft.common.entities.monster.boss;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -94,9 +97,9 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TITLE, (byte) 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TITLE, (byte) 0);
     }
     
     @Override
@@ -155,15 +158,15 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putByte("title", this.entityData.get(DATA_TITLE));
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putByte("title", this.entityData.get(DATA_TITLE));
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        setTitle(tag.getByte("title"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        setTitle(input.getByteOr("title", (byte)0));
     }
     
     // ==================== Spawn ====================
@@ -191,9 +194,9 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
     // ==================== AI / Update ====================
     
     @Override
-    protected void customServerAiStep() {
+    protected void customServerAiStep(ServerLevel level) {
         if (fieldFrenzyCounter == 0) {
-            super.customServerAiStep();
+            super.customServerAiStep(level);
         }
         
         // Regenerate absorption shield
@@ -214,7 +217,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
         
         super.tick();
         
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             // Decay arm lift animations
             if (armLiftL > 0.0f) {
                 armLiftL -= 0.05f;
@@ -249,7 +252,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
         super.aiStep();
         
         // Place "sap" effect blocks when walking
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             int i = Mth.floor(getX());
             int j = Mth.floor(getY());
             int k = Mth.floor(getZ());
@@ -359,21 +362,21 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
     // ==================== Damage Handling ====================
     
     @Override
-    public boolean isInvulnerableTo(DamageSource source) {
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
         return fieldFrenzyCounter > 0 || source == damageSources().drown() || source == damageSources().wither() 
-                || super.isInvulnerableTo(source);
+                || super.isInvulnerableTo(level, source);
     }
     
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (isInvulnerableTo(source)) {
+        if (isInvulnerableTo((ServerLevel) this.level(), source)) {
             return false;
         }
         
         boolean wasHurt = super.hurt(source, amount);
         
         // Trigger field frenzy when absorption shield is depleted
-        if (!level().isClientSide && wasHurt && !fieldFrenzy && getAbsorptionAmount() <= 0.0f) {
+        if (!level().isClientSide() && wasHurt && !fieldFrenzy && getAbsorptionAmount() <= 0.0f) {
             fieldFrenzy = true;
             fieldFrenzyCounter = 150;
         }

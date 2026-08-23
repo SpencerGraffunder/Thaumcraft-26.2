@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,7 +24,7 @@ import javax.annotation.Nullable;
  */
 public abstract class BlockTCDevice extends Block implements EntityBlock {
 
-    public static final EnumProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
 
     public BlockTCDevice(Properties properties) {
@@ -83,10 +84,10 @@ public abstract class BlockTCDevice extends Block implements EntityBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, Orientation orientation, boolean isMoving) {
+        super.neighborChanged(state, level, pos, block, orientation, isMoving);
         
-        if (hasEnabled() && !level.isClientSide) {
+        if (hasEnabled() && !level.isClientSide()) {
             boolean shouldBeEnabled = !level.hasNeighborSignal(pos);
             if (state.getValue(ENABLED) != shouldBeEnabled) {
                 level.setBlock(pos, state.setValue(ENABLED, shouldBeEnabled), 3);

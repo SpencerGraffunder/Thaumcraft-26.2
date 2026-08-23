@@ -32,7 +32,7 @@ public class TileEssentiaOutput extends TileThaumcraft implements IEssentiaTrans
      * Called by the block's ticker on server side.
      */
     public void serverTick() {
-        if (level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide()) return;
         
         if (++tickCounter % 5 == 0) {
             fillBuffer();

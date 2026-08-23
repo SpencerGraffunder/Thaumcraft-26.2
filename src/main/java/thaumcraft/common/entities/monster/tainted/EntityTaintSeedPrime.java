@@ -1,4 +1,5 @@
 package thaumcraft.common.entities.monster.tainted;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -39,14 +40,14 @@ public class EntityTaintSeedPrime extends EntityTaintSeed {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
         // TODO: Drop flux crystals when implemented
-        spawnAtLocation(new ItemStack(Items.SLIME_BALL));
+        spawnAtLocation((ServerLevel) this.level(), new ItemStack(Items.SLIME_BALL));
         if (random.nextBoolean()) {
-            spawnAtLocation(new ItemStack(Items.SLIME_BALL));
+            spawnAtLocation((ServerLevel) this.level(), new ItemStack(Items.SLIME_BALL));
         }
         if (random.nextBoolean()) {
-            spawnAtLocation(new ItemStack(Items.SLIME_BALL));
+            spawnAtLocation((ServerLevel) this.level(), new ItemStack(Items.SLIME_BALL));
         }
     }
 }

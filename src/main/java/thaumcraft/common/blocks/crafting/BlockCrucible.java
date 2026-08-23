@@ -89,7 +89,7 @@ public class BlockCrucible extends BlockTCDevice {
 
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof TileCrucible crucible) {
                 if (entity instanceof ItemEntity itemEntity) {
@@ -116,7 +116,7 @@ public class BlockCrucible extends BlockTCDevice {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 
@@ -259,7 +259,7 @@ public class BlockCrucible extends BlockTCDevice {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return null;
         }
         return type == ModBlockEntities.CRUCIBLE.get() ?

@@ -1,13 +1,16 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.casters.ICaster;
 
-import java.util.function.Supplier;
 
 /**
  * Packet sent from client to server when the player wants to change their caster's focus.
@@ -15,7 +18,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketFocusChangeToServer {
+public class PacketFocusChangeToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFocusChangeToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfocuschangetoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFocusChangeToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFocusChangeToServer::encode, PacketFocusChangeToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final String focus;
     
@@ -31,9 +45,9 @@ public class PacketFocusChangeToServer {
         return new PacketFocusChangeToServer(buf.readUtf(32767));
     }
     
-    public static void handle(PacketFocusChangeToServer packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketFocusChangeToServer packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) {
                 return;
             }
@@ -51,7 +65,6 @@ public class PacketFocusChangeToServer {
                 changeFocus(offHand, player, packet.focus);
             }
         });
-        ctx.get().setPacketHandled(true);
     }
     
     /**

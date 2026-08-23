@@ -109,7 +109,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
         // Apply vis exhaustion to living entities
         if (entity instanceof LivingEntity living) {
             MobEffectInstance effect = new MobEffectInstance(
-                    ModEffects.VIS_EXHAUST.get(), 
+                    ModEffects.VIS_EXHAUST, 
                     600, 
                     gooLevel / 3, 
                     true, 

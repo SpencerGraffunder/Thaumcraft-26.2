@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.devices;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
@@ -48,16 +50,16 @@ public class TileHungryChest extends TileThaumcraft implements Container {
     // ==================== NBT ====================
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        ContainerHelper.saveAllItems(tag, items);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, items);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(tag, items);
+        ContainerHelper.loadAllItems(input, items);
     }
 
     // ==================== Tick ====================
@@ -261,7 +263,7 @@ public class TileHungryChest extends TileThaumcraft implements Container {
     // ==================== Drop Items ====================
 
     public void dropContents() {
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             for (ItemStack stack : items) {
                 if (!stack.isEmpty()) {
                     net.minecraft.world.Containers.dropItemStack(level,

@@ -86,7 +86,7 @@ public class TileResearchTable extends TileThaumcraftInventory implements MenuPr
         super.readSyncNBT(tag);
         if (tag.contains("note")) {
             data = new ResearchTableData(this);
-            data.deserialize(tag.getCompound("note"));
+            data.deserialize(tag.getCompoundOrEmpty("note"));
         } else {
             data = null;
         }
@@ -297,7 +297,7 @@ public class TileResearchTable extends TileThaumcraftInventory implements MenuPr
     public boolean triggerEvent(int id, int param) {
         if (id == 1) {
             // Play learn sound on client
-            if (level != null && level.isClientSide) {
+            if (level != null && level.isClientSide()) {
                 level.playLocalSound(
                         worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
                         ModSounds.LEARN.get(), SoundSource.BLOCKS,

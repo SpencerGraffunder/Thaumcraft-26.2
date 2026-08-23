@@ -22,7 +22,7 @@ public class PotionThaumarhia extends MobEffect {
     
     @Override
     public void applyEffectTick(LivingEntity target, int amplifier) {
-        if (target.level().isClientSide) return;
+        if (target.level().isClientSide()) return;
         
         Level level = target.level();
         BlockPos pos = target.blockPosition();

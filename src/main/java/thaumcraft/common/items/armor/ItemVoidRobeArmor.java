@@ -116,7 +116,7 @@ public class ItemVoidRobeArmor extends Item
     @Override
     public int getColor(ItemStack stack) {
         CompoundTag tag = stack.getTagElement("display");
-        return tag != null && tag.contains("color") ? tag.getInt("color") : DEFAULT_COLOR;
+        return tag != null && tag.contains("color") ? tag.getIntOr("color", 0) : DEFAULT_COLOR;
     }
     
     @Override

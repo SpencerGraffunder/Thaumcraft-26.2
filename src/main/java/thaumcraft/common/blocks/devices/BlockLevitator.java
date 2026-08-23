@@ -1,4 +1,5 @@
 package thaumcraft.common.blocks.devices;
+import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -41,7 +42,7 @@ import javax.annotation.Nullable;
  */
 public class BlockLevitator extends Block implements EntityBlock {
     
-    public static final EnumProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     
     // Shapes for each facing direction (slightly indented on the back)
     // The block is 7/8 (0.875) of full size in the facing direction
@@ -102,15 +103,15 @@ public class BlockLevitator extends Block implements EntityBlock {
             levitator.increaseRange(player);
             level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                     ModSounds.KEY.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
         return InteractionResult.PASS;
     }
     
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, 
-                                 BlockPos fromPos, boolean isMoving) {
-        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+                                 Orientation orientation, boolean isMoving) {
+        super.neighborChanged(state, level, pos, block, orientation, isMoving);
         // Levitator responds to redstone - TileLevitator checks hasNeighborSignal
     }
     
@@ -125,7 +126,7 @@ public class BlockLevitator extends Block implements EntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, 
                                                                     BlockEntityType<T> type) {
         if (type == ModBlockEntities.LEVITATOR.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileLevitator.clientTick(lvl, pos, st, (TileLevitator) be);
             } else {
                 return (lvl, pos, st, be) -> TileLevitator.serverTick(lvl, pos, st, (TileLevitator) be);

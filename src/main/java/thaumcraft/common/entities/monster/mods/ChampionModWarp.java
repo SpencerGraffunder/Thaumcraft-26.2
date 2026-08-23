@@ -23,9 +23,9 @@ public class ChampionModWarp implements IChampionModifierEffect {
     @Override
     public float performEffect(LivingEntity champion, LivingEntity target, DamageSource source, float amount) {
         // Inflict warp on player targets
-        if (target instanceof Player player && !player.level().isClientSide) {
+        if (target instanceof Player player && !player.level().isClientSide()) {
             IPlayerWarp warp = ThaumcraftCapabilities.getWarp(player);
-            if (warp != null && player.level().random.nextInt(3) == 0) {
+            if (warp != null && player.level().getRandom().nextInt(3) == 0) {
                 warp.add(IPlayerWarp.EnumWarpType.TEMPORARY, 1);
             }
         }
@@ -35,21 +35,21 @@ public class ChampionModWarp implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void showFX(LivingEntity champion) {
-        if (champion.level().random.nextInt(3) != 0) {
+        if (champion.level().getRandom().nextInt(3) != 0) {
             return;
         }
         
         // Purple eldritch particles
-        double w = champion.level().random.nextFloat() * champion.getBbWidth();
-        double d = champion.level().random.nextFloat() * champion.getBbWidth();
-        double h = champion.level().random.nextFloat() * champion.getBbHeight();
+        double w = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double d = champion.level().getRandom().nextFloat() * champion.getBbWidth();
+        double h = champion.level().getRandom().nextFloat() * champion.getBbHeight();
         
         champion.level().addParticle(ParticleTypes.PORTAL,
                 champion.getBoundingBox().minX + w,
                 champion.getBoundingBox().minY + h,
                 champion.getBoundingBox().minZ + d,
-                (champion.level().random.nextDouble() - 0.5) * 0.5,
-                (champion.level().random.nextDouble() - 0.5) * 0.5,
-                (champion.level().random.nextDouble() - 0.5) * 0.5);
+                (champion.level().getRandom().nextDouble() - 0.5) * 0.5,
+                (champion.level().getRandom().nextDouble() - 0.5) * 0.5,
+                (champion.level().getRandom().nextDouble() - 0.5) * 0.5);
     }
 }

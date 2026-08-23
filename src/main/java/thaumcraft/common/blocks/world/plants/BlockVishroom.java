@@ -85,7 +85,7 @@ public class BlockVishroom extends BushBlock {
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         // Cause nausea when entities walk through
-        if (!level.isClientSide && entity instanceof LivingEntity living) {
+        if (!level.isClientSide() && entity instanceof LivingEntity living) {
             if (level.getRandom().nextInt(5) == 0) {
                 living.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
             }

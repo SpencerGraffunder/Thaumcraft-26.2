@@ -1,13 +1,16 @@
 package thaumcraft.common.lib.network.misc;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.casters.ICaster;
 
-import java.util.function.Supplier;
 
 /**
  * Packet sent from client to server when the player presses an item-specific key.
@@ -23,7 +26,18 @@ import java.util.function.Supplier;
  * 
  * Ported to 1.20.1
  */
-public class PacketItemKeyToServer {
+public class PacketItemKeyToServer implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketItemKeyToServer> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetitemkeytoserver"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketItemKeyToServer> STREAM_CODEC =
+        StreamCodec.ofMember(PacketItemKeyToServer::encode, PacketItemKeyToServer::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final byte key;
     private final byte modifier;
@@ -52,9 +66,9 @@ public class PacketItemKeyToServer {
         return new PacketItemKeyToServer(buf.readByte(), buf.readByte());
     }
     
-    public static void handle(PacketItemKeyToServer packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+    public static void handle(PacketItemKeyToServer packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) ctx.player();
             if (player == null) {
                 return;
             }
@@ -94,7 +108,6 @@ public class PacketItemKeyToServer {
                 }
             }
         });
-        ctx.get().setPacketHandled(true);
     }
     
     /**

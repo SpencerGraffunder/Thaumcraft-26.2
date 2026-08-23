@@ -19,7 +19,7 @@ import thaumcraft.Thaumcraft;
 public class ModSounds {
     
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = 
-            DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Thaumcraft.MODID);
+            DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Thaumcraft.MODID);
     
     // ==================== Player Sounds ====================
     public static final DeferredHolder<SoundEvent, SoundEvent> HEARTBEAT = registerSound("heartbeat");

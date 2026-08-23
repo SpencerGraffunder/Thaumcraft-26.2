@@ -1,14 +1,17 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXBlockBamf - Teleport/poof visual effect at a location.
@@ -16,7 +19,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXBlockBamf {
+public class PacketFXBlockBamf implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXBlockBamf> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxblockbamf"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXBlockBamf> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXBlockBamf::encode, PacketFXBlockBamf::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final double x;
     private final double y;
@@ -70,11 +84,10 @@ public class PacketFXBlockBamf {
         );
     }
     
-    public static void handle(PacketFXBlockBamf packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXBlockBamf packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

@@ -1,6 +1,8 @@
 package thaumcraft.common.tiles.misc;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -162,21 +164,21 @@ public class TileHole extends TileMemory {
     }
     
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putShort("countdown", countdown);
-        tag.putShort("countdownMax", countdownMax);
-        tag.putByte("depth", depth);
-        tag.putByte("direction", direction == null ? (byte) -1 : (byte) direction.ordinal());
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putShort("countdown", countdown);
+        output.putShort("countdownMax", countdownMax);
+        output.putByte("depth", depth);
+        output.putByte("direction", direction == null ? (byte) -1 : (byte) direction.ordinal());
     }
     
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        countdown = tag.getShort("countdown");
-        countdownMax = tag.getShort("countdownMax");
-        depth = tag.getByte("depth");
-        byte dirByte = tag.getByte("direction");
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        countdown = input.getShortOr("countdown", (short)0);
+        countdownMax = input.getShortOr("countdownMax", (short)0);
+        depth = input.getByteOr("depth", (byte)0);
+        byte dirByte = input.getByteOr("direction", (byte)0);
         direction = dirByte >= 0 && dirByte < Direction.values().length ? Direction.values()[dirByte] : null;
     }
 }

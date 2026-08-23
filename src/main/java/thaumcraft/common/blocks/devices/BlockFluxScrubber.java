@@ -103,7 +103,7 @@ public class BlockFluxScrubber extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.FLUX_SCRUBBER.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileFluxScrubber.clientTick(lvl, pos, st, (TileFluxScrubber) be);
             } else {
                 return (lvl, pos, st, be) -> TileFluxScrubber.serverTick(lvl, pos, st, (TileFluxScrubber) be);

@@ -54,7 +54,7 @@ public class ItemMagicDust extends ItemTCBase {
                 
                 trigger.execute(level, player, pos, place, face);
                 
-                if (level.isClientSide) {
+                if (level.isClientSide()) {
                     // Client side effects
                     doSparkles(player, level, pos, context.getClickLocation(), hand, trigger, place);
                 } else {

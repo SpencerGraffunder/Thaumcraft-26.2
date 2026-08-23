@@ -54,7 +54,7 @@ public class TileLampFertility extends TileThaumcraft implements IEssentiaTransp
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        charges = tag.getInt("Charges");
+        charges = tag.getIntOr("Charges", 0);
     }
 
     // ==================== Tick ====================

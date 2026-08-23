@@ -1,6 +1,6 @@
 package thaumcraft.client.renderers.entity;
 
-import net.minecraft.client.model.ZombieModel;
+import net.minecraft.client.model.monster.zombie.ZombieModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;

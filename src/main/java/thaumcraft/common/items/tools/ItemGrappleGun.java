@@ -49,7 +49,7 @@ public class ItemGrappleGun extends Item implements IRechargable {
      */
     public boolean isLoaded(ItemStack stack) {
         if (stack.hasTag()) {
-            return stack.getTag().getByte("loaded") == 1;
+            return stack.getTag().getByteOr("loaded", (byte)0) == 1;
         }
         return false;
     }

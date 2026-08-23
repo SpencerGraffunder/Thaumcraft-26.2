@@ -61,7 +61,7 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                   InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
         
@@ -122,7 +122,7 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                     BlockEntityType<T> type) {
         if (type == ModBlockEntities.RECHARGE_PEDESTAL.get()) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 return (lvl, pos, st, be) -> TileRechargePedestal.clientTick(lvl, pos, st, (TileRechargePedestal) be);
             } else {
                 return (lvl, pos, st, be) -> TileRechargePedestal.serverTick(lvl, pos, st, (TileRechargePedestal) be);

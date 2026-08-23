@@ -154,11 +154,11 @@ public class BlockTaint extends Block implements ITaintBlock {
     
     @Override
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
-        if (!level.isClientSide && entity instanceof LivingEntity living && 
+        if (!level.isClientSide() && entity instanceof LivingEntity living && 
                 !living.isInvertedHealAndHarm() && level.getRandom().nextInt(250) == 0) {
             // Apply flux taint effect
             if (ModEffects.FLUX_TAINT != null) {
-                living.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), 200, 0, false, true));
+                living.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT, 200, 0, false, true));
             }
         }
         super.stepOn(level, pos, state, entity);
@@ -167,7 +167,7 @@ public class BlockTaint extends Block implements ITaintBlock {
     @Override
     public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int eventId, int eventParam) {
         if (eventId == 1) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(),
                         SoundEvents.CHORUS_FLOWER_DEATH, SoundSource.BLOCKS,
                         0.1f, 0.9f + level.getRandom().nextFloat() * 0.2f, false);
@@ -181,7 +181,7 @@ public class BlockTaint extends Block implements ITaintBlock {
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
         // Taint rock has a chance to drop flux crystal
         if (type == TaintType.ROCK) {
-            RandomSource random = builder.getLevel().random;
+            RandomSource random = builder.getLevel().getRandom();
             int rr = random.nextInt(15);
             if (rr > 13 && ModItems.FLUX_CRYSTAL != null) {
                 return Collections.singletonList(new ItemStack(ModItems.FLUX_CRYSTAL.get()));
@@ -239,7 +239,7 @@ public class BlockTaint extends Block implements ITaintBlock {
             int range = 32;
             
             if (level.isAreaLoaded(fallPos, range)) {
-                if (!level.isClientSide) {
+                if (!level.isClientSide()) {
                     EntityFallingTaint fallingTaint = new EntityFallingTaint(
                             level, 
                             fallPos.getX() + 0.5, 

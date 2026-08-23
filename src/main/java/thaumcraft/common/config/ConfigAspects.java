@@ -19,7 +19,7 @@ public class ConfigAspects {
         registerThaumcraftItems();
         
         AspectRegistryEvent are = new AspectRegistryEvent();
-        MinecraftForge.EVENT_BUS.post(are);
+        NeoForge.EVENT_BUS.post(are);
     }
 
     

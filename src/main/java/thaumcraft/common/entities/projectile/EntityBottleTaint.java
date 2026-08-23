@@ -1,4 +1,5 @@
 package thaumcraft.common.entities.projectile;
+import net.minecraft.network.syncher.SynchedEntityData;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -39,7 +40,7 @@ public class EntityBottleTaint extends ThrowableProjectile {
     }
     
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
         // No additional synced data needed
     }
     
@@ -78,7 +79,7 @@ public class EntityBottleTaint extends ThrowableProjectile {
     protected void onHit(HitResult result) {
         super.onHit(result);
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Find nearby living entities and apply flux taint effect
             AABB searchBox = new AABB(getX(), getY(), getZ(), getX(), getY(), getZ()).inflate(5.0, 5.0, 5.0);
             List<LivingEntity> entities = level().getEntitiesOfClass(LivingEntity.class, searchBox);
@@ -87,7 +88,7 @@ public class EntityBottleTaint extends ThrowableProjectile {
                 // Skip tainted mobs and undead
                 if (!(entity instanceof ITaintedMob) && !entity.isInvertedHealAndHarm()) {
                     // Apply flux taint effect
-                    entity.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT.get(), 100, 0, false, true));
+                    entity.addEffect(new MobEffectInstance(ModEffects.FLUX_TAINT, 100, 0, false, true));
                 }
             }
             

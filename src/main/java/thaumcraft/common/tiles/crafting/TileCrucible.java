@@ -72,7 +72,7 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
     @Override
     protected void readSyncNBT(CompoundTag tag) {
         super.readSyncNBT(tag);
-        heat = tag.getShort("Heat");
+        heat = tag.getShortOr("Heat", (short)0);
         tank.readFromNBT(tag);
         aspects.readFromNBT(tag);
     }
@@ -130,7 +130,7 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
      * Attempt to smelt an item dropped into the crucible.
      */
     public void attemptSmelt(ItemEntity itemEntity) {
-        if (level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide()) return;
         if (heat < 151 || tank.getFluidAmount() <= 0) return;
 
         ItemStack stack = itemEntity.getItem();

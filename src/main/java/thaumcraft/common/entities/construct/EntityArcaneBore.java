@@ -1,6 +1,8 @@
 package thaumcraft.common.entities.construct;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -31,8 +33,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
-import net.neoforged.neoforge.server.level.FakePlayer;
-import net.neoforged.neoforge.server.level.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.fx.PacketFXBoreDig;
 import thaumcraft.common.world.aura.AuraHandler;
@@ -93,32 +95,32 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
     }
     
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(FACING, Direction.DOWN);
-        this.entityData.define(ACTIVE, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(FACING, Direction.DOWN);
+        builder.define(ACTIVE, false);
     }
     
     // ==================== NBT ====================
     
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putFloat("Charge", charge);
-        tag.putByte("Facing", (byte) getFacing().ordinal());
-        tag.putBoolean("Active", isActive());
-        tag.putInt("Spiral", spiral);
-        tag.putFloat("Radius", currentRadius);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putFloat("Charge", charge);
+        output.putByte("Facing", (byte) getFacing().ordinal());
+        output.putBoolean("Active", isActive());
+        output.putInt("Spiral", spiral);
+        output.putFloat("Radius", currentRadius);
     }
     
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        charge = tag.getFloat("Charge");
-        setFacing(Direction.values()[tag.getByte("Facing") % Direction.values().length]);
-        setActive(tag.getBoolean("Active"));
-        spiral = tag.getInt("Spiral");
-        currentRadius = tag.getFloat("Radius");
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        charge = input.getFloatOr("Charge", 0.0F);
+        setFacing(Direction.values()[input.getByteOr("Facing", (byte)0) % Direction.values().length]);
+        setActive(input.getBooleanOr("Active", false));
+        spiral = input.getIntOr("Spiral", 0);
+        currentRadius = input.getFloatOr("Radius", 0.0F);
     }
     
     // ==================== Tick ====================
@@ -127,7 +129,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
     public void tick() {
         super.tick();
         
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // Heal slowly
             if (tickCount % 50 == 0) {
                 heal(1.0f);
@@ -154,7 +156,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         }
         
         // Server-side mining logic
-        if (digTarget != null && charge >= digCost && !level().isClientSide) {
+        if (digTarget != null && charge >= digCost && !level().isClientSide()) {
             if (digDelay-- <= 0 && dig()) {
                 charge -= digCost;
                 
@@ -168,7 +170,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         }
         
         // Find next block to mine
-        if (!level().isClientSide && digTarget == null && isActive() && validInventory()) {
+        if (!level().isClientSide() && digTarget == null && isActive() && validInventory()) {
             findNextBlockToDig();
             
             if (digTarget != null) {
@@ -190,7 +192,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         if (held.isEmpty()) return false;
         
         boolean isPickaxe = held.getItem() instanceof PickaxeItem ||
-                held.getItem().canPerformAction(held, net.minecraftforge.common.ToolActions.PICKAXE_DIG);
+                held.getItem().canPerformAction(held, net.neoforged.neoforge.common.ToolActions.PICKAXE_DIG);
         
         if (!isPickaxe) return false;
         
@@ -373,7 +375,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
     
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (!level().isClientSide && isOwner(player) && isAlive()) {
+        if (!level().isClientSide() && isOwner(player) && isAlive()) {
             if (player.isShiftKeyDown()) {
                 // Drop items and destroy
                 if (ModSounds.ZAP != null) {
@@ -382,7 +384,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
                 
                 // Drop held pickaxe
                 if (!getMainHandItem().isEmpty()) {
-                    spawnAtLocation(getMainHandItem(), 0.5f);
+                    spawnAtLocation((ServerLevel) this.level(), getMainHandItem(), 0.5f);
                 }
                 
                 // Drop bore placer
@@ -415,9 +417,9 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
     @Override
     public void die(DamageSource source) {
         super.die(source);
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (!getMainHandItem().isEmpty()) {
-                spawnAtLocation(getMainHandItem(), 0.5f);
+                spawnAtLocation((ServerLevel) this.level(), getMainHandItem(), 0.5f);
             }
         }
     }

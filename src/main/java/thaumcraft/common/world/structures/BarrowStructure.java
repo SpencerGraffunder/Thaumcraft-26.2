@@ -63,7 +63,7 @@ public class BarrowStructure extends Structure {
         ChunkGenerator chunkGenerator = context.chunkGenerator();
         LevelHeightAccessor heightAccessor = context.heightAccessor();
         RandomState randomState = context.randomState();
-        RandomSource random = context.getRandom()();
+        RandomSource random = context.random();
         
         // Get the center position of the chunk
         int x = chunkPos.getMiddleBlockX();

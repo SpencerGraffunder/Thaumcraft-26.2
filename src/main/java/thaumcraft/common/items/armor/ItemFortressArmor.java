@@ -113,7 +113,7 @@ public class ItemFortressArmor extends Item implements IGoggles, IRevealer {
      * Get the mask type (0-3 for different variants).
      */
     public static int getMaskType(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt("mask") : 0;
+        return stack.hasTag() ? stack.getTag().getIntOr("mask", 0) : 0;
     }
     
     /**

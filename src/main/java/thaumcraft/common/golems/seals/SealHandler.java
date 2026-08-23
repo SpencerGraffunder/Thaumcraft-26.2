@@ -29,7 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Ported from 1.12.2. Key changes:
  * - Dimension is now ResourceKey<Level> (stored as String key in map)
  * - EnumFacing -> Direction
- * - world.isRemote -> level.isClientSide
+ * - world.isRemote -> level.isClientSide()
  * - world.isBlockLoaded -> level.isLoaded
  * - Network packets stubbed (TODO: implement when network is ready)
  * - AuraHandler.dirtyChunks integration stubbed (TODO: implement when aura system integrates)
@@ -51,7 +51,7 @@ public class SealHandler {
      * Get the string key for a dimension
      */
     private static String getDimKey(ResourceKey<Level> dim) {
-        return dim.location().toString();
+        return dim.identifier().toString();
     }
     
     // ==================== Seal Type Registration ====================
@@ -188,7 +188,7 @@ public class SealHandler {
         sealEntity.setOwner(player.getUUID().toString());
         dimSeals.put(sealPos, sealEntity);
         
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             sealEntity.syncToClient(level);
             markChunkAsDirty(level.dimension(), pos);
         }
@@ -213,7 +213,7 @@ public class SealHandler {
         
         dimSeals.put(seal.getSealPos(), seal);
         
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             seal.syncToClient(level);
             markChunkAsDirty(level.dimension(), seal.getSealPos().pos);
         }
@@ -233,11 +233,11 @@ public class SealHandler {
         SealEntity seal = dimSeals.remove(pos);
         
         try {
-            if (!level.isClientSide && seal != null && seal.seal != null) {
+            if (!level.isClientSide() && seal != null && seal.seal != null) {
                 seal.seal.onRemoval(level, pos.pos, pos.face);
             }
             
-            if (!quiet && seal != null && seal.getSeal() != null && !level.isClientSide) {
+            if (!quiet && seal != null && seal.getSeal() != null && !level.isClientSide()) {
                 // Drop seal item
                 ItemStack sealStack = ItemSealPlacer.getSealStack(seal.getSeal().getKey());
                 if (!sealStack.isEmpty()) {
@@ -259,7 +259,7 @@ public class SealHandler {
             }
         }
         
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             // Send removal packet to all clients in dimension
             SealEntity removedSeal = new SealEntity(level, pos, null);
             PacketHandler.sendToDimension(new PacketSealToClient(removedSeal), level.dimension());

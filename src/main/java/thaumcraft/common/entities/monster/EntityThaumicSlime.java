@@ -1,4 +1,5 @@
 package thaumcraft.common.entities.monster;
+import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.BlockPos;
@@ -14,7 +15,7 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +42,7 @@ public class EntityThaumicSlime extends Slime {
     }
     
     /**
-     * Static spawn rule check for use with SpawnPlacementRegisterEvent.
+     * Static spawn rule check for use with RegisterSpawnPlacementsEvent.
      * Thaumic slimes don't spawn naturally - they are created by flux effects.
      */
     public static boolean checkThaumicSlimeSpawnRules(EntityType<? extends EntityThaumicSlime> type, ServerLevelAccessor level,
@@ -155,7 +156,7 @@ public class EntityThaumicSlime extends Slime {
         if (onGround() && !wasOnGroundLastTick) {
             wasOnGroundLastTick = true;
             
-            if (level().isClientSide) {
+            if (level().isClientSide()) {
                 for (int j = 0; j < size * 2; j++) {
                     spawnSlimeParticles();
                 }
@@ -170,7 +171,7 @@ public class EntityThaumicSlime extends Slime {
         super.tick();
         
         // Client-side particles for launched slimes
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             if (launched > 0) {
                 launched--;
                 for (int k = 0; k < size * (launched + 1); k++) {
@@ -180,7 +181,7 @@ public class EntityThaumicSlime extends Slime {
         }
         
         // Server-side spit attack logic
-        if (!level().isClientSide && isAlive()) {
+        if (!level().isClientSide() && isAlive()) {
             Player target = level().getNearestPlayer(this, 16.0);
             if (target != null) {
                 if (spitCounter > 0) {
@@ -221,7 +222,7 @@ public class EntityThaumicSlime extends Slime {
         int size = getSize();
         
         // Split into smaller slimes on death
-        if (!level().isClientSide && size > 1 && isDeadOrDying()) {
+        if (!level().isClientSide() && size > 1 && isDeadOrDying()) {
             for (int k = 0; k < size; k++) {
                 float offsetX = (k % 2 - 0.5f) * size / 4.0f;
                 float offsetZ = (k / 2 - 0.5f) * size / 4.0f;
@@ -264,8 +265,8 @@ public class EntityThaumicSlime extends Slime {
     }
     
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int lootingLevel, boolean wasRecentlyHit) {
-        super.dropCustomDeathLoot(source, lootingLevel, wasRecentlyHit);
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
+        super.dropCustomDeathLoot(level, source, wasRecentlyHit);
         
         // Drop flux crystal if large enough
         if (getSize() > 1) {

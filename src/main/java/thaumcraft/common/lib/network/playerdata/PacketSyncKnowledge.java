@@ -1,4 +1,9 @@
 package thaumcraft.common.lib.network.playerdata;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -6,14 +11,12 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchEntry;
 import thaumcraft.client.gui.ResearchToast;
 
-import java.util.function.Supplier;
 
 /**
  * PacketSyncKnowledge - Syncs all player research/knowledge data from server to client.
@@ -25,7 +28,18 @@ import java.util.function.Supplier;
  * 
  * Ported from 1.12.2
  */
-public class PacketSyncKnowledge {
+public class PacketSyncKnowledge implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketSyncKnowledge> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetsyncknowledge"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncKnowledge> STREAM_CODEC =
+        StreamCodec.ofMember(PacketSyncKnowledge::encode, PacketSyncKnowledge::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private CompoundTag data;
     
@@ -56,10 +70,9 @@ public class PacketSyncKnowledge {
         return msg;
     }
     
-    public static void handle(PacketSyncKnowledge msg, Supplier<NetworkEvent.Context> ctxSupplier) {
-        NetworkEvent.Context ctx = ctxSupplier.get();
+    public static void handle(PacketSyncKnowledge msg, IPayloadContext ctxSupplier) {
+        IPayloadContext ctx = ctxSupplier;
         ctx.enqueueWork(() -> handleOnClient(msg));
-        ctx.setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)
@@ -77,7 +90,7 @@ public class PacketSyncKnowledge {
                     ResearchEntry entry = ResearchCategories.getResearch(key);
                     if (entry != null) {
                         // Show toast notification
-                        Minecraft.getInstance().getToasts().addToast(new ResearchToast(entry));
+                        Minecraft.getInstance().gui.toastManager().addToast(new ResearchToast(entry));
                     }
                     knowledge.clearResearchFlag(key, IPlayerKnowledge.EnumResearchFlag.POPUP);
                 }

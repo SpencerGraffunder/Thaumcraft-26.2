@@ -33,7 +33,7 @@ import thaumcraft.common.lib.network.misc.PacketSealToClient;
  * - ChunkDataEvent APIs updated for 1.20.1
  * - ChunkWatchEvent.Watch -> ChunkWatchEvent.Watch with updated API
  */
-@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = Thaumcraft.MODID, bus = Mod.EventBusSubscriber.Bus.GAME)
 public class ChunkEvents {
     
     private static final String THAUMCRAFT_DATA_KEY = "Thaumcraft";
@@ -86,15 +86,15 @@ public class ChunkEvents {
         if (event.getLevel() instanceof Level level && !level.isClientSide()) {
             CompoundTag data = event.getData();
             
-            if (data.contains(THAUMCRAFT_DATA_KEY, Tag.TAG_COMPOUND)) {
-                CompoundTag thaumcraftData = data.getCompound(THAUMCRAFT_DATA_KEY);
+            if (data.contains(THAUMCRAFT_DATA_KEY)) {
+                CompoundTag thaumcraftData = data.getCompoundOrEmpty(THAUMCRAFT_DATA_KEY);
                 
                 // Load seals
-                if (thaumcraftData.contains(SEALS_KEY, Tag.TAG_LIST)) {
-                    ListTag sealList = thaumcraftData.getList(SEALS_KEY, Tag.TAG_COMPOUND);
+                if (thaumcraftData.contains(SEALS_KEY)) {
+                    ListTag sealList = thaumcraftData.getListOrEmpty(SEALS_KEY);
                     
                     for (int i = 0; i < sealList.size(); i++) {
-                        CompoundTag sealNbt = sealList.getCompound(i);
+                        CompoundTag sealNbt = sealList.getCompoundOrEmpty(i);
                         
                         try {
                             SealEntity seal = new SealEntity();
@@ -112,9 +112,9 @@ public class ChunkEvents {
             
             // TODO: When Aura system is implemented, load aura data here as well
             // if (thaumcraftData.contains("base")) {
-            //     short base = thaumcraftData.getShort("base");
-            //     float vis = thaumcraftData.getFloat("vis");
-            //     float flux = thaumcraftData.getFloat("flux");
+            //     short base = thaumcraftData.getShortOr("base", (short)0);
+            //     float vis = thaumcraftData.getFloatOr("vis", 0.0F);
+            //     float flux = thaumcraftData.getFloatOr("flux", 0.0F);
             //     AuraHandler.addAuraChunk(level.dimension(), event.getChunk(), base, vis, flux);
             // }
         }

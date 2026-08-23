@@ -1,13 +1,16 @@
 package thaumcraft.common.lib.network.fx;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.NetworkEvent;
 import thaumcraft.client.fx.FXDispatcher;
 
-import java.util.function.Supplier;
 
 /**
  * PacketFXEssentiaSource - Essentia stream/flow visual effect.
@@ -15,7 +18,18 @@ import java.util.function.Supplier;
  * 
  * Server -> Client
  */
-public class PacketFXEssentiaSource {
+public class PacketFXEssentiaSource implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketFXEssentiaSource> TYPE =
+        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("thaumcraft", "packetfxessentiasource"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketFXEssentiaSource> STREAM_CODEC =
+        StreamCodec.ofMember(PacketFXEssentiaSource::encode, PacketFXEssentiaSource::decode);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return this.TYPE;
+    }
+
     
     private final int x;
     private final int y;
@@ -79,11 +93,10 @@ public class PacketFXEssentiaSource {
         return new PacketFXEssentiaSource(x, y, z, dx, dy, dz, color, ext);
     }
     
-    public static void handle(PacketFXEssentiaSource packet, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketFXEssentiaSource packet, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
             handleClient(packet);
         });
-        ctx.get().setPacketHandled(true);
     }
     
     @OnlyIn(Dist.CLIENT)

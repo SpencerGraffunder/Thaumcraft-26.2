@@ -18,24 +18,24 @@ public class EntitySpecialItem extends ItemEntity {
     
     public EntitySpecialItem(EntityType<? extends EntitySpecialItem> type, Level level) {
         super(type, level);
-        this.bobOffs = (float)(Math.getRandom()() * Math.PI * 2.0);
+        this.bobOffs = (float)(Math.random() * Math.PI * 2.0);
     }
     
     public EntitySpecialItem(Level level) {
         super(ModEntities.SPECIAL_ITEM.get(), level);
-        this.bobOffs = (float)(Math.getRandom()() * Math.PI * 2.0);
+        this.bobOffs = (float)(Math.random() * Math.PI * 2.0);
     }
     
     public EntitySpecialItem(Level level, double x, double y, double z, ItemStack stack) {
         super(ModEntities.SPECIAL_ITEM.get(), level);
-        this.bobOffs = (float)(Math.getRandom()() * Math.PI * 2.0);
+        this.bobOffs = (float)(Math.random() * Math.PI * 2.0);
         this.setPos(x, y, z);
         this.setItem(stack);
-        this.setYRot((float)(Math.getRandom()() * 360.0));
+        this.setYRot((float)(Math.random() * 360.0));
         this.setDeltaMovement(
-                (Math.getRandom()() * 0.2 - 0.1),
+                (Math.random() * 0.2 - 0.1),
                 0.2,
-                (Math.getRandom()() * 0.2 - 0.1)
+                (Math.random() * 0.2 - 0.1)
         );
     }
     
