@@ -2,6 +2,7 @@ package thaumcraft.common.items;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import thaumcraft.init.ItemRegistration;
 
 /**
  * Base class for simple Thaumcraft items.
@@ -10,11 +11,11 @@ import net.minecraft.world.item.Rarity;
 public class ItemTC extends Item {
 
     public ItemTC(Properties properties) {
-        super(properties);
+        super(ItemRegistration.id(properties));
     }
 
     public ItemTC() {
-        super(new Properties());
+        super(ItemRegistration.id(new Properties()));
     }
 
     /**

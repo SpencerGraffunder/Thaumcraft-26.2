@@ -25,9 +25,9 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class ItemCausalityCollapser extends Item {
 
     public ItemCausalityCollapser() {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(16)
-                .rarity(Rarity.EPIC));
+                .rarity(Rarity.EPIC)));
     }
 
     @Override

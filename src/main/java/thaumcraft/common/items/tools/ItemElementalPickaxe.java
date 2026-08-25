@@ -24,12 +24,13 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * Sets entities on fire when hit.
  * Has built-in Refining and Sounding infusion enchantments.
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemElementalPickaxe extends Item {
 
     public ItemElementalPickaxe() {
-        super((// attack speed
+        super(ItemRegistration.id((// attack speed
                 new Item.Properties()
-                        .rarity(Rarity.RARE)).pickaxe(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
+                        .rarity(Rarity.RARE)).pickaxe(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F)));
     }
 
     /**

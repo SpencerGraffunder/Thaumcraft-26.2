@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 public class ItemCultistLeaderArmor extends Item implements IWarpingGear {
     
     public ItemCultistLeaderArmor(ArmorType type) {
-        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_CULTIST_LEADER, type));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_CULTIST_LEADER, type)));
     
     }
     

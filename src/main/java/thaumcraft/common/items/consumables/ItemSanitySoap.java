@@ -24,7 +24,7 @@ import thaumcraft.init.ModSounds;
 public class ItemSanitySoap extends Item {
 
     public ItemSanitySoap() {
-        super(new Item.Properties());
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()));
     }
 
     @Override

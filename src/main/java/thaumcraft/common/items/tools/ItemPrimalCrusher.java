@@ -47,9 +47,9 @@ public class ItemPrimalCrusher extends Item implements IWarpingGear {
     }
 
     public ItemPrimalCrusher() {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .rarity(Rarity.EPIC)
-                .pickaxe(PRIMAL_VOID_TIER, 3.5f, -2.8f));
+                .pickaxe(PRIMAL_VOID_TIER, 3.5f, -2.8f)));
     }
 
     @Override

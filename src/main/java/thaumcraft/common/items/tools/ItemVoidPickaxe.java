@@ -18,10 +18,11 @@ import net.minecraft.server.level.ServerLevel;
 /**
  * Void Metal Pickaxe - Powerful but warping pickaxe that applies weakness and self-repairs.
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemVoidPickaxe extends Item implements IWarpingGear {
     
     public ItemVoidPickaxe() {
-        super((new Item.Properties().rarity(Rarity.RARE)).pickaxe(ThaumcraftMaterials.TOOLMAT_VOID, 1, -2.8F));
+        super(ItemRegistration.id((new Item.Properties().rarity(Rarity.RARE)).pickaxe(ThaumcraftMaterials.TOOLMAT_VOID, 1, -2.8F)));
     }
     
     @Override

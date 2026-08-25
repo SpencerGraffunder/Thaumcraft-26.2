@@ -7,14 +7,15 @@ import net.minecraft.world.item.Rarity;
  * Simple material item for crafting components.
  * Used for things like quicksilver, thaumium ingots, void metal, etc.
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemMaterial extends Item {
 
     public ItemMaterial(Properties properties) {
-        super(properties);
+        super(thaumcraft.init.ItemRegistration.id(properties));
     }
 
     public ItemMaterial() {
-        super(new Properties());
+        super(ItemRegistration.id(new Properties()));
     }
 
     /**

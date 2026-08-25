@@ -22,13 +22,14 @@ import javax.annotation.Nullable;
  * 
  * Can be worn as helmet armor or potentially as a Curios bauble.
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemGoggles extends Item implements IVisDiscountGear, IRevealer, IGoggles {
     
     public ItemGoggles() {
-        super((new Item.Properties()
+        super(ItemRegistration.id((new Item.Properties()
                         .stacksTo(1)
                         .durability(350)
-                        .rarity(Rarity.RARE)).humanoidArmor(ThaumcraftMaterials.ARMORMAT_SPECIAL, ArmorType.HELMET));
+                        .rarity(Rarity.RARE)).humanoidArmor(ThaumcraftMaterials.ARMORMAT_SPECIAL, ArmorType.HELMET)));
     }
     
     @Override

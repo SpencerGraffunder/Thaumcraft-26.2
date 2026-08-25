@@ -8,9 +8,10 @@ import thaumcraft.init.ModItems;
 /**
  * Thaumium Pickaxe - Magic-infused iron pickaxe with better stats.
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemThaumiumPickaxe extends Item {
     
     public ItemThaumiumPickaxe() {
-        super((new Item.Properties()).pickaxe(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
+        super(ItemRegistration.id((new Item.Properties()).pickaxe(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F)));
     }
 }

@@ -25,13 +25,14 @@ import net.minecraft.server.level.ServerLevel;
  * Boots of the Traveller - Magical boots that grant speed and step height.
  * Consumes vis charge while providing the movement bonus.
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemBootsTraveller extends Item implements IRechargable {
     
     public ItemBootsTraveller() {
-        super((new Item.Properties()
+        super(ItemRegistration.id((new Item.Properties()
                         .stacksTo(1)
                         .durability(350)
-                        .rarity(Rarity.RARE)).humanoidArmor(ThaumcraftMaterials.ARMORMAT_SPECIAL, ArmorType.BOOTS));
+                        .rarity(Rarity.RARE)).humanoidArmor(ThaumcraftMaterials.ARMORMAT_SPECIAL, ArmorType.BOOTS)));
     }
     
     @Override

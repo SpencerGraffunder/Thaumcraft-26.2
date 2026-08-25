@@ -20,11 +20,11 @@ import thaumcraft.api.capabilities.IPlayerWarp;
 public class ItemZombieBrain extends Item {
     
     public ItemZombieBrain() {
-        super(new Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Properties()
                 .food(new FoodProperties.Builder()
                         .nutrition(4)
                         .saturationModifier(0.2f)
-                        .build()));
+                        .build())));
     }
     
     @Override

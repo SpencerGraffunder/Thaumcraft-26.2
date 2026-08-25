@@ -30,9 +30,9 @@ public class ItemFocus extends Item {
     private final int maxComplexity;
     
     public ItemFocus(int complexity) {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(1)
-                .rarity(Rarity.RARE));
+                .rarity(Rarity.RARE)));
         this.maxComplexity = complexity;
     }
     

@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 public class ItemThaumiumArmor extends Item {
     
     public ItemThaumiumArmor(ArmorType type) {
-        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_THAUMIUM, type));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_THAUMIUM, type)));
     
     }
     

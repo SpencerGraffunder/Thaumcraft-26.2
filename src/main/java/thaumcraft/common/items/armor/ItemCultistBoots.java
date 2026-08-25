@@ -15,11 +15,12 @@ import javax.annotation.Nullable;
  * Crimson Cult Boots - Standard iron-quality boots worn by cultists.
  * Shared between robe and plate variants.
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemCultistBoots extends Item {
     
     public ItemCultistBoots() {
-        super((new Item.Properties()
+        super(ItemRegistration.id((new Item.Properties()
                         .stacksTo(1)
-                        .rarity(Rarity.UNCOMMON)).humanoidArmor(ArmorMaterials.IRON, ArmorType.BOOTS));
+                        .rarity(Rarity.UNCOMMON)).humanoidArmor(ArmorMaterials.IRON, ArmorType.BOOTS)));
     }
 }

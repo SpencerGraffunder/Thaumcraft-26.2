@@ -39,8 +39,8 @@ public class ItemSealPlacer extends Item implements ISealDisplayer {
     private final String sealKey;
 
     public ItemSealPlacer(String sealKey) {
-        super(new Item.Properties()
-                .stacksTo(64));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
+                .stacksTo(64)));
         this.sealKey = sealKey;
     }
 

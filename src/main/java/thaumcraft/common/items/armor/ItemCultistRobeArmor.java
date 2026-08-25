@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 public class ItemCultistRobeArmor extends Item implements IVisDiscountGear, IWarpingGear {
     
     public ItemCultistRobeArmor(ArmorType type) {
-        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_CULTIST_ROBE, type));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_CULTIST_ROBE, type)));
     
     }
     

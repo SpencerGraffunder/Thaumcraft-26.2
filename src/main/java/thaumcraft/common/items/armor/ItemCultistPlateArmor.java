@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 public class ItemCultistPlateArmor extends Item {
     
     public ItemCultistPlateArmor(ArmorType type) {
-        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_CULTIST_PLATE, type));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_CULTIST_PLATE, type)));
     
     }
     

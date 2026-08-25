@@ -31,12 +31,13 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * When used, allows the player to float and pushes nearby entities away.
  * Has built-in Arcing infusion enchantment.
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemElementalSword extends Item {
 
     public ItemElementalSword() {
-        super((// attack speed
+        super(ItemRegistration.id((// attack speed
                 new Item.Properties()
-                        .rarity(Rarity.RARE)).sword(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
+                        .rarity(Rarity.RARE)).sword(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F)));
     }
 
     @Override

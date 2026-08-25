@@ -28,18 +28,19 @@ import net.minecraft.server.level.ServerLevel;
  * @author Azanor
  * Ported to 1.20.1
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
     
     /** Base amount of essentia stored in each crystal */
     protected final int baseAmount;
     
     public ItemCrystalEssence() {
-        super(new Item.Properties().stacksTo(64));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().stacksTo(64)));
         this.baseAmount = 1;
     }
     
     public ItemCrystalEssence(int baseAmount) {
-        super(new Item.Properties().stacksTo(64));
+        super(ItemRegistration.id(new Item.Properties().stacksTo(64)));
         this.baseAmount = baseAmount;
     }
     

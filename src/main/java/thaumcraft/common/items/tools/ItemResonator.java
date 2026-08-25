@@ -23,9 +23,9 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 public class ItemResonator extends Item {
 
     public ItemResonator() {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(1)
-                .rarity(Rarity.UNCOMMON));
+                .rarity(Rarity.UNCOMMON)));
     }
 
     @Override

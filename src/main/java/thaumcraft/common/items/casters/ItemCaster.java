@@ -50,9 +50,9 @@ public class ItemCaster extends Item implements ICaster {
     private final int auraArea;
     
     public ItemCaster(int area) {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(1)
-                .rarity(Rarity.UNCOMMON));
+                .rarity(Rarity.UNCOMMON)));
         this.auraArea = area;
     }
     

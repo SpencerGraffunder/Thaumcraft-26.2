@@ -15,11 +15,11 @@ import net.minecraft.world.item.Item;
 public class ItemTripleMeatTreat extends Item {
     
     public ItemTripleMeatTreat() {
-        super(new Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Properties()
                 .food(new FoodProperties.Builder()
                         .nutrition(6)
                         .saturationModifier(0.8f)
                         .alwaysEdible() // Can eat even when full
-                        .build()));
+                        .build())));
     }
 }

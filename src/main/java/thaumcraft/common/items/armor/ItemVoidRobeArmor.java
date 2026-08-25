@@ -40,7 +40,7 @@ public class ItemVoidRobeArmor extends Item
     private static final int DEFAULT_COLOR = 0x6A4C00;
     
     public ItemVoidRobeArmor(ArmorType type) {
-        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_VOIDROBE, type));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_VOIDROBE, type)));
     
     }
     

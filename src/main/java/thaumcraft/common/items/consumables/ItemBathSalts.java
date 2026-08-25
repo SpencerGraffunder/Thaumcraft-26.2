@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 public class ItemBathSalts extends Item {
 
     public ItemBathSalts() {
-        super(new Item.Properties());
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()));
     }
 
     /**

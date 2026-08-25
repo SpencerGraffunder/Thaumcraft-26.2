@@ -41,9 +41,9 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class ItemGolemPlacer extends Item implements ISealDisplayer {
 
     public ItemGolemPlacer() {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(16)
-                .rarity(Rarity.UNCOMMON));
+                .rarity(Rarity.UNCOMMON)));
     }
 
     @Override

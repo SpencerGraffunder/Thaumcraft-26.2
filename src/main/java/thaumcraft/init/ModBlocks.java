@@ -757,6 +757,9 @@ public class ModBlocks {
      * Register a BlockItem for a block.
      */
     private static <T extends Block> void registerBlockItem(String name, DeferredHolder<Block, T> block) {
-        BLOCK_ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+        BLOCK_ITEMS.register(name, id -> {
+            ItemRegistration.set(ResourceKey.create(Registries.ITEM, id));
+            return new BlockItem(block.get(), ItemRegistration.id(new Item.Properties()));
+        });
     }
 }

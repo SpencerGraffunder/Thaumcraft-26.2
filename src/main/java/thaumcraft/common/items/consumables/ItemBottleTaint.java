@@ -15,8 +15,8 @@ import net.minecraft.world.level.Level;
 public class ItemBottleTaint extends Item {
 
     public ItemBottleTaint() {
-        super(new Item.Properties()
-                .stacksTo(8));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
+                .stacksTo(8)));
     }
 
     @Override

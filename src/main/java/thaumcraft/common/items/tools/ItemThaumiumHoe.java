@@ -12,7 +12,6 @@ import thaumcraft.init.ModItems;
 public class ItemThaumiumHoe extends HoeItem {
     
     public ItemThaumiumHoe() {
-        super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, -2, -1.0F, 
-                new Item.Properties());
+        super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, -2, -1.0F, thaumcraft.init.ItemRegistration.id(new Item.Properties()));
     }
 }

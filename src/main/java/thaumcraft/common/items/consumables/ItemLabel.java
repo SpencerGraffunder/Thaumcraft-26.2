@@ -25,7 +25,7 @@ public class ItemLabel extends Item {
     private final boolean isFilled;
 
     public ItemLabel(boolean filled) {
-        super(new Item.Properties());
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()));
         this.isFilled = filled;
     }
 

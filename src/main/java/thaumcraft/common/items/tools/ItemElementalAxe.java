@@ -34,8 +34,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class ItemElementalAxe extends AxeItem {
 
     public ItemElementalAxe() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 8.0f, -3.0f, new Item.Properties()
-                        .rarity(Rarity.RARE));
+        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 8.0f, -3.0f, thaumcraft.init.ItemRegistration.id(new Item.Properties()
+                        .rarity(Rarity.RARE)));
     }
 
     @Override

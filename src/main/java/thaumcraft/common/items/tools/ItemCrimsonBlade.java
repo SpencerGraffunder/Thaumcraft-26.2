@@ -31,12 +31,11 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * Applies weakness and hunger to targets.
  * Self-repairs and causes warp when equipped.
  */
+import thaumcraft.init.ItemRegistration;
 public class ItemCrimsonBlade extends Item implements IWarpingGear {
 
     public ItemCrimsonBlade() {
-        super((// attack speed
-                new Item.Properties()
-                        .rarity(Rarity.EPIC)).sword(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F));
+        super(ItemRegistration.id((new Item.Properties().rarity(Rarity.EPIC)).sword(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 1, -2.8F)));
     }
 
     /**

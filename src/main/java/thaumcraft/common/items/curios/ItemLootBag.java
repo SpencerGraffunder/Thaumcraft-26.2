@@ -44,9 +44,9 @@ public class ItemLootBag extends Item {
     private final LootTier tier;
 
     public ItemLootBag(LootTier tier) {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(16)
-                .rarity(tier.getRarity()));
+                .rarity(tier.getRarity())));
         this.tier = tier;
     }
 

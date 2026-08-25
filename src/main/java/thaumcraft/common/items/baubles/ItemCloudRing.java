@@ -26,9 +26,9 @@ public class ItemCloudRing extends Item {
     private static final HashMap<UUID, Boolean> jumpUsed = new HashMap<>();
     
     public ItemCloudRing() {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(1)
-                .rarity(Rarity.RARE));
+                .rarity(Rarity.RARE)));
     }
     
     @Override

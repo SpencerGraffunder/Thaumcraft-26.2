@@ -20,8 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 public class ItemVoidHoe extends HoeItem implements IWarpingGear {
     
     public ItemVoidHoe() {
-        super(ThaumcraftMaterials.TOOLMAT_VOID, -3, -0.5F, 
-                new Item.Properties().rarity(Rarity.RARE));
+        super(ThaumcraftMaterials.TOOLMAT_VOID, -3, -0.5F, thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE)));
     }
     
     @Override

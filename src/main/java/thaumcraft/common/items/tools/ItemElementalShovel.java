@@ -39,8 +39,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class ItemElementalShovel extends ShovelItem {
 
     public ItemElementalShovel() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 1.5f, -3.0f, new Item.Properties()
-                        .rarity(Rarity.RARE));
+        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 1.5f, -3.0f, thaumcraft.init.ItemRegistration.id(new Item.Properties()
+                        .rarity(Rarity.RARE)));
     }
 
     @Override

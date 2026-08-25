@@ -34,7 +34,7 @@ public class ItemTurretPlacer extends Item {
     private final TurretType turretType;
     
     public ItemTurretPlacer(TurretType type) {
-        super(new Item.Properties().stacksTo(16));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().stacksTo(16)));
         this.turretType = type;
     }
     

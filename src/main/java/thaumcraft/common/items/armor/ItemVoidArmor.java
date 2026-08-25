@@ -22,7 +22,7 @@ import net.minecraft.server.level.ServerLevel;
 public class ItemVoidArmor extends Item implements IWarpingGear {
     
     public ItemVoidArmor(ArmorType type) {
-        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_VOID, type));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_VOID, type)));
     
     }
     

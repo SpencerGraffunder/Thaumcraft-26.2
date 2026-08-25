@@ -41,9 +41,9 @@ public class ItemFocusPouch extends Item {
     public static final int INVENTORY_SIZE = 18;
 
     public ItemFocusPouch() {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(1)
-                .rarity(Rarity.UNCOMMON));
+                .rarity(Rarity.UNCOMMON)));
     }
 
     @Override

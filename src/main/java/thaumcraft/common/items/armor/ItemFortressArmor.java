@@ -33,7 +33,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class ItemFortressArmor extends Item implements IGoggles, IRevealer {
     
     public ItemFortressArmor(ArmorType type) {
-        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_FORTRESS, type));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_FORTRESS, type)));
     
     }
     

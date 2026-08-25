@@ -12,6 +12,6 @@ import thaumcraft.init.ModItems;
 public class ItemThaumiumAxe extends AxeItem {
     
     public ItemThaumiumAxe() {
-        super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 6.0F, -3.1F, new Item.Properties());
+        super(ThaumcraftMaterials.TOOLMAT_THAUMIUM, 6.0F, -3.1F, thaumcraft.init.ItemRegistration.id(new Item.Properties()));
     }
 }

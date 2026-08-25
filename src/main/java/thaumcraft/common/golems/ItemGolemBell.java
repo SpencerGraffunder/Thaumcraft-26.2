@@ -37,9 +37,9 @@ import java.util.List;
 public class ItemGolemBell extends Item implements ISealDisplayer {
 
     public ItemGolemBell() {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(1)
-                .rarity(Rarity.UNCOMMON));
+                .rarity(Rarity.UNCOMMON)));
     }
 
     @Override

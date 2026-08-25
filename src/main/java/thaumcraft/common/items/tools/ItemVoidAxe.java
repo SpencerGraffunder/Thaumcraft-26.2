@@ -22,7 +22,7 @@ import net.minecraft.server.level.ServerLevel;
 public class ItemVoidAxe extends AxeItem implements IWarpingGear {
     
     public ItemVoidAxe() {
-        super(ThaumcraftMaterials.TOOLMAT_VOID, 5.0F, -3.0F, new Item.Properties().rarity(Rarity.RARE));
+        super(ThaumcraftMaterials.TOOLMAT_VOID, 5.0F, -3.0F, thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE)));
     }
     
     @Override

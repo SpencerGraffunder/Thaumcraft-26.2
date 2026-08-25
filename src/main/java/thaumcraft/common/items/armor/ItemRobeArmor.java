@@ -34,7 +34,7 @@ public class ItemRobeArmor extends Item implements IVisDiscountGear {
     private static final int DEFAULT_COLOR = 0x6A4C00;
     
     public ItemRobeArmor(ArmorType type) {
-        super(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_SPECIAL, type));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().humanoidArmor(ThaumcraftMaterials.ARMORMAT_SPECIAL, type)));
     
     }
     

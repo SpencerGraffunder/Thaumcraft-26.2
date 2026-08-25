@@ -22,7 +22,7 @@ public class ItemVisCrystal extends Item implements IEssentiaContainerItem {
     private final Aspect aspect;
     
     public ItemVisCrystal(Aspect aspect) {
-        super(new Item.Properties().stacksTo(64));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().stacksTo(64)));
         this.aspect = aspect;
     }
     

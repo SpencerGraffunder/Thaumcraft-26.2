@@ -24,8 +24,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class ItemElementalHoe extends HoeItem {
 
     public ItemElementalHoe() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, -2, -1.0f, new Item.Properties()
-                        .rarity(Rarity.RARE));
+        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, -2, -1.0f, thaumcraft.init.ItemRegistration.id(new Item.Properties()
+                        .rarity(Rarity.RARE)));
     }
 
     @Override

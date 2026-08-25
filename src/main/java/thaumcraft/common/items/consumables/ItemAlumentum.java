@@ -19,7 +19,7 @@ import thaumcraft.common.entities.projectile.EntityAlumentum;
 public class ItemAlumentum extends Item {
     
     public ItemAlumentum() {
-        super(new Properties().stacksTo(64));
+        super(thaumcraft.init.ItemRegistration.id(new Properties().stacksTo(64)));
     }
     
     @Override

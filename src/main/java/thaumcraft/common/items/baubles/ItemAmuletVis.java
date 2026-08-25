@@ -28,9 +28,9 @@ public class ItemAmuletVis extends Item {
     private final boolean isCrafted;
     
     public ItemAmuletVis(boolean crafted) {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(1)
-                .rarity(crafted ? Rarity.RARE : Rarity.UNCOMMON));
+                .rarity(crafted ? Rarity.RARE : Rarity.UNCOMMON)));
         this.isCrafted = crafted;
     }
     

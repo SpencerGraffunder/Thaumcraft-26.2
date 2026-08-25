@@ -14,9 +14,9 @@ import net.minecraft.world.item.Rarity;
 public class ItemCharmUndying extends Item {
     
     public ItemCharmUndying() {
-        super(new Item.Properties()
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties()
                 .stacksTo(1)
-                .rarity(Rarity.RARE));
+                .rarity(Rarity.RARE)));
     }
     
     /**

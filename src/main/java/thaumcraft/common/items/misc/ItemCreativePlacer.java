@@ -35,7 +35,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class ItemCreativePlacer extends Item {
     
     public ItemCreativePlacer(Properties properties) {
-        super(properties.stacksTo(1).rarity(Rarity.EPIC));
+        super(thaumcraft.init.ItemRegistration.id(properties.stacksTo(1).rarity(Rarity.EPIC)));
     }
     
     @Override
