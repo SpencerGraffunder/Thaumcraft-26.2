@@ -4,17 +4,17 @@ Port of **Thaumcraft 6** from the 1.20.1 Forge source fork
 ([ShobieShy/Thaumcraft-6-Source-Code-1.20.1](https://github.com/ShobieShy/Thaumcraft-6-Source-Code-1.20.1))
 to **Minecraft 26.2 "Chaos Cubed"** on **NeoForge 26.2.0.59** (Java 25).
 
-## Status: COMPILES & BUILDS — server-boot testing in progress
+## Status: COMPILES & BUILDS — server boots to "Done" — runtime testing in progress
 
 The 26.2 port is under active development on branch `master`.
 
 - `./gradlew compileJava` — **GREEN (0 errors)**
 - `./gradlew build` — **SUCCESS** → `build/libs/thaumcraft-6.2.0+26.2.jar`
 - `./gradlew runServer` — gets through mod construction and block registration;
-  **blocked at item registration** (`Item id not set` — same `Properties.setId`
-  requirement that blocks had; the block fix is done via
-  `BlockRegistration` ThreadLocal + `DeferredRegister.createBlocks`, items need
-  the identical treatment next)
+  item registration now id-injected via `ItemRegistration` ThreadLocal;
+  **server reaches `Done (2.4s)`** — world loads, aura threads run per dimension,
+  golem parts/seals/research/aspect/multiblock init run on `ServerStartingEvent`
+  (they construct vanilla `ItemStack`s, illegal in commonSetup on 26.2)
 
 **Completed waves**
 
@@ -45,15 +45,16 @@ The 26.2 port is under active development on branch `master`.
 
 **Remaining (runtime testing on a test server)**
 
-- **Item registration** — items need the same `Properties.setId` treatment as
-  blocks (ThreadLocal pending id in `ModItems` + item constructors)
-- Entity spawning/behaviour, golem seals, bosses
+- **In-world runtime testing** — entity spawning/behaviour, golem seals, bosses;
+  a dedicated server boots clean but gameplay paths are unexercised
 - Crafting UIs (arcane workbench, crucible, infusion altar, research table)
 - Worldgen (greatwood/silverwood, ores, ruins, taint biome)
 - Visual QA — several renderers use compile-first approximations
   (billboard beams, atlas-sprite substitutions, banner tint limits)
 - Data migration — some recipe JSONs still carry old-style `"nbt"` that the
   26.2 codecs ignore (recipes load, NBT dropped)
+- Dev-environment note: `run/server.properties` sets `max-tick-time=300000`
+  (first-boot world saves exceed the 60s default watchdog)
 
 **Known-good reference:** the unmodified 1.20.1 Forge build produces
 `thaumcraft-6.2.0.jar` and loads into a world — that's the behavior baseline
