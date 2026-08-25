@@ -104,31 +104,10 @@ public class Thaumcraft {
         // Network payload handlers are registered via RegisterPayloadHandlersEvent
         // (see registerPayloadHandlers below).
         
-        // Perform setup that must happen after all registry events
-        event.enqueueWork(() -> {
+                event.enqueueWork(() -> {
             // Initialize focus system
             FocusInit.registerFoci();
             LOGGER.info("Registered {} focus elements", FocusInit.getAllFocusKeys().length);
-            
-            // Initialize golem parts (materials, heads, arms, legs, addons)
-            GolemProperties.registerDefaultParts();
-            LOGGER.info("Registered golem parts");
-            
-            // Initialize golem seals
-            SealHandler.registerDefaultSeals();
-            
-            // Initialize research system (categories, scannables, theorycraft)
-            ConfigResearch.init();
-            
-            // Initialize aspect registry (item/block -> aspects mapping)
-            ConfigAspects.init();
-            
-            // Initialize multiblock dust triggers (salis mundus recipes)
-            ConfigMultiblocks.init();
-            
-            // Initialize recipe system
-            // ConfigRecipes.init();
-            
             LOGGER.info("Thaumcraft setup complete!");
         });
     }
@@ -141,9 +120,21 @@ public class Thaumcraft {
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        // Parse research JSON files (must be done when server starts so data packs are loaded)
-        ConfigResearch.postInit();
-        
+        // Golem parts reference vanilla ItemStacks, which are only safe to
+        // construct after registry holders bind their components (commonSetup is
+        // too early: 'Components not bound yet'). Register them on server start.
+        GolemProperties.registerDefaultParts();
+        LOGGER.info("Registered golem parts");
+        SealHandler.registerDefaultSeals();
+        LOGGER.info("Registered golem seals");
+
+        // Research, aspect, and multiblock scan registries also construct vanilla
+        // ItemStacks (ScanBlock/ScanObject), so they must run here as well.
+        ConfigResearch.init();
+        ConfigAspects.init();
+        ConfigMultiblocks.init();
+                ConfigResearch.postInit();
+
         // Register commands
         // CommandThaumcraft.register(event.getServer().getCommands().getDispatcher());
         LOGGER.info("Thaumcraft server starting");

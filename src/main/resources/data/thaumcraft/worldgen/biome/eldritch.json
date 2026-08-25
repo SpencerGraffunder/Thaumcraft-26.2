@@ -39,9 +39,7 @@
     "misc": []
   },
   "spawn_costs": {},
-  "carvers": {
-    "air": []
-  },
+  "carvers": [],
   "features": [
     [],
     [],
