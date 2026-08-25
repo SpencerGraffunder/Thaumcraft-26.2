@@ -555,6 +555,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.THAUMIUM_NUGGET.get()), new AspectList().add(Aspect.METAL, 1).add(Aspect.MAGIC, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.VOID_METAL_NUGGET.get()), new AspectList().add(Aspect.METAL, 1).add(Aspect.VOID, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BRASS_NUGGET.get()), new AspectList().add(Aspect.METAL, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), new AspectList().add(Aspect.METAL, 2).add(Aspect.DEATH, 2).add(Aspect.ALCHEMY, 1));
         
         // Magic items
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.THAUMONOMICON.get()), new AspectList().add(Aspect.MIND, 20).add(Aspect.MAGIC, 10).add(Aspect.PLANT, 5));

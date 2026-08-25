@@ -83,14 +83,40 @@ public class Thaumcraft {
         ModStructures.STRUCTURE_TYPES.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
-        NeoForge.EVENT_BUS.register(this);
+        // (All game-bus subscribers live in static @EventBusSubscriber classes;
+        //  instance subscription is rejected once the class has no such methods.)
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         // ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ThaumcraftConfig.SPEC);
     }
     
-    public static Thaumcraft getInstance() {
-        return instance;
+
+    /** TEMP(debug): write live registry id snapshots for content auditing. */
+    private static void dumpRegistryIds() {
+        try {
+            java.io.File out = new java.io.File("registry-ids.txt");
+            java.io.PrintWriter pw = new java.io.PrintWriter(out);
+            pw.println("# items");
+            for (net.minecraft.resources.Identifier key : net.minecraft.core.registries.BuiltInRegistries.ITEM.keySet()) {
+                pw.println(key.toString());
+            }
+            pw.println("# blocks");
+            for (net.minecraft.resources.Identifier key : net.minecraft.core.registries.BuiltInRegistries.BLOCK.keySet()) {
+                pw.println(key.toString());
+            }
+            pw.println("# block_entity_types");
+            for (net.minecraft.resources.Identifier key : net.minecraft.core.registries.BuiltInRegistries.BLOCK_ENTITY_TYPE.keySet()) {
+                pw.println(key.toString());
+            }
+            pw.println("# entity_types");
+            for (net.minecraft.resources.Identifier key : net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.keySet()) {
+                pw.println(key.toString());
+            }
+            pw.close();
+            LOGGER.info("registry ids dumped to " + out.getAbsolutePath());
+        } catch (Throwable t) {
+            LOGGER.error("registry id dump failed", t);
+        }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -105,6 +131,7 @@ public class Thaumcraft {
         // (see registerPayloadHandlers below).
         
                 event.enqueueWork(() -> {
+            dumpRegistryIds();
             // Initialize focus system
             FocusInit.registerFoci();
             LOGGER.info("Registered {} focus elements", FocusInit.getAllFocusKeys().length);
@@ -117,32 +144,30 @@ public class Thaumcraft {
         PacketHandler.register(event);
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-        // Golem parts reference vanilla ItemStacks, which are only safe to
-        // construct after registry holders bind their components (commonSetup is
-        // too early: 'Components not bound yet'). Register them on server start.
-        GolemProperties.registerDefaultParts();
-        LOGGER.info("Registered golem parts");
-        SealHandler.registerDefaultSeals();
-        LOGGER.info("Registered golem seals");
-
-        // Research, aspect, and multiblock scan registries also construct vanilla
-        // ItemStacks (ScanBlock/ScanObject), so they must run here as well.
-        ConfigResearch.init();
-        ConfigAspects.init();
-        ConfigMultiblocks.init();
-                ConfigResearch.postInit();
-
-        // Register commands
-        // CommandThaumcraft.register(event.getServer().getCommands().getDispatcher());
-        LOGGER.info("Thaumcraft server starting");
-    }
-
     // Entity attribute registration
     @EventBusSubscriber(modid = MODID)
     public static class ModEvents {
+        @SubscribeEvent
+        public static void onServerStarting(ServerStartingEvent event) {
+            dumpRegistryIds();
+            // Golem parts reference vanilla ItemStacks, which are only safe to
+            // construct after registry holders bind their components (commonSetup is
+            // too early: 'Components not bound yet'). Register them on server start.
+            GolemProperties.registerDefaultParts();
+            LOGGER.info("Registered golem parts");
+            SealHandler.registerDefaultSeals();
+            LOGGER.info("Registered golem seals");
+
+            // Research, aspect, and multiblock scan registries also construct vanilla
+            // ItemStacks (ScanBlock/ScanObject), so they must run here as well.
+            ConfigResearch.init();
+            ConfigAspects.init();
+            ConfigMultiblocks.init();
+            ConfigResearch.postInit();
+
+            LOGGER.info("Thaumcraft server starting");
+        }
+
         @SubscribeEvent
         public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
             // Monster entities

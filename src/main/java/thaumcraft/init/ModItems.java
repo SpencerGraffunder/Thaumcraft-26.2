@@ -148,6 +148,8 @@ public class ModItems {
 
     public static final DeferredHolder<Item, Item> QUARTZ_NUGGET = registerItem("quartz_nugget",
             ItemMaterial::basic);
+    public static final DeferredHolder<Item, Item> NUGGET_RARE_EARTH = registerItem("nugget_rareearth",
+            ItemMaterial::uncommon);
 
     // ==================== Primal Shards ====================
 

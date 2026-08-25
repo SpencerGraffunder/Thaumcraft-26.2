@@ -8,12 +8,15 @@
     "vinculum": 5
   },
   "input": {
-    "item": "thaumcraft:vis_crystal",
-    "nbt": "{aspect:\"terra\"}"
+    "item": "thaumcraft:vis_crystal_earth"
   },
   "ingredients": [
-    {"item": "minecraft:wheat_seeds"},
-    {"item": "thaumcraft:salis_mundus"}
+    {
+      "item": "minecraft:wheat_seeds"
+    },
+    {
+      "item": "thaumcraft:salis_mundus"
+    }
   ],
   "result": {
     "item": "thaumcraft:crystal_earth"

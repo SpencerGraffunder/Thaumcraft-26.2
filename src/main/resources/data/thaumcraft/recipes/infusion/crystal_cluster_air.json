@@ -8,12 +8,15 @@
     "vinculum": 5
   },
   "input": {
-    "item": "thaumcraft:vis_crystal",
-    "nbt": "{aspect:\"aer\"}"
+    "item": "thaumcraft:vis_crystal_air"
   },
   "ingredients": [
-    {"item": "minecraft:wheat_seeds"},
-    {"item": "thaumcraft:salis_mundus"}
+    {
+      "item": "minecraft:wheat_seeds"
+    },
+    {
+      "item": "thaumcraft:salis_mundus"
+    }
   ],
   "result": {
     "item": "thaumcraft:crystal_air"

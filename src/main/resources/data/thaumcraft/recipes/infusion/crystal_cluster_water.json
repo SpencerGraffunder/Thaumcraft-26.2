@@ -8,12 +8,15 @@
     "vinculum": 5
   },
   "input": {
-    "item": "thaumcraft:vis_crystal",
-    "nbt": "{aspect:\"aqua\"}"
+    "item": "thaumcraft:vis_crystal_water"
   },
   "ingredients": [
-    {"item": "minecraft:wheat_seeds"},
-    {"item": "thaumcraft:salis_mundus"}
+    {
+      "item": "minecraft:wheat_seeds"
+    },
+    {
+      "item": "thaumcraft:salis_mundus"
+    }
   ],
   "result": {
     "item": "thaumcraft:crystal_water"
