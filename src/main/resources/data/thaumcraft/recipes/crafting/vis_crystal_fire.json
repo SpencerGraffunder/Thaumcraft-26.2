@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "thaumcraft:shard_fire"
+    }
+  },
+  "result": {
+    "item": "thaumcraft:vis_crystal_fire",
+    "count": 1
+  }
+}

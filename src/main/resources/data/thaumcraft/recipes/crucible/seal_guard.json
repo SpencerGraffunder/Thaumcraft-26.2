@@ -9,8 +9,7 @@
     "praemunio": 20
   },
   "result": {
-    "item": "thaumcraft:blank_seal",
-    "count": 1,
-    "nbt": "{seal:\"thaumcraft:guard\"}"
+    "item": "thaumcraft:seal_guard",
+    "count": 1
   }
 }

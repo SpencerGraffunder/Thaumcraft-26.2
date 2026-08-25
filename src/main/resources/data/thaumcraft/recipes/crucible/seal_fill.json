@@ -8,8 +8,7 @@
     "aversio": 10
   },
   "result": {
-    "item": "thaumcraft:blank_seal",
-    "count": 1,
-    "nbt": "{seal:\"thaumcraft:fill\"}"
+    "item": "thaumcraft:seal_fill",
+    "count": 1
   }
 }

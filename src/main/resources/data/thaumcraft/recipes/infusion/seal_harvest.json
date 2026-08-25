@@ -11,15 +11,26 @@
     "item": "thaumcraft:blank_seal"
   },
   "ingredients": [
-    {"item": "minecraft:wheat_seeds"},
-    {"item": "minecraft:pumpkin_seeds"},
-    {"item": "minecraft:melon_seeds"},
-    {"item": "minecraft:beetroot_seeds"},
-    {"item": "minecraft:sugar_cane"},
-    {"item": "minecraft:cactus"}
+    {
+      "item": "minecraft:wheat_seeds"
+    },
+    {
+      "item": "minecraft:pumpkin_seeds"
+    },
+    {
+      "item": "minecraft:melon_seeds"
+    },
+    {
+      "item": "minecraft:beetroot_seeds"
+    },
+    {
+      "item": "minecraft:sugar_cane"
+    },
+    {
+      "item": "minecraft:cactus"
+    }
   ],
   "result": {
-    "item": "thaumcraft:blank_seal",
-    "nbt": "{seal:\"thaumcraft:harvest\"}"
+    "item": "thaumcraft:seal_harvest"
   }
 }

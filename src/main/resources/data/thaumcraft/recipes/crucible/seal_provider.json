@@ -10,8 +10,7 @@
     "desiderium": 10
   },
   "result": {
-    "item": "thaumcraft:blank_seal",
-    "count": 1,
-    "nbt": "{seal:\"thaumcraft:provider\"}"
+    "item": "thaumcraft:seal_provide",
+    "count": 1
   }
 }

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "thaumcraft:shard_earth"
+    }
+  },
+  "result": {
+    "item": "thaumcraft:vis_crystal_earth",
+    "count": 1
+  }
+}

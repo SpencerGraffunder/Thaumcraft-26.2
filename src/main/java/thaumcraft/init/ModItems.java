@@ -708,10 +708,8 @@ public class ModItems {
 
     public static final DeferredHolder<Item, Item> SEAL_BREAKER_ADVANCED = registerItem("seal_breaker_advanced",
             () -> ItemSealPlacer.create("thaumcraft:breaker_advanced"));
-
     public static final DeferredHolder<Item, Item> SEAL_PICKUP_ADVANCED = registerItem("seal_pickup_advanced",
             () -> ItemSealPlacer.create("thaumcraft:pickup_advanced"));
-
     // ==================== Crystal Essence ====================
 
     public static final DeferredHolder<Item, Item> CRYSTAL_ESSENCE = registerItem("crystal_essence",

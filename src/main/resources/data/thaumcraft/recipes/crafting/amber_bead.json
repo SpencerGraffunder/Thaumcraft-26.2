@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "thaumcraft:amber"
+    }
+  ],
+  "result": {
+    "item": "thaumcraft:amber_bead",
+    "count": 4
+  }
+}

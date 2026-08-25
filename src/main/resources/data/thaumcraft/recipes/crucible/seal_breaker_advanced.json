@@ -11,8 +11,7 @@
     "instrumentum": 20
   },
   "result": {
-    "item": "thaumcraft:blank_seal",
-    "count": 1,
-    "nbt": "{seal:\"thaumcraft:breaker_advanced\"}"
+    "item": "thaumcraft:seal_breaker_advanced",
+    "count": 1
   }
 }
