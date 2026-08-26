@@ -12,23 +12,11 @@
     "WRW"
   ],
   "key": {
-    "W": {
-      "tag": "minecraft:planks"
-    },
-    "S": {
-      "tag": "forge:dusts/redstone"
-    },
-    "E": {
-      "item": "thaumcraft:quicksilver"
-    },
-    "P": {
-      "item": "minecraft:piston"
-    },
-    "R": {
-      "item": "thaumcraft:vis_resonator"
-    }
+    "W": "#minecraft:planks",
+    "S": "#forge:dusts/redstone",
+    "E": "thaumcraft:quicksilver",
+    "P": "minecraft:piston",
+    "R": "thaumcraft:vis_resonator"
   },
-  "result": {
-    "item": "thaumcraft:vis_generator"
-  }
+  "result": "thaumcraft:vis_generator"
 }

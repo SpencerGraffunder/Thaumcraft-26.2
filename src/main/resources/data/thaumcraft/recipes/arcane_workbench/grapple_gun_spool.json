@@ -11,11 +11,9 @@
     "SSS"
   ],
   "key": {
-    "S": {"tag": "forge:string"},
-    "H": {"item": "minecraft:tripwire_hook"},
-    "G": {"item": "thaumcraft:mechanism_simple"}
+    "S": "#forge:string",
+    "H": "minecraft:tripwire_hook",
+    "G": "thaumcraft:mechanism_simple"
   },
-  "result": {
-    "item": "thaumcraft:grapple_gun_spool"
-  }
+  "result": "thaumcraft:grapple_gun_spool"
 }

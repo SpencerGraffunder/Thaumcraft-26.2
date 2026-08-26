@@ -11,11 +11,9 @@
     "   "
   ],
   "key": {
-    "P": {"tag": "thaumcraft:plates/iron"},
-    "M": {"item": "thaumcraft:brain_curious"},
-    "T": {"item": "thaumcraft:turret_placer_basic"}
+    "P": "#thaumcraft:plates/iron",
+    "M": "thaumcraft:brain_curious",
+    "T": "thaumcraft:turret_placer_basic"
   },
-  "result": {
-    "item": "thaumcraft:turret_placer_advanced"
-  }
+  "result": "thaumcraft:turret_placer_advanced"
 }

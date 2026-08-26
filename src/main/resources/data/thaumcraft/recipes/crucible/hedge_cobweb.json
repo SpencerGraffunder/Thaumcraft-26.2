@@ -1,15 +1,13 @@
 {
   "type": "thaumcraft:crucible",
   "research": "HEDGEALCHEMY",
-  "catalyst": {
-    "item": "minecraft:string"
-  },
+  "catalyst": "minecraft:string",
   "aspects": {
     "vinculum": 5,
     "bestia": 5
   },
   "result": {
-    "item": "minecraft:cobweb",
+    "id": "minecraft:cobweb",
     "count": 1
   },
   "group": "thaumcraft:hedge_transmutation"

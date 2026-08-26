@@ -3,14 +3,8 @@
   "research": "TUBES",
   "vis": 10,
   "ingredients": [
-    {
-      "item": "thaumcraft:tube_normal"
-    },
-    {
-      "item": "thaumcraft:filter"
-    }
+    "thaumcraft:tube_normal",
+    "thaumcraft:filter"
   ],
-  "result": {
-    "item": "thaumcraft:tube_filter"
-  }
+  "result": "thaumcraft:tube_filter"
 }

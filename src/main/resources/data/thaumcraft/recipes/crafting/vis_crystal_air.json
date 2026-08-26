@@ -5,12 +5,10 @@
     "##"
   ],
   "key": {
-    "#": {
-      "item": "thaumcraft:shard_air"
-    }
+    "#": "thaumcraft:shard_air"
   },
   "result": {
-    "item": "thaumcraft:vis_crystal_air",
+    "id": "thaumcraft:vis_crystal_air",
     "count": 1
   }
 }

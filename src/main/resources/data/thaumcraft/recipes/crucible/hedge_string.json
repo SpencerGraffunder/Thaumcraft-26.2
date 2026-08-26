@@ -1,15 +1,13 @@
 {
   "type": "thaumcraft:crucible",
   "research": "HEDGEALCHEMY",
-  "catalyst": {
-    "item": "minecraft:wheat"
-  },
+  "catalyst": "minecraft:wheat",
   "aspects": {
     "bestia": 3,
     "fabrico": 3
   },
   "result": {
-    "item": "minecraft:string",
+    "id": "minecraft:string",
     "count": 1
   },
   "group": "thaumcraft:hedge_transmutation"

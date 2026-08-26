@@ -9,17 +9,9 @@
     "TGT"
   ],
   "key": {
-    "T": {
-      "item": "thaumcraft:thaumometer"
-    },
-    "G": {
-      "tag": "forge:ingots/brass"
-    },
-    "L": {
-      "tag": "forge:leather"
-    }
+    "T": "thaumcraft:thaumometer",
+    "G": "#forge:ingots/brass",
+    "L": "#forge:leather"
   },
-  "result": {
-    "item": "thaumcraft:goggles"
-  }
+  "result": "thaumcraft:goggles"
 }

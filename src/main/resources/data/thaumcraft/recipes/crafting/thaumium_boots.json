@@ -5,10 +5,10 @@
     "I I"
   ],
   "key": {
-    "I": {"item": "thaumcraft:thaumium_ingot"}
+    "I": "thaumcraft:thaumium_ingot"
   },
   "result": {
-    "item": "thaumcraft:thaumium_boots",
+    "id": "thaumcraft:thaumium_boots",
     "count": 1
   }
 }

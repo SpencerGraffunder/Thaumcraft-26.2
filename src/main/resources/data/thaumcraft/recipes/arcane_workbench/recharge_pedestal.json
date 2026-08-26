@@ -12,20 +12,10 @@
     "SSS"
   ],
   "key": {
-    "R": {
-      "item": "thaumcraft:vis_resonator"
-    },
-    "D": {
-      "tag": "forge:gems/diamond"
-    },
-    "I": {
-      "tag": "forge:ingots/gold"
-    },
-    "S": {
-      "tag": "forge:stone"
-    }
+    "R": "thaumcraft:vis_resonator",
+    "D": "#forge:gems/diamond",
+    "I": "#forge:ingots/gold",
+    "S": "#forge:stone"
   },
-  "result": {
-    "item": "thaumcraft:recharge_pedestal"
-  }
+  "result": "thaumcraft:recharge_pedestal"
 }

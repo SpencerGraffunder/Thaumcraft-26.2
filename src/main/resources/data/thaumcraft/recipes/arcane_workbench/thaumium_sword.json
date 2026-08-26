@@ -12,14 +12,8 @@
     " S "
   ],
   "key": {
-    "T": {
-      "item": "thaumcraft:thaumium_ingot"
-    },
-    "S": {
-      "tag": "forge:rods/wooden"
-    }
+    "T": "thaumcraft:thaumium_ingot",
+    "S": "#forge:rods/wooden"
   },
-  "result": {
-    "item": "thaumcraft:thaumium_sword"
-  }
+  "result": "thaumcraft:thaumium_sword"
 }

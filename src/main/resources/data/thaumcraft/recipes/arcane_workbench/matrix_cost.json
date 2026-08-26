@@ -13,17 +13,9 @@
     "SAS"
   ],
   "key": {
-    "S": {
-      "item": "thaumcraft:arcane_stone"
-    },
-    "A": {
-      "item": "thaumcraft:alumentum"
-    },
-    "G": {
-      "item": "minecraft:diamond_block"
-    }
+    "S": "thaumcraft:arcane_stone",
+    "A": "thaumcraft:alumentum",
+    "G": "minecraft:diamond_block"
   },
-  "result": {
-    "item": "thaumcraft:matrix_cost"
-  }
+  "result": "thaumcraft:matrix_cost"
 }

@@ -13,13 +13,11 @@
     " W "
   ],
   "key": {
-    "V": {"item": "thaumcraft:vis_resonator"},
-    "H": {"item": "minecraft:hopper"},
-    "G": {"item": "thaumcraft:mechanism_simple"},
-    "C": {"tag": "forge:workbenches"},
-    "W": {"item": "thaumcraft:greatwood_planks"}
+    "V": "thaumcraft:vis_resonator",
+    "H": "minecraft:hopper",
+    "G": "thaumcraft:mechanism_simple",
+    "C": "#forge:workbenches",
+    "W": "thaumcraft:greatwood_planks"
   },
-  "result": {
-    "item": "thaumcraft:pattern_crafter"
-  }
+  "result": "thaumcraft:pattern_crafter"
 }

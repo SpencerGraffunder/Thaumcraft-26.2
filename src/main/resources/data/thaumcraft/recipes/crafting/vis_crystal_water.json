@@ -5,12 +5,10 @@
     "##"
   ],
   "key": {
-    "#": {
-      "item": "thaumcraft:shard_water"
-    }
+    "#": "thaumcraft:shard_water"
   },
   "result": {
-    "item": "thaumcraft:vis_crystal_water",
+    "id": "thaumcraft:vis_crystal_water",
     "count": 1
   }
 }

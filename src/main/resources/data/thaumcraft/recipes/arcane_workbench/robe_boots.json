@@ -8,11 +8,7 @@
     "I I"
   ],
   "key": {
-    "I": {
-      "item": "thaumcraft:enchanted_fabric"
-    }
+    "I": "thaumcraft:enchanted_fabric"
   },
-  "result": {
-    "item": "thaumcraft:cloth_boots"
-  }
+  "result": "thaumcraft:cloth_boots"
 }

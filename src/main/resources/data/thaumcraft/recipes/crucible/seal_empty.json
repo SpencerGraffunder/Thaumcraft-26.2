@@ -1,14 +1,12 @@
 {
   "type": "thaumcraft:crucible",
   "research": "SEALEMPTY",
-  "catalyst": {
-    "item": "thaumcraft:blank_seal"
-  },
+  "catalyst": "thaumcraft:blank_seal",
   "aspects": {
     "vacuos": 10
   },
   "result": {
-    "item": "thaumcraft:seal_empty",
+    "id": "thaumcraft:seal_empty",
     "count": 1
   }
 }

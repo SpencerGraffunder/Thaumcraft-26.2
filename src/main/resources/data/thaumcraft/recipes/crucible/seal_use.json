@@ -1,16 +1,14 @@
 {
   "type": "thaumcraft:crucible",
   "research": "SEALUSE",
-  "catalyst": {
-    "item": "thaumcraft:blank_seal"
-  },
+  "catalyst": "thaumcraft:blank_seal",
   "aspects": {
     "fabrico": 20,
     "sensus": 10,
     "cognitio": 20
   },
   "result": {
-    "item": "thaumcraft:seal_use",
+    "id": "thaumcraft:seal_use",
     "count": 1
   }
 }

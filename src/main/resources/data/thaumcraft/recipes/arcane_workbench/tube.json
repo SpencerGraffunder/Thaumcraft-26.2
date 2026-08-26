@@ -8,21 +8,13 @@
     " B "
   ],
   "key": {
-    "Q": {
-      "item": "thaumcraft:quicksilver"
-    },
-    "I": {
-      "item": "thaumcraft:plate_iron"
-    },
-    "G": {
-      "tag": "forge:glass"
-    },
-    "B": {
-      "item": "thaumcraft:brass_nugget"
-    }
+    "Q": "thaumcraft:quicksilver",
+    "I": "thaumcraft:plate_iron",
+    "G": "#forge:glass",
+    "B": "thaumcraft:brass_nugget"
   },
   "result": {
-    "item": "thaumcraft:tube_normal",
+    "id": "thaumcraft:tube_normal",
     "count": 8
   }
 }

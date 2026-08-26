@@ -1,18 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "minecraft:paper"
-    },
-    {
-      "item": "minecraft:ink_sac"
-    },
-    {
-      "item": "minecraft:bone"
-    }
+    "minecraft:paper",
+    "minecraft:ink_sac",
+    "minecraft:bone"
   ],
   "result": {
-    "item": "thaumcraft:celestial_notes_moon_3",
+    "id": "thaumcraft:celestial_notes_moon_3",
     "count": 1
   }
 }

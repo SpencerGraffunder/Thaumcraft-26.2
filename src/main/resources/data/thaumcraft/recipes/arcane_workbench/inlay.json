@@ -11,12 +11,10 @@
     "GGG"
   ],
   "key": {
-    "G": {
-      "tag": "forge:nuggets/gold"
-    }
+    "G": "#forge:nuggets/gold"
   },
   "result": {
-    "item": "thaumcraft:inlay",
+    "id": "thaumcraft:inlay",
     "count": 8
   }
 }

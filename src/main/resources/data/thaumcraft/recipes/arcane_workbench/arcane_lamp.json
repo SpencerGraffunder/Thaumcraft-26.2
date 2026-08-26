@@ -12,14 +12,8 @@
     " I "
   ],
   "key": {
-    "I": {
-      "item": "thaumcraft:plate_iron"
-    },
-    "A": {
-      "item": "thaumcraft:amber_block"
-    }
+    "I": "thaumcraft:plate_iron",
+    "A": "thaumcraft:amber_block"
   },
-  "result": {
-    "item": "thaumcraft:lamp_arcane"
-  }
+  "result": "thaumcraft:lamp_arcane"
 }

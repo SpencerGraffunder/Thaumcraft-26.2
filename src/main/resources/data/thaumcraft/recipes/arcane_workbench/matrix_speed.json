@@ -12,17 +12,9 @@
     "SNS"
   ],
   "key": {
-    "S": {
-      "item": "thaumcraft:arcane_stone"
-    },
-    "N": {
-      "tag": "thaumcraft:nitor"
-    },
-    "G": {
-      "item": "minecraft:diamond_block"
-    }
+    "S": "thaumcraft:arcane_stone",
+    "N": "#thaumcraft:nitor",
+    "G": "minecraft:diamond_block"
   },
-  "result": {
-    "item": "thaumcraft:matrix_speed"
-  }
+  "result": "thaumcraft:matrix_speed"
 }

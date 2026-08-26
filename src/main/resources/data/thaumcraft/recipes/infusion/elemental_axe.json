@@ -2,23 +2,19 @@
   "type": "thaumcraft:infusion",
   "research": "ELEMENTALTOOLS",
   "instability": 3,
-  "input": {
-    "item": "thaumcraft:thaumium_axe"
-  },
+  "input": "thaumcraft:thaumium_axe",
   "ingredients": [
-    { "item": "thaumcraft:shard_fire" },
-    { "item": "thaumcraft:shard_fire" },
-    { "item": "thaumcraft:shard_air" },
-    { "item": "thaumcraft:shard_air" },
-    { "item": "minecraft:blaze_powder" },
-    { "item": "minecraft:blaze_powder" }
+    "thaumcraft:shard_fire",
+    "thaumcraft:shard_fire",
+    "thaumcraft:shard_air",
+    "thaumcraft:shard_air",
+    "minecraft:blaze_powder",
+    "minecraft:blaze_powder"
   ],
   "aspects": {
     "ignis": 30,
     "aer": 30,
     "instrumentum": 20
   },
-  "result": {
-    "item": "thaumcraft:elemental_axe"
-  }
+  "result": "thaumcraft:elemental_axe"
 }

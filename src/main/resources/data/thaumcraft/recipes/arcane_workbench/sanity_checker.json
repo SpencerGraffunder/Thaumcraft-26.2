@@ -12,17 +12,9 @@
     "BN "
   ],
   "key": {
-    "B": {
-      "item": "thaumcraft:zombie_brain"
-    },
-    "N": {
-      "tag": "thaumcraft:nuggets/brass"
-    },
-    "M": {
-      "item": "thaumcraft:mirrored_glass"
-    }
+    "B": "thaumcraft:zombie_brain",
+    "N": "#thaumcraft:nuggets/brass",
+    "M": "thaumcraft:mirrored_glass"
   },
-  "result": {
-    "item": "thaumcraft:sanity_checker"
-  }
+  "result": "thaumcraft:sanity_checker"
 }

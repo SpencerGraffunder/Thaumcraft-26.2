@@ -1,10 +1,10 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {"item": "thaumcraft:brass_ingot"}
+    "thaumcraft:brass_ingot"
   ],
   "result": {
-    "item": "thaumcraft:brass_nugget",
+    "id": "thaumcraft:brass_nugget",
     "count": 9
   }
 }

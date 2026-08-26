@@ -12,13 +12,11 @@
     "ICI"
   ],
   "key": {
-    "B": {"tag": "thaumcraft:plates/brass"},
-    "D": {"item": "minecraft:dispenser"},
-    "I": {"tag": "thaumcraft:plates/iron"},
-    "A": {"item": "minecraft:brewing_stand"},
-    "C": {"item": "thaumcraft:alchemical_brass_block"}
+    "B": "#thaumcraft:plates/brass",
+    "D": "minecraft:dispenser",
+    "I": "#thaumcraft:plates/iron",
+    "A": "minecraft:brewing_stand",
+    "C": "thaumcraft:alchemical_brass_block"
   },
-  "result": {
-    "item": "thaumcraft:potion_sprayer"
-  }
+  "result": "thaumcraft:potion_sprayer"
 }

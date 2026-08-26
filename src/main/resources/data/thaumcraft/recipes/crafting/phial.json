@@ -6,11 +6,11 @@
     " G "
   ],
   "key": {
-    "G": {"tag": "forge:glass"},
-    "C": {"item": "minecraft:clay_ball"}
+    "G": "#forge:glass",
+    "C": "minecraft:clay_ball"
   },
   "result": {
-    "item": "thaumcraft:phial_empty",
+    "id": "thaumcraft:phial_empty",
     "count": 8
   }
 }

@@ -7,18 +7,10 @@
     "vitreus": 10,
     "vinculum": 5
   },
-  "input": {
-    "item": "thaumcraft:vis_crystal_entropy"
-  },
+  "input": "thaumcraft:vis_crystal_entropy",
   "ingredients": [
-    {
-      "item": "minecraft:wheat_seeds"
-    },
-    {
-      "item": "thaumcraft:salis_mundus"
-    }
+    "minecraft:wheat_seeds",
+    "thaumcraft:salis_mundus"
   ],
-  "result": {
-    "item": "thaumcraft:crystal_entropy"
-  }
+  "result": "thaumcraft:crystal_entropy"
 }

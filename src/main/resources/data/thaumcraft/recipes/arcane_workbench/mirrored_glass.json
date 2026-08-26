@@ -7,14 +7,8 @@
     "ordo": 1
   },
   "ingredients": [
-    {
-      "item": "thaumcraft:quicksilver"
-    },
-    {
-      "tag": "forge:glass_panes"
-    }
+    "thaumcraft:quicksilver",
+    "#forge:glass_panes"
   ],
-  "result": {
-    "item": "thaumcraft:mirrored_glass"
-  }
+  "result": "thaumcraft:mirrored_glass"
 }

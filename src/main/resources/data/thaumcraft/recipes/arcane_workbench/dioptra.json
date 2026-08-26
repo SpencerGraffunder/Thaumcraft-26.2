@@ -12,20 +12,10 @@
     "AAA"
   ],
   "key": {
-    "A": {
-      "item": "thaumcraft:arcane_stone"
-    },
-    "P": {
-      "item": "thaumcraft:vis_resonator"
-    },
-    "I": {
-      "item": "thaumcraft:plate_iron"
-    },
-    "G": {
-      "item": "thaumcraft:thaumometer"
-    }
+    "A": "thaumcraft:arcane_stone",
+    "P": "thaumcraft:vis_resonator",
+    "I": "thaumcraft:plate_iron",
+    "G": "thaumcraft:thaumometer"
   },
-  "result": {
-    "item": "thaumcraft:dioptra"
-  }
+  "result": "thaumcraft:dioptra"
 }

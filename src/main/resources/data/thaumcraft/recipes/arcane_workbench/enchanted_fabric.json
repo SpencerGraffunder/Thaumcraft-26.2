@@ -9,14 +9,8 @@
     " S "
   ],
   "key": {
-    "S": {
-      "tag": "forge:string"
-    },
-    "C": {
-      "tag": "minecraft:wool"
-    }
+    "S": "#forge:string",
+    "C": "#minecraft:wool"
   },
-  "result": {
-    "item": "thaumcraft:enchanted_fabric"
-  }
+  "result": "thaumcraft:enchanted_fabric"
 }

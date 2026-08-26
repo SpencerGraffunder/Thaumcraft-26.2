@@ -9,14 +9,8 @@
     "GGG"
   ],
   "key": {
-    "W": {
-      "tag": "minecraft:wooden_slabs"
-    },
-    "G": {
-      "tag": "forge:glass_panes"
-    }
+    "W": "#minecraft:wooden_slabs",
+    "G": "#forge:glass_panes"
   },
-  "result": {
-    "item": "thaumcraft:jar_normal"
-  }
+  "result": "thaumcraft:jar_normal"
 }

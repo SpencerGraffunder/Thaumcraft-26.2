@@ -16,17 +16,9 @@
     "SAS"
   ],
   "key": {
-    "S": {
-      "item": "thaumcraft:balanced_shard"
-    },
-    "A": {
-      "item": "thaumcraft:amber"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    }
+    "S": "thaumcraft:balanced_shard",
+    "A": "thaumcraft:amber",
+    "G": "minecraft:gold_ingot"
   },
-  "result": {
-    "item": "thaumcraft:primal_charm"
-  }
+  "result": "thaumcraft:primal_charm"
 }

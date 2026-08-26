@@ -6,10 +6,10 @@
     "KKK"
   ],
   "key": {
-    "K": {"item": "thaumcraft:silverwood_planks"}
+    "K": "thaumcraft:silverwood_planks"
   },
   "result": {
-    "item": "thaumcraft:silverwood_stairs",
+    "id": "thaumcraft:silverwood_stairs",
     "count": 4
   }
 }

@@ -7,18 +7,10 @@
     "vitreus": 10,
     "vinculum": 5
   },
-  "input": {
-    "item": "thaumcraft:crystal_flux"
-  },
+  "input": "thaumcraft:crystal_flux",
   "ingredients": [
-    {
-      "item": "minecraft:wheat_seeds"
-    },
-    {
-      "item": "thaumcraft:salis_mundus"
-    }
+    "minecraft:wheat_seeds",
+    "thaumcraft:salis_mundus"
   ],
-  "result": {
-    "item": "thaumcraft:crystal_flux"
-  }
+  "result": "thaumcraft:crystal_flux"
 }

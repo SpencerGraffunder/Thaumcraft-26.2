@@ -7,31 +7,14 @@
     "sensus": 10,
     "humanus": 10
   },
-  "input": {
-    "item": "thaumcraft:blank_seal",
-    "nbt": "{seal:\"thaumcraft:guard\"}"
-  },
+  "input": "thaumcraft:seal_guard",
   "ingredients": [
-    {
-      "tag": "forge:leather"
-    },
-    {
-      "tag": "minecraft:wool"
-    },
-    {
-      "item": "minecraft:rabbit_hide"
-    },
-    {
-      "item": "minecraft:porkchop"
-    },
-    {
-      "item": "minecraft:mutton"
-    },
-    {
-      "item": "minecraft:beef"
-    }
+    "#forge:leather",
+    "#minecraft:wool",
+    "minecraft:rabbit_hide",
+    "minecraft:porkchop",
+    "minecraft:mutton",
+    "minecraft:beef"
   ],
-  "result": {
-    "item": "thaumcraft:seal_butcher"
-  }
+  "result": "thaumcraft:seal_butcher"
 }

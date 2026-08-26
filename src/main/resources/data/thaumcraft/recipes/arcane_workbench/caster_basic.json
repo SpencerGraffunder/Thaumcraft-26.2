@@ -16,20 +16,10 @@
     "LTL"
   ],
   "key": {
-    "T": {
-      "item": "thaumcraft:thaumometer"
-    },
-    "R": {
-      "item": "thaumcraft:vis_resonator"
-    },
-    "L": {
-      "tag": "forge:leather"
-    },
-    "I": {
-      "tag": "forge:ingots/iron"
-    }
+    "T": "thaumcraft:thaumometer",
+    "R": "thaumcraft:vis_resonator",
+    "L": "#forge:leather",
+    "I": "#forge:ingots/iron"
   },
-  "result": {
-    "item": "thaumcraft:caster_basic"
-  }
+  "result": "thaumcraft:caster_basic"
 }

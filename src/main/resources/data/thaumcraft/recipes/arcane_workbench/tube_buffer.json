@@ -8,23 +8,11 @@
     "PRP"
   ],
   "key": {
-    "P": {
-      "item": "thaumcraft:phial_empty"
-    },
-    "V": {
-      "item": "thaumcraft:tube_valve"
-    },
-    "T": {
-      "item": "thaumcraft:tube_normal"
-    },
-    "W": {
-      "item": "thaumcraft:plate_iron"
-    },
-    "R": {
-      "item": "thaumcraft:tube_restricted"
-    }
+    "P": "thaumcraft:phial_empty",
+    "V": "thaumcraft:tube_valve",
+    "T": "thaumcraft:tube_normal",
+    "W": "thaumcraft:plate_iron",
+    "R": "thaumcraft:tube_restricted"
   },
-  "result": {
-    "item": "thaumcraft:tube_buffer"
-  }
+  "result": "thaumcraft:tube_buffer"
 }

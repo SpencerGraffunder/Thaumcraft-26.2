@@ -7,18 +7,10 @@
     "vitreus": 10,
     "vinculum": 5
   },
-  "input": {
-    "item": "thaumcraft:vis_crystal_fire"
-  },
+  "input": "thaumcraft:vis_crystal_fire",
   "ingredients": [
-    {
-      "item": "minecraft:wheat_seeds"
-    },
-    {
-      "item": "thaumcraft:salis_mundus"
-    }
+    "minecraft:wheat_seeds",
+    "thaumcraft:salis_mundus"
   ],
-  "result": {
-    "item": "thaumcraft:crystal_fire"
-  }
+  "result": "thaumcraft:crystal_fire"
 }

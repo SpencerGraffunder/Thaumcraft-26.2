@@ -16,17 +16,9 @@
     "T T"
   ],
   "key": {
-    "T": {
-      "item": "thaumcraft:thaumium_ingot"
-    },
-    "G": {
-      "item": "thaumcraft:vis_resonator"
-    },
-    "C": {
-      "item": "thaumcraft:caster_basic"
-    }
+    "T": "thaumcraft:thaumium_ingot",
+    "G": "thaumcraft:vis_resonator",
+    "C": "thaumcraft:caster_basic"
   },
-  "result": {
-    "item": "thaumcraft:caster_advanced"
-  }
+  "result": "thaumcraft:caster_advanced"
 }

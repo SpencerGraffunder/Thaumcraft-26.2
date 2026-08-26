@@ -6,10 +6,10 @@
     "NNN"
   ],
   "key": {
-    "N": {"item": "thaumcraft:thaumium_nugget"}
+    "N": "thaumcraft:thaumium_nugget"
   },
   "result": {
-    "item": "thaumcraft:thaumium_ingot",
+    "id": "thaumcraft:thaumium_ingot",
     "count": 1
   }
 }

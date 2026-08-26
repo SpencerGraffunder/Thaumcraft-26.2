@@ -11,20 +11,10 @@
     "WRW"
   ],
   "key": {
-    "W": {
-      "tag": "minecraft:wooden_slabs"
-    },
-    "R": {
-      "item": "minecraft:redstone"
-    },
-    "G": {
-      "item": "thaumcraft:mechanism_simple"
-    },
-    "P": {
-      "item": "thaumcraft:plate_brass"
-    }
+    "W": "#minecraft:wooden_slabs",
+    "R": "minecraft:redstone",
+    "G": "thaumcraft:mechanism_simple",
+    "P": "thaumcraft:plate_brass"
   },
-  "result": {
-    "item": "thaumcraft:arcane_ear"
-  }
+  "result": "thaumcraft:arcane_ear"
 }

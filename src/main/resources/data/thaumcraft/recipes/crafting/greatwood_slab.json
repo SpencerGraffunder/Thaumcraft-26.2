@@ -4,10 +4,10 @@
     "KKK"
   ],
   "key": {
-    "K": {"item": "thaumcraft:greatwood_planks"}
+    "K": "thaumcraft:greatwood_planks"
   },
   "result": {
-    "item": "thaumcraft:greatwood_slab",
+    "id": "thaumcraft:greatwood_slab",
     "count": 6
   }
 }

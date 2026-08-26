@@ -5,11 +5,11 @@
     "W W"
   ],
   "key": {
-    "S": {"tag": "minecraft:wooden_slabs"},
-    "W": {"tag": "minecraft:planks"}
+    "S": "#minecraft:wooden_slabs",
+    "W": "#minecraft:planks"
   },
   "result": {
-    "item": "thaumcraft:table_wood",
+    "id": "thaumcraft:table_wood",
     "count": 1
   }
 }

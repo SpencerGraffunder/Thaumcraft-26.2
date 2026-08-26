@@ -5,12 +5,10 @@
     "##"
   ],
   "key": {
-    "#": {
-      "item": "thaumcraft:shard_entropy"
-    }
+    "#": "thaumcraft:shard_entropy"
   },
   "result": {
-    "item": "thaumcraft:vis_crystal_entropy",
+    "id": "thaumcraft:vis_crystal_entropy",
     "count": 1
   }
 }

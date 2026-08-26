@@ -2,28 +2,14 @@
   "type": "thaumcraft:infusion",
   "research": "LAMPFERTILITY",
   "instability": 4,
-  "center": {
-    "item": "thaumcraft:lamp_arcane"
-  },
+  "center": "thaumcraft:lamp_arcane",
   "ingredients": [
-    {
-      "tag": "forge:ingots/gold"
-    },
-    {
-      "item": "minecraft:wheat"
-    },
-    {
-      "item": "thaumcraft:crystal_essence"
-    },
-    {
-      "tag": "forge:ingots/gold"
-    },
-    {
-      "item": "minecraft:carrot"
-    },
-    {
-      "item": "thaumcraft:crystal_essence"
-    }
+    "#forge:ingots/gold",
+    "minecraft:wheat",
+    "thaumcraft:crystal_essence",
+    "#forge:ingots/gold",
+    "minecraft:carrot",
+    "thaumcraft:crystal_essence"
   ],
   "aspects": {
     "bestia": 20,
@@ -31,7 +17,5 @@
     "victus": 15,
     "desiderium": 15
   },
-  "result": {
-    "item": "thaumcraft:lamp_fertility"
-  }
+  "result": "thaumcraft:lamp_fertility"
 }

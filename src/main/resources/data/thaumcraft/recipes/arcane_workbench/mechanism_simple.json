@@ -12,17 +12,9 @@
     " B "
   ],
   "key": {
-    "B": {
-      "item": "thaumcraft:plate_brass"
-    },
-    "I": {
-      "item": "thaumcraft:plate_iron"
-    },
-    "S": {
-      "tag": "forge:rods/wooden"
-    }
+    "B": "thaumcraft:plate_brass",
+    "I": "thaumcraft:plate_iron",
+    "S": "#forge:rods/wooden"
   },
-  "result": {
-    "item": "thaumcraft:mechanism_simple"
-  }
+  "result": "thaumcraft:mechanism_simple"
 }

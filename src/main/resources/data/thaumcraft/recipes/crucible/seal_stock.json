@@ -1,16 +1,13 @@
 {
   "type": "thaumcraft:crucible",
   "research": "SEALSTOCK",
-  "catalyst": {
-    "item": "thaumcraft:blank_seal",
-    "nbt": "{seal:\"thaumcraft:fill\"}"
-  },
+  "catalyst": "thaumcraft:seal_fill",
   "aspects": {
     "cognitio": 10,
     "desiderium": 10
   },
   "result": {
-    "item": "thaumcraft:seal_stock",
+    "id": "thaumcraft:seal_stock",
     "count": 1
   }
 }

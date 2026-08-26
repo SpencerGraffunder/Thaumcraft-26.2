@@ -2,29 +2,17 @@
   "type": "thaumcraft:infusion",
   "research": "FORTRESSMASK",
   "instability": 2,
-  "center": {
-    "item": "thaumcraft:goggles"
-  },
+  "center": "thaumcraft:goggles",
   "ingredients": [
-    {
-      "item": "thaumcraft:thaumometer"
-    },
-    {
-      "tag": "forge:gems/diamond"
-    },
-    {
-      "item": "thaumcraft:salis_mundus"
-    },
-    {
-      "tag": "forge:gems/diamond"
-    }
+    "thaumcraft:thaumometer",
+    "#forge:gems/diamond",
+    "thaumcraft:salis_mundus",
+    "#forge:gems/diamond"
   ],
   "aspects": {
     "praecantatio": 20,
     "sensus": 30,
     "auram": 15
   },
-  "result": {
-    "item": "thaumcraft:goggles"
-  }
+  "result": "thaumcraft:goggles"
 }

@@ -6,10 +6,10 @@
     "NNN"
   ],
   "key": {
-    "N": {"item": "thaumcraft:quicksilver_nugget"}
+    "N": "thaumcraft:quicksilver_nugget"
   },
   "result": {
-    "item": "thaumcraft:quicksilver",
+    "id": "thaumcraft:quicksilver",
     "count": 1
   }
 }

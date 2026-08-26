@@ -11,23 +11,11 @@
     "IBI"
   ],
   "key": {
-    "I": {
-      "item": "thaumcraft:plate_iron"
-    },
-    "B": {
-      "item": "thaumcraft:plate_brass"
-    },
-    "M": {
-      "item": "thaumcraft:filter"
-    },
-    "G": {
-      "item": "thaumcraft:alchemical_brass_block"
-    },
-    "A": {
-      "item": "thaumcraft:filter"
-    }
+    "I": "thaumcraft:plate_iron",
+    "B": "thaumcraft:plate_brass",
+    "M": "thaumcraft:filter",
+    "G": "thaumcraft:alchemical_brass_block",
+    "A": "thaumcraft:filter"
   },
-  "result": {
-    "item": "thaumcraft:smelter_vent"
-  }
+  "result": "thaumcraft:smelter_vent"
 }

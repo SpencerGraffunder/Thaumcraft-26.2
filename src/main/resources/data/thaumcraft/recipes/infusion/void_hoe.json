@@ -2,13 +2,11 @@
   "type": "thaumcraft:infusion",
   "research": "VOIDROBEARMOR",
   "instability": 3,
-  "input": {
-    "item": "thaumcraft:thaumium_hoe"
-  },
+  "input": "thaumcraft:thaumium_hoe",
   "ingredients": [
-    { "item": "thaumcraft:void_metal_ingot" },
-    { "item": "thaumcraft:void_metal_ingot" },
-    { "item": "thaumcraft:void_seed" }
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_seed"
   ],
   "aspects": {
     "alienis": 15,
@@ -16,7 +14,5 @@
     "instrumentum": 15,
     "tenebrae": 8
   },
-  "result": {
-    "item": "thaumcraft:void_hoe"
-  }
+  "result": "thaumcraft:void_hoe"
 }

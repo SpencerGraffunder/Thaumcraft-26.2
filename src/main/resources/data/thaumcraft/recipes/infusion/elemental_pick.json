@@ -2,23 +2,19 @@
   "type": "thaumcraft:infusion",
   "research": "ELEMENTALTOOLS",
   "instability": 3,
-  "input": {
-    "item": "thaumcraft:thaumium_pick"
-  },
+  "input": "thaumcraft:thaumium_pick",
   "ingredients": [
-    { "item": "thaumcraft:shard_fire" },
-    { "item": "thaumcraft:shard_fire" },
-    { "item": "thaumcraft:shard_earth" },
-    { "item": "thaumcraft:shard_earth" },
-    { "item": "minecraft:blaze_powder" },
-    { "item": "minecraft:blaze_powder" }
+    "thaumcraft:shard_fire",
+    "thaumcraft:shard_fire",
+    "thaumcraft:shard_earth",
+    "thaumcraft:shard_earth",
+    "minecraft:blaze_powder",
+    "minecraft:blaze_powder"
   ],
   "aspects": {
     "ignis": 30,
     "terra": 30,
     "instrumentum": 20
   },
-  "result": {
-    "item": "thaumcraft:elemental_pick"
-  }
+  "result": "thaumcraft:elemental_pick"
 }

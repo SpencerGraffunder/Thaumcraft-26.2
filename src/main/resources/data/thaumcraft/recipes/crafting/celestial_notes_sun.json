@@ -1,18 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "minecraft:paper"
-    },
-    {
-      "item": "minecraft:ink_sac"
-    },
-    {
-      "item": "minecraft:gold_nugget"
-    }
+    "minecraft:paper",
+    "minecraft:ink_sac",
+    "minecraft:gold_nugget"
   ],
   "result": {
-    "item": "thaumcraft:celestial_notes_sun",
+    "id": "thaumcraft:celestial_notes_sun",
     "count": 1
   }
 }

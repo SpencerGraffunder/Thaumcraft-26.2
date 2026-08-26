@@ -1,16 +1,14 @@
 {
   "type": "thaumcraft:crucible",
   "research": "BASEALCHEMY",
-  "catalyst": {
-    "item": "minecraft:glowstone_dust"
-  },
+  "catalyst": "minecraft:glowstone_dust",
   "aspects": {
     "lux": 10,
     "ignis": 10,
     "potentia": 5
   },
   "result": {
-    "item": "thaumcraft:nitor",
+    "id": "thaumcraft:nitor",
     "count": 1
   }
 }

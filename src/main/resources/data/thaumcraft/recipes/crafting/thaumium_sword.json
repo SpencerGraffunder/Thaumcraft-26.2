@@ -6,11 +6,11 @@
     "S"
   ],
   "key": {
-    "I": {"item": "thaumcraft:thaumium_ingot"},
-    "S": {"tag": "forge:rods/wooden"}
+    "I": "thaumcraft:thaumium_ingot",
+    "S": "#forge:rods/wooden"
   },
   "result": {
-    "item": "thaumcraft:thaumium_sword",
+    "id": "thaumcraft:thaumium_sword",
     "count": 1
   }
 }

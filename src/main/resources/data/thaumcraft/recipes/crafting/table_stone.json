@@ -5,11 +5,11 @@
     "W W"
   ],
   "key": {
-    "S": {"item": "minecraft:stone_slab"},
-    "W": {"tag": "forge:stone"}
+    "S": "minecraft:stone_slab",
+    "W": "#forge:stone"
   },
   "result": {
-    "item": "thaumcraft:table_stone",
+    "id": "thaumcraft:table_stone",
     "count": 1
   }
 }

@@ -12,26 +12,12 @@
     "IBI"
   ],
   "key": {
-    "W": {
-      "item": "thaumcraft:greatwood_planks"
-    },
-    "T": {
-      "item": "thaumcraft:tube_filter"
-    },
-    "R": {
-      "item": "thaumcraft:plate_brass"
-    },
-    "G": {
-      "item": "thaumcraft:alchemical_brass_block"
-    },
-    "I": {
-      "item": "thaumcraft:plate_iron"
-    },
-    "B": {
-      "item": "thaumcraft:bellows"
-    }
+    "W": "thaumcraft:greatwood_planks",
+    "T": "thaumcraft:tube_filter",
+    "R": "thaumcraft:plate_brass",
+    "G": "thaumcraft:alchemical_brass_block",
+    "I": "thaumcraft:plate_iron",
+    "B": "thaumcraft:bellows"
   },
-  "result": {
-    "item": "thaumcraft:smelter_aux"
-  }
+  "result": "thaumcraft:smelter_aux"
 }

@@ -11,17 +11,9 @@
     "WW "
   ],
   "key": {
-    "W": {
-      "tag": "minecraft:planks"
-    },
-    "I": {
-      "tag": "forge:ingots/iron"
-    },
-    "L": {
-      "tag": "forge:leather"
-    }
+    "W": "#minecraft:planks",
+    "I": "#forge:ingots/iron",
+    "L": "#forge:leather"
   },
-  "result": {
-    "item": "thaumcraft:bellows"
-  }
+  "result": "thaumcraft:bellows"
 }

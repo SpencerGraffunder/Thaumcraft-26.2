@@ -1,15 +1,11 @@
 {
   "type": "thaumcraft:crucible",
   "research": "UNLOCKAUROMANCY",
-  "catalyst": {
-    "item": "thaumcraft:crystal_order"
-  },
+  "catalyst": "thaumcraft:crystal_order",
   "aspects": {
     "vitreus": 20,
     "praecantatio": 10,
     "auram": 5
   },
-  "result": {
-    "item": "thaumcraft:focus_blank"
-  }
+  "result": "thaumcraft:focus_blank"
 }

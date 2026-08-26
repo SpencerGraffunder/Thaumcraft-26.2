@@ -6,13 +6,13 @@
     "aer": 1
   },
   "ingredients": [
-    {"item": "minecraft:clay_ball"},
-    {"item": "thaumcraft:tallow"},
-    {"tag": "forge:dyes/red"},
-    {"tag": "thaumcraft:nitor"}
+    "minecraft:clay_ball",
+    "thaumcraft:tallow",
+    "#forge:dyes/red",
+    "#thaumcraft:nitor"
   ],
   "result": {
-    "item": "thaumcraft:blank_seal",
+    "id": "thaumcraft:blank_seal",
     "count": 3
   }
 }

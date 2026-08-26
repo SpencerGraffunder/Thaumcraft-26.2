@@ -7,14 +7,8 @@
     "aqua": 1
   },
   "ingredients": [
-    {
-      "item": "thaumcraft:plate_iron"
-    },
-    {
-      "tag": "forge:gems/quartz"
-    }
+    "thaumcraft:plate_iron",
+    "#forge:gems/quartz"
   ],
-  "result": {
-    "item": "thaumcraft:vis_resonator"
-  }
+  "result": "thaumcraft:vis_resonator"
 }

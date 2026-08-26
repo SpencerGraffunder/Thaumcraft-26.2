@@ -1,15 +1,11 @@
 {
   "type": "thaumcraft:crucible",
   "research": "UNLOCKALCHEMY",
-  "catalyst": {
-    "item": "minecraft:glowstone_dust"
-  },
+  "catalyst": "minecraft:glowstone_dust",
   "aspects": {
     "potentia": 10,
     "ignis": 10,
     "lux": 10
   },
-  "result": {
-    "item": "thaumcraft:nitor_yellow"
-  }
+  "result": "thaumcraft:nitor_yellow"
 }

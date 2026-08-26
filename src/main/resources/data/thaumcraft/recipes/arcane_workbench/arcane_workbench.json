@@ -16,17 +16,9 @@
     "WSW"
   ],
   "key": {
-    "S": {
-      "tag": "forge:stone"
-    },
-    "W": {
-      "tag": "minecraft:planks"
-    },
-    "T": {
-      "item": "thaumcraft:table_wood"
-    }
+    "S": "#forge:stone",
+    "W": "#minecraft:planks",
+    "T": "thaumcraft:table_wood"
   },
-  "result": {
-    "item": "thaumcraft:arcane_workbench"
-  }
+  "result": "thaumcraft:arcane_workbench"
 }

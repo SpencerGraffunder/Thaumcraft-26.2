@@ -12,17 +12,9 @@
     "I I"
   ],
   "key": {
-    "R": {
-      "item": "thaumcraft:vis_resonator"
-    },
-    "W": {
-      "item": "thaumcraft:greatwood_planks"
-    },
-    "I": {
-      "tag": "forge:ingots/iron"
-    }
+    "R": "thaumcraft:vis_resonator",
+    "W": "thaumcraft:greatwood_planks",
+    "I": "#forge:ingots/iron"
   },
-  "result": {
-    "item": "thaumcraft:arcane_workbench_charger"
-  }
+  "result": "thaumcraft:arcane_workbench_charger"
 }

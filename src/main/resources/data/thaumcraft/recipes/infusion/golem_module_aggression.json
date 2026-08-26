@@ -2,21 +2,17 @@
   "type": "thaumcraft:infusion",
   "research": "GOLEMDIRECT",
   "instability": 2,
-  "centerItem": {
-    "item": "thaumcraft:brain_clockwork"
-  },
+  "centerItem": "thaumcraft:brain_clockwork",
   "components": [
-    {"item": "minecraft:iron_sword"},
-    {"item": "minecraft:bow"},
-    {"item": "minecraft:arrow"},
-    {"item": "thaumcraft:quicksilver"}
+    "minecraft:iron_sword",
+    "minecraft:bow",
+    "minecraft:arrow",
+    "thaumcraft:quicksilver"
   ],
   "aspects": {
     "aversio": 25,
     "instrumentum": 15,
     "praecantatio": 10
   },
-  "result": {
-    "item": "thaumcraft:golem_module_aggression"
-  }
+  "result": "thaumcraft:golem_module_aggression"
 }

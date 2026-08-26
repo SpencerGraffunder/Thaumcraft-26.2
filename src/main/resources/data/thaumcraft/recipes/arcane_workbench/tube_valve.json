@@ -3,14 +3,8 @@
   "research": "TUBES",
   "vis": 10,
   "ingredients": [
-    {
-      "item": "thaumcraft:tube_normal"
-    },
-    {
-      "item": "minecraft:lever"
-    }
+    "thaumcraft:tube_normal",
+    "minecraft:lever"
   ],
-  "result": {
-    "item": "thaumcraft:tube_valve"
-  }
+  "result": "thaumcraft:tube_valve"
 }

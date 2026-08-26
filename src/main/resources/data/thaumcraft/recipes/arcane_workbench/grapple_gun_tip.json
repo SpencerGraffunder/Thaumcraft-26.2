@@ -11,10 +11,8 @@
     " I "
   ],
   "key": {
-    "I": {"tag": "forge:ingots/iron"},
-    "M": {"item": "thaumcraft:mechanism_simple"}
+    "I": "#forge:ingots/iron",
+    "M": "thaumcraft:mechanism_simple"
   },
-  "result": {
-    "item": "thaumcraft:grapple_gun_tip"
-  }
+  "result": "thaumcraft:grapple_gun_tip"
 }

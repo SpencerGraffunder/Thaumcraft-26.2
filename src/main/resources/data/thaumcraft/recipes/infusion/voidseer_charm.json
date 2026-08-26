@@ -2,23 +2,19 @@
   "type": "thaumcraft:infusion",
   "research": "VOIDSEERPEARL",
   "instability": 4,
-  "input": {
-    "item": "minecraft:ender_eye"
-  },
+  "input": "minecraft:ender_eye",
   "ingredients": [
-    { "item": "thaumcraft:void_seed" },
-    { "item": "thaumcraft:void_seed" },
-    { "item": "thaumcraft:shard_entropy" },
-    { "item": "thaumcraft:shard_entropy" },
-    { "item": "minecraft:chorus_fruit" },
-    { "item": "minecraft:chorus_fruit" }
+    "thaumcraft:void_seed",
+    "thaumcraft:void_seed",
+    "thaumcraft:shard_entropy",
+    "thaumcraft:shard_entropy",
+    "minecraft:chorus_fruit",
+    "minecraft:chorus_fruit"
   ],
   "aspects": {
     "alienis": 50,
     "vacuos": 30,
     "sensus": 30
   },
-  "result": {
-    "item": "thaumcraft:voidseer_charm"
-  }
+  "result": "thaumcraft:voidseer_charm"
 }

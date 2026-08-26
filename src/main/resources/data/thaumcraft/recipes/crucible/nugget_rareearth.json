@@ -1,15 +1,13 @@
 {
   "type": "thaumcraft:crucible",
   "research": "NUGGETS_FROM_CRUCIBLE",
-  "catalyst": {
-    "item": "thaumcraft:cluster_cinnabar"
-  },
+  "catalyst": "thaumcraft:cluster_cinnabar",
   "aspects": {
     "alkimia": 6,
     "potentia": 6
   },
   "result": {
-    "item": "thaumcraft:nugget_rareearth",
+    "id": "thaumcraft:nugget_rareearth",
     "count": 1
   }
 }

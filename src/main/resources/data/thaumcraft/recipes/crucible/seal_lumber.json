@@ -1,16 +1,13 @@
 {
   "type": "thaumcraft:crucible",
   "research": "SEALLUMBER",
-  "catalyst": {
-    "item": "thaumcraft:blank_seal",
-    "nbt": "{seal:\"thaumcraft:breaker\"}"
-  },
+  "catalyst": "thaumcraft:seal_breaker",
   "aspects": {
     "herba": 40,
     "sensus": 20
   },
   "result": {
-    "item": "thaumcraft:seal_lumber",
+    "id": "thaumcraft:seal_lumber",
     "count": 1
   }
 }

@@ -8,14 +8,8 @@
     "SSS"
   ],
   "key": {
-    "S": {
-      "item": "thaumcraft:ancient_stone_slab"
-    },
-    "B": {
-      "item": "thaumcraft:ancient_stone"
-    }
+    "S": "thaumcraft:ancient_stone_slab",
+    "B": "thaumcraft:ancient_stone"
   },
-  "result": {
-    "item": "thaumcraft:pedestal_ancient"
-  }
+  "result": "thaumcraft:pedestal_ancient"
 }

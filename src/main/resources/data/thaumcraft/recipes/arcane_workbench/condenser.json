@@ -13,23 +13,11 @@
     "BTB"
   ],
   "key": {
-    "B": {
-      "item": "thaumcraft:plate_brass"
-    },
-    "C": {
-      "item": "thaumcraft:morphic_resonator"
-    },
-    "W": {
-      "tag": "minecraft:planks"
-    },
-    "M": {
-      "item": "thaumcraft:mechanism_complex"
-    },
-    "T": {
-      "item": "thaumcraft:tube_normal"
-    }
+    "B": "thaumcraft:plate_brass",
+    "C": "thaumcraft:morphic_resonator",
+    "W": "#minecraft:planks",
+    "M": "thaumcraft:mechanism_complex",
+    "T": "thaumcraft:tube_normal"
   },
-  "result": {
-    "item": "thaumcraft:condenser"
-  }
+  "result": "thaumcraft:condenser"
 }

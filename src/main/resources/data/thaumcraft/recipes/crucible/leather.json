@@ -1,14 +1,10 @@
 {
   "type": "thaumcraft:crucible",
   "research": "HEDGEALCHEMY",
-  "catalyst": {
-    "item": "minecraft:rotten_flesh"
-  },
+  "catalyst": "minecraft:rotten_flesh",
   "aspects": {
     "aer": 3,
     "bestia": 3
   },
-  "result": {
-    "item": "minecraft:leather"
-  }
+  "result": "minecraft:leather"
 }

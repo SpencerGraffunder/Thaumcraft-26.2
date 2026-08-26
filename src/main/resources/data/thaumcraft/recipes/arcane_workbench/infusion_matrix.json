@@ -16,14 +16,8 @@
     "S S"
   ],
   "key": {
-    "S": {
-      "item": "thaumcraft:arcane_stone_brick"
-    },
-    "N": {
-      "item": "thaumcraft:nitor"
-    }
+    "S": "thaumcraft:arcane_stone_brick",
+    "N": "thaumcraft:nitor"
   },
-  "result": {
-    "item": "thaumcraft:infusion_matrix"
-  }
+  "result": "thaumcraft:infusion_matrix"
 }

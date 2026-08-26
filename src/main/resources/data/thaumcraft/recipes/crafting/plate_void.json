@@ -4,10 +4,10 @@
     "III"
   ],
   "key": {
-    "I": {"item": "thaumcraft:void_metal_ingot"}
+    "I": "thaumcraft:void_metal_ingot"
   },
   "result": {
-    "item": "thaumcraft:plate_void",
+    "id": "thaumcraft:plate_void",
     "count": 3
   }
 }

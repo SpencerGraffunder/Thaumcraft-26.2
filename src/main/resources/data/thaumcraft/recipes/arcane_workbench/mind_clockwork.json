@@ -12,12 +12,10 @@
     "BCB"
   ],
   "key": {
-    "P": {"tag": "forge:glass_panes"},
-    "G": {"item": "thaumcraft:mechanism_simple"},
-    "B": {"tag": "thaumcraft:plates/brass"},
-    "C": {"item": "minecraft:comparator"}
+    "P": "#forge:glass_panes",
+    "G": "thaumcraft:mechanism_simple",
+    "B": "#thaumcraft:plates/brass",
+    "C": "minecraft:comparator"
   },
-  "result": {
-    "item": "thaumcraft:brain_clockwork"
-  }
+  "result": "thaumcraft:brain_clockwork"
 }

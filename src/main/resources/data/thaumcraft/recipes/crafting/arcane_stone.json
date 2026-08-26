@@ -6,11 +6,11 @@
     "KKK"
   ],
   "key": {
-    "K": {"tag": "forge:stone"},
-    "C": {"item": "thaumcraft:crystal_essence"}
+    "K": "#forge:stone",
+    "C": "thaumcraft:crystal_essence"
   },
   "result": {
-    "item": "thaumcraft:arcane_stone",
+    "id": "thaumcraft:arcane_stone",
     "count": 9
   }
 }

@@ -2,23 +2,19 @@
   "type": "thaumcraft:infusion",
   "research": "GRAPPLEGUN",
   "instability": 3,
-  "input": {
-    "item": "minecraft:crossbow"
-  },
+  "input": "minecraft:crossbow",
   "ingredients": [
-    { "item": "thaumcraft:mechanism_complex" },
-    { "item": "thaumcraft:mechanism_complex" },
-    { "item": "thaumcraft:shard_air" },
-    { "item": "thaumcraft:shard_air" },
-    { "item": "minecraft:string" },
-    { "item": "minecraft:string" }
+    "thaumcraft:mechanism_complex",
+    "thaumcraft:mechanism_complex",
+    "thaumcraft:shard_air",
+    "thaumcraft:shard_air",
+    "minecraft:string",
+    "minecraft:string"
   ],
   "aspects": {
     "aer": 40,
     "motus": 40,
     "machina": 30
   },
-  "result": {
-    "item": "thaumcraft:grapple_gun"
-  }
+  "result": "thaumcraft:grapple_gun"
 }

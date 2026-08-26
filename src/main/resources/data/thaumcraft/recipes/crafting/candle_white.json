@@ -6,11 +6,11 @@
     " T "
   ],
   "key": {
-    "S": {"tag": "forge:string"},
-    "T": {"item": "thaumcraft:tallow"}
+    "S": "#forge:string",
+    "T": "thaumcraft:tallow"
   },
   "result": {
-    "item": "thaumcraft:candle_white",
+    "id": "thaumcraft:candle_white",
     "count": 3
   }
 }

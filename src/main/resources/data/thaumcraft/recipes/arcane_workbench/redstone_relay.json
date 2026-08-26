@@ -11,17 +11,9 @@
     "SSS"
   ],
   "key": {
-    "T": {
-      "item": "minecraft:redstone_torch"
-    },
-    "G": {
-      "item": "thaumcraft:mechanism_simple"
-    },
-    "S": {
-      "item": "minecraft:stone_slab"
-    }
+    "T": "minecraft:redstone_torch",
+    "G": "thaumcraft:mechanism_simple",
+    "S": "minecraft:stone_slab"
   },
-  "result": {
-    "item": "thaumcraft:redstone_relay"
-  }
+  "result": "thaumcraft:redstone_relay"
 }

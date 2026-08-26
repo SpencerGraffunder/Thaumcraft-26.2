@@ -1,18 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "minecraft:paper"
-    },
-    {
-      "item": "minecraft:ink_sac"
-    },
-    {
-      "item": "minecraft:quartz"
-    }
+    "minecraft:paper",
+    "minecraft:ink_sac",
+    "minecraft:quartz"
   ],
   "result": {
-    "item": "thaumcraft:celestial_notes_stars_1",
+    "id": "thaumcraft:celestial_notes_stars_1",
     "count": 1
   }
 }

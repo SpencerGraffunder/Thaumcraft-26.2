@@ -1,9 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "",
-  "catalyst": {
-    "item": "minecraft:redstone"
-  },
+  "catalyst": "minecraft:redstone",
   "aspects": {
     "praecantatio": 5,
     "aer": 2,
@@ -14,7 +12,7 @@
     "perditio": 2
   },
   "result": {
-    "item": "thaumcraft:salis_mundus",
+    "id": "thaumcraft:salis_mundus",
     "count": 1
   }
 }

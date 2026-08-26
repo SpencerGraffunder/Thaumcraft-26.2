@@ -1,16 +1,13 @@
 {
   "type": "thaumcraft:crucible",
   "research": "SEALPROVIDE",
-  "catalyst": {
-    "item": "thaumcraft:blank_seal",
-    "nbt": "{seal:\"thaumcraft:empty_advanced\"}"
-  },
+  "catalyst": "thaumcraft:seal_empty",
   "aspects": {
     "permutatio": 10,
     "desiderium": 10
   },
   "result": {
-    "item": "thaumcraft:seal_provide",
+    "id": "thaumcraft:seal_provide",
     "count": 1
   }
 }

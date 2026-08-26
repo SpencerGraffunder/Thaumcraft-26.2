@@ -2,28 +2,14 @@
   "type": "thaumcraft:infusion",
   "research": "LAMPGROWTH",
   "instability": 4,
-  "center": {
-    "item": "thaumcraft:lamp_arcane"
-  },
+  "center": "thaumcraft:lamp_arcane",
   "ingredients": [
-    {
-      "tag": "forge:ingots/gold"
-    },
-    {
-      "item": "minecraft:bone_meal"
-    },
-    {
-      "item": "thaumcraft:crystal_essence"
-    },
-    {
-      "tag": "forge:ingots/gold"
-    },
-    {
-      "item": "minecraft:bone_meal"
-    },
-    {
-      "item": "thaumcraft:crystal_essence"
-    }
+    "#forge:ingots/gold",
+    "minecraft:bone_meal",
+    "thaumcraft:crystal_essence",
+    "#forge:ingots/gold",
+    "minecraft:bone_meal",
+    "thaumcraft:crystal_essence"
   ],
   "aspects": {
     "herba": 20,
@@ -31,7 +17,5 @@
     "victus": 15,
     "instrumentum": 15
   },
-  "result": {
-    "item": "thaumcraft:lamp_growth"
-  }
+  "result": "thaumcraft:lamp_growth"
 }

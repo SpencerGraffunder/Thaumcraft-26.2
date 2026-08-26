@@ -5,10 +5,10 @@
     "AA"
   ],
   "key": {
-    "A": {"item": "thaumcraft:amber"}
+    "A": "thaumcraft:amber"
   },
   "result": {
-    "item": "thaumcraft:amber_block",
+    "id": "thaumcraft:amber_block",
     "count": 1
   }
 }

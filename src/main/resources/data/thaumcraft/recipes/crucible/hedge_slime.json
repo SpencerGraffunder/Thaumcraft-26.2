@@ -1,15 +1,13 @@
 {
   "type": "thaumcraft:crucible",
   "research": "HEDGEALCHEMY",
-  "catalyst": {
-    "item": "minecraft:slime_ball"
-  },
+  "catalyst": "minecraft:slime_ball",
   "aspects": {
     "aqua": 5,
     "victus": 5
   },
   "result": {
-    "item": "minecraft:slime_ball",
+    "id": "minecraft:slime_ball",
     "count": 2
   },
   "group": "thaumcraft:hedge_duplication"

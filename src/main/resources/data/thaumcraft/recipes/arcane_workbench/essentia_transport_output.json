@@ -12,12 +12,10 @@
     "IGI"
   ],
   "key": {
-    "B": {"tag": "thaumcraft:plates/brass"},
-    "Q": {"item": "minecraft:hopper"},
-    "I": {"tag": "thaumcraft:plates/iron"},
-    "G": {"item": "thaumcraft:alchemical_brass_block"}
+    "B": "#thaumcraft:plates/brass",
+    "Q": "minecraft:hopper",
+    "I": "#thaumcraft:plates/iron",
+    "G": "thaumcraft:alchemical_brass_block"
   },
-  "result": {
-    "item": "thaumcraft:essentia_output"
-  }
+  "result": "thaumcraft:essentia_output"
 }

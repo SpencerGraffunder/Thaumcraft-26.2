@@ -1,15 +1,11 @@
 {
   "type": "thaumcraft:crucible",
   "research": "ESSENTIASMELTERVOID",
-  "catalyst": {
-    "item": "thaumcraft:flux_crystal"
-  },
+  "catalyst": "thaumcraft:flux_crystal",
   "aspects": {
     "vacuos": 10,
     "tenebrae": 10,
     "alienis": 5
   },
-  "result": {
-    "item": "thaumcraft:void_seed"
-  }
+  "result": "thaumcraft:void_seed"
 }

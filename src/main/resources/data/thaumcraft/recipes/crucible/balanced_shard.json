@@ -1,14 +1,10 @@
 {
   "type": "thaumcraft:crucible",
   "research": "PRIMPEARL",
-  "catalyst": {
-    "item": "thaumcraft:shard_order"
-  },
+  "catalyst": "thaumcraft:shard_order",
   "aspects": {
     "perditio": 5,
     "praecantatio": 5
   },
-  "result": {
-    "item": "thaumcraft:balanced_shard"
-  }
+  "result": "thaumcraft:balanced_shard"
 }

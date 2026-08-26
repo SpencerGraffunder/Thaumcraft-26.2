@@ -1,9 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "PRIMPEARL",
-  "catalyst": {
-    "item": "thaumcraft:balanced_shard"
-  },
+  "catalyst": "thaumcraft:balanced_shard",
   "aspects": {
     "aer": 10,
     "aqua": 10,
@@ -12,7 +10,5 @@
     "ordo": 10,
     "perditio": 10
   },
-  "result": {
-    "item": "thaumcraft:primal_charm"
-  }
+  "result": "thaumcraft:primal_charm"
 }

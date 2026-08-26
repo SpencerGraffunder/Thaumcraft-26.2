@@ -7,18 +7,10 @@
     "vitreus": 10,
     "vinculum": 5
   },
-  "input": {
-    "item": "thaumcraft:vis_crystal_order"
-  },
+  "input": "thaumcraft:vis_crystal_order",
   "ingredients": [
-    {
-      "item": "minecraft:wheat_seeds"
-    },
-    {
-      "item": "thaumcraft:salis_mundus"
-    }
+    "minecraft:wheat_seeds",
+    "thaumcraft:salis_mundus"
   ],
-  "result": {
-    "item": "thaumcraft:crystal_order"
-  }
+  "result": "thaumcraft:crystal_order"
 }

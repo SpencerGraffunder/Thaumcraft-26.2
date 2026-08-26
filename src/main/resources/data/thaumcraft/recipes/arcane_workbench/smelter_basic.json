@@ -11,20 +11,10 @@
     "SSS"
   ],
   "key": {
-    "B": {
-      "item": "thaumcraft:plate_brass"
-    },
-    "C": {
-      "item": "thaumcraft:crucible"
-    },
-    "S": {
-      "tag": "forge:cobblestone"
-    },
-    "F": {
-      "item": "minecraft:furnace"
-    }
+    "B": "thaumcraft:plate_brass",
+    "C": "thaumcraft:crucible",
+    "S": "#forge:cobblestone",
+    "F": "minecraft:furnace"
   },
-  "result": {
-    "item": "thaumcraft:smelter"
-  }
+  "result": "thaumcraft:smelter"
 }

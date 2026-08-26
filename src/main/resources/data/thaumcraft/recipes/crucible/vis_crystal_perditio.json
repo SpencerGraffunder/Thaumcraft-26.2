@@ -1,14 +1,12 @@
 {
   "type": "thaumcraft:crucible",
   "research": "BASEALCHEMY",
-  "catalyst": {
-    "tag": "forge:gems/quartz"
-  },
+  "catalyst": "#forge:gems/quartz",
   "aspects": {
     "perditio": 2
   },
   "result": {
-    "item": "thaumcraft:vis_crystal_entropy",
+    "id": "thaumcraft:vis_crystal_entropy",
     "count": 1
   },
   "group": "thaumcraft:vis_crystal"

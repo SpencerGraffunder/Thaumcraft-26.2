@@ -9,14 +9,8 @@
     "SSS"
   ],
   "key": {
-    "S": {
-      "item": "thaumcraft:arcane_stone_slab"
-    },
-    "B": {
-      "item": "thaumcraft:arcane_stone"
-    }
+    "S": "thaumcraft:arcane_stone_slab",
+    "B": "thaumcraft:arcane_stone"
   },
-  "result": {
-    "item": "thaumcraft:pedestal_arcane"
-  }
+  "result": "thaumcraft:pedestal_arcane"
 }

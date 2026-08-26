@@ -4,10 +4,10 @@
     "III"
   ],
   "key": {
-    "I": {"item": "thaumcraft:thaumium_ingot"}
+    "I": "thaumcraft:thaumium_ingot"
   },
   "result": {
-    "item": "thaumcraft:plate_thaumium",
+    "id": "thaumcraft:plate_thaumium",
     "count": 3
   }
 }

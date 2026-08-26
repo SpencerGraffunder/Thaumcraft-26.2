@@ -1,13 +1,13 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {"item": "minecraft:beef"},
-    {"item": "minecraft:chicken"},
-    {"item": "minecraft:porkchop"},
-    {"item": "minecraft:sugar"}
+    "minecraft:beef",
+    "minecraft:chicken",
+    "minecraft:porkchop",
+    "minecraft:sugar"
   ],
   "result": {
-    "item": "thaumcraft:triple_meat_treat",
+    "id": "thaumcraft:triple_meat_treat",
     "count": 1
   }
 }

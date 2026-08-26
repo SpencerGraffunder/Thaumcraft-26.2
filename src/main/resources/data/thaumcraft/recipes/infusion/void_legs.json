@@ -2,17 +2,15 @@
   "type": "thaumcraft:infusion",
   "research": "VOIDROBEARMOR",
   "instability": 4,
-  "input": {
-    "item": "thaumcraft:thaumium_legs"
-  },
+  "input": "thaumcraft:thaumium_legs",
   "ingredients": [
-    { "item": "thaumcraft:void_metal_ingot" },
-    { "item": "thaumcraft:void_metal_ingot" },
-    { "item": "thaumcraft:void_metal_ingot" },
-    { "item": "thaumcraft:void_metal_ingot" },
-    { "item": "thaumcraft:void_metal_ingot" },
-    { "item": "thaumcraft:void_seed" },
-    { "item": "thaumcraft:void_seed" }
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_seed",
+    "thaumcraft:void_seed"
   ],
   "aspects": {
     "alienis": 25,
@@ -20,7 +18,5 @@
     "praemunio": 20,
     "tenebrae": 12
   },
-  "result": {
-    "item": "thaumcraft:void_legs"
-  }
+  "result": "thaumcraft:void_legs"
 }

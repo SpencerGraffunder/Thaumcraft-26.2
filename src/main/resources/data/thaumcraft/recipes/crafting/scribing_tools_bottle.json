@@ -1,12 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {"item": "minecraft:glass_bottle"},
-    {"item": "minecraft:feather"},
-    {"tag": "forge:dyes/black"}
+    "minecraft:glass_bottle",
+    "minecraft:feather",
+    "#forge:dyes/black"
   ],
   "result": {
-    "item": "thaumcraft:scribing_tools",
+    "id": "thaumcraft:scribing_tools",
     "count": 1
   }
 }

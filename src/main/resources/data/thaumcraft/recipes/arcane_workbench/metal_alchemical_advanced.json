@@ -12,17 +12,9 @@
     " A "
   ],
   "key": {
-    "A": {
-      "item": "thaumcraft:alchemical_brass_block"
-    },
-    "V": {
-      "item": "thaumcraft:plate_void"
-    },
-    "P": {
-      "item": "thaumcraft:primordial_pearl"
-    }
+    "A": "thaumcraft:alchemical_brass_block",
+    "V": "thaumcraft:plate_void",
+    "P": "thaumcraft:primordial_pearl"
   },
-  "result": {
-    "item": "thaumcraft:alchemical_brass_advanced_block"
-  }
+  "result": "thaumcraft:alchemical_brass_advanced_block"
 }

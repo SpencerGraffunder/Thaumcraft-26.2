@@ -2,29 +2,17 @@
   "type": "thaumcraft:infusion",
   "research": "ARMORFORTRESS",
   "instability": 1,
-  "center": {
-    "item": "minecraft:iron_helmet"
-  },
+  "center": "minecraft:iron_helmet",
   "ingredients": [
-    {
-      "item": "thaumcraft:thaumium_ingot"
-    },
-    {
-      "item": "thaumcraft:thaumium_ingot"
-    },
-    {
-      "item": "thaumcraft:thaumium_ingot"
-    },
-    {
-      "item": "thaumcraft:thaumium_ingot"
-    }
+    "thaumcraft:thaumium_ingot",
+    "thaumcraft:thaumium_ingot",
+    "thaumcraft:thaumium_ingot",
+    "thaumcraft:thaumium_ingot"
   ],
   "aspects": {
     "metallum": 20,
     "praecantatio": 10,
     "praemunio": 15
   },
-  "result": {
-    "item": "thaumcraft:thaumium_helm"
-  }
+  "result": "thaumcraft:thaumium_helm"
 }

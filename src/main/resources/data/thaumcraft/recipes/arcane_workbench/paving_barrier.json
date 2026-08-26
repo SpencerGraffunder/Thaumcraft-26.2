@@ -11,12 +11,10 @@
     "SS"
   ],
   "key": {
-    "S": {
-      "item": "thaumcraft:arcane_stone_brick"
-    }
+    "S": "thaumcraft:arcane_stone_brick"
   },
   "result": {
-    "item": "thaumcraft:paving_stone_barrier",
+    "id": "thaumcraft:paving_stone_barrier",
     "count": 4
   }
 }

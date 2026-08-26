@@ -13,21 +13,13 @@
     "IVI"
   ],
   "key": {
-    "I": {
-      "item": "thaumcraft:plate_iron"
-    },
-    "V": {
-      "item": "thaumcraft:tube_valve"
-    },
-    "T": {
-      "item": "thaumcraft:tube_normal"
-    },
-    "W": {
-      "item": "thaumcraft:greatwood_planks"
-    }
+    "I": "thaumcraft:plate_iron",
+    "V": "thaumcraft:tube_valve",
+    "T": "thaumcraft:tube_normal",
+    "W": "thaumcraft:greatwood_planks"
   },
   "result": {
-    "item": "thaumcraft:alchemical_brass_block",
+    "id": "thaumcraft:alchemical_brass_block",
     "count": 2
   }
 }

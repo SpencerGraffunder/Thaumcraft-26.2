@@ -12,17 +12,9 @@
     "QTQ"
   ],
   "key": {
-    "Q": {
-      "tag": "forge:gems/quartz"
-    },
-    "T": {
-      "item": "thaumcraft:plate_thaumium"
-    },
-    "F": {
-      "item": "thaumcraft:filter"
-    }
+    "Q": "#forge:gems/quartz",
+    "T": "thaumcraft:plate_thaumium",
+    "F": "thaumcraft:filter"
   },
-  "result": {
-    "item": "thaumcraft:condenser_lattice"
-  }
+  "result": "thaumcraft:condenser_lattice"
 }

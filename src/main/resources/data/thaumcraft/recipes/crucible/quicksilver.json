@@ -1,14 +1,10 @@
 {
   "type": "thaumcraft:crucible",
   "research": "UNLOCKALCHEMY",
-  "catalyst": {
-    "item": "minecraft:redstone"
-  },
+  "catalyst": "minecraft:redstone",
   "aspects": {
     "metallum": 5,
     "permutatio": 3
   },
-  "result": {
-    "item": "thaumcraft:quicksilver"
-  }
+  "result": "thaumcraft:quicksilver"
 }

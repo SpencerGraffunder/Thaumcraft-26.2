@@ -8,14 +8,8 @@
     "SSS"
   ],
   "key": {
-    "S": {
-      "item": "thaumcraft:eldritch_stone_tile"
-    },
-    "B": {
-      "item": "thaumcraft:eldritch_stone_tile"
-    }
+    "S": "thaumcraft:eldritch_stone_tile",
+    "B": "thaumcraft:eldritch_stone_tile"
   },
-  "result": {
-    "item": "thaumcraft:pedestal_eldritch"
-  }
+  "result": "thaumcraft:pedestal_eldritch"
 }

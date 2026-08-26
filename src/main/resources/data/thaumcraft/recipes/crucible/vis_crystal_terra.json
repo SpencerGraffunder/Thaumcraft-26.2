@@ -1,14 +1,12 @@
 {
   "type": "thaumcraft:crucible",
   "research": "BASEALCHEMY",
-  "catalyst": {
-    "tag": "forge:gems/quartz"
-  },
+  "catalyst": "#forge:gems/quartz",
   "aspects": {
     "terra": 2
   },
   "result": {
-    "item": "thaumcraft:vis_crystal_earth",
+    "id": "thaumcraft:vis_crystal_earth",
     "count": 1
   },
   "group": "thaumcraft:vis_crystal"

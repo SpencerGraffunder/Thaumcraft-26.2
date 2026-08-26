@@ -6,11 +6,11 @@
     "NSN"
   ],
   "key": {
-    "N": {"item": "thaumcraft:brass_nugget"},
-    "S": {"tag": "forge:rods/wooden"}
+    "N": "thaumcraft:brass_nugget",
+    "S": "#forge:rods/wooden"
   },
   "result": {
-    "item": "thaumcraft:jar_brace",
+    "id": "thaumcraft:jar_brace",
     "count": 2
   }
 }

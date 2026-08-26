@@ -9,9 +9,7 @@
     "J"
   ],
   "key": {
-    "J": {"item": "thaumcraft:jar_normal"}
+    "J": "thaumcraft:jar_normal"
   },
-  "result": {
-    "item": "thaumcraft:jar_void"
-  }
+  "result": "thaumcraft:jar_void"
 }

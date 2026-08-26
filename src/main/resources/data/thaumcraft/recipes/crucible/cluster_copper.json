@@ -1,14 +1,10 @@
 {
   "type": "thaumcraft:crucible",
   "research": "METALPURIFICATION",
-  "catalyst": {
-    "tag": "forge:ores/copper"
-  },
+  "catalyst": "#forge:ores/copper",
   "aspects": {
     "metallum": 5,
     "ordo": 5
   },
-  "result": {
-    "item": "thaumcraft:cluster_copper"
-  }
+  "result": "thaumcraft:cluster_copper"
 }

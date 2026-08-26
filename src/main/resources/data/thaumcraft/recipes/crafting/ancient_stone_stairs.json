@@ -6,10 +6,10 @@
     "KKK"
   ],
   "key": {
-    "K": {"item": "thaumcraft:ancient_stone"}
+    "K": "thaumcraft:ancient_stone"
   },
   "result": {
-    "item": "thaumcraft:ancient_stone_stairs",
+    "id": "thaumcraft:ancient_stone_stairs",
     "count": 4
   }
 }

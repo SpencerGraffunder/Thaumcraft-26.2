@@ -8,17 +8,9 @@
     "LLL"
   ],
   "key": {
-    "L": {
-      "tag": "forge:leather"
-    },
-    "G": {
-      "tag": "forge:ingots/gold"
-    },
-    "B": {
-      "item": "minecraft:gold_ingot"
-    }
+    "L": "#forge:leather",
+    "G": "#forge:ingots/gold",
+    "B": "minecraft:gold_ingot"
   },
-  "result": {
-    "item": "thaumcraft:focus_pouch"
-  }
+  "result": "thaumcraft:focus_pouch"
 }

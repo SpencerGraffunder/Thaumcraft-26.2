@@ -12,11 +12,9 @@
     "IAI"
   ],
   "key": {
-    "I": {"tag": "thaumcraft:plates/iron"},
-    "A": {"tag": "forge:gems/amber"},
-    "B": {"item": "thaumcraft:brain_clockwork"}
+    "I": "#thaumcraft:plates/iron",
+    "A": "#forge:gems/amber",
+    "B": "thaumcraft:brain_clockwork"
   },
-  "result": {
-    "item": "thaumcraft:brain_box"
-  }
+  "result": "thaumcraft:brain_box"
 }

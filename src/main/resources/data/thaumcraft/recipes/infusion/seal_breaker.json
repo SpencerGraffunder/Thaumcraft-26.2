@@ -7,21 +7,11 @@
     "perditio": 10,
     "humanus": 10
   },
-  "input": {
-    "item": "thaumcraft:blank_seal"
-  },
+  "input": "thaumcraft:blank_seal",
   "ingredients": [
-    {
-      "item": "minecraft:golden_axe"
-    },
-    {
-      "item": "minecraft:golden_pickaxe"
-    },
-    {
-      "item": "minecraft:golden_shovel"
-    }
+    "minecraft:golden_axe",
+    "minecraft:golden_pickaxe",
+    "minecraft:golden_shovel"
   ],
-  "result": {
-    "item": "thaumcraft:seal_breaker"
-  }
+  "result": "thaumcraft:seal_breaker"
 }

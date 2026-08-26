@@ -2,23 +2,19 @@
   "type": "thaumcraft:infusion",
   "research": "VERDANTCHARMS",
   "instability": 2,
-  "input": {
-    "item": "minecraft:golden_carrot"
-  },
+  "input": "minecraft:golden_carrot",
   "ingredients": [
-    { "item": "thaumcraft:shard_earth" },
-    { "item": "thaumcraft:shard_earth" },
-    { "item": "thaumcraft:shard_water" },
-    { "item": "thaumcraft:shard_water" },
-    { "item": "minecraft:wheat_seeds" },
-    { "item": "minecraft:wheat_seeds" }
+    "thaumcraft:shard_earth",
+    "thaumcraft:shard_earth",
+    "thaumcraft:shard_water",
+    "thaumcraft:shard_water",
+    "minecraft:wheat_seeds",
+    "minecraft:wheat_seeds"
   ],
   "aspects": {
     "victus": 30,
     "herba": 30,
     "sensus": 20
   },
-  "result": {
-    "item": "thaumcraft:verdant_charm"
-  }
+  "result": "thaumcraft:verdant_charm"
 }

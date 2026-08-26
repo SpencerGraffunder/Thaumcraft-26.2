@@ -5,12 +5,10 @@
     "##"
   ],
   "key": {
-    "#": {
-      "item": "thaumcraft:shard_order"
-    }
+    "#": "thaumcraft:shard_order"
   },
   "result": {
-    "item": "thaumcraft:vis_crystal_order",
+    "id": "thaumcraft:vis_crystal_order",
     "count": 1
   }
 }

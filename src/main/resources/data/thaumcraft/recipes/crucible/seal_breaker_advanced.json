@@ -1,17 +1,14 @@
 {
   "type": "thaumcraft:crucible",
   "research": "SEALBREAK",
-  "catalyst": {
-    "item": "thaumcraft:blank_seal",
-    "nbt": "{seal:\"thaumcraft:breaker\"}"
-  },
+  "catalyst": "thaumcraft:seal_breaker",
   "aspects": {
     "sensus": 10,
     "cognitio": 10,
     "instrumentum": 20
   },
   "result": {
-    "item": "thaumcraft:seal_breaker_advanced",
+    "id": "thaumcraft:seal_breaker_advanced",
     "count": 1
   }
 }

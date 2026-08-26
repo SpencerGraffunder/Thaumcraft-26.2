@@ -12,17 +12,9 @@
     " M "
   ],
   "key": {
-    "M": {
-      "item": "thaumcraft:mechanism_simple"
-    },
-    "T": {
-      "item": "thaumcraft:plate_thaumium"
-    },
-    "Q": {
-      "item": "minecraft:piston"
-    }
+    "M": "thaumcraft:mechanism_simple",
+    "T": "thaumcraft:plate_thaumium",
+    "Q": "minecraft:piston"
   },
-  "result": {
-    "item": "thaumcraft:mechanism_complex"
-  }
+  "result": "thaumcraft:mechanism_complex"
 }

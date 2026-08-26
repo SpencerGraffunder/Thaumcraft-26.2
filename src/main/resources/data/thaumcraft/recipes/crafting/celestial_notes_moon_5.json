@@ -1,18 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "minecraft:paper"
-    },
-    {
-      "item": "minecraft:ink_sac"
-    },
-    {
-      "item": "minecraft:flint"
-    }
+    "minecraft:paper",
+    "minecraft:ink_sac",
+    "minecraft:flint"
   ],
   "result": {
-    "item": "thaumcraft:celestial_notes_moon_5",
+    "id": "thaumcraft:celestial_notes_moon_5",
     "count": 1
   }
 }

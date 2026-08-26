@@ -12,17 +12,9 @@
     " G "
   ],
   "key": {
-    "G": {
-      "tag": "forge:glass_panes"
-    },
-    "B": {
-      "item": "thaumcraft:plate_brass"
-    },
-    "S": {
-      "item": "thaumcraft:quicksilver"
-    }
+    "G": "#forge:glass_panes",
+    "B": "thaumcraft:plate_brass",
+    "S": "thaumcraft:quicksilver"
   },
-  "result": {
-    "item": "thaumcraft:morphic_resonator"
-  }
+  "result": "thaumcraft:morphic_resonator"
 }

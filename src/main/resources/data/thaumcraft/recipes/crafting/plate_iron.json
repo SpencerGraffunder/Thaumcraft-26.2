@@ -4,10 +4,10 @@
     "III"
   ],
   "key": {
-    "I": {"tag": "forge:ingots/iron"}
+    "I": "#forge:ingots/iron"
   },
   "result": {
-    "item": "thaumcraft:plate_iron",
+    "id": "thaumcraft:plate_iron",
     "count": 3
   }
 }

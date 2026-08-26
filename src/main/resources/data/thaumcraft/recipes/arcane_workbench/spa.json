@@ -11,23 +11,11 @@
     "SPS"
   ],
   "key": {
-    "Q": {
-      "item": "minecraft:quartz_block"
-    },
-    "I": {
-      "item": "minecraft:iron_bars"
-    },
-    "S": {
-      "item": "thaumcraft:arcane_stone"
-    },
-    "J": {
-      "item": "thaumcraft:jar_normal"
-    },
-    "P": {
-      "item": "thaumcraft:mechanism_simple"
-    }
+    "Q": "minecraft:quartz_block",
+    "I": "minecraft:iron_bars",
+    "S": "thaumcraft:arcane_stone",
+    "J": "thaumcraft:jar_normal",
+    "P": "thaumcraft:mechanism_simple"
   },
-  "result": {
-    "item": "thaumcraft:spa"
-  }
+  "result": "thaumcraft:spa"
 }

@@ -6,20 +6,16 @@
     "alienis": 50,
     "vitium": 50
   },
-  "input": {
-    "item": "minecraft:tnt"
-  },
+  "input": "minecraft:tnt",
   "ingredients": [
-    {"item": "thaumcraft:morphic_resonator"},
-    {"item": "minecraft:redstone_block"},
-    {"item": "thaumcraft:alumentum"},
-    {"tag": "thaumcraft:nitor"},
-    {"item": "thaumcraft:vis_resonator"},
-    {"item": "minecraft:redstone_block"},
-    {"item": "thaumcraft:alumentum"},
-    {"tag": "thaumcraft:nitor"}
+    "thaumcraft:morphic_resonator",
+    "minecraft:redstone_block",
+    "thaumcraft:alumentum",
+    "#thaumcraft:nitor",
+    "thaumcraft:vis_resonator",
+    "minecraft:redstone_block",
+    "thaumcraft:alumentum",
+    "#thaumcraft:nitor"
   ],
-  "result": {
-    "item": "thaumcraft:causality_collapser"
-  }
+  "result": "thaumcraft:causality_collapser"
 }

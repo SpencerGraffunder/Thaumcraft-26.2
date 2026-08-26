@@ -1,15 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "minecraft:paper"
-    },
-    {
-      "item": "minecraft:ink_sac"
-    }
+    "minecraft:paper",
+    "minecraft:ink_sac"
   ],
   "result": {
-    "item": "thaumcraft:label_blank",
+    "id": "thaumcraft:label_blank",
     "count": 1
   }
 }

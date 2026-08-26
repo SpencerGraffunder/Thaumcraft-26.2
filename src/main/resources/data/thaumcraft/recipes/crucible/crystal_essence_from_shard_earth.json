@@ -1,15 +1,13 @@
 {
   "type": "thaumcraft:crucible",
   "research": "CRYSTAL_ESSENCE",
-  "catalyst": {
-    "item": "thaumcraft:shard_earth"
-  },
+  "catalyst": "thaumcraft:shard_earth",
   "aspects": {
     "crystallis": 4,
     "auram": 4
   },
   "result": {
-    "item": "thaumcraft:crystal_essence",
+    "id": "thaumcraft:crystal_essence",
     "count": 1
   }
 }

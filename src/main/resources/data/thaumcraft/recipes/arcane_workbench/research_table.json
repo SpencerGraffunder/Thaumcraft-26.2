@@ -12,17 +12,9 @@
     "W W"
   ],
   "key": {
-    "P": {
-      "item": "minecraft:paper"
-    },
-    "S": {
-      "tag": "minecraft:wooden_slabs"
-    },
-    "W": {
-      "tag": "minecraft:planks"
-    }
+    "P": "minecraft:paper",
+    "S": "#minecraft:wooden_slabs",
+    "W": "#minecraft:planks"
   },
-  "result": {
-    "item": "thaumcraft:research_table"
-  }
+  "result": "thaumcraft:research_table"
 }

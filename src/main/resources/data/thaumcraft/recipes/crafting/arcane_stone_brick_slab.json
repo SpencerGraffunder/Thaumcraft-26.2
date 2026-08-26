@@ -4,10 +4,10 @@
     "KKK"
   ],
   "key": {
-    "K": {"item": "thaumcraft:arcane_stone_brick"}
+    "K": "thaumcraft:arcane_stone_brick"
   },
   "result": {
-    "item": "thaumcraft:arcane_stone_brick_slab",
+    "id": "thaumcraft:arcane_stone_brick_slab",
     "count": 6
   }
 }
