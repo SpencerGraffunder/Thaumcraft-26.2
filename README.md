@@ -6,7 +6,7 @@ to **Minecraft 26.2 "Chaos Cubed"** on **NeoForge 26.2.0.59** (Java 25).
 
 ## Status: COMPILES & BUILDS — server boots to "Done" — runtime testing in progress
 
-The 26.2 port is under active development on branch `master`.
+The 26.2 port is under active development.
 
 - `./gradlew compileJava` — **GREEN (0 errors)**
 - `./gradlew build` — **SUCCESS** → `build/libs/thaumcraft-6.2.0+26.2.jar`
@@ -15,6 +15,9 @@ The 26.2 port is under active development on branch `master`.
   **server reaches `Done (2.4s)`** — world loads, aura threads run per dimension,
   golem parts/seals/research/aspect/multiblock init run on `ServerStartingEvent`
   (they construct vanilla `ItemStack`s, illegal in commonSetup on 26.2)
+- Recipe data migrated to the 26.2 format: `key` ingredients are plain strings
+  and `result` uses `"id"` (not `"item"`); forge + thaumcraft item tags added
+  for cross-mod interop.
 
 **Completed waves**
 
@@ -22,8 +25,6 @@ The 26.2 port is under active development on branch `master`.
 - Mechanical renames (`Identifier`, `DeferredHolder`, `ToolMaterial`/`ArmorMaterial`
   records, `EntitySpawnReason`, `InteractionResult`, `EnumProperty<Direction>`)
 - Armor/tools on the 26.2 component API (`humanoidArmor`, `.pickaxe()/.sword()`)
-- Particles/FX on the render-state model (`SingleQuadParticle.extract()` +
-  `QuadParticleRenderState`); all FX ported
 - BlockEntity sync on the 26.2 ValueIO API (`ValueOutput`/`ValueInput`)
 - Entity/tile renderers, screens, widgets → render-state model
   (`EntityRenderer<T,S>`, `BlockEntityRenderer<T,S>`, `GuiGraphicsExtractor`,

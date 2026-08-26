@@ -3,13 +3,14 @@
 > Everything below this header tracks the **26.2 NeoForge port** (NeoForge
 > 26.2.0.59, Java 25). The historical 1.20.1 plan is preserved further down.
 
-## 26.2 Status: ✅ COMPILES & BUILDS — server-boot testing in progress
+## 26.2 Status: COMPILES & BUILDS — server boots to "Done" — runtime testing in progress
 
 `./gradlew compileJava` is GREEN (0 errors); `./gradlew build` produces
-`thaumcraft-6.2.0+26.2.jar`. `runServer` gets through mod construction and
-block registration; it currently stops at **item registration** (`Item id not
-set` — the item classes need the same `Properties.setId` ThreadLocal treatment
-that blocks already got).
+`thaumcraft-6.2.0+26.2.jar`. `runServer` reaches **Done (2.4s)** — world loads,
+aura threads run per dimension, and golem parts/seals/research/aspect/
+multiblock init run on `ServerStartingEvent` (they build vanilla `ItemStack`s,
+illegal in commonSetup on 26.2). Item registration is id-injected via
+`ItemRegistration` ThreadLocal.
 
 ### Completed
 
@@ -42,13 +43,13 @@ that blocks already got).
       every block constructor before `super(...)`
 - [x] Recipe codecs: empty `Ingredient` defaults → `Optional<Ingredient>`
       (avoids the "Ingredients can't be empty" class-init crash)
+- [x] Item registration id-injection: `ItemRegistration` ThreadLocal around
+      every item `Properties` before `super(...)` (same pattern as blocks)
+- [x] Recipe data → 26.2 format: `key` ingredients as plain strings, `result`
+      uses `"id"` not `"item"`; forge + thaumcraft item tags added
 
 ### Remaining (runtime testing on a test server)
 
-- [ ] **Item registration id-injection** — same ThreadLocal pattern as blocks:
-      `ModItems` + every item constructor wraps `Properties` with
-      `ItemRegistration.id(...)` (item `Properties` also require an id at
-      construction in 26.2)
 - [ ] Entity spawning/behaviour, golem seals, bosses
 - [ ] Crafting UIs (arcane workbench, crucible, infusion altar, research table)
 - [ ] Worldgen (greatwood/silverwood, ores, ruins, taint biome)
