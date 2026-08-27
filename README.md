@@ -19,7 +19,7 @@ The 26.2 port is under active development.
   and `result` uses `"id"` (not `"item"`); forge + thaumcraft item tags added
   for cross-mod interop.
 
-Detailed task tracking lives in [`todo.md`](./todo.md) — the completed-wave
+Detailed task tracking lives in [`todo.md`](./todo.md)[`todo.md`](./todo.md] — 
 checklists and remaining runtime-testing items are maintained there, not here.
 This README covers build/run/deploy status only.
 
