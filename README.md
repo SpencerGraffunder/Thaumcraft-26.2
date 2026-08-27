@@ -52,8 +52,6 @@ The 26.2 port is under active development.
 - Worldgen (greatwood/silverwood, ores, ruins, taint biome)
 - Visual QA — several renderers use compile-first approximations
   (billboard beams, atlas-sprite substitutions, banner tint limits)
-- Data migration — some recipe JSONs still carry old-style `"nbt"` that the
-  26.2 codecs ignore (recipes load, NBT dropped)
 - Dev-environment note: `run/server.properties` sets `max-tick-time=300000`
   (first-boot world saves exceed the 60s default watchdog)
 

@@ -55,8 +55,8 @@ illegal in commonSetup on 26.2). Item registration is id-injected via
 - [ ] Worldgen (greatwood/silverwood, ores, ruins, taint biome)
 - [ ] Visual QA — several renderers use compile-first approximations
       (billboard beams, block-atlas sprite substitutions, banner tint limits)
-- [ ] Data migration — some recipe JSONs still use old-style `"nbt"` which the
-      26.2 codecs ignore (recipes load, NBT dropped)
+- [x] Data migration — all recipe JSONs audited; zero old-style `"nbt"` fields
+      remain (450/450 parse; `result` uses `"id"`, keys plain strings)
 
 # Thaumcraft 6 - Minecraft 1.20.1 Migration Plan
 
