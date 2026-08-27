@@ -47,6 +47,8 @@ illegal in commonSetup on 26.2). Item registration is id-injected via
       every item `Properties` before `super(...)` (same pattern as blocks)
 - [x] Recipe data → 26.2 format: `key` ingredients as plain strings, `result`
       uses `"id"` not `"item"`; forge + thaumcraft item tags added
+- [x] Data migration — all recipe JSONs audited; zero old-style `"nbt"` fields
+      remain (450/450 parse; `result` uses `"id"`, keys plain strings)
 
 ### Remaining (runtime testing on a test server)
 
@@ -55,8 +57,6 @@ illegal in commonSetup on 26.2). Item registration is id-injected via
 - [ ] Worldgen (greatwood/silverwood, ores, ruins, taint biome)
 - [ ] Visual QA — several renderers use compile-first approximations
       (billboard beams, block-atlas sprite substitutions, banner tint limits)
-- [x] Data migration — all recipe JSONs audited; zero old-style `"nbt"` fields
-      remain (450/450 parse; `result` uses `"id"`, keys plain strings)
 
 # Thaumcraft 6 - Minecraft 1.20.1 Migration Plan
 
