@@ -71,14 +71,7 @@
         "maxCount": 1
       }
     ],
-    "creature": [
-      {
-        "type": "minecraft:bat",
-        "weight": 3,
-        "minCount": 1,
-        "maxCount": 1
-      }
-    ],
+    "creature": [],
     "ambient": [
       {
         "type": "minecraft:bat",

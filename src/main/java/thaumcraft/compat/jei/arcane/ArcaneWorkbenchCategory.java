@@ -1,13 +1,12 @@
 package thaumcraft.compat.jei.arcane;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -53,7 +52,7 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
     }
 
     @Override
-    public RecipeType<IArcaneRecipe> getRecipeType() {
+    public IRecipeType<IArcaneRecipe> getRecipeType() {
         return ThaumcraftJEIPlugin.ARCANE_TYPE;
     }
 
@@ -99,7 +98,7 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
                     Ingredient ingredient = ingredients.get(ingredientIndex);
                     if (!ingredient.isEmpty()) {
                         builder.addSlot(RecipeIngredientRole.INPUT, x, y)
-                                .addIngredients(ingredient);
+                                .add(ingredient);
                     }
                 }
                 ingredientIndex++;
@@ -112,7 +111,7 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
                 : RegistryAccess.EMPTY;
         ItemStack output = recipe.getResultItem();
         builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19)
-                .addItemStack(output);
+                .add(output);
     }
 
     @Override

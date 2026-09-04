@@ -6,7 +6,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -50,7 +50,7 @@ public class InfusionCategory implements IRecipeCategory<InfusionRecipeType> {
     }
 
     @Override
-    public RecipeType<InfusionRecipeType> getRecipeType() {
+    public IRecipeType<InfusionRecipeType> getRecipeType() {
         return ThaumcraftJEIPlugin.INFUSION_TYPE;
     }
 
@@ -85,7 +85,7 @@ public class InfusionCategory implements IRecipeCategory<InfusionRecipeType> {
         Ingredient centralItem = recipe.getCentralItem();
         if (centralItem != null && !centralItem.isEmpty()) {
             builder.addSlot(RecipeIngredientRole.INPUT, centerX, centerY)
-                    .addIngredients(centralItem);
+                    .add(centralItem);
         }
         
         // Add component items in a circle around the center
@@ -102,7 +102,7 @@ public class InfusionCategory implements IRecipeCategory<InfusionRecipeType> {
             Ingredient component = components.get(i);
             if (!component.isEmpty()) {
                 builder.addSlot(RecipeIngredientRole.INPUT, x, y)
-                        .addIngredients(component);
+                        .add(component);
             }
         }
         
@@ -112,7 +112,7 @@ public class InfusionCategory implements IRecipeCategory<InfusionRecipeType> {
                 : RegistryAccess.EMPTY;
         ItemStack output = recipe.getResultItem();
         builder.addSlot(RecipeIngredientRole.OUTPUT, 140, centerY)
-                .addItemStack(output);
+                .add(output);
     }
 
     @Override

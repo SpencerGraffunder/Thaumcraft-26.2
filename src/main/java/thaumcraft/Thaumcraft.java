@@ -36,6 +36,7 @@ import thaumcraft.common.lib.research.theorycraft.TheoryRegistry;
 import thaumcraft.common.lib.InternalMethodHandler;
 import thaumcraft.common.config.ConfigResearch;
 import thaumcraft.common.config.ConfigAspects;
+import thaumcraft.common.lib.CommonInternals;
 import thaumcraft.common.config.ConfigMultiblocks;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.client.lib.events.KeyHandler;
@@ -159,8 +160,10 @@ public class Thaumcraft {
             LOGGER.info("Registered golem seals");
 
             // Research, aspect, and multiblock scan registries also construct vanilla
-            // ItemStacks (ScanBlock/ScanObject), so they must run here as well.
             ConfigResearch.init();
+            // Vanilla-item aspect + smelting-bonus data (identifier-based, safe here)
+            CommonInternals.initAspects();
+            CommonInternals.initSmeltingBonuses();
             ConfigAspects.init();
             ConfigMultiblocks.init();
             ConfigResearch.postInit();

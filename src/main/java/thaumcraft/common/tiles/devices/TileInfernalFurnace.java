@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import thaumcraft.api.aura.AuraHelper;
+import thaumcraft.common.lib.CommonInternals;
 import thaumcraft.common.tiles.TileThaumcraftInventory;
 import thaumcraft.init.ModBlockEntities;
 
@@ -316,9 +317,7 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
     }
     
     private ItemStack[] getSmeltingBonus(ItemStack input) {
-        // TODO: Implement smelting bonus system
-        // This requires porting CommonInternals.smeltingBonus
-        return new ItemStack[0];
+        return CommonInternals.getSmeltingBonus(input);
     }
     
     // ==================== Facing ====================

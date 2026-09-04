@@ -791,10 +791,12 @@ public class ResearchManager {
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:seal", "thaumcraft:blank_seal");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:focus_basic", "thaumcraft:focus_blank");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:focus_greater", "thaumcraft:focus_advanced");
-        LEGACY_ITEM_MAPPINGS.put("thaumcraft:biothaumic_mind", "thaumcraft:brain_biothaumic");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:biothaumic_mind", "thaumcraft:brain_curious");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:clockwork_mind", "thaumcraft:brain_clockwork");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:crimson_rites", "thaumcraft:thaumonomicon");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:module", "thaumcraft:golem_module_vision");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:brain", "thaumcraft:brain_normal");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:leather", "minecraft:leather");
         
         // Block name variations
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:sapling_greatwood", "thaumcraft:greatwood_sapling");
@@ -819,6 +821,8 @@ public class ResearchManager {
         // Minecraft items that changed names
         LEGACY_ITEM_MAPPINGS.put("minecraft:dye", "minecraft:white_dye");
         LEGACY_ITEM_MAPPINGS.put("minecraft:hardened_clay", "minecraft:terracotta");
+        LEGACY_ITEM_MAPPINGS.put("minecraft:noteblock", "minecraft:note_block");
+        LEGACY_ITEM_MAPPINGS.put("minecraft:web", "minecraft:cobweb");
     }
     
     /**

@@ -6,7 +6,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -49,7 +49,7 @@ public class CrucibleCategory implements IRecipeCategory<CrucibleRecipeType> {
     }
 
     @Override
-    public RecipeType<CrucibleRecipeType> getRecipeType() {
+    public IRecipeType<CrucibleRecipeType> getRecipeType() {
         return ThaumcraftJEIPlugin.CRUCIBLE_TYPE;
     }
 
@@ -78,7 +78,7 @@ public class CrucibleCategory implements IRecipeCategory<CrucibleRecipeType> {
     public void setRecipe(IRecipeLayoutBuilder builder, CrucibleRecipeType recipe, IFocusGroup focuses) {
         // Add catalyst input slot (left side)
         builder.addSlot(RecipeIngredientRole.INPUT, 10, 30)
-                .addIngredients(recipe.getCatalyst());
+                .add(recipe.getCatalyst());
         
         // Add output slot (right side)
         RegistryAccess registryAccess = Minecraft.getInstance().level != null 
@@ -86,7 +86,7 @@ public class CrucibleCategory implements IRecipeCategory<CrucibleRecipeType> {
                 : RegistryAccess.EMPTY;
         ItemStack output = recipe.getResultItem();
         builder.addSlot(RecipeIngredientRole.OUTPUT, 120, 30)
-                .addItemStack(output);
+                .add(output);
     }
 
     @Override

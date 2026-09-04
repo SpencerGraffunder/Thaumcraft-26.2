@@ -18,10 +18,22 @@
 - Fresh-world server boots to "Done"; aura scheduler ticks continuously
   (moon phase now read via the 26.2 positional environment-attribute API)
 - Initial chunk save completes for all 3 dimensions (no OOM)
-- Research data loads: **148 entries / 7 categories** (golemancy 29/29)
+- Research data loads: **148 entries / 8 categories** (alchemy 22, eldritch 5,
+  basics 20, auromancy 23, scans 12, artifice 20, infusion 17, golemancy 29)
 - Tag-based aspect registration runs without errors — 26.2 changed
   `Identifier.withDefaultNamespace` to path-only; all id call sites now use
   `Identifier.parse`
+- **Spawn categories fixed**: `minecraft:bat` (CREATURE→PASSIVE) and
+  `thaumcraft:pech` (MONSTER→CREATURE) now register in the correct
+  `SpawnPlacements` buckets — zero "Detected … wrong category" warnings
+- **Research icon mappings added**: `minecraft:noteblock→note_block`,
+  `minecraft:web→cobweb`, `thaumcraft:brain→brain_normal`,
+  `thaumcraft:biothaumic_mind→brain_curious`, `thaumcraft:leather→
+  minecraft:leather` (all verified against the 1.20.1 reference data)
+- **Aspect + smelting-bonus data wired**: `CommonInternals.initAspects()`
+  (101 vanilla-item aspects) and `initSmeltingBonuses()` now run on
+  `ServerStartingEvent`; `TileInfernalFurnace.getSmeltingBonus` delegates to
+  `CommonInternals` (bellows bonus drops functional)
 
 ## Known issues & environment
 
@@ -32,17 +44,30 @@
   `CI=true ./gradlew …`.
 - **Dev-server console**: `stop` typed into the `runServer` console is not
   forwarded to the server process — stop with SIGINT/Ctrl+C.
-- **Legacy item names in research icons**: `minecraft:noteblock`,
-  `thaumcraft:brain`, `thaumcraft:biothaumic_mind` have no 26.2 mapping
-  (icons fall back to texture ids — add mappings to `LEGACY_ITEM_MAPPINGS`).
-- **Dead code**: `CommonInternals.initAspects()` / `initSmeltingBonuses()`
-  are never called (aspects come from `ConfigAspects` tag registration;
-  `TileInfernalFurnace` still TODOs the smelting-bonus port).
+- **Missing content**: `thaumcraft:wand_workbench` — the wand workbench
+  block/item was never ported; research icons for it fall back to the
+  texture id until the block is ported.
 
 ## Known build warnings
 
-- 147 warnings on `./gradlew build` (2026-09-03, OpenJDK 25.0.4): JEI compat
-  code (`src/main/java/thaumcraft/compat/jei/`) uses APIs JEI marked for
-  removal — `RecipeType`, `IIngredientAcceptor.addItemStack`,
-  `IRecipeCatalystRegistration.addRecipeCatalyst`. Port to the new JEI API
-  before the next JEI release drops them.
+- **Resolved (2026-09-04)**: JEI compat layer migrated off the JEI 30.x
+  removal-marked API — `RecipeType` → `mezz.jei.api.recipe.types.IRecipeType`,
+  `IIngredientAcceptor.addIngredients/addItemStack` → `.add(...)`,
+  `addRecipeCatalyst` → `addCraftingStation`. Zero `compat/jei` warnings.
+- **Deferred project — NeoForge handler API migration (125 warnings)**:
+  the entire `net.neoforged.neoforge.items` package
+  (`IItemHandler`, `IItemHandlerModifiable`, `ItemStackHandler`,
+  `ItemHandlerHelper`) and `IFluidHandler`/`FluidTank` are
+  `@Deprecated(since="1.21.9", forRemoval=true)`. The replacement is the
+  transaction-based `net.neoforged.neoforge.transfer` API
+  (`ResourceHandler<T extends Resource>`, `ItemAccess`,
+  `transfer.item`/`transfer.fluid`/`transfer.energy`).
+  - Still fully functional at runtime in 26.2 (vanilla itself still uses the
+    `Container` model), so this is a planned rewrite, not an urgency.
+  - Affected files: `TilePatternCrafter`, `SealProvide`, `SealEmpty`,
+    `SealFill`, `SealStock`, `BlockCrucible`, `ThaumcraftInvHelper`,
+    `InventoryUtils`, `LogisticsMenu`, `TileWaterJug`, `TileCrucible`,
+    `BlockWaterJug`, others.
+  - Plan: dedicated pass migrating to `StacksResourceHandler`/`ItemAccess`
+    + in-game testing of every machine (item + fluid transfer, serialization,
+    capability exposure).

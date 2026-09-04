@@ -286,7 +286,7 @@ public class ModEntities {
     
     public static final DeferredHolder<EntityType<?>, EntityType<EntityPech>> PECH = 
             ENTITY_TYPES.register("pech", () -> 
-                EntityType.Builder.<EntityPech>of(EntityPech::new, MobCategory.CREATURE)
+                EntityType.Builder.<EntityPech>of(EntityPech::new, MobCategory.MONSTER)
                     .sized(0.6f, 1.2f)
                     .clientTrackingRange(8)
                     .updateInterval(3)

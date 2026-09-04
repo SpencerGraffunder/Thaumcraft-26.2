@@ -4,7 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
@@ -38,14 +38,14 @@ public class ThaumcraftJEIPlugin implements IModPlugin {
     public static final Identifier PLUGIN_ID = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "jei_plugin");
 
     // Recipe types for JEI
-    public static final RecipeType<IArcaneRecipe> ARCANE_TYPE =
-            RecipeType.create(Thaumcraft.MODID, "arcane_workbench", IArcaneRecipe.class);
+    public static final IRecipeType<IArcaneRecipe> ARCANE_TYPE =
+            IRecipeType.create(Thaumcraft.MODID, "arcane_workbench", IArcaneRecipe.class);
 
-    public static final RecipeType<CrucibleRecipeType> CRUCIBLE_TYPE =
-            RecipeType.create(Thaumcraft.MODID, "crucible", CrucibleRecipeType.class);
+    public static final IRecipeType<CrucibleRecipeType> CRUCIBLE_TYPE =
+            IRecipeType.create(Thaumcraft.MODID, "crucible", CrucibleRecipeType.class);
 
-    public static final RecipeType<InfusionRecipeType> INFUSION_TYPE =
-            RecipeType.create(Thaumcraft.MODID, "infusion", InfusionRecipeType.class);
+    public static final IRecipeType<InfusionRecipeType> INFUSION_TYPE =
+            IRecipeType.create(Thaumcraft.MODID, "infusion", InfusionRecipeType.class);
 
     @Override
     public Identifier getPluginUid() {
@@ -115,13 +115,10 @@ public class ThaumcraftJEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        // Arcane Workbench is the catalyst for arcane recipes
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ARCANE_WORKBENCH.get()), ARCANE_TYPE);
+        registration.addCraftingStation(ARCANE_TYPE, new ItemStack(ModBlocks.ARCANE_WORKBENCH.get()));
 
-        // Crucible is the catalyst for crucible recipes
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.CRUCIBLE.get()), CRUCIBLE_TYPE);
+        registration.addCraftingStation(CRUCIBLE_TYPE, new ItemStack(ModBlocks.CRUCIBLE.get()));
 
-        // Infusion Matrix is the catalyst for infusion recipes
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.INFUSION_MATRIX.get()), INFUSION_TYPE);
+        registration.addCraftingStation(INFUSION_TYPE, new ItemStack(ModBlocks.INFUSION_MATRIX.get()));
     }
 }
