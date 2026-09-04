@@ -30,8 +30,11 @@ This README covers build/run/deploy status only.
 
 Requires JDK 25.
 
+- Ubuntu 26.04: `sudo apt-get install openjdk-25-jdk-headless` puts JDK 25 on
+  the `PATH` — no `JAVA_HOME` needed.
+- Otherwise: `export JAVA_HOME=/path/to/jdk-25` before running Gradle.
+
 ```bash
-export JAVA_HOME=/path/to/jdk-25
 ./gradlew build
 ```
 
