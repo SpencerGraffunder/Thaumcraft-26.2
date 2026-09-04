@@ -26,8 +26,9 @@ import thaumcraft.common.golems.seals.SealHandler;
 import thaumcraft.common.golems.tasks.TaskHandler;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.fx.PacketFXBlockBamf;
+import thaumcraft.common.world.aura.AuraChunkHandler;
 import thaumcraft.common.world.aura.AuraHandler;
-import thaumcraft.common.world.aura.AuraThreadManager;
+import thaumcraft.common.world.aura.AuraManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,21 +65,6 @@ public class ServerEvents {
     // Default predicate that always allows swapping
     public static final Predicate<SwapperPredicate> DEFAULT_PREDICATE = pred -> true;
     
-    /**
-     * World tick event - called every tick for each loaded dimension
-     */
-    @SubscribeEvent
-    public static void onLevelTick(LevelTickEvent.Pre event) {
-        // Only run on ServerLevel
-        if (!(event.getLevel() instanceof ServerLevel level)) {
-            return;
-        }
-
-        // Start aura thread if not already running
-        if (!AuraThreadManager.hasThread(level.dimension()) && AuraHandler.getAuraWorld(level.dimension()) != null) {
-            AuraThreadManager.startThread(level.dimension());
-        }
-    }
 
     @SubscribeEvent
     public static void onLevelTickPost(LevelTickEvent.Post event) {
@@ -107,14 +93,12 @@ public class ServerEvents {
             // Clean up suspended or expired golem tasks
             TaskHandler.clearSuspendedOrExpiredTasks(level);
 
-            // Mark dirty aura chunks for saving
+            // Persist changed aura data into chunk attachments
             ResourceKey<Level> dimension = level.dimension();
             CopyOnWriteArrayList<ChunkPos> dirtyChunks = AuraHandler.dirtyChunks.get(dimension);
             if (dirtyChunks != null && !dirtyChunks.isEmpty()) {
                 for (ChunkPos pos : dirtyChunks) {
-                    // Mark the chunk as needing to be saved
-                    level.getChunkSource().getChunk(pos.x(), pos.z(), false);
-                    // The chunk will be marked dirty automatically when aura data is saved
+                    AuraChunkHandler.persistChunk(level, pos);
                 }
                 dirtyChunks.clear();
             }
@@ -479,7 +463,7 @@ public class ServerEvents {
     @SubscribeEvent
     public static void onLevelLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel level) {
-            AuraThreadManager.onLevelLoad(level);
+            AuraManager.onLevelLoad(level);
         }
     }
     
@@ -489,7 +473,7 @@ public class ServerEvents {
     @SubscribeEvent
     public static void onLevelUnload(LevelEvent.Unload event) {
         if (event.getLevel() instanceof ServerLevel level) {
-            AuraThreadManager.onLevelUnload(level);
+            AuraManager.onLevelUnload(level);
         }
     }
     
@@ -498,8 +482,8 @@ public class ServerEvents {
      */
     @SubscribeEvent
     public static void onServerStopping(net.neoforged.neoforge.event.server.ServerStoppingEvent event) {
-        // Stop all aura threads
-        AuraThreadManager.stopAllThreads();
+        // Clear aura simulation state
+        AuraManager.stopAll();
         
         // Clear dirty chunk tracking
         AuraHandler.dirtyChunks.clear();

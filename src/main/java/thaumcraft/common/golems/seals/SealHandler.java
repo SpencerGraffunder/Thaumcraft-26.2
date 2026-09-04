@@ -7,8 +7,10 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thaumcraft.api.golems.seals.ISeal;
@@ -16,6 +18,7 @@ import thaumcraft.api.golems.seals.ISealEntity;
 import thaumcraft.api.golems.seals.SealPos;
 import thaumcraft.api.golems.tasks.Task;
 import thaumcraft.common.golems.tasks.TaskHandler;
+import thaumcraft.common.world.aura.AuraChunkHandler;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.misc.PacketSealToClient;
 
@@ -265,9 +268,8 @@ public class SealHandler {
             PacketHandler.sendToDimension(new PacketSealToClient(removedSeal), level.dimension());
         }
         
-        if (!quiet) {
-            markChunkAsDirty(level.dimension(), pos.pos);
-        }
+        // Persist the removal into the chunk attachment (no-op if chunk is gone)
+        markChunkAsDirty(level.dimension(), pos.pos);
     }
     
     // ==================== World Ticking ====================
@@ -309,13 +311,19 @@ public class SealHandler {
     // ==================== Chunk Dirty Marking ====================
     
     /**
-     * Mark a chunk as dirty for saving
-     * TODO: Integrate with AuraHandler when ready
+     * Persist the seal changes for this chunk into the chunk attachment
+     * (auto-saved with the chunk NBT on the next save cycle).
      */
     public static void markChunkAsDirty(ResourceKey<Level> dim, BlockPos pos) {
-        // TODO: When AuraHandler is implemented:
-        // ChunkPos chunkPos = new ChunkPos(pos);
-        // AuraHandler.markChunkDirty(dim, chunkPos);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) {
+            return;
+        }
+        
+        Level level = server.getLevel(dim);
+        if (level != null && !level.isClientSide()) {
+            AuraChunkHandler.persistChunk(level, new ChunkPos(pos.getX(), pos.getZ()));
+        }
     }
     
     // ==================== Player Sync ====================

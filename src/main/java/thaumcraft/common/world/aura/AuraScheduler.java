@@ -186,4 +186,24 @@ public class AuraScheduler {
         ChunkPos pos = chunk.getLoc();
         AuraHandler.dirtyChunks.computeIfAbsent(dim, k -> new CopyOnWriteArrayList<>()).addIfAbsent(pos);
     }
+
+    /**
+     * Clears per-dimension simulation state (dimension unload).
+     */
+    public static void resetDimension(ResourceKey<Level> dim) {
+        lastWorldTime.remove(dim);
+        phaseVis.remove(dim);
+        phaseFlux.remove(dim);
+        phaseMax.remove(dim);
+    }
+
+    /**
+     * Clears all simulation state (server shutdown).
+     */
+    public static void resetAll() {
+        lastWorldTime.clear();
+        phaseVis.clear();
+        phaseFlux.clear();
+        phaseMax.clear();
+    }
 }

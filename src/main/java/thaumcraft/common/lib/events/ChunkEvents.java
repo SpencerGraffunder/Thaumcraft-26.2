@@ -2,12 +2,12 @@ package thaumcraft.common.lib.events;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.event.level.ChunkDataEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -21,107 +21,85 @@ import thaumcraft.common.lib.network.misc.PacketSealToClient;
 import thaumcraft.common.world.aura.AuraChunkHandler;
 
 /**
- * ChunkEvents - Handles chunk-based data persistence and syncing.
- * 
+ * ChunkEvents - Handles chunk-based seal syncing.
+ *
  * Responsibilities:
- * - Save seals to chunk NBT data
- * - Load seals from chunk NBT data
+ * - Restore seals from the chunk attachment when a chunk loads
+ * - Drop seals from memory when a chunk unloads
  * - Sync seals to players when they start watching a chunk
- * 
- * Ported from 1.12.2. Key changes:
- * - NBTTagCompound -> CompoundTag
- * - NBTTagList -> ListTag
- * - world.provider.getDimension() -> level.dimension()
- * - ChunkDataEvent APIs updated for 1.20.1
- * - ChunkWatchEvent.Watch -> ChunkWatchEvent.Watch with updated API
+ *
+ * Persistence of seals/aura into the chunk attachment is handled by
+ * {@link AuraChunkHandler#persistChunk(Level, ChunkPos)} (attachment
+ * auto-saves with the chunk NBT). This class deliberately does NOT write
+ * inside chunk-save callbacks - see the class-level note in AuraChunkHandler
+ * on the 26.2 save loop.
  */
 @EventBusSubscriber(modid = Thaumcraft.MODID)
 public class ChunkEvents {
     
-    private static final String THAUMCRAFT_DATA_KEY = "Thaumcraft";
+    private static final String THAUMCRAFT_DATA_KEY = "thaumcraft";
     private static final String SEALS_KEY = "seals";
     
     /**
-     * Save chunk data - seals are written to chunk NBT
+     * Called when a chunk is fully loaded: restore seals from the chunk attachment.
      */
     @SubscribeEvent
-    public static void onChunkSave(ChunkDataEvent.Save event) {
-        if (event.getLevel() instanceof Level level && !level.isClientSide()) {
-            ChunkPos chunkPos = event.getChunk().getPos();
+    public static void onChunkLoad(ChunkEvent.Load event) {
+        if (event.getLevel() == null || event.getLevel().isClientSide()) {
+            return;
+        }
+        
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+        
+        LevelChunk chunk = event.getChunk();
+        CompoundTag data = chunk.getData(AuraChunkHandler.CHUNK_DATA);
+        if (data == null || !data.contains(THAUMCRAFT_DATA_KEY)) {
+            return;
+        }
+        
+        CompoundTag thaumcraftData = data.getCompoundOrEmpty(THAUMCRAFT_DATA_KEY);
+        if (!thaumcraftData.contains(SEALS_KEY)) {
+            return;
+        }
+        
+        ListTag sealList = thaumcraftData.getListOrEmpty(SEALS_KEY);
+        for (int i = 0; i < sealList.size(); i++) {
+            CompoundTag sealNbt = sealList.getCompoundOrEmpty(i);
             
-            CompoundTag thaumcraftData = new CompoundTag();
-            
-            // Save seals in this chunk
-            ListTag sealList = new ListTag();
-            for (ISealEntity seal : SealHandler.getSealsInChunk(level, chunkPos)) {
-                if (seal.getSeal() != null) {
-                    CompoundTag sealNbt = seal.writeNBT();
-                    sealList.add(sealNbt);
+            try {
+                SealEntity seal = new SealEntity();
+                seal.readNBT(sealNbt);
+                
+                if (seal.getSeal() != null && seal.getSealPos() != null) {
+                    SealHandler.addSealEntity(level, seal);
                 }
-            }
-            
-            if (!sealList.isEmpty()) {
-                thaumcraftData.put(SEALS_KEY, sealList);
-            }
-            
-            // Only write data if we have something to save
-            if (!thaumcraftData.isEmpty()) {
-                CompoundTag data = event.getChunk().getData(AuraChunkHandler.CHUNK_DATA);
-                data.put(THAUMCRAFT_DATA_KEY, thaumcraftData);
-                event.getChunk().setData(AuraChunkHandler.CHUNK_DATA, data);
-                event.getChunk().markUnsaved();
-            }
-            
-            // Clean up seals from unloaded chunks to prevent memory leaks
-            // Only do this if the chunk is actually being unloaded (not just saved)
-            if (event.getChunk() instanceof LevelChunk levelChunk && !levelChunk.isUnsaved()) {
-                // Chunk is being unloaded, remove seals from memory
-                for (ISealEntity seal : SealHandler.getSealsInChunk(level, chunkPos)) {
-                    SealHandler.removeSealEntity(level, seal.getSealPos(), true);
-                }
+            } catch (Exception e) {
+                Thaumcraft.LOGGER.error("Failed to load seal from chunk data", e);
             }
         }
     }
     
     /**
-     * Load chunk data - seals are read from chunk NBT
+     * Called when a chunk is unloaded: drop its seals from memory.
+     * (Their data was persisted into the attachment by AuraChunkHandler.)
      */
     @SubscribeEvent
-    public static void onChunkLoad(ChunkDataEvent.Load event) {
-        if (event.getLevel() instanceof Level level && !level.isClientSide()) {
-            CompoundTag data = event.getChunk().getData(AuraChunkHandler.CHUNK_DATA);
-            
-            if (data.contains(THAUMCRAFT_DATA_KEY)) {
-                CompoundTag thaumcraftData = data.getCompoundOrEmpty(THAUMCRAFT_DATA_KEY);
-                
-                // Load seals
-                if (thaumcraftData.contains(SEALS_KEY)) {
-                    ListTag sealList = thaumcraftData.getListOrEmpty(SEALS_KEY);
-                    
-                    for (int i = 0; i < sealList.size(); i++) {
-                        CompoundTag sealNbt = sealList.getCompoundOrEmpty(i);
-                        
-                        try {
-                            SealEntity seal = new SealEntity();
-                            seal.readNBT(sealNbt);
-                            
-                            if (seal.getSeal() != null && seal.getSealPos() != null) {
-                                SealHandler.addSealEntity(level, seal);
-                            }
-                        } catch (Exception e) {
-                            Thaumcraft.LOGGER.error("Failed to load seal from chunk data", e);
-                        }
-                    }
-                }
+    public static void onChunkUnload(ChunkEvent.Unload event) {
+        if (event.getLevel() == null || event.getLevel().isClientSide()) {
+            return;
+        }
+        
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+        
+        ChunkPos chunkPos = event.getChunk().getPos();
+        for (ISealEntity seal : SealHandler.getSealsInChunk(level, chunkPos)) {
+            if (seal.getSeal() != null) {
+                SealHandler.removeSealEntity(level, seal.getSealPos(), true);
             }
-            
-            // TODO: When Aura system is implemented, load aura data here as well
-            // if (thaumcraftData.contains("base")) {
-            //     short base = thaumcraftData.getShortOr("base", (short)0);
-            //     float vis = thaumcraftData.getFloatOr("vis", 0.0F);
-            //     float flux = thaumcraftData.getFloatOr("flux", 0.0F);
-            //     AuraHandler.addAuraChunk(level.dimension(), event.getChunk(), base, vis, flux);
-            // }
         }
     }
     
