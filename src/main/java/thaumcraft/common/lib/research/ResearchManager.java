@@ -399,7 +399,7 @@ public class ResearchManager {
                     } else if (iconStrings[i].startsWith("focus")) {
                         icons[i] = iconStrings[i];
                     } else {
-                        icons[i] = Identifier.withDefaultNamespace(iconStrings[i]);
+                        icons[i] = Identifier.parse(iconStrings[i]);
                     }
                 }
                 entry.setIcons(icons);
@@ -645,7 +645,7 @@ public class ResearchManager {
         if (array == null || array.isEmpty()) return null;
         List<Identifier> list = new ArrayList<>();
         for (JsonElement e : array) {
-            list.add(Identifier.withDefaultNamespace(e.getAsString()));
+            list.add(Identifier.parse(e.getAsString()));
         }
         return list.toArray(new Identifier[0]);
     }
@@ -728,14 +728,14 @@ public class ResearchManager {
         name = name.toLowerCase();
         
         try {
-            Identifier itemId = Identifier.withDefaultNamespace(name);
+            Identifier itemId = Identifier.parse(name);
             Item item = BuiltInRegistries.ITEM.getValue(itemId);
             
             if (item == null || item == net.minecraft.world.item.Items.AIR) {
                 // Item not found - try fallback mappings for common old names
                 String mappedName = LEGACY_ITEM_MAPPINGS.get(name);
                 if (mappedName != null) {
-                    itemId = Identifier.withDefaultNamespace(mappedName);
+                    itemId = Identifier.parse(mappedName);
                     item = BuiltInRegistries.ITEM.getValue(itemId);
                 }
             }

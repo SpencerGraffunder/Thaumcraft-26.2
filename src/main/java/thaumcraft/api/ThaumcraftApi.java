@@ -289,7 +289,7 @@ public class ThaumcraftApi {
      */
     public static void registerObjectTag(String tagName, AspectList aspects) {
         try {
-            Identifier tagLoc = Identifier.withDefaultNamespace(tagName);
+            Identifier tagLoc = Identifier.parse(tagName);
             net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.ItemTags.create(tagLoc);
             for (net.minecraft.core.Holder<Item> holder : net.minecraft.core.registries.BuiltInRegistries.ITEM.getTagOrEmpty(tagKey)) {
                 registerObjectTag(new ItemStack(holder.value()), aspects.copy());
@@ -329,7 +329,7 @@ public class ThaumcraftApi {
 
     public static void registerComplexObjectTag(String tagName, AspectList aspects) {
         try {
-            Identifier tagLoc = Identifier.withDefaultNamespace(tagName);
+            Identifier tagLoc = Identifier.parse(tagName);
             net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.ItemTags.create(tagLoc);
             for (net.minecraft.core.Holder<Item> holder : net.minecraft.core.registries.BuiltInRegistries.ITEM.getTagOrEmpty(tagKey)) {
                 registerComplexObjectTag(new ItemStack(holder.value()), aspects.copy());
@@ -377,7 +377,7 @@ public class ThaumcraftApi {
         CommonInternals.scanEntities.add(new EntityTags(entityName, aspects, nbt));
         if (nbt == null || nbt.length == 0) {
             try {
-                AspectHelper.registerEntityTag(Identifier.withDefaultNamespace(entityName), aspects);
+                AspectHelper.registerEntityTag(Identifier.parse(entityName), aspects);
             } catch (Exception e) {}
         }
     }

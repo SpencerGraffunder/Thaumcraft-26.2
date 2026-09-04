@@ -254,7 +254,7 @@ public class InternalMethodHandler implements IInternalMethodHandler {
         }
         
         try {
-            Identifier loc = Identifier.withDefaultNamespace(dimension);
+            Identifier loc = Identifier.parse(dimension);
             return ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, loc);
         } catch (Exception e) {
             return null;

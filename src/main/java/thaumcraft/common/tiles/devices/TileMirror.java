@@ -82,7 +82,7 @@ public class TileMirror extends TileThaumcraft implements Container {
         linkZ = input.getIntOr("LinkZ", 0);
         if (input.keySet().contains("LinkDim")) {
             linkDimension = ResourceKey.create(Registries.DIMENSION, 
-                Identifier.withDefaultNamespace(input.getStringOr("LinkDim", "")));
+                Identifier.parse(input.getStringOr("LinkDim", "")));
         }
         instability = input.getIntOr("Instability", 0);
     }

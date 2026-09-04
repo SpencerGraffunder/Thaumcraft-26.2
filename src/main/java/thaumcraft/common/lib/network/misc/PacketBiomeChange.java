@@ -89,7 +89,7 @@ public class PacketBiomeChange implements CustomPacketPayload {
         BlockPos pos = new BlockPos(packet.x, packet.y, packet.z);
         
         // Get the biome from registry
-        Identifier biomeRL = Identifier.withDefaultNamespace(packet.biomeId);
+        Identifier biomeRL = Identifier.parse(packet.biomeId);
         var biomeRegistry = level.registryAccess().lookupOrThrow(Registries.BIOME);
         Holder<Biome> biomeHolder = biomeRegistry.get(ResourceKey.create(Registries.BIOME, biomeRL)).orElse(null);
         

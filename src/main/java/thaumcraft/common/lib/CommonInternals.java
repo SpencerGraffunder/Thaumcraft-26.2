@@ -284,7 +284,7 @@ public class CommonInternals {
      * Helper method to register aspects for an item by string ID.
      */
     private static void registerAspects(String itemId, AspectList aspects) {
-        AspectHelper.registerObjectTag(Identifier.withDefaultNamespace(itemId), aspects);
+        AspectHelper.registerObjectTag(Identifier.parse(itemId), aspects);
     }
 
     /**
@@ -321,19 +321,19 @@ public class CommonInternals {
      */
     public static void initSmeltingBonuses() {
         // Iron ore gives nuggets as bonus
-        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:raw_iron"),
+        registerSmeltingBonus(Identifier.parse("minecraft:raw_iron"),
                 new ItemStack(Items.IRON_NUGGET, 1));
-        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:iron_ore"),
+        registerSmeltingBonus(Identifier.parse("minecraft:iron_ore"),
                 new ItemStack(Items.IRON_NUGGET, 1));
         
         // Gold ore gives nuggets as bonus
-        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:raw_gold"),
+        registerSmeltingBonus(Identifier.parse("minecraft:raw_gold"),
                 new ItemStack(Items.GOLD_NUGGET, 1));
-        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:gold_ore"),
+        registerSmeltingBonus(Identifier.parse("minecraft:gold_ore"),
                 new ItemStack(Items.GOLD_NUGGET, 1));
         
         // Copper ore gives extra copper
-        registerSmeltingBonus(Identifier.withDefaultNamespace("minecraft:raw_copper"),
+        registerSmeltingBonus(Identifier.parse("minecraft:raw_copper"),
                 new ItemStack(Items.COPPER_INGOT, 1));
         
         // Wood gives charcoal and ash (when ash item is added)

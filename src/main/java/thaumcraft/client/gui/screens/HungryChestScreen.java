@@ -20,7 +20,7 @@ public class HungryChestScreen extends AbstractContainerScreen<HungryChestMenu> 
     
     // Use vanilla chest texture for now, or create custom one
     private static final Identifier TEXTURE = 
-            Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
+            Identifier.parse("textures/gui/container/generic_54.png");
     
     // Hungry chest has 3 rows (same as small chest)
     private static final int ROWS = 3;

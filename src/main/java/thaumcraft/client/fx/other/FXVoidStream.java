@@ -22,7 +22,7 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class FXVoidStream extends ThaumcraftParticle {
     
-    private static final Identifier VOID_TEX = Identifier.withDefaultNamespace("textures/entity/end_portal.png");
+    private static final Identifier VOID_TEX = Identifier.parse("textures/entity/end_portal.png");
     
     private final double targetX, targetY, targetZ;
     private final double startX, startY, startZ;

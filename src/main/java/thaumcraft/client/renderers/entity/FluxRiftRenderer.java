@@ -34,7 +34,7 @@ import java.util.List;
 public class FluxRiftRenderer extends EntityRenderer<EntityFluxRift, FluxRiftRenderState> {
     
     private static final Identifier RIFT_TEXTURE = 
-            Identifier.withDefaultNamespace("textures/entity/end_portal.png");
+            Identifier.parse("textures/entity/end_portal.png");
     
     public FluxRiftRenderer(EntityRendererProvider.Context context) {
         super(context);

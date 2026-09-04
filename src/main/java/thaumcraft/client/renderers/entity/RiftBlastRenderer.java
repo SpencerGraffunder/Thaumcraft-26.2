@@ -25,7 +25,7 @@ import thaumcraft.common.entities.projectile.EntityRiftBlast;
 public class RiftBlastRenderer extends EntityRenderer<EntityRiftBlast, RiftBlastRenderState> {
     
     private static final Identifier TEXTURE = 
-            Identifier.withDefaultNamespace("textures/entity/end_portal.png");
+            Identifier.parse("textures/entity/end_portal.png");
     
     public RiftBlastRenderer(EntityRendererProvider.Context context) {
         super(context);
