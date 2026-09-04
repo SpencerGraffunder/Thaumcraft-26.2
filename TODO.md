@@ -13,6 +13,93 @@
 - [ ] Visual QA — several renderers use compile-first approximations
       (billboard beams, block-atlas sprite substitutions, banner tint limits)
 
+## P1: Verified functional gaps (2026-09-04) — fix before in-game QA
+
+Verified against the NeoForge 26.2.0.59 universal jar and the official
+NeoForge 26.2.x source. Each item below breaks a core system at runtime.
+
+### 1. Worldgen dead — biome modifiers never load
+
+- 14 files under `src/main/resources/data/thaumcraft/forge/biome_modifier/`
+  (1.20.1 Forge layout), all with `"type": "forge:add_features"`.
+- NeoForge 26.2 registers modifier codecs under namespace `neoforge`
+  (`NeoForgeMod.MOD_ID = "neoforge"`); `AddFeaturesBiomeModifier` javadoc
+  requires `"type": "neoforge:add_features"`; datapack directory is
+  `data/<ns>/neoforge/biome_modifier/`.
+- Effect: no greatwood/silverwood trees, no TC ores, no crystal clusters,
+  no ruined towers / eldritch obelisks / barrows / ancient stone circles,
+  no cinderpearl / vishroom — none of the worldgen features ever apply.
+- Fix:
+
+  ```bash
+  git mv src/main/resources/data/thaumcraft/forge/biome_modifier \
+         src/main/resources/data/thaumcraft/neoforge/biome_modifier
+  sed -i 's/"type": "forge:add_features"/"type": "neoforge:add_features"/' \
+         src/main/resources/data/thaumcraft/neoforge/biome_modifier/*.json
+  ```
+
+- Verify: fresh world — forest biomes grow greatwood/silverwood trees;
+  TC ore veins appear in stone/deepslate.
+
+### 2. `#forge:` tags dead — recipes uncraftable, cross-mod tag membership invisible
+
+- NeoForge 26.2 ships 593 `data/c/tags/` files and **zero** `data/forge/tags/`;
+  the `forge:` namespace is not loaded at all.
+- Port has 40 tag definitions under `data/forge/tags/{items,blocks}/` (dead)
+  and 26 distinct `#forge:` ingredient refs in recipes (~90 usages) that match
+  nothing → those recipes are uncraftable (rods, ingots, gems, dyes, …).
+- Fix:
+  1. `git mv src/main/resources/data/forge/tags/items src/main/resources/data/c/tags/items`
+  2. `git mv src/main/resources/data/forge/tags/blocks src/main/resources/data/c/tags/block`
+     (26.2 uses singular `block` for block tags)
+  3. Rewrite recipe refs `#forge:X` → `#c:X`. 18 of the 26 exist in the
+     convention set: `rods/wooden`, `ingots/{gold,iron}`,
+     `gems/{quartz,emerald,diamond}`, `glass_panes`, `dyes/{black,red}`,
+     `nuggets/gold`, `dusts/{redstone,glowstone}`, `ores/{iron,gold,copper}`.
+  4. Renames: `#forge:leather` (7 refs) → `#c:leathers`; `#forge:glass`
+     (2 refs) → `#c:glass_blocks/colorless` (both convention tags verified
+     to contain `minecraft:` equivalents in the 26.2 jar). Then drop the
+     now-redundant port definitions `data/c/tags/items/{leather,glass}.json`.
+  5. Custom tags (not in the convention set) resolve via the port's own
+     moved definitions: `string`, `stone`, `trapdoors/wooden`, `slimeballs`,
+     `ingots/brass`, `gems/amber`, `workbenches`, `cobblestone`.
+- Verify: JEI — arcane-workbench recipes with rod/ingot/gem ingredients are
+  craftable; TC ores appear under `c:ores/{iron,gold,copper}`; other mods'
+  recipes matching `c:ingots/thaumium` etc. now work.
+
+### 3. Six block classes never create their block entities (machines dead)
+
+Tile classes exist and are implemented; the blocks return `null` with
+`// TODO: Return Tile… when implemented`:
+
+| Block (`common/blocks/…`) | Tile(s) to return (`common/tiles/…`) |
+|---|---|
+| `crafting/BlockInfusionMatrix` | `crafting/TileInfusionMatrix` |
+| `essentia/BlockTube` | `essentia/TileTube` + `TileTubeFilter` / `TileTubeBuffer` / `TileTubeValve` / `TileTubeOneway` / `TileTubeRestrict` (pick by tube type) |
+| `essentia/BlockAlembic` | `essentia/TileAlembic` |
+| `devices/BlockLamp` | `devices/TileLampArcane` / `TileLampFertility` / `TileLampGrowth` (pick by lamp type) |
+| `devices/BlockMirror` | `devices/TileMirror` / `TileMirrorEssentia` |
+| `devices/BlockStabilizer` | `devices/TileStabilizer` |
+
+Effect: infusion altar, stabilizers, the entire essentia transport network
+(tubes/valves/filters/buffers), alembic, lamps, mirrors — none function.
+Copy the 26.2 constructor pattern from a working block, e.g. `BlockCondenser`:
+`new TileCondenser(ModBlockEntities.CONDENSER.get(), pos, state)` — 26.2
+`BlockEntity` constructors take the `BlockEntityType` first.
+
+## Suggested order for the next session
+
+1. P1.1 + P1.2 — data migrations (mechanical: 2 `git mv`s + seds, then
+   `CI=true ./gradlew build`)
+2. P1.3 — wire the 6 blocks to their tiles; in-game test each machine
+   (infusion altar + stabilizers first, then a tube network)
+3. Re-run the Outstanding list — worldgen now actually generates; crafting
+   UIs functional; entity spawning
+4. Port `wand_workbench` (Known issues)
+5. Full feature-gap audit vs the 1.20.1 reference — a subagent pass was
+   aborted before writing its report (partial transcript:
+   `history://GapAudit`; reference tarball may still be at `/tmp/refrepo`)
+
 ## Verified (2026-09-04)
 
 - Fresh-world server boots to "Done"; aura scheduler ticks continuously
