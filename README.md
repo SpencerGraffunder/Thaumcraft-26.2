@@ -44,13 +44,19 @@ builds on every push with JDK 25 and uploads the jar as an artifact.
 ## Running
 
 ```bash
-./gradlew runClient   # client
-./gradlew runServer   # dedicated server
-./gradlew runGameTestServer
+CI=true ./gradlew runClient   # client
+CI=true ./gradlew runServer   # dedicated server
+CI=true ./gradlew runGameTestServer
 ```
 
 Dev note: `run/server.properties` sets `max-tick-time=300000` (first-boot world
 saves exceed the 60s default watchdog).
+
+Dev note: keep `CI=true` set for local runs — without it, NeoGradle takes the
+local decompile→patch→recompile pipeline, which is broken on this toolchain
+(`neoFormPatch` fails on `var1` parameter names from the decompiler). The
+`runServer` console does not forward a typed `stop` to the server process —
+stop it with Ctrl+C/SIGINT.
 
 ## Deployment
 
