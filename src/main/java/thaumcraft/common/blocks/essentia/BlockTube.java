@@ -27,6 +27,13 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 
 import javax.annotation.Nullable;
 import thaumcraft.init.BlockRegistration;
+import thaumcraft.common.tiles.essentia.TileTube;
+import thaumcraft.common.tiles.essentia.TileTubeBuffer;
+import thaumcraft.common.tiles.essentia.TileTubeFilter;
+import thaumcraft.common.tiles.essentia.TileTubeOneway;
+import thaumcraft.common.tiles.essentia.TileTubeRestrict;
+import thaumcraft.common.tiles.essentia.TileTubeValve;
+import thaumcraft.init.ModBlockEntities;
 
 /**
  * Essentia tubes for transporting essentia between containers.
@@ -168,8 +175,14 @@ public class BlockTube extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // TODO: Return appropriate tile entity based on tube type
-        return null;
+        return switch (tubeType) {
+            case NORMAL -> new TileTube(ModBlockEntities.TUBE.get(), pos, state);
+            case RESTRICTED -> new TileTubeRestrict(ModBlockEntities.TUBE_RESTRICT.get(), pos, state);
+            case FILTER -> new TileTubeFilter(ModBlockEntities.TUBE_FILTER.get(), pos, state);
+            case VALVE -> new TileTubeValve(ModBlockEntities.TUBE_VALVE.get(), pos, state);
+            case BUFFER -> new TileTubeBuffer(ModBlockEntities.TUBE_BUFFER.get(), pos, state);
+            case ONEWAY -> new TileTubeOneway(ModBlockEntities.TUBE_ONEWAY.get(), pos, state);
+        };
     }
 
     /**

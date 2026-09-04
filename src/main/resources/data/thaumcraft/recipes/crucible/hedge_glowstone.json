@@ -1,7 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "HEDGEALCHEMY",
-  "catalyst": "#forge:dusts/glowstone",
+  "catalyst": "#c:dusts/glowstone",
   "aspects": {
     "lux": 5,
     "sensus": 5

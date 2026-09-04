@@ -10,7 +10,7 @@
   "key": {
     "I": "thaumcraft:plate_iron",
     "N": "minecraft:quartz",
-    "S": "#forge:rods/wooden"
+    "S": "#c:rods/wooden"
   },
   "result": "thaumcraft:resonator"
 }

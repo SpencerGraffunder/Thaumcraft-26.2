@@ -9,7 +9,7 @@
   },
   "input": "thaumcraft:seal_guard",
   "ingredients": [
-    "#forge:leather",
+    "#c:leathers",
     "#minecraft:wool",
     "minecraft:rabbit_hide",
     "minecraft:porkchop",

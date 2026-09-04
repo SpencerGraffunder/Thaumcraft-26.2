@@ -1,7 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "BASEALCHEMY",
-  "catalyst": "#forge:gems/quartz",
+  "catalyst": "#c:gems/quartz",
   "aspects": {
     "aer": 2
   },

@@ -8,7 +8,7 @@
   "ingredients": [
     "minecraft:clay_ball",
     "thaumcraft:tallow",
-    "#forge:dyes/red",
+    "#c:dyes/red",
     "#thaumcraft:nitor"
   ],
   "result": {

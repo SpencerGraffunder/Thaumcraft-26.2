@@ -4,13 +4,13 @@
   "instability": 5,
   "center": "minecraft:gold_ingot",
   "ingredients": [
-    "#forge:gems/emerald",
+    "#c:gems/emerald",
     "minecraft:writable_book",
-    "#forge:gems/emerald",
+    "#c:gems/emerald",
     "minecraft:writable_book",
-    "#forge:gems/emerald",
+    "#c:gems/emerald",
     "minecraft:writable_book",
-    "#forge:gems/emerald",
+    "#c:gems/emerald",
     "minecraft:writable_book"
   ],
   "aspects": {

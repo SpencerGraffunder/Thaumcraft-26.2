@@ -12,8 +12,8 @@
   ],
   "key": {
     "W": "#minecraft:planks",
-    "I": "#forge:ingots/iron",
-    "L": "#forge:leather"
+    "I": "#c:ingots/iron",
+    "L": "#c:leathers"
   },
   "result": "thaumcraft:bellows"
 }

@@ -7,8 +7,8 @@
     "thaumcraft:plate_thaumium",
     "thaumcraft:plate_thaumium",
     "thaumcraft:plate_thaumium",
-    "#forge:ingots/gold",
-    "#forge:leather"
+    "#c:ingots/gold",
+    "#c:leathers"
   ],
   "aspects": {
     "metallum": 50,

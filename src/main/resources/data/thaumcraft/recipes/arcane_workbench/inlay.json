@@ -11,7 +11,7 @@
     "GGG"
   ],
   "key": {
-    "G": "#forge:nuggets/gold"
+    "G": "#c:nuggets/gold"
   },
   "result": {
     "id": "thaumcraft:inlay",

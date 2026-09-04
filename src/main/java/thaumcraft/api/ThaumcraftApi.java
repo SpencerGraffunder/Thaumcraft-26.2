@@ -73,7 +73,7 @@ public class ThaumcraftApi {
     
     /**
      * This method is used to determine what bonus items are generated when the infernal furnace smelts items.
-     * @param in The input of the smelting operation. Can either be an ItemStack or a tag string (e.g. "forge:ores/gold")
+     * @param in The input of the smelting operation. Can either be an ItemStack or a tag string (e.g. "c:ores/gold")
      * @param out The bonus item that can be produced from the smelting operation.
      * @param chance the base chance of the item being produced as a bonus. Default value is .33f
      */
@@ -284,7 +284,7 @@ public class ThaumcraftApi {
     
     /**
      * Used to assign aspects to the given item tag. 
-     * @param tagName the tag name (e.g. "forge:ingots/iron")
+     * @param tagName the tag name (e.g. "c:ingots/iron")
      * @param aspects A AspectList of the associated aspects
      */
     public static void registerObjectTag(String tagName, AspectList aspects) {

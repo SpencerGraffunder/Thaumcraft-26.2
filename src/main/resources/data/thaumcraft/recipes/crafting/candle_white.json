@@ -6,7 +6,7 @@
     " T "
   ],
   "key": {
-    "S": "#forge:string",
+    "S": "#c:string",
     "T": "thaumcraft:tallow"
   },
   "result": {

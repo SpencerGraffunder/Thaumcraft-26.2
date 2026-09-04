@@ -1,7 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "UNLOCKALCHEMY",
-  "catalyst": "#forge:slimeballs",
+  "catalyst": "#c:slimeballs",
   "aspects": {
     "vinculum": 5
   },

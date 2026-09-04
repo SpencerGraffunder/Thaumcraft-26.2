@@ -13,7 +13,7 @@
   ],
   "key": {
     "T": "thaumcraft:thaumium_ingot",
-    "S": "#forge:rods/wooden"
+    "S": "#c:rods/wooden"
   },
   "result": "thaumcraft:thaumium_pick"
 }

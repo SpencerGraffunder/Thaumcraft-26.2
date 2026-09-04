@@ -11,7 +11,7 @@
     "SSS"
   ],
   "key": {
-    "S": "#forge:string",
+    "S": "#c:string",
     "H": "minecraft:tripwire_hook",
     "G": "thaumcraft:mechanism_simple"
   },

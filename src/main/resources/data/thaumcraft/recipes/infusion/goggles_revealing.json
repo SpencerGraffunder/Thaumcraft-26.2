@@ -5,9 +5,9 @@
   "center": "thaumcraft:goggles",
   "ingredients": [
     "thaumcraft:thaumometer",
-    "#forge:gems/diamond",
+    "#c:gems/diamond",
     "thaumcraft:salis_mundus",
-    "#forge:gems/diamond"
+    "#c:gems/diamond"
   ],
   "aspects": {
     "praecantatio": 20,

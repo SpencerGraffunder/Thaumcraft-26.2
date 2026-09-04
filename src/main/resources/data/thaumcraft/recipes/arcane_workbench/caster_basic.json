@@ -18,8 +18,8 @@
   "key": {
     "T": "thaumcraft:thaumometer",
     "R": "thaumcraft:vis_resonator",
-    "L": "#forge:leather",
-    "I": "#forge:ingots/iron"
+    "L": "#c:leathers",
+    "I": "#c:ingots/iron"
   },
   "result": "thaumcraft:caster_basic"
 }

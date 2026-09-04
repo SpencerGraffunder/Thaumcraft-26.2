@@ -4,7 +4,7 @@
   "instability": 5,
   "center": "thaumcraft:mirror_item",
   "ingredients": [
-    "#forge:rods/wooden",
+    "#c:rods/wooden",
     "minecraft:compass",
     "minecraft:map"
   ],

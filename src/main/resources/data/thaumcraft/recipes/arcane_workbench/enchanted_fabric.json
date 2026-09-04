@@ -9,7 +9,7 @@
     " S "
   ],
   "key": {
-    "S": "#forge:string",
+    "S": "#c:string",
     "C": "#minecraft:wool"
   },
   "result": "thaumcraft:enchanted_fabric"

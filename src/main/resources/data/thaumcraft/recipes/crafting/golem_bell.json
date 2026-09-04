@@ -6,8 +6,8 @@
     "S  "
   ],
   "key": {
-    "S": "#forge:rods/wooden",
-    "Q": "#forge:gems/quartz"
+    "S": "#c:rods/wooden",
+    "Q": "#c:gems/quartz"
   },
   "result": {
     "id": "thaumcraft:golem_bell",

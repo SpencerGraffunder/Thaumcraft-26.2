@@ -15,6 +15,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import thaumcraft.init.BlockRegistration;
+import thaumcraft.common.tiles.devices.TileStabilizer;
+import thaumcraft.init.ModBlockEntities;
 
 /**
  * Runic matrix stabilizer for infusion crafting.
@@ -60,7 +62,6 @@ public class BlockStabilizer extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // TODO: Return TileStabilizer when implemented
-        return null;
+        return new TileStabilizer(ModBlockEntities.STABILIZER.get(), pos, state);
     }
 }

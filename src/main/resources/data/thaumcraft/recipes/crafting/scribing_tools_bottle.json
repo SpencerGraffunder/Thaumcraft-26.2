@@ -3,7 +3,7 @@
   "ingredients": [
     "minecraft:glass_bottle",
     "minecraft:feather",
-    "#forge:dyes/black"
+    "#c:dyes/black"
   ],
   "result": {
     "id": "thaumcraft:scribing_tools",

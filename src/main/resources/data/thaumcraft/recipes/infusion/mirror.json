@@ -4,9 +4,9 @@
   "instability": 1,
   "center": "thaumcraft:mirrored_glass",
   "ingredients": [
-    "#forge:ingots/gold",
-    "#forge:ingots/gold",
-    "#forge:ingots/gold",
+    "#c:ingots/gold",
+    "#c:ingots/gold",
+    "#c:ingots/gold",
     "minecraft:ender_pearl"
   ],
   "aspects": {

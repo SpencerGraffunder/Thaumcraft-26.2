@@ -12,7 +12,7 @@
     "BCB"
   ],
   "key": {
-    "P": "#forge:glass_panes",
+    "P": "#c:glass_panes",
     "G": "thaumcraft:mechanism_simple",
     "B": "#thaumcraft:plates/brass",
     "C": "minecraft:comparator"

@@ -8,7 +8,7 @@
   },
   "ingredients": [
     "thaumcraft:quicksilver",
-    "#forge:glass_panes"
+    "#c:glass_panes"
   ],
   "result": "thaumcraft:mirrored_glass"
 }

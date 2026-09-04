@@ -7,7 +7,7 @@
   ],
   "key": {
     "I": "thaumcraft:void_metal_ingot",
-    "S": "#forge:rods/wooden"
+    "S": "#c:rods/wooden"
   },
   "result": {
     "id": "thaumcraft:void_hoe",

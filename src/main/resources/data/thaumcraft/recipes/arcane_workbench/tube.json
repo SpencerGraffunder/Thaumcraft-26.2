@@ -10,7 +10,7 @@
   "key": {
     "Q": "thaumcraft:quicksilver",
     "I": "thaumcraft:plate_iron",
-    "G": "#forge:glass",
+    "G": "#c:glass",
     "B": "thaumcraft:brass_nugget"
   },
   "result": {

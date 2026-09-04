@@ -13,14 +13,17 @@
 - [ ] Visual QA — several renderers use compile-first approximations
       (billboard beams, block-atlas sprite substitutions, banner tint limits)
 
-## P1: Verified functional gaps (2026-09-04) — fix before in-game QA
+## P1: Functional gaps — RESOLVED (2026-09-04)
 
-Verified against the NeoForge 26.2.0.59 universal jar and the official
-NeoForge 26.2.x source. Each item below breaks a core system at runtime.
+All three fixed and build-verified (`BUILD SUCCESSFUL`); in-game
+verification still outstanding.
+
+Diagnosis was verified against the NeoForge 26.2.0.59 universal jar and
+the official NeoForge 26.2.x source before fixing.
 
 ### 1. Worldgen dead — biome modifiers never load
 
-- 14 files under `src/main/resources/data/thaumcraft/forge/biome_modifier/`
+- 13 files under `src/main/resources/data/thaumcraft/forge/biome_modifier/`
   (1.20.1 Forge layout), all with `"type": "forge:add_features"`.
 - NeoForge 26.2 registers modifier codecs under namespace `neoforge`
   (`NeoForgeMod.MOD_ID = "neoforge"`); `AddFeaturesBiomeModifier` javadoc
@@ -89,14 +92,14 @@ Copy the 26.2 constructor pattern from a working block, e.g. `BlockCondenser`:
 
 ## Suggested order for the next session
 
-1. P1.1 + P1.2 — data migrations (mechanical: 2 `git mv`s + seds, then
-   `CI=true ./gradlew build`)
-2. P1.3 — wire the 6 blocks to their tiles; in-game test each machine
-   (infusion altar + stabilizers first, then a tube network)
-3. Re-run the Outstanding list — worldgen now actually generates; crafting
-   UIs functional; entity spawning
-4. Port `wand_workbench` (Known issues)
-5. Full feature-gap audit vs the 1.20.1 reference — a subagent pass was
+1. In-game QA of the P1 fixes — fresh world: greatwood/silverwood trees +
+   TC ores generate; JEI shows the rod/ingot/gem recipes craftable;
+   infusion altar + stabilizers craft; a tube network moves essentia;
+   alembic/lamps/mirrors/stabilizer tiles function
+2. Re-run the Outstanding list — entity spawning/behaviour, crafting UIs,
+   taint biome
+3. Port `wand_workbench` (Known issues)
+4. Full feature-gap audit vs the 1.20.1 reference — a subagent pass was
    aborted before writing its report (partial transcript:
    `history://GapAudit`; reference tarball may still be at `/tmp/refrepo`)
 

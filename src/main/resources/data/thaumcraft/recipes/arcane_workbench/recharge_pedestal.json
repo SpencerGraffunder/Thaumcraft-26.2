@@ -13,9 +13,9 @@
   ],
   "key": {
     "R": "thaumcraft:vis_resonator",
-    "D": "#forge:gems/diamond",
-    "I": "#forge:ingots/gold",
-    "S": "#forge:stone"
+    "D": "#c:gems/diamond",
+    "I": "#c:ingots/gold",
+    "S": "#c:stone"
   },
   "result": "thaumcraft:recharge_pedestal"
 }

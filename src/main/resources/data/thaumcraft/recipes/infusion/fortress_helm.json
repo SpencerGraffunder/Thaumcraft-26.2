@@ -6,9 +6,9 @@
   "ingredients": [
     "thaumcraft:plate_thaumium",
     "thaumcraft:plate_thaumium",
-    "#forge:ingots/gold",
-    "#forge:ingots/gold",
-    "#forge:gems/emerald"
+    "#c:ingots/gold",
+    "#c:ingots/gold",
+    "#c:gems/emerald"
   ],
   "aspects": {
     "metallum": 50,

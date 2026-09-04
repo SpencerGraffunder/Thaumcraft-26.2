@@ -108,42 +108,42 @@ public class ConfigAspects {
     
     private static void registerItemAspects() {
         // Basic Ores - Using forge tags for compatibility
-        ThaumcraftApi.registerObjectTag("forge:ores/lapis", new AspectList().add(Aspect.EARTH, 5).add(Aspect.SENSES, 15));
-        ThaumcraftApi.registerObjectTag("forge:ores/diamond", new AspectList().add(Aspect.EARTH, 5).add(Aspect.DESIRE, 15).add(Aspect.CRYSTAL, 15));
-        ThaumcraftApi.registerObjectTag("forge:gems/diamond", new AspectList().add(Aspect.CRYSTAL, 15).add(Aspect.DESIRE, 15));
-        ThaumcraftApi.registerObjectTag("forge:ores/redstone", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENERGY, 15));
+        ThaumcraftApi.registerObjectTag("c:ores/lapis", new AspectList().add(Aspect.EARTH, 5).add(Aspect.SENSES, 15));
+        ThaumcraftApi.registerObjectTag("c:ores/diamond", new AspectList().add(Aspect.EARTH, 5).add(Aspect.DESIRE, 15).add(Aspect.CRYSTAL, 15));
+        ThaumcraftApi.registerObjectTag("c:gems/diamond", new AspectList().add(Aspect.CRYSTAL, 15).add(Aspect.DESIRE, 15));
+        ThaumcraftApi.registerObjectTag("c:ores/redstone", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENERGY, 15));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.REDSTONE_ORE), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENERGY, 15));
-        ThaumcraftApi.registerObjectTag("forge:ores/emerald", new AspectList().add(Aspect.EARTH, 5).add(Aspect.DESIRE, 10).add(Aspect.CRYSTAL, 15));
-        ThaumcraftApi.registerObjectTag("forge:gems/emerald", new AspectList().add(Aspect.CRYSTAL, 15).add(Aspect.DESIRE, 10));
-        ThaumcraftApi.registerObjectTag("forge:ores/quartz", new AspectList().add(Aspect.EARTH, 5).add(Aspect.CRYSTAL, 10));
-        ThaumcraftApi.registerObjectTag("forge:gems/quartz", new AspectList().add(Aspect.CRYSTAL, 5));
-        ThaumcraftApi.registerObjectTag("forge:ores/iron", new AspectList().add(Aspect.EARTH, 5).add(Aspect.METAL, 15));
-        ThaumcraftApi.registerObjectTag("forge:dusts/iron", new AspectList().add(Aspect.METAL, 15).add(Aspect.ENTROPY, 1));
-        ThaumcraftApi.registerObjectTag("forge:ingots/iron", new AspectList().add(Aspect.METAL, 15));
-        ThaumcraftApi.registerObjectTag("forge:ores/gold", new AspectList().add(Aspect.EARTH, 5).add(Aspect.METAL, 10).add(Aspect.DESIRE, 10));
-        ThaumcraftApi.registerObjectTag("forge:dusts/gold", new AspectList().add(Aspect.METAL, 10).add(Aspect.DESIRE, 10).add(Aspect.ENTROPY, 1));
-        ThaumcraftApi.registerObjectTag("forge:ingots/gold", new AspectList().add(Aspect.METAL, 10).add(Aspect.DESIRE, 10));
+        ThaumcraftApi.registerObjectTag("c:ores/emerald", new AspectList().add(Aspect.EARTH, 5).add(Aspect.DESIRE, 10).add(Aspect.CRYSTAL, 15));
+        ThaumcraftApi.registerObjectTag("c:gems/emerald", new AspectList().add(Aspect.CRYSTAL, 15).add(Aspect.DESIRE, 10));
+        ThaumcraftApi.registerObjectTag("c:ores/quartz", new AspectList().add(Aspect.EARTH, 5).add(Aspect.CRYSTAL, 10));
+        ThaumcraftApi.registerObjectTag("c:gems/quartz", new AspectList().add(Aspect.CRYSTAL, 5));
+        ThaumcraftApi.registerObjectTag("c:ores/iron", new AspectList().add(Aspect.EARTH, 5).add(Aspect.METAL, 15));
+        ThaumcraftApi.registerObjectTag("c:dusts/iron", new AspectList().add(Aspect.METAL, 15).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag("c:ingots/iron", new AspectList().add(Aspect.METAL, 15));
+        ThaumcraftApi.registerObjectTag("c:ores/gold", new AspectList().add(Aspect.EARTH, 5).add(Aspect.METAL, 10).add(Aspect.DESIRE, 10));
+        ThaumcraftApi.registerObjectTag("c:dusts/gold", new AspectList().add(Aspect.METAL, 10).add(Aspect.DESIRE, 10).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag("c:ingots/gold", new AspectList().add(Aspect.METAL, 10).add(Aspect.DESIRE, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.COAL_ORE), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENERGY, 15).add(Aspect.FIRE, 15));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.COAL), new AspectList().add(Aspect.ENERGY, 10).add(Aspect.FIRE, 10));
-        ThaumcraftApi.registerObjectTag("forge:dusts/redstone", new AspectList().add(Aspect.ENERGY, 10));
-        ThaumcraftApi.registerObjectTag("forge:dusts/glowstone", new AspectList().add(Aspect.SENSES, 5).add(Aspect.LIGHT, 10));
-        ThaumcraftApi.registerObjectTag("forge:ingots/copper", new AspectList().add(Aspect.METAL, 10).add(Aspect.EXCHANGE, 5));
-        ThaumcraftApi.registerObjectTag("forge:dusts/copper", new AspectList().add(Aspect.METAL, 10).add(Aspect.ENTROPY, 1).add(Aspect.EXCHANGE, 5));
-        ThaumcraftApi.registerObjectTag("forge:ores/copper", new AspectList().add(Aspect.METAL, 10).add(Aspect.EARTH, 5).add(Aspect.EXCHANGE, 5));
+        ThaumcraftApi.registerObjectTag("c:dusts/redstone", new AspectList().add(Aspect.ENERGY, 10));
+        ThaumcraftApi.registerObjectTag("c:dusts/glowstone", new AspectList().add(Aspect.SENSES, 5).add(Aspect.LIGHT, 10));
+        ThaumcraftApi.registerObjectTag("c:ingots/copper", new AspectList().add(Aspect.METAL, 10).add(Aspect.EXCHANGE, 5));
+        ThaumcraftApi.registerObjectTag("c:dusts/copper", new AspectList().add(Aspect.METAL, 10).add(Aspect.ENTROPY, 1).add(Aspect.EXCHANGE, 5));
+        ThaumcraftApi.registerObjectTag("c:ores/copper", new AspectList().add(Aspect.METAL, 10).add(Aspect.EARTH, 5).add(Aspect.EXCHANGE, 5));
         
         // Basic Blocks
-        ThaumcraftApi.registerObjectTag("forge:stone", new AspectList().add(Aspect.EARTH, 5));
-        ThaumcraftApi.registerObjectTag("forge:cobblestone", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag("c:stone", new AspectList().add(Aspect.EARTH, 5));
+        ThaumcraftApi.registerObjectTag("c:cobblestones", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.BEDROCK), new AspectList().add(Aspect.VOID, 25).add(Aspect.ENTROPY, 25).add(Aspect.EARTH, 25).add(Aspect.DARKNESS, 25));
-        ThaumcraftApi.registerObjectTag("forge:dirt", new AspectList().add(Aspect.EARTH, 5));
+        ThaumcraftApi.registerObjectTag("c:dirt", new AspectList().add(Aspect.EARTH, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PODZOL), new AspectList().add(Aspect.EARTH, 5).add(Aspect.PLANT, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.FARMLAND), new AspectList().add(Aspect.EARTH, 5).add(Aspect.WATER, 2).add(Aspect.ORDER, 2));
-        ThaumcraftApi.registerObjectTag("forge:sand", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 5));
+        ThaumcraftApi.registerObjectTag("c:sands", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 5));
         ThaumcraftApi.registerObjectTag("minecraft:grass", new AspectList().add(Aspect.EARTH, 5).add(Aspect.PLANT, 2)); // Not sure if this tag exists
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GRASS_BLOCK), new AspectList().add(Aspect.EARTH, 5).add(Aspect.PLANT, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DIRT_PATH), new AspectList().add(Aspect.EARTH, 5).add(Aspect.PLANT, 2).add(Aspect.ORDER, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_STONE), new AspectList().add(Aspect.EARTH, 5).add(Aspect.DARKNESS, 5));
-        ThaumcraftApi.registerObjectTag("forge:gravel", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 2));
+        ThaumcraftApi.registerObjectTag("c:gravels", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MYCELIUM), new AspectList().add(Aspect.EARTH, 5).add(Aspect.PLANT, 1).add(Aspect.FLUX, 1));
         
         // Clay
@@ -154,7 +154,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SOUL_SAND), new AspectList().add(Aspect.EARTH, 3).add(Aspect.TRAP, 1).add(Aspect.SOUL, 3));
         
         // Obsidian
-        ThaumcraftApi.registerObjectTag("forge:obsidian", new AspectList().add(Aspect.EARTH, 5).add(Aspect.FIRE, 5).add(Aspect.DARKNESS, 5));
+        ThaumcraftApi.registerObjectTag("c:obsidians", new AspectList().add(Aspect.EARTH, 5).add(Aspect.FIRE, 5).add(Aspect.DARKNESS, 5));
         
         // Wood
         ThaumcraftApi.registerObjectTag("minecraft:logs", new AspectList().add(Aspect.PLANT, 20));
@@ -166,7 +166,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PACKED_ICE), new AspectList().add(Aspect.COLD, 15).add(Aspect.ORDER, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.SNOWBALL), new AspectList().add(Aspect.COLD, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.SLIME_BALL), new AspectList().add(Aspect.WATER, 5).add(Aspect.LIFE, 5).add(Aspect.ALCHEMY, 1));
-        ThaumcraftApi.registerObjectTag("forge:leather", new AspectList().add(Aspect.BEAST, 5).add(Aspect.PROTECT, 5));
+        ThaumcraftApi.registerObjectTag("c:leathers", new AspectList().add(Aspect.BEAST, 5).add(Aspect.PROTECT, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.ROTTEN_FLESH), new AspectList().add(Aspect.MAN, 5).add(Aspect.LIFE, 5).add(Aspect.ENTROPY, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.FEATHER), new AspectList().add(Aspect.FLIGHT, 5).add(Aspect.AIR, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BONE), new AspectList().add(Aspect.DEATH, 5).add(Aspect.LIFE, 5));
@@ -174,7 +174,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.GUNPOWDER), new AspectList().add(Aspect.FIRE, 10).add(Aspect.ENTROPY, 10).add(Aspect.ALCHEMY, 5));
         
         // Glass
-        ThaumcraftApi.registerObjectTag("forge:glass", new AspectList().add(Aspect.CRYSTAL, 5));
+        ThaumcraftApi.registerObjectTag("c:glass", new AspectList().add(Aspect.CRYSTAL, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GLASS), new AspectList().add(Aspect.CRYSTAL, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GLASS_PANE), new AspectList().add(Aspect.CRYSTAL, 1));
         
@@ -189,7 +189,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LARGE_FERN), new AspectList().add(Aspect.PLANT, 5).add(Aspect.AIR, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.LILY_PAD), new AspectList().add(Aspect.PLANT, 5).add(Aspect.WATER, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DEAD_BUSH), new AspectList().add(Aspect.PLANT, 5).add(Aspect.ENTROPY, 1));
-        ThaumcraftApi.registerObjectTag("forge:vines", new AspectList().add(Aspect.PLANT, 5));
+        ThaumcraftApi.registerObjectTag("c:vines", new AspectList().add(Aspect.PLANT, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.VINE), new AspectList().add(Aspect.PLANT, 5));
         
         // Seeds and crops
@@ -262,7 +262,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BLAZE_ROD), new AspectList().add(Aspect.FIRE, 15).add(Aspect.ENERGY, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BLAZE_POWDER), new AspectList().add(Aspect.FIRE, 10).add(Aspect.ALCHEMY, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MAGMA_CREAM), new AspectList().add(Aspect.FIRE, 5).add(Aspect.ALCHEMY, 5).add(Aspect.WATER, 5));
-        ThaumcraftApi.registerObjectTag("forge:ender_pearls", new AspectList().add(Aspect.ELDRITCH, 10).add(Aspect.MOTION, 15));
+        ThaumcraftApi.registerObjectTag("c:ender_pearls", new AspectList().add(Aspect.ELDRITCH, 10).add(Aspect.MOTION, 15));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.ENDER_PEARL), new AspectList().add(Aspect.ELDRITCH, 10).add(Aspect.MOTION, 15));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.ENDER_EYE), new AspectList().add(Aspect.ELDRITCH, 10).add(Aspect.MOTION, 15).add(Aspect.SENSES, 10).add(Aspect.MAGIC, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.GHAST_TEAR), new AspectList().add(Aspect.UNDEAD, 5).add(Aspect.SOUL, 10).add(Aspect.ALCHEMY, 10));
@@ -278,7 +278,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.DRAGON_BREATH), new AspectList().add(Aspect.DARKNESS, 10).add(Aspect.ENTROPY, 10).add(Aspect.FIRE, 10).add(Aspect.ALCHEMY, 10));
         
         // Nether star and special items
-        ThaumcraftApi.registerObjectTag("forge:nether_stars", new AspectList().add(Aspect.ELDRITCH, 10).add(Aspect.MAGIC, 20).add(Aspect.ORDER, 20).add(Aspect.AURA, 10));
+        ThaumcraftApi.registerObjectTag("c:nether_stars", new AspectList().add(Aspect.ELDRITCH, 10).add(Aspect.MAGIC, 20).add(Aspect.ORDER, 20).add(Aspect.AURA, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.NETHER_STAR), new AspectList().add(Aspect.ELDRITCH, 10).add(Aspect.MAGIC, 20).add(Aspect.ORDER, 20).add(Aspect.AURA, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.TOTEM_OF_UNDYING), new AspectList().add(Aspect.ORDER, 10).add(Aspect.ENTROPY, 10).add(Aspect.LIFE, 25).add(Aspect.UNDEAD, 10));
         

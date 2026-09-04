@@ -13,7 +13,7 @@
   ],
   "key": {
     "W": "#minecraft:planks",
-    "S": "#forge:dusts/redstone",
+    "S": "#c:dusts/redstone",
     "E": "thaumcraft:quicksilver",
     "P": "minecraft:piston",
     "R": "thaumcraft:vis_resonator"

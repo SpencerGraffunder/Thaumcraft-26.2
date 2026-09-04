@@ -4,10 +4,10 @@
   "instability": 4,
   "center": "thaumcraft:lamp_arcane",
   "ingredients": [
-    "#forge:ingots/gold",
+    "#c:ingots/gold",
     "minecraft:wheat",
     "thaumcraft:crystal_essence",
-    "#forge:ingots/gold",
+    "#c:ingots/gold",
     "minecraft:carrot",
     "thaumcraft:crystal_essence"
   ],

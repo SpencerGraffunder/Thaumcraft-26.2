@@ -16,7 +16,7 @@ public class AspectEventProxy {
     
     /**
      * Used to assign aspects to the given item tag. 
-     * @param tagName the tag name (e.g. "forge:ingots/iron")
+     * @param tagName the tag name (e.g. "c:ingots/iron")
      * @param aspects A AspectList of the associated aspects
      */
     public void registerObjectTag(String tagName, AspectList aspects) {

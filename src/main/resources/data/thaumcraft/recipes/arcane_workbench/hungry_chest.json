@@ -13,7 +13,7 @@
   ],
   "key": {
     "W": "thaumcraft:greatwood_planks",
-    "T": "#forge:trapdoors/wooden"
+    "T": "#c:trapdoors/wooden"
   },
   "result": "thaumcraft:hungry_chest"
 }

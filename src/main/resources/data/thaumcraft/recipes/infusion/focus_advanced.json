@@ -5,7 +5,7 @@
   "center": "thaumcraft:focus_blank",
   "ingredients": [
     "thaumcraft:quicksilver",
-    "#forge:gems/diamond",
+    "#c:gems/diamond",
     "thaumcraft:quicksilver",
     "minecraft:ender_pearl"
   ],

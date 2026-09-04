@@ -16,7 +16,7 @@
     "WSW"
   ],
   "key": {
-    "S": "#forge:stone",
+    "S": "#c:stone",
     "W": "#minecraft:planks",
     "T": "thaumcraft:table_wood"
   },

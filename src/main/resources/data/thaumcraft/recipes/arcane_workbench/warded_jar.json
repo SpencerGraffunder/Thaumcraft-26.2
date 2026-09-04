@@ -10,7 +10,7 @@
   ],
   "key": {
     "W": "#minecraft:wooden_slabs",
-    "G": "#forge:glass_panes"
+    "G": "#c:glass_panes"
   },
   "result": "thaumcraft:jar_normal"
 }

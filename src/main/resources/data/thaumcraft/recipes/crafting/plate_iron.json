@@ -4,7 +4,7 @@
     "III"
   ],
   "key": {
-    "I": "#forge:ingots/iron"
+    "I": "#c:ingots/iron"
   },
   "result": {
     "id": "thaumcraft:plate_iron",

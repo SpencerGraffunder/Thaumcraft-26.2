@@ -28,6 +28,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import thaumcraft.init.BlockRegistration;
+import thaumcraft.common.tiles.devices.TileLampArcane;
+import thaumcraft.common.tiles.devices.TileLampFertility;
+import thaumcraft.common.tiles.devices.TileLampGrowth;
+import thaumcraft.init.ModBlockEntities;
 
 /**
  * Arcane lamp that provides magical light.
@@ -120,8 +124,11 @@ public class BlockLamp extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // TODO: Return appropriate TileLamp variant when implemented
-        return null;
+        return switch (lampType) {
+            case ARCANE -> new TileLampArcane(ModBlockEntities.LAMP_ARCANE.get(), pos, state);
+            case GROWTH -> new TileLampGrowth(ModBlockEntities.LAMP_GROWTH.get(), pos, state);
+            case FERTILITY -> new TileLampFertility(ModBlockEntities.LAMP_FERTILITY.get(), pos, state);
+        };
     }
 
     @Nullable

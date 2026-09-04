@@ -7,7 +7,7 @@
   ],
   "key": {
     "N": "thaumcraft:brass_nugget",
-    "S": "#forge:rods/wooden"
+    "S": "#c:rods/wooden"
   },
   "result": {
     "id": "thaumcraft:jar_brace",

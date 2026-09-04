@@ -14,7 +14,7 @@
   "key": {
     "F": "minecraft:feather",
     "S": "thaumcraft:shard_order",
-    "I": "#forge:dyes/black"
+    "I": "#c:dyes/black"
   },
   "result": "thaumcraft:scribing_tools"
 }

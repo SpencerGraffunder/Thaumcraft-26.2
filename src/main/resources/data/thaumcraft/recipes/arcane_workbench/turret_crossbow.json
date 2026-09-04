@@ -16,7 +16,7 @@
     "I": "#thaumcraft:plates/iron",
     "W": "thaumcraft:greatwood_planks",
     "M": "thaumcraft:brain_clockwork",
-    "S": "#forge:rods/wooden"
+    "S": "#c:rods/wooden"
   },
   "result": "thaumcraft:turret_placer_basic"
 }

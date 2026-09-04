@@ -9,7 +9,7 @@
     "GWG"
   ],
   "key": {
-    "G": "#forge:ingots/gold",
+    "G": "#c:ingots/gold",
     "W": "thaumcraft:silverwood_planks"
   },
   "result": {

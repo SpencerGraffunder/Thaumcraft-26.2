@@ -16,7 +16,7 @@
     "V": "thaumcraft:vis_resonator",
     "H": "minecraft:hopper",
     "G": "thaumcraft:mechanism_simple",
-    "C": "#forge:workbenches",
+    "C": "#c:workbenches",
     "W": "thaumcraft:greatwood_planks"
   },
   "result": "thaumcraft:pattern_crafter"

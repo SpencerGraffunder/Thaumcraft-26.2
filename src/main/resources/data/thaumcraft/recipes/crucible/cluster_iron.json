@@ -1,7 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "METALPURIFICATION",
-  "catalyst": "#forge:ores/iron",
+  "catalyst": "#c:ores/iron",
   "aspects": {
     "metallum": 5,
     "ordo": 5

@@ -26,6 +26,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import thaumcraft.init.BlockRegistration;
+import thaumcraft.common.tiles.devices.TileMirror;
+import thaumcraft.common.tiles.devices.TileMirrorEssentia;
+import thaumcraft.init.ModBlockEntities;
 
 /**
  * Magic mirror for item teleportation.
@@ -109,8 +112,11 @@ public class BlockMirror extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // TODO: Return TileMirror when implemented
-        return null;
+        return switch (mirrorType) {
+            case ITEM -> new TileMirror(ModBlockEntities.MIRROR_ITEM.get(), pos, state);
+            case PLAYER -> new TileMirrorEssentia(ModBlockEntities.MIRROR_ESSENTIA.get(), pos, state);
+            case HAND -> null;
+        };
     }
 
     @Nullable

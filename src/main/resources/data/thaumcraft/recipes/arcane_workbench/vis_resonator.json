@@ -8,7 +8,7 @@
   },
   "ingredients": [
     "thaumcraft:plate_iron",
-    "#forge:gems/quartz"
+    "#c:gems/quartz"
   ],
   "result": "thaumcraft:vis_resonator"
 }

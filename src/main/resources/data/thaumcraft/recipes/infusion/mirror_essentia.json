@@ -4,9 +4,9 @@
   "instability": 2,
   "center": "thaumcraft:mirrored_glass",
   "ingredients": [
-    "#forge:ingots/iron",
-    "#forge:ingots/iron",
-    "#forge:ingots/iron",
+    "#c:ingots/iron",
+    "#c:ingots/iron",
+    "#c:ingots/iron",
     "minecraft:ender_pearl"
   ],
   "aspects": {

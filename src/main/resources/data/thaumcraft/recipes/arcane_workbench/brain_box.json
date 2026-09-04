@@ -13,7 +13,7 @@
   ],
   "key": {
     "I": "#thaumcraft:plates/iron",
-    "A": "#forge:gems/amber",
+    "A": "#c:gems/amber",
     "B": "thaumcraft:brain_clockwork"
   },
   "result": "thaumcraft:brain_box"

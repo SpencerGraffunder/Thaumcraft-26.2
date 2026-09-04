@@ -7,7 +7,7 @@
   ],
   "key": {
     "I": "thaumcraft:thaumium_ingot",
-    "S": "#forge:rods/wooden"
+    "S": "#c:rods/wooden"
   },
   "result": {
     "id": "thaumcraft:thaumium_sword",

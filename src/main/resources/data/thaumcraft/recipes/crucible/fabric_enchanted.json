@@ -1,7 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "BASEARTIFICE",
-  "catalyst": "#forge:string",
+  "catalyst": "#c:string",
   "aspects": {
     "praecantatio": 5,
     "bestia": 3

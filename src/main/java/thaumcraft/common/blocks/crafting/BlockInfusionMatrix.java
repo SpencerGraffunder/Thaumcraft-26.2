@@ -17,6 +17,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import thaumcraft.init.BlockRegistration;
+import thaumcraft.common.tiles.crafting.TileInfusionMatrix;
+import thaumcraft.init.ModBlockEntities;
 
 /**
  * The infusion altar's central matrix block.
@@ -51,8 +53,7 @@ public class BlockInfusionMatrix extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // TODO: Return TileInfusionMatrix when implemented
-        return null;
+        return new TileInfusionMatrix(ModBlockEntities.INFUSION_MATRIX.get(), pos, state);
     }
 
     @Nullable

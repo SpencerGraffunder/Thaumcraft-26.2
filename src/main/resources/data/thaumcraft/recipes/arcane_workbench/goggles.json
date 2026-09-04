@@ -10,8 +10,8 @@
   ],
   "key": {
     "T": "thaumcraft:thaumometer",
-    "G": "#forge:ingots/brass",
-    "L": "#forge:leather"
+    "G": "#c:ingots/brass",
+    "L": "#c:leathers"
   },
   "result": "thaumcraft:goggles"
 }

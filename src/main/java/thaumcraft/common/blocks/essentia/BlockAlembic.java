@@ -22,6 +22,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import thaumcraft.init.BlockRegistration;
+import thaumcraft.common.tiles.essentia.TileAlembic;
+import thaumcraft.init.ModBlockEntities;
 
 /**
  * Alembic for distilling essentia from items in a crucible.
@@ -87,8 +89,7 @@ public class BlockAlembic extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        // TODO: Return TileAlembic when implemented
-        return null;
+        return new TileAlembic(ModBlockEntities.ALEMBIC.get(), pos, state);
     }
 
     @Nullable
