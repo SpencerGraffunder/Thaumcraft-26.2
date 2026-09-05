@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.common.lib.events.EssentiaHandler;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectSource;
 import thaumcraft.api.aura.AuraHelper;
@@ -278,10 +279,11 @@ public class TileMirrorEssentia extends TileThaumcraft implements IAspectSource 
 
         BlockEntity te = targetWorld.getBlockEntity(new BlockPos(linkX, linkY, linkZ));
         if (te instanceof TileMirrorEssentia) {
-            // TODO: Use EssentiaHandler.addEssentia when implemented
-            // For now, just add instability and return success
-            addInstability(null, amount);
-            return 0;
+            boolean b = EssentiaHandler.addEssentia(te, aspect, linkedFacing, 8, true, 5);
+            if (b) {
+                addInstability(null, amount);
+            }
+            return b ? 0 : amount;
         }
         return amount;
     }
@@ -299,10 +301,11 @@ public class TileMirrorEssentia extends TileThaumcraft implements IAspectSource 
 
         BlockEntity te = targetWorld.getBlockEntity(new BlockPos(linkX, linkY, linkZ));
         if (te instanceof TileMirrorEssentia) {
-            // TODO: Use EssentiaHandler.drainEssentia when implemented
-            // For now, just add instability and return success
-            addInstability(null, amount);
-            return true;
+            boolean b = EssentiaHandler.drainEssentia(te, aspect, linkedFacing, 8, true, 5);
+            if (b) {
+                addInstability(null, amount);
+            }
+            return b;
         }
         return false;
     }
@@ -325,8 +328,7 @@ public class TileMirrorEssentia extends TileThaumcraft implements IAspectSource 
 
         BlockEntity te = targetWorld.getBlockEntity(new BlockPos(linkX, linkY, linkZ));
         if (te instanceof TileMirrorEssentia) {
-            // TODO: Use EssentiaHandler.findEssentia when implemented
-            return true;
+            return EssentiaHandler.findEssentia(te, aspect, linkedFacing, 8, true);
         }
         return false;
     }

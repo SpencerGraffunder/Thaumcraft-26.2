@@ -17,6 +17,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.common.lib.crafting.CrucibleRecipeType;
+import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectSource;
 import thaumcraft.api.aspects.IEssentiaTransport;
@@ -287,8 +289,11 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
      */
     @Nullable
     private AspectList getRecipeForItem(ItemStack stack) {
-        // Placeholder implementation
-        // In the real implementation, this queries ThaumcraftCraftingManager
+        if (level == null) return null;
+        for (CrucibleRecipeType recipe :
+                ThaumcraftCraftingManager.findCrucibleRecipesForCatalyst(stack, level)) {
+            return recipe.getAspects();
+        }
         return null;
     }
 
@@ -298,7 +303,11 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
      */
     @Nullable
     private ItemStack getResultForItem(ItemStack catalyst) {
-        // Placeholder implementation
+        if (level == null) return null;
+        for (CrucibleRecipeType recipe :
+                ThaumcraftCraftingManager.findCrucibleRecipesForCatalyst(catalyst, level)) {
+            return recipe.getResultItem();
+        }
         return null;
     }
 
