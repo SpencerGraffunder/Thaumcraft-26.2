@@ -1,8 +1,13 @@
 package thaumcraft.common.blocks.crafting;
 
 import net.minecraft.core.BlockPos;
+import thaumcraft.common.menu.FocalManipulatorMenu;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -87,8 +92,17 @@ public class BlockFocalManipulator extends BlockTCDevice {
         }
         
         BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof TileFocalManipulator && player instanceof ServerPlayer serverPlayer) {
-            // TODO: Open GUI when menu system is implemented
+        if (be instanceof TileFocalManipulator tile && player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(new MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.translatable("container.thaumcraft.focal_manipulator");
+                }
+                @Override
+                public AbstractContainerMenu createMenu(int id, Inventory inv, Player pl) {
+                    return new FocalManipulatorMenu(id, inv, tile);
+                }
+            }, buf -> buf.writeBlockPos(pos));
             return InteractionResult.CONSUME;
         }
         

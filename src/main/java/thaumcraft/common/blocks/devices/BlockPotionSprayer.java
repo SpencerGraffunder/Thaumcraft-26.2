@@ -2,9 +2,15 @@ package thaumcraft.common.blocks.devices;
 import net.minecraft.world.level.redstone.Orientation;
 
 import net.minecraft.core.BlockPos;
+import thaumcraft.common.menu.PotionSprayerMenu;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -87,12 +93,19 @@ public class BlockPotionSprayer extends Block implements EntityBlock {
             return InteractionResult.SUCCESS;
         }
         
-        // TODO: Open GUI when menu system is implemented
-        // For now, just toggle enabled state
         BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof TilePotionSprayer sprayer) {
-            // Could open menu here
-            // player.openMenu(sprayer);
+        if (be instanceof TilePotionSprayer sprayer && player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(new MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.translatable("container.thaumcraft.potion_sprayer");
+                }
+                @Override
+                public AbstractContainerMenu createMenu(int id, Inventory inv, Player pl) {
+                    return new PotionSprayerMenu(id, inv, sprayer);
+                }
+            }, buf -> buf.writeBlockPos(pos));
+            return InteractionResult.CONSUME;
         }
         
         return InteractionResult.CONSUME;

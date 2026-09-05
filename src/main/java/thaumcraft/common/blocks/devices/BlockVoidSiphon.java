@@ -1,8 +1,14 @@
 package thaumcraft.common.blocks.devices;
 
 import net.minecraft.core.BlockPos;
+import thaumcraft.common.menu.VoidSiphonMenu;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -82,15 +88,29 @@ public class BlockVoidSiphon extends Block implements EntityBlock {
         // TODO: Open GUI when menu system is implemented
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof TileVoidSiphon siphon) {
-            // For now, just retrieve any void seeds
+            // Right-click with a hand to collect any void seeds
             ItemStack seeds = siphon.getItem(0);
-            if (!seeds.isEmpty()) {
+            if (!seeds.isEmpty() && player.getMainHandItem().isEmpty()) {
                 if (!player.getInventory().add(seeds)) {
                     player.drop(seeds, false);
                 }
                 siphon.setItem(0, ItemStack.EMPTY);
                 return InteractionResult.SUCCESS;
             }
+            // Otherwise open the void siphon GUI
+            if (player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.openMenu(new MenuProvider() {
+                    @Override
+                    public Component getDisplayName() {
+                        return Component.translatable("container.thaumcraft.void_siphon");
+                    }
+                    @Override
+                    public AbstractContainerMenu createMenu(int id, Inventory inv, Player pl) {
+                        return new VoidSiphonMenu(id, inv, siphon);
+                    }
+                }, buf -> buf.writeBlockPos(pos));
+            }
+            return InteractionResult.CONSUME;
         }
         
         return InteractionResult.CONSUME;
