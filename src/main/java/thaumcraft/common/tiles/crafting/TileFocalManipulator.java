@@ -21,6 +21,7 @@ import thaumcraft.api.casters.FocusPackage;
 import thaumcraft.common.items.casters.ItemFocus;
 import thaumcraft.common.tiles.TileThaumcraftInventory;
 import thaumcraft.common.world.aura.AuraHandler;
+import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModBlockEntities;
 import thaumcraft.init.ModSounds;
 
@@ -195,12 +196,21 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
      */
     public float spendAura(float amount) {
         if (level == null) return 0.0f;
-        
-        // TODO: Check for arcane workbench charger for increased range
-        // if (level.getBlockState(worldPosition.above()).getBlock() == ModBlocks.ARCANE_WORKBENCH_CHARGER) {
-        //     return drainFromWideArea(amount);
-        // }
-        
+
+        // If an arcane workbench charger is directly above, distribute the drain
+        // across the 3x3 chunk area (matches 1.12.2 TileFocalManipulator.spendAura).
+        if (level.getBlockState(worldPosition.above()).is(ModBlocks.ARCANE_WORKBENCH_CHARGER.get())) {
+            float remaining = amount;
+            float perChunk = amount / 9.0f;
+            for (int dx = -1; dx <= 1 && remaining > 0.0f; dx++) {
+                for (int dz = -1; dz <= 1 && remaining > 0.0f; dz++) {
+                    float toDrain = Math.min(perChunk, remaining);
+                    remaining -= AuraHandler.drainVis(level, worldPosition.offset(dx * 16, 0, dz * 16), toDrain, false);
+                }
+            }
+            return amount - remaining;
+        }
+
         return AuraHandler.drainVis(level, worldPosition, amount, false);
     }
     

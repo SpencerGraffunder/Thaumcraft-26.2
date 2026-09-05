@@ -492,7 +492,10 @@ public class ModBlocks {
             BlockCondenser::new);
 
     public static final DeferredHolder<Block, Block> CONDENSER_LATTICE = registerBlock("condenser_lattice",
-            BlockCondenser::new);
+            BlockCondenserLattice::clean);
+
+    public static final DeferredHolder<Block, Block> CONDENSER_LATTICE_DIRTY = registerBlock("condenser_lattice_dirty",
+            BlockCondenserLattice::dirty);
 
     public static final DeferredHolder<Block, Block> ARCANE_EAR = registerBlock("arcane_ear",
             BlockArcaneEar::createPulse);

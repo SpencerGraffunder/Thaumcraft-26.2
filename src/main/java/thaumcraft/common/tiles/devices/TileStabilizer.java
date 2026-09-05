@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
+import java.util.List;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
@@ -94,24 +95,21 @@ public class TileStabilizer extends TileThaumcraft {
     private void tryAddStability() {
         if (level == null) return;
 
-        Direction facing = getFacing();
         AABB area = new AABB(worldPosition).inflate(RANGE);
-
-        // TODO: When EntityFluxRift is implemented, stabilize them:
-        // List<EntityFluxRift> rifts = level.getEntitiesOfClass(EntityFluxRift.class, area);
-        // for (EntityFluxRift rift : rifts) {
-        //     if (rift.isRemoved()) continue;
-        //     if (rift.getStability() == EntityFluxRift.EnumStability.VERY_STABLE) continue;
-        //     
-        //     if (mitigate(1)) {
-        //         rift.addStability();
-        //         delay += 5;
-        //         if (energy <= 0) return;
-        //     }
-        // }
-
-        // For now, just slowly drain energy when there could be rifts
-        // This will be properly implemented when EntityFluxRift exists
+        List<thaumcraft.common.entities.EntityFluxRift> rifts =
+                level.getEntitiesOfClass(thaumcraft.common.entities.EntityFluxRift.class, area);
+        if (rifts.isEmpty()) {
+            return;
+        }
+        for (thaumcraft.common.entities.EntityFluxRift rift : rifts) {
+            if (rift.isRemoved()) continue;
+            if (rift.getStability() == thaumcraft.common.entities.EntityFluxRift.EnumStability.VERY_STABLE) continue;
+            if (mitigate(1)) {
+                rift.addStability(1.0f);
+                delay += 5;
+                if (energy <= 0) return;
+            }
+        }
     }
 
     private Direction getFacing() {

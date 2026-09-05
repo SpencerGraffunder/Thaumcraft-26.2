@@ -14,6 +14,7 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
+import thaumcraft.init.ModBlocks;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -163,15 +164,14 @@ public class TileCondenser extends TileThaumcraft implements IEssentiaTransport 
      * Mark a random lattice block as dirty (clogged).
      */
     private void makeLatticeDirty() {
-        // TODO: When condenser lattice blocks are implemented,
-        // pick a random unclogged lattice and change it to dirty state
-        if (!uncloggedList.isEmpty() && level != null) {
-            int index = level.getRandom().nextInt(uncloggedList.size());
-            if (index == 0 && uncloggedList.size() > 1) {
-                index = level.getRandom().nextInt(uncloggedList.size());
-            }
-            // BlockPos p = BlockPos.of(uncloggedList.get(index));
-            // Change block to dirty lattice
+        if (uncloggedList.isEmpty() || level == null) return;
+        int index = level.getRandom().nextInt(uncloggedList.size());
+        if (index == 0 && uncloggedList.size() > 1) {
+            index = level.getRandom().nextInt(uncloggedList.size());
+        }
+        BlockPos p = BlockPos.of(uncloggedList.get(index));
+        if (level.getBlockState(p).is(ModBlocks.CONDENSER_LATTICE.get())) {
+            level.setBlock(p, ModBlocks.CONDENSER_LATTICE_DIRTY.get().defaultBlockState(), 3);
         }
     }
 
@@ -217,11 +217,8 @@ public class TileCondenser extends TileThaumcraft implements IEssentiaTransport 
             BlockPos checkPos = pos.relative(face);
             BlockState state = level.getBlockState(checkPos);
             
-            // TODO: Check for condenser lattice blocks
-            // boolean isLattice = state.is(ModBlocks.CONDENSER_LATTICE.get());
-            // boolean isDirtyLattice = state.is(ModBlocks.CONDENSER_LATTICE_DIRTY.get());
-            boolean isLattice = false;
-            boolean isDirtyLattice = false;
+            boolean isLattice = state.is(ModBlocks.CONDENSER_LATTICE.get());
+            boolean isDirtyLattice = state.is(ModBlocks.CONDENSER_LATTICE_DIRTY.get());
 
             if (skip && isDirtyLattice) {
                 clogged = true;
@@ -232,12 +229,9 @@ public class TileCondenser extends TileThaumcraft implements IEssentiaTransport 
 
             if (!visited.contains(checkPos.asLong())) {
                 // Check for another condenser below (invalid)
-                if (face == Direction.DOWN) {
-                    // TODO: Check if block is condenser
-                    // if (state.is(ModBlocks.CONDENSER.get())) {
-                    //     latticeCount = -99;
-                    //     return;
-                    // }
+                if (face == Direction.DOWN && state.is(ModBlocks.CONDENSER.get())) {
+                    latticeCount = -99.0f;
+                    return;
                 }
 
                 // Only count lattice blocks above the condenser

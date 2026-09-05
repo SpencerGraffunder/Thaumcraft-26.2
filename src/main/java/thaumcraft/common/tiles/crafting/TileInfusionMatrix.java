@@ -44,6 +44,7 @@ import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 import thaumcraft.common.lib.events.EssentiaHandler;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.fx.PacketFXBlockArc;
+import thaumcraft.common.tiles.devices.TileStabilizer;
 import thaumcraft.common.lib.network.fx.PacketFXEssentiaSource;
 import thaumcraft.common.lib.network.fx.PacketFXInfusionSource;
 import thaumcraft.common.lib.research.ResearchManager;
@@ -99,6 +100,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
 
     // Cached pedestal positions
     private List<BlockPos> pedestals = new ArrayList<>();
+    private List<BlockPos> stabilizers = new ArrayList<>();
     private List<BlockPos> problemBlocks = new ArrayList<>();
     private HashMap<Block, Integer> tempBlockCount = new HashMap<>();
 
@@ -637,8 +639,30 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
             BlockPos cc = pedestals.get(level.getRandom().nextInt(pedestals.size()));
             BlockEntity te = level.getBlockEntity(cc);
             if (te instanceof TilePedestal ped && !ped.getItem(0).isEmpty()) {
-                // TODO: Check for stabilizer mitigation
-                
+                // Check for a nearby energy stabilizer that can mitigate this event
+                BlockPos stabPos = findNearestStabilizer(cc);
+                if (stabPos != null) {
+                    BlockEntity ste = level.getBlockEntity(stabPos);
+                    if (ste instanceof TileStabilizer tste) {
+                        int amount = 5 + level.getRandom().nextInt(6); // 5..10
+                        if (tste.mitigate(amount)) {
+                            if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                                PacketHandler.sendToAllTrackingChunk(
+                                        new PacketFXBlockArc(worldPosition, cc.above(),
+                                                0.3f - level.getRandom().nextFloat() * 0.1f, 0.0f,
+                                                0.3f - level.getRandom().nextFloat() * 0.1f),
+                                        serverLevel, worldPosition);
+                                PacketHandler.sendToAllTrackingChunk(
+                                        new PacketFXBlockArc(cc.above(), stabPos,
+                                                0.3f - level.getRandom().nextFloat() * 0.1f, 0.0f,
+                                                0.3f - level.getRandom().nextFloat() * 0.1f),
+                                        serverLevel, worldPosition);
+                            }
+                            return;
+                        }
+                    }
+                }
+
                 if (type <= 3 || type == 5) {
                     InventoryUtils.dropItems(level, cc);
                 } else {
@@ -686,12 +710,32 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
 
     // ==================== Surroundings ====================
 
+/**
+     * Find the nearest energy stabilizer (within 8 blocks) to the given pedestal,
+     * matching the 1.12.2 {@code findInstabilityMitigator} behaviour.
+     */
+    private BlockPos findNearestStabilizer(BlockPos pedestal) {
+        BlockPos best = null;
+        double bestDist = Double.MAX_VALUE;
+        for (BlockPos sp : stabilizers) {
+            double d = pedestal.distSqr(sp);
+            if (d <= 64 && d < bestDist) {
+                bestDist = d;
+                best = sp;
+            }
+        }
+        return best;
+    }
+
     /**
      * Scan surroundings for pedestals and stabilizers.
      */
+
+
     private void scanSurroundings() {
         Set<Long> stuff = new HashSet<>();
         pedestals.clear();
+        stabilizers.clear();
         tempBlockCount.clear();
         problemBlocks.clear();
         cycleTime = 10;
@@ -716,6 +760,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                         if (bi instanceof IInfusionStabiliser stabiliser) {
                             if (stabiliser.canStabaliseInfusion(level, bp)) {
                                 stuff.add(bp.asLong());
+                                stabilizers.add(bp);
                             }
                         }
                         // Fallback: check for vanilla skulls and candles

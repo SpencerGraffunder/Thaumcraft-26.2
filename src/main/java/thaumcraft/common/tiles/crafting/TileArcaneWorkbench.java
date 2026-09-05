@@ -117,11 +117,10 @@ public class TileArcaneWorkbench extends TileThaumcraft implements MenuProvider 
 
         int totalVis = 0;
         
-        // Check if there's a workbench charger above
+        // Check if there is an arcane workbench charger directly above
         BlockState above = level.getBlockState(worldPosition.above());
-        if (above.is(ModBlocks.ARCANE_WORKBENCH.get())) {
-            // TODO: Check for arcane workbench charger block when implemented
-            // If charger present, draw from 3x3 chunk area
+        if (above.is(ModBlocks.ARCANE_WORKBENCH_CHARGER.get())) {
+            // Charger present: draw from the 3x3 chunk area (matches 1.12.2 behaviour)
             int chunkX = worldPosition.getX() >> 4;
             int chunkZ = worldPosition.getZ() >> 4;
             
@@ -148,9 +147,9 @@ public class TileArcaneWorkbench extends TileThaumcraft implements MenuProvider 
     public void spendAura(int visCost) {
         if (level == null || level.isClientSide() || visCost <= 0) return;
 
+        // Charger present: distribute drain across the 3x3 chunk area (matches 1.12.2)
         BlockState above = level.getBlockState(worldPosition.above());
-        // TODO: Check for charger block
-        boolean hasCharger = false;
+        boolean hasCharger = above.is(ModBlocks.ARCANE_WORKBENCH_CHARGER.get());
 
         if (hasCharger) {
             // Distribute vis drain across 3x3 chunk area
