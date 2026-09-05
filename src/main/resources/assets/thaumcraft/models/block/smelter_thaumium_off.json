@@ -1,5 +1,5 @@
 {
-    "parent": "block/cube",
+    "parent": "minecraft:block/cube",
     "textures": {          
         "north": "thaumcraft:block/smelter_thaumium_front_off",  
         "south": "thaumcraft:block/smelter_thaumium_side",      

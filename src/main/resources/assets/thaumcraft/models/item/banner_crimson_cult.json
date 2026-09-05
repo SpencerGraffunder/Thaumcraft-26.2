@@ -1,5 +1,5 @@
 {
-    "parent": "builtin/generated",
+    "parent": "minecraft:item/generated",
     "textures": {        
         "layer0": "thaumcraft:item/banner_stand",
         "layer1": "thaumcraft:item/banner_cultist"

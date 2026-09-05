@@ -1,5 +1,5 @@
 {
-    "parent": "block/cube",
+    "parent": "minecraft:block/cube",
     "textures": {
         "particle": "thaumcraft:block/eldritch_stone_1",
         "up": "thaumcraft:block/eldritch_stone_1",

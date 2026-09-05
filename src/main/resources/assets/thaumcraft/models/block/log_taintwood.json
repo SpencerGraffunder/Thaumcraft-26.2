@@ -1,5 +1,5 @@
 {
-    "parent": "block/cube",
+    "parent": "minecraft:block/cube",
     "textures": {
         "particle": "thaumcraft:block/log_taintwood_top",   
         "up": "thaumcraft:block/log_taintwood_top",

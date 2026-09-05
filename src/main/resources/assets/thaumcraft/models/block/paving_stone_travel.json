@@ -1,5 +1,5 @@
 {
-    "parent": "block/farmland",
+    "parent": "minecraft:block/farmland",
     "textures": {
         "particle": "thaumcraft:block/paving_stone_travel",
         "dirt": "thaumcraft:block/arcane_brick_stone",

@@ -1,5 +1,5 @@
 {
-    "parent": "block/stairs",
+    "parent": "minecraft:block/stairs",
     "textures": {
         "bottom": "thaumcraft:block/arcane_brick_stone",
         "top": "thaumcraft:block/arcane_brick_stone",
