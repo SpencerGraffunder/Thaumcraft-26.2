@@ -1,4 +1,8 @@
 package thaumcraft.common.blocks.essentia;
+import thaumcraft.api.aspects.IEssentiaContainerItem;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.Aspect;
+import net.minecraft.world.item.ItemStack;
 
 import net.minecraft.core.Direction;
 
@@ -55,6 +59,29 @@ public class BlockEssentiaReservoir extends Block implements EntityBlock {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
+        // Phial interaction: right-click with an empty essentia container to extract 1 essence
+        ItemStack held = player.getMainHandItem();
+        if (held.getItem() instanceof IEssentiaContainerItem container) {
+            AspectList heldAspects = container.getAspects(held);
+            if (heldAspects == null || heldAspects.size() == 0) {
+                BlockEntity be = level.getBlockEntity(pos);
+                if (be instanceof thaumcraft.common.tiles.essentia.TileEssentiaReservoir tile) {
+                    Direction side = hit.getDirection();
+                    Aspect aspect = tile.getEssentiaType(side);
+                    int amt = tile.getEssentiaAmount(side);
+                    if (aspect != null && amt > 0) {
+                        if (tile.takeFromContainer(aspect, 1)) {
+                            AspectList cur = container.getAspects(held);
+                            if (cur == null) cur = new AspectList();
+                            cur.add(aspect, 1);
+                            container.setAspects(held, cur);
+                                                        return InteractionResult.CONSUME;
+                        }
+                    }
+                }
+            }
+        }
+
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof TileEssentiaReservoir reservoir) {
