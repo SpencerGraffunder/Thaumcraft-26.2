@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.common.NeoForge;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.menu.SmelterMenu;
@@ -262,12 +263,10 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
     }
 
     /**
-     * Get aspects from an item.
-     * TODO: Replace with actual ThaumcraftCraftingManager lookup.
+     * Get aspects from an item via the crafting manager's aspect registry.
      */
     private AspectList getItemAspects(ItemStack stack) {
-        // Placeholder - in full implementation, query aspect registry
-        return new AspectList();
+        return ThaumcraftCraftingManager.getObjectTags(stack);
     }
 
     public boolean takeFromContainer(Aspect tag, int amount) {
