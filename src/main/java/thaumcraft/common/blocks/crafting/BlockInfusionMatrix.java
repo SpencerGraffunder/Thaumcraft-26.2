@@ -1,6 +1,7 @@
 package thaumcraft.common.blocks.crafting;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -58,8 +59,14 @@ public class BlockInfusionMatrix extends Block implements EntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(net.minecraft.world.level.Level level, BlockState state, BlockEntityType<T> type) {
-        // TODO: Return ticker when TileInfusionMatrix is implemented
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        if (type == ModBlockEntities.INFUSION_MATRIX.get()) {
+            if (!level.isClientSide()) {
+                return (lvl, pos, st, be) -> TileInfusionMatrix.serverTick(lvl, pos, st, (TileInfusionMatrix) be);
+            } else {
+                return (lvl, pos, st, be) -> TileInfusionMatrix.clientTick(lvl, pos, st, (TileInfusionMatrix) be);
+            }
+        }
         return null;
     }
 }

@@ -122,7 +122,9 @@ public class BlockMirror extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        // TODO: Return ticker when TileMirror is implemented
+        if (!level.isClientSide()) {
+            return (lvl, pos, st, be) -> { if (be instanceof TileMirror t) TileMirror.serverTick(lvl, pos, st, t); };
+        }
         return null;
     }
 
