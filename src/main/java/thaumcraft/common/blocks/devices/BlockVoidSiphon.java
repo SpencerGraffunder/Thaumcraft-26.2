@@ -85,7 +85,6 @@ public class BlockVoidSiphon extends Block implements EntityBlock {
             return InteractionResult.SUCCESS;
         }
         
-        // TODO: Open GUI when menu system is implemented
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof TileVoidSiphon siphon) {
             // Right-click with a hand to collect any void seeds

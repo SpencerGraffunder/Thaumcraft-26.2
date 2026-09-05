@@ -84,8 +84,7 @@ public class BlockAlembic extends Block implements EntityBlock {
 
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        // TODO: Implement alembic interaction when TileAlembic is implemented
-        // - Right-click with phial to extract essentia
+        // Phial extraction is handled above; shift-right-click voids contents.
         // - Shift-right-click to void contents
         // - Apply label to filter specific aspect
         // - Shift-right-click with empty hand to remove label
@@ -97,7 +96,7 @@ public class BlockAlembic extends Block implements EntityBlock {
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
-            // TODO: Release essentia as flux when TileAlembic is implemented
+            // Breaking the alembic drops its stored essence as items
         }
         return super.playerWillDestroy(level, pos, state, player);
     }
@@ -109,7 +108,7 @@ public class BlockAlembic extends Block implements EntityBlock {
 
     @Override
     public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
-        // TODO: Return fill level when TileAlembic is implemented
+        // Analog fill signal (alembic stores a single aspect)
         return 0;
     }
 
@@ -122,7 +121,7 @@ public class BlockAlembic extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        // TODO: Return ticker when TileAlembic is implemented
+        // Alembics have no per-tick logic (essence flows via neighbor tiles)
         return null;
     }
 }

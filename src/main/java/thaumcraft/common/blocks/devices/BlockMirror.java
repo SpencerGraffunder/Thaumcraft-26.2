@@ -101,10 +101,7 @@ public class BlockMirror extends Block implements EntityBlock {
         }
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        // TODO: Handle mirror linking and configuration when TileMirror is implemented
-        // - Right-click with hand mirror to link
-        // - Shift-right-click to clear link
-        // - Configure teleportation settings
+        // Mirrors are linked via the Hand Mirror item (ItemHandMirror.useOn).
 
         return InteractionResult.CONSUME;
     }

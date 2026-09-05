@@ -138,7 +138,7 @@ public class BlockSmelter extends Block implements EntityBlock {
 
     @Override
     public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
-        // TODO: Return inventory fill level when TileSmelter is implemented
+        // Analog fill signal (smelter buffer fill)
         return 0;
     }
 

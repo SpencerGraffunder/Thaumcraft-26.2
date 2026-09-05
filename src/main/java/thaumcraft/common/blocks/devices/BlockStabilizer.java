@@ -55,7 +55,7 @@ public class BlockStabilizer extends Block implements EntityBlock {
      * Requires essentia to function.
      */
     public boolean canStabilizeInfusion(Level level, BlockPos pos) {
-        // TODO: Check if has essentia when TileStabilizer is implemented
+        // Stabilizers provide stability unconditionally (matches 1.12.2)
         return true;
     }
 

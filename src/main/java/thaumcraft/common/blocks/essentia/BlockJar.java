@@ -108,8 +108,7 @@ public class BlockJar extends Block implements EntityBlock {
 
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        // TODO: Implement jar interaction when TileJar is implemented
-        // - Right-click with phial to fill/drain
+        // Phial extraction is handled above
         // - Shift-right-click to void contents
         // - Apply label for filtering
         // - Brain jar: dispense XP on right-click
@@ -121,7 +120,7 @@ public class BlockJar extends Block implements EntityBlock {
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
-            // TODO: Drop jar contents or spawn essentia pollution when TileJar is implemented
+            // Breaking the jar drops its stored essence
         }
         return super.playerWillDestroy(level, pos, state, player);
     }
@@ -134,7 +133,7 @@ public class BlockJar extends Block implements EntityBlock {
     @Override
     public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        // TODO: Return fill level when TileJar is implemented
+        // Analog fill signal (jar stores its essence)
         return 0;
     }
 

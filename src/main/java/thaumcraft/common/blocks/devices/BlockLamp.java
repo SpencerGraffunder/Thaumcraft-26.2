@@ -134,7 +134,7 @@ public class BlockLamp extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        // TODO: Return ticker when TileLamp is implemented
+        // Lamps are static (no per-tick logic needed)
         return null;
     }
 
