@@ -44,18 +44,35 @@ public class SealPos {
     }
 
     /**
-     * Converts this SealPos to a unique long value for storage
+     * Converts this SealPos to a unique long value for storage.
+     *
+     * BlockPos.asLong() already occupies all 64 bits (x in bits 32-63), so the
+     * face cannot simply be XORed onto the top bits -- that collides with x's
+     * sign-extension and corrupts the face for any negative x. Instead we pack
+     * explicit, non-overlapping fields that cover the full valid world:
+     *   bits 0-25   = z      (26-bit signed, +-33.5M, covers MC +-30M)
+     *   bits 26-34  = y + 64 (9-bit, covers y in -64..512)
+     *   bits 35-60  = x      (26-bit signed, +-33.5M, covers MC +-30M)
+     *   bits 61-63  = face   (3-bit ordinal, 0-5)
      */
     public long toLong() {
-        return pos.asLong() ^ ((long) face.ordinal() << 60);
+        long z = (long) pos.getZ() & 0x3FFFFFFL;
+        long y = ((long) pos.getY() + 64L) & 0x1FFL;
+        long x = (long) pos.getX() & 0x3FFFFFFL;
+        return z | (y << 26) | (x << 35) | ((long) face.ordinal() << 61);
     }
 
     /**
-     * Creates a SealPos from a long value
+     * Creates a SealPos from a long value produced by {@link #toLong()}.
      */
     public static SealPos fromLong(long value) {
-        int faceOrdinal = (int) (value >>> 60);
-        long posLong = value & 0x0FFFFFFFFFFFFFFFL;
-        return new SealPos(BlockPos.of(posLong), Direction.values()[faceOrdinal]);
+        int faceOrdinal = (int) ((value >>> 61) & 0x7);
+        int x = (int) ((value >>> 35) & 0x3FFFFFFL);
+        x = (int) (((long) x << 38) >> 38);   // sign-extend 26-bit two's-complement
+        int y = (int) ((value >>> 26) & 0x1FFL);
+        y -= 64;
+        int z = (int) (value & 0x3FFFFFFL);
+        z = (int) (((long) z << 38) >> 38);   // sign-extend 26-bit two's-complement
+        return new SealPos(new BlockPos(x, y, z), Direction.values()[faceOrdinal]);
     }
 }
