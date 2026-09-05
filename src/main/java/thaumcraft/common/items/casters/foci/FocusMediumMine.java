@@ -5,6 +5,7 @@ import thaumcraft.api.casters.FocusMedium;
 import thaumcraft.api.casters.FocusPackage;
 import thaumcraft.api.casters.NodeSetting;
 import thaumcraft.api.casters.Trajectory;
+import thaumcraft.common.entities.projectile.EntityFocusMine;
 
 /**
  * Mine Medium - Places a proximity mine that triggers when entities approach.
@@ -41,7 +42,7 @@ public class FocusMediumMine extends FocusMedium {
     public EnumSupplyType[] willSupply() {
         return new EnumSupplyType[] { EnumSupplyType.TARGET, EnumSupplyType.TRAJECTORY };
     }
-    
+
     @Override
     public EnumSupplyType[] mustBeSupplied() {
         return new EnumSupplyType[] { EnumSupplyType.TRAJECTORY };
@@ -50,24 +51,15 @@ public class FocusMediumMine extends FocusMedium {
     @Override
     public boolean execute(Trajectory trajectory) {
         FocusPackage remainingPackage = getRemainingPackage();
-        
+
         if (remainingPackage == null || getPackage() == null || getPackage().world == null) {
             return false;
         }
-        
+
         boolean targetFriendly = getSettingValue("target") == TARGET_FRIEND;
-        
-        // TODO: Create and spawn EntityFocusMine
-        // EntityFocusMine mine = new EntityFocusMine(remainingPackage, trajectory, targetFriendly);
-        // return getPackage().world.addFreshEntity(mine);
-        
-        // Placeholder - will need entity implementation
-        // The mine entity should:
-        // - Spawn at trajectory.source
-        // - Wait for entities to approach within trigger range
-        // - When triggered, supply TARGET and TRAJECTORY to remaining effects
-        // - Despawn after triggering or after timeout
-        return true;
+
+        EntityFocusMine mine = new EntityFocusMine(remainingPackage, trajectory, targetFriendly);
+        return getPackage().world.addFreshEntity(mine);
     }
 
     @Override
@@ -80,9 +72,9 @@ public class FocusMediumMine extends FocusMedium {
     public NodeSetting[] createSettings() {
         int[] target = { TARGET_ENEMY, TARGET_FRIEND };
         String[] targetDesc = { "focus.common.enemy", "focus.common.friend" };
-        
+
         return new NodeSetting[] {
-            new NodeSetting("target", "focus.common.target", 
+            new NodeSetting("target", "focus.common.target",
                 new NodeSetting.NodeSettingIntList(target, targetDesc))
         };
     }

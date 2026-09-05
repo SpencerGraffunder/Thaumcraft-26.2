@@ -5,6 +5,7 @@ import thaumcraft.api.casters.FocusMedium;
 import thaumcraft.api.casters.FocusPackage;
 import thaumcraft.api.casters.NodeSetting;
 import thaumcraft.api.casters.Trajectory;
+import thaumcraft.common.entities.projectile.EntityFocusCloud;
 
 /**
  * Cloud Medium - Creates an area effect cloud that applies effects to entities within.
@@ -36,7 +37,7 @@ public class FocusMediumCloud extends FocusMedium {
     public EnumSupplyType[] willSupply() {
         return new EnumSupplyType[] { EnumSupplyType.TARGET };
     }
-    
+
     @Override
     public EnumSupplyType[] mustBeSupplied() {
         return new EnumSupplyType[] { EnumSupplyType.TRAJECTORY };
@@ -45,25 +46,16 @@ public class FocusMediumCloud extends FocusMedium {
     @Override
     public boolean execute(Trajectory trajectory) {
         FocusPackage remainingPackage = getRemainingPackage();
-        
+
         if (remainingPackage == null || getPackage() == null || getPackage().world == null) {
             return false;
         }
-        
+
         float radius = getSettingValue("radius");
         int duration = getSettingValue("duration");
-        
-        // TODO: Create and spawn EntityFocusCloud
-        // EntityFocusCloud cloud = new EntityFocusCloud(remainingPackage, trajectory, radius, duration);
-        // return getPackage().world.addFreshEntity(cloud);
-        
-        // Placeholder - will need entity implementation
-        // The cloud entity should:
-        // - Spawn at trajectory.source
-        // - Have configurable radius and duration
-        // - Periodically check for entities in range
-        // - Apply effects from remaining package to entities
-        return true;
+
+        EntityFocusCloud cloud = new EntityFocusCloud(remainingPackage, trajectory, radius, duration);
+        return getPackage().world.addFreshEntity(cloud);
     }
 
     @Override
@@ -75,9 +67,9 @@ public class FocusMediumCloud extends FocusMedium {
     @Override
     public NodeSetting[] createSettings() {
         return new NodeSetting[] {
-            new NodeSetting("radius", "focus.common.radius", 
+            new NodeSetting("radius", "focus.common.radius",
                 new NodeSetting.NodeSettingIntRange(1, 3)),
-            new NodeSetting("duration", "focus.common.duration", 
+            new NodeSetting("duration", "focus.common.duration",
                 new NodeSetting.NodeSettingIntRange(5, 30))
         };
     }
