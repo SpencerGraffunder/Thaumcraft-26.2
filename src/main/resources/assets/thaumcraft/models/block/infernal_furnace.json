@@ -1,7 +1,9 @@
 {
+    "parent": "minecraft:block/block",
     "__createdwith": "opl's Model Creator",
     "ambientocclusion": false,
     "textures": {
+        "particle": "thaumcraft:block/infernal_furnace",
         "side": "thaumcraft:block/infernal_furnace",
         "core": "blocks/lava_still",
         "fire": "blocks/fire_layer_0"

@@ -1,7 +1,9 @@
 {
+    "parent": "minecraft:block/block",
     "__createdwith": "opl's Model Creator",
     "ambientocclusion": false,
     "textures": {
+        "particle": "thaumcraft:block/centrifuge",
         "side": "thaumcraft:block/centrifuge"
     },
     "elements": [
