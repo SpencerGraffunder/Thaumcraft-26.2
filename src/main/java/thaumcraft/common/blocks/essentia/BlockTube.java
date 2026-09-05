@@ -27,6 +27,7 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 
 import javax.annotation.Nullable;
 import thaumcraft.init.BlockRegistration;
+import net.minecraft.world.item.ItemStack;
 import thaumcraft.common.tiles.essentia.TileTube;
 import thaumcraft.common.tiles.essentia.TileTubeBuffer;
 import thaumcraft.common.tiles.essentia.TileTubeFilter;
@@ -150,11 +151,32 @@ public class BlockTube extends Block implements EntityBlock {
         }
 
         // Special interactions for valve and filter tubes
+        BlockEntity te = level.getBlockEntity(pos);
         if (tubeType == TubeType.VALVE) {
-            // TODO: Toggle valve when TileTubeValve is implemented
+            if (te instanceof TileTubeValve valve) {
+                valve.allowFlow = !valve.allowFlow;
+                valve.markDirtyAndSync();
+            }
             return InteractionResult.CONSUME;
         } else if (tubeType == TubeType.FILTER) {
-            // TODO: Set filter aspect when TileTubeFilter is implemented
+            if (te instanceof TileTubeFilter filter) {
+                // Right-click with an essentia container (jar/phial) to set the filter aspect
+                ItemStack held = player.getMainHandItem();
+                if (held.getItem() instanceof thaumcraft.api.aspects.IEssentiaContainerItem container) {
+                    thaumcraft.api.aspects.AspectList aspects = container.getAspects(held);
+                    if (aspects != null && aspects.size() > 0) {
+                        filter.setFilter(aspects.getAspects()[0]);
+                        filter.markDirtyAndSync();
+                        return InteractionResult.CONSUME;
+                    }
+                }
+                // Empty hand clears the filter
+                if (player.getMainHandItem().isEmpty()) {
+                    filter.setFilter(null);
+                    filter.markDirtyAndSync();
+                    return InteractionResult.CONSUME;
+                }
+            }
             return InteractionResult.CONSUME;
         }
 
