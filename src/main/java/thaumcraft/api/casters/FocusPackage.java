@@ -52,9 +52,11 @@ public class FocusPackage {
         if (complexity < 0) {
             complexity = 0;
             for (IFocusElement element : nodes) {
-                // Base complexity for each element
-                complexity += 5;
-                // TODO: Add element-specific complexity calculations
+                if (element instanceof FocusNode node) {
+                    complexity += Math.max(1, node.getComplexity());
+                } else {
+                    complexity += 5; // fallback for non-FocusNode elements
+                }
             }
         }
         return Math.max(1, complexity);

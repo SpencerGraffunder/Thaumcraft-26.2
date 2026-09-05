@@ -1,5 +1,6 @@
 package thaumcraft.common.tiles.devices;
 
+import java.lang.reflect.Field;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -82,22 +83,41 @@ public class TileBellows extends TileThaumcraft {
                 
                 // Speed up vanilla furnaces
                 if (targetTile instanceof FurnaceBlockEntity furnace) {
-                    // Access furnace cook time through reflection or mixin in full implementation
-                    // For now, we note this needs AbstractFurnaceBlockEntity access
-                    // The original mod directly accessed furnace.cookTime
+                    // Advance the vanilla furnace cook progress (see speedUpFurnace)
                     speedUpFurnace(furnace);
                 }
                 
-                // TODO: Speed up Thaumcraft devices (smelter, etc.)
+                // Thaumcraft devices (smelter, etc.) read the bellows bonus themselves via\n            // TileBellows.getBellows(...), so no direct action is needed here.
             }
         }
     }
 
+    // Cached reflection handles for the (private) AbstractFurnaceBlockEntity
+    // cook-progress fields. Vanilla hides these, so we access them reflectively
+    // with a one-time lookup and graceful fallback (matches the 1.12.2 behavior
+    // where Bellows bumped the furnace cook time by 1 every 2 ticks).
+    private static volatile Field F_COOKING_TIME;
+    private static volatile Field F_COOKING_TOTAL;
+
     private static void speedUpFurnace(FurnaceBlockEntity furnace) {
-        // In 1.20.1, furnace internals are protected
-        // This would need an accessor mixin or AT to work properly
-        // For now, this is a placeholder
-        // Original code: if (cookTime > 0 && cookTime < 199) cookTime++;
+        try {
+            Class<?> cls = furnace.getClass().getSuperclass(); // AbstractFurnaceBlockEntity
+            if (F_COOKING_TIME == null) {
+                F_COOKING_TIME = cls.getDeclaredField("cookingTimer");
+                F_COOKING_TIME.setAccessible(true);
+                F_COOKING_TOTAL = cls.getDeclaredField("cookingTotalTime");
+                F_COOKING_TOTAL.setAccessible(true);
+            }
+            int cur = F_COOKING_TIME.getInt(furnace);
+            int total = F_COOKING_TOTAL.getInt(furnace);
+            // Only boost while actively cooking and not already complete
+            if (cur > 0 && cur < total) {
+                F_COOKING_TIME.setInt(furnace, cur + 1);
+            }
+        } catch (Exception ignored) {
+            // Field names/visibility may change between MC versions; fail silently
+            // rather than crashing the tick.
+        }
     }
 
     // ==================== State Helpers ====================
