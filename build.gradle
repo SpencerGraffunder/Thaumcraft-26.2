@@ -64,6 +64,7 @@ runs {
 sourceSets.main.resources { srcDir 'src/generated/resources'; srcDir 'src/main/templates' }
 
 dependencies {
+    testImplementation "junit:junit:4.13.2"
     // Specify the version of Minecraft/NeoForge to use.
     implementation "net.neoforged:neoforge:${neo_version}"
 

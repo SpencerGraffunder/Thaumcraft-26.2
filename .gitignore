@@ -24,3 +24,6 @@ test-server
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# runtime logs
+logs/
