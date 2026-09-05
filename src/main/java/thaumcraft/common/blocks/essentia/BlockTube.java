@@ -190,7 +190,10 @@ public class BlockTube extends Block implements EntityBlock {
 
     @Override
     public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
-        // TODO: Return buffer fill level when TileTubeBuffer is implemented
+        BlockEntity te = level.getBlockEntity(pos);
+        if (te instanceof TileTubeBuffer buffer) {
+            return Math.max(0, Math.min(15, (buffer.aspects.visSize() * 15) / TileTubeBuffer.MAX_AMOUNT));
+        }
         return 0;
     }
 
