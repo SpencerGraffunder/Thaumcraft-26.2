@@ -208,7 +208,7 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
             return false;
         }
 
-        // TODO: Get aspects from item using ThaumcraftCraftingManager
+        // Retrieve the item's aspects (via ThaumcraftCraftingManager.getObjectTags).
         AspectList itemAspects = getItemAspects(input);
         if (itemAspects == null || itemAspects.size() == 0) {
             return false;

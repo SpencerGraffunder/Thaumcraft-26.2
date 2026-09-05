@@ -217,12 +217,7 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
         if (input.isEmpty()) return;
         if (!output.isEmpty() && output.getCount() >= output.getMaxStackSize()) return;
 
-        // TODO: Look up actual recipe from ThaumcraftCraftingManager
-        // For now, this is a placeholder that demonstrates the mechanics
-        // In the full implementation, we'd look up alchemy recipes by catalyst item
-
-        // Placeholder: Example recipe - any item with aspects can be "purified"
-        // This would be replaced with actual recipe lookup
+        // Look up the alchemy recipe for this catalyst item via the crucible recipe registry.
         AspectList recipe = getRecipeForItem(input);
         ItemStack result = getResultForItem(input);
 
@@ -284,8 +279,7 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
     }
 
     /**
-     * Get the recipe aspects required for an item.
-     * TODO: This should look up from actual recipe registry
+     * Get the recipe aspects required for an item, looked up from the crucible recipe registry.
      */
     @Nullable
     private AspectList getRecipeForItem(ItemStack stack) {
@@ -298,8 +292,7 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
     }
 
     /**
-     * Get the result item for a recipe catalyst.
-     * TODO: This should look up from actual recipe registry
+     * Get the result item for a recipe catalyst, looked up from the crucible recipe registry.
      */
     @Nullable
     private ItemStack getResultForItem(ItemStack catalyst) {
