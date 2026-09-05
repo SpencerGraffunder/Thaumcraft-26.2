@@ -1,11 +1,11 @@
 {
     "parent": "minecraft:block/block",
     "textures": {
-        "side": "blocks/hopper_outside",
-        "top": "blocks/hopper_top",
+        "side": "block/hopper_outside",
+        "top": "block/hopper_top",
         "panels": "thaumcraft:block/pattern_crafter",
         "particle": "thaumcraft:block/pattern_crafter",
-        "inside": "blocks/hopper_inside"
+        "inside": "block/hopper_inside"
     },
     "elements": [
         {
