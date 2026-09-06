@@ -1,14 +1,12 @@
 package thaumcraft.common.lib.network.misc;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.resources.Identifier;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.common.world.aura.AuraChunk;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -34,13 +32,11 @@ public class PacketAuraToClient implements CustomPacketPayload {
     }
 
     
-    private short base;
-    private float vis;
-    private float flux;
+    public short base;
+    public float vis;
+    public float flux;
     
     // Client-side storage for current aura display
-    @OnlyIn(Dist.CLIENT)
-    public static AuraChunk currentAura = null;
     
     public PacketAuraToClient() {
     }
@@ -71,14 +67,11 @@ public class PacketAuraToClient implements CustomPacketPayload {
         return msg;
     }
     
+    public static Consumer<PacketAuraToClient> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketAuraToClient msg, IPayloadContext ctxSupplier) {
         IPayloadContext ctx = ctxSupplier;
-        ctx.enqueueWork(() -> handleOnClient(msg));
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(msg));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleOnClient(PacketAuraToClient msg) {
-        // Store the current aura for HUD display
-        currentAura = new AuraChunk(null, msg.base, msg.vis, msg.flux);
-    }
 }

@@ -1,6 +1,5 @@
 package thaumcraft.common.lib.network.misc;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -9,17 +8,12 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-
 import thaumcraft.api.golems.seals.ISealConfigFilter;
 import thaumcraft.api.golems.seals.ISealEntity;
-import thaumcraft.api.golems.seals.SealPos;
-import thaumcraft.common.golems.seals.SealHandler;
+import java.util.function.Consumer;
 
-import java.util.function.Supplier;
+
 
 /**
  * Packet to sync seal filter configuration to the client.
@@ -40,11 +34,11 @@ public class PacketSealFilterToClient implements CustomPacketPayload {
         return this.TYPE;
     }
 
-    private final BlockPos pos;
-    private final Direction face;
-    private final byte filterSize;
-    private final NonNullList<ItemStack> filter;
-    private final NonNullList<Integer> filterStackSizes;
+    public final BlockPos pos;
+    public final Direction face;
+    public final byte filterSize;
+    public final NonNullList<ItemStack> filter;
+    public final NonNullList<Integer> filterStackSizes;
     
     public PacketSealFilterToClient(ISealEntity sealEntity) {
         this.pos = sealEntity.getSealPos().pos;
@@ -97,30 +91,10 @@ public class PacketSealFilterToClient implements CustomPacketPayload {
         return new PacketSealFilterToClient(pos, face, filterSize, filter, filterStackSizes);
     }
     
+    public static Consumer<PacketSealFilterToClient> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketSealFilterToClient packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> handleClient(packet));
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketSealFilterToClient packet) {
-        Minecraft mc = Minecraft.getInstance();
-        Level level = mc.level;
-        if (level == null) return;
-        
-        try {
-            ISealEntity seal = SealHandler.getSealEntity(
-                level.dimension(), 
-                new SealPos(packet.pos, packet.face)
-            );
-            
-            if (seal != null && seal.getSeal() instanceof ISealConfigFilter configFilter) {
-                for (int i = 0; i < packet.filterSize; i++) {
-                    configFilter.setFilterSlot(i, packet.filter.get(i));
-                    configFilter.setFilterSlotSize(i, packet.filterStackSizes.get(i));
-                }
-            }
-        } catch (Exception e) {
-            // Silently ignore errors (seal may not exist on client yet)
-        }
-    }
 }

@@ -1,18 +1,15 @@
 package thaumcraft.common.lib.network.playerdata;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.resources.Identifier;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.api.capabilities.IPlayerWarp;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -37,7 +34,7 @@ public class PacketSyncWarp implements CustomPacketPayload {
     }
 
     
-    private CompoundTag data;
+    public CompoundTag data;
     
     public PacketSyncWarp() {
         this.data = new CompoundTag();
@@ -62,19 +59,11 @@ public class PacketSyncWarp implements CustomPacketPayload {
         return msg;
     }
     
+    public static Consumer<PacketSyncWarp> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketSyncWarp msg, IPayloadContext ctxSupplier) {
         IPayloadContext ctx = ctxSupplier;
-        ctx.enqueueWork(() -> handleOnClient(msg));
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(msg));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleOnClient(PacketSyncWarp msg) {
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-        
-        IPlayerWarp warp = ThaumcraftCapabilities.getWarp(player);
-        if (warp != null && msg.data != null) {
-            warp.deserializeNBT(msg.data);
-        }
-    }
 }

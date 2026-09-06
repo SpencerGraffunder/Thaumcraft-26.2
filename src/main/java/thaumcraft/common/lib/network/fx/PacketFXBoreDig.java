@@ -1,20 +1,13 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.client.fx.FXDispatcher;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -37,11 +30,11 @@ public class PacketFXBoreDig implements CustomPacketPayload {
     }
 
     
-    private final int x;
-    private final int y;
-    private final int z;
-    private final int boreId;
-    private final int delay;
+    public final int x;
+    public final int y;
+    public final int z;
+    public final int boreId;
+    public final int delay;
     
     public PacketFXBoreDig(BlockPos pos, Entity bore, int delay) {
         this.x = pos.getX();
@@ -76,39 +69,10 @@ public class PacketFXBoreDig implements CustomPacketPayload {
         return new PacketFXBoreDig(x, y, z, boreId, delay);
     }
     
+    public static Consumer<PacketFXBoreDig> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXBoreDig packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            handleClient(packet);
-        });
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXBoreDig packet) {
-        try {
-            Level level = Minecraft.getInstance().level;
-            if (level == null) return;
-            
-            BlockPos pos = new BlockPos(packet.x, packet.y, packet.z);
-            Entity bore = level.getEntity(packet.boreId);
-            
-            if (bore == null) {
-                return;
-            }
-            
-            BlockState state = level.getBlockState(pos);
-            if (state.is(Blocks.AIR)) {
-                return;
-            }
-            
-            // Create delayed digging effects
-            // In the original, this used ServerEvents.addRunnableClient for delayed execution
-            // For 1.20.1, we'll spawn the effect directly - the FXDispatcher handles the visual
-            FXDispatcher.INSTANCE.boreDigFx(
-                    pos.getX(), pos.getY(), pos.getZ(),
-                    bore, state, 0, packet.delay
-            );
-        } catch (Exception ignored) {
-            // Silently ignore client-side FX errors
-        }
-    }
 }

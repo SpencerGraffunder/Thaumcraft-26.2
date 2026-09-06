@@ -1,18 +1,11 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.api.casters.FocusEffect;
-import thaumcraft.api.casters.FocusEngine;
-import thaumcraft.api.casters.IFocusElement;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -37,9 +30,9 @@ public class PacketFXFocusEffect implements CustomPacketPayload {
     }
 
     
-    private final float x, y, z;
-    private final float motionX, motionY, motionZ;
-    private final String parts;
+    public final float x, y, z;
+    public final float motionX, motionY, motionZ;
+    public final String parts;
     
     public PacketFXFocusEffect(float x, float y, float z, float motionX, float motionY, float motionZ, String[] parts) {
         this.x = x;
@@ -90,31 +83,10 @@ public class PacketFXFocusEffect implements CustomPacketPayload {
         );
     }
     
+    public static Consumer<PacketFXFocusEffect> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXFocusEffect packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> handleClient(packet));
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXFocusEffect packet) {
-        Minecraft mc = Minecraft.getInstance();
-        Level level = mc.level;
-        if (level == null) return;
-        
-        String[] partKeys = packet.parts.split("%");
-        int amount = Math.max(1, 10 / partKeys.length);
-        
-        for (String key : partKeys) {
-            IFocusElement element = FocusEngine.getElement(key);
-            if (element instanceof FocusEffect effect) {
-                for (int i = 0; i < amount; i++) {
-                    // Add some randomness to the motion
-                    double mx = packet.motionX + level.getRandom().nextGaussian() / 20.0;
-                    double my = packet.motionY + level.getRandom().nextGaussian() / 20.0;
-                    double mz = packet.motionZ + level.getRandom().nextGaussian() / 20.0;
-                    
-                    effect.renderParticleFX(level, packet.x, packet.y, packet.z, mx, my, mz);
-                }
-            }
-        }
-    }
 }

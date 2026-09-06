@@ -258,6 +258,7 @@ public class Thaumcraft {
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+            thaumcraft.client.lib.network.PacketClientWiring.init();
             // Some client setup code
             LOGGER.info("Thaumcraft client setup");
             LOGGER.info("MINECRAFT NAME >> {}", net.minecraft.client.Minecraft.getInstance().getUser().getName());

@@ -4,7 +4,7 @@ Port of **Thaumcraft 6** from the 1.20.1 Forge source fork
 ([ShobieShy/Thaumcraft-6-Source-Code-1.20.1](https://github.com/ShobieShy/Thaumcraft-6-Source-Code-1.20.1))
 to **Minecraft 26.2 "Chaos Cubed"** on **NeoForge 26.2.0.59** (Java 25).
 
-## Status: COMPILES & BUILDS — server boots to "Done"
+## Status: COMPILES & BUILDS — server boots to "Done" — multiplayer handshake verified
 
 The 26.2 port is under active development.
 
@@ -18,6 +18,12 @@ The 26.2 port is under active development.
 - Recipe data migrated to the 26.2 format: `key` ingredients are plain strings
   and `result` uses `"id"` (not `"item"`); forge + thaumcraft item tags added
   for cross-mod interop.
+- Multiplayer fixed & verified: S2C payload handlers split into
+  server-safe common classes + client handler classes
+  (`thaumcraft.client.lib.network.*`), so all 38 `thaumcraft:packet*`
+  channels register on both dists. A 26.2.0.75 client joins a 26.2.0.75
+  dev server cleanly — NeoForge handshake passes with zero channel errors,
+  player in-world (see [`TODO.md`](./TODO.md) P0 for details).
 
 Detailed task tracking lives in [`todo.md`](./todo.md)[`todo.md`](./todo.md] — 
 checklists and remaining runtime-testing items are maintained there, not here.

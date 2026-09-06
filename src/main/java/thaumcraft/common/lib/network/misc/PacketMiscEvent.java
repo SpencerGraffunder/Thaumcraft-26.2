@@ -1,17 +1,11 @@
 package thaumcraft.common.lib.network.misc;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.resources.Identifier;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.init.ModSounds;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -38,8 +32,8 @@ public class PacketMiscEvent implements CustomPacketPayload {
     public static final byte MIST_EVENT = 1;
     public static final byte MIST_EVENT_SHORT = 2;
     
-    private final byte type;
-    private final int value;
+    public final byte type;
+    public final int value;
     
     public PacketMiscEvent(byte type) {
         this.type = type;
@@ -67,42 +61,10 @@ public class PacketMiscEvent implements CustomPacketPayload {
         return new PacketMiscEvent(type, value);
     }
     
+    public static Consumer<PacketMiscEvent> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketMiscEvent packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> handleClient(packet));
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketMiscEvent packet) {
-        Minecraft mc = Minecraft.getInstance();
-        Player player = mc.player;
-        if (player == null || mc.level == null) return;
-        
-        switch (packet.type) {
-            case WARP_EVENT -> {
-                // Play heartbeat sound for warp effects
-                // TODO: Check ModConfig.CONFIG_GRAPHICS.nostress when config is implemented
-                if (ModSounds.HEARTBEAT.get() != null) {
-                    mc.level.playLocalSound(
-                        player.getX(), player.getY(), player.getZ(),
-                        ModSounds.HEARTBEAT.get(), SoundSource.AMBIENT,
-                        1.0f, 1.0f, false
-                    );
-                }
-            }
-            case MIST_EVENT -> {
-                // Long duration fog effect
-                // TODO: Implement RenderEventHandler.fogFiddled when rendering is ported
-                // RenderEventHandler.fogFiddled = true;
-                // RenderEventHandler.fogDuration = 2400;
-            }
-            case MIST_EVENT_SHORT -> {
-                // Short duration fog effect
-                // TODO: Implement RenderEventHandler when rendering is ported
-                // RenderEventHandler.fogFiddled = true;
-                // if (RenderEventHandler.fogDuration < 200) {
-                //     RenderEventHandler.fogDuration = 200;
-                // }
-            }
-        }
-    }
 }

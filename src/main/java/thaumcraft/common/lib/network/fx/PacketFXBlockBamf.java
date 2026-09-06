@@ -1,16 +1,13 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.client.fx.FXDispatcher;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -32,12 +29,12 @@ public class PacketFXBlockBamf implements CustomPacketPayload {
     }
 
     
-    private final double x;
-    private final double y;
-    private final double z;
-    private final int color;
-    private final byte flags;
-    private final byte face;
+    public final double x;
+    public final double y;
+    public final double z;
+    public final int color;
+    public final byte flags;
+    public final byte face;
     
     public PacketFXBlockBamf(double x, double y, double z, int color, boolean sound, boolean flair, Direction side) {
         this.x = x;
@@ -84,35 +81,19 @@ public class PacketFXBlockBamf implements CustomPacketPayload {
         );
     }
     
+    public static Consumer<PacketFXBlockBamf> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXBlockBamf packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            handleClient(packet);
-        });
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXBlockBamf packet) {
-        Direction side = null;
-        if (packet.face >= 0 && packet.face < Direction.values().length) {
-            side = Direction.values()[packet.face];
-        }
-        
-        boolean sound = getBit(packet.flags, 0);
-        boolean flair = getBit(packet.flags, 1);
-        
-        if (packet.color != -9999) {
-            FXDispatcher.INSTANCE.drawBamf(packet.x, packet.y, packet.z, packet.color, sound, flair, side);
-        } else {
-            FXDispatcher.INSTANCE.drawBamf(packet.x, packet.y, packet.z, sound, flair, side);
-        }
-    }
     
     // Bit manipulation helpers
     private static int setBit(int value, int bit) {
         return value | (1 << bit);
     }
     
-    private static boolean getBit(int value, int bit) {
+    public static boolean getBit(int value, int bit) {
         return (value & (1 << bit)) != 0;
     }
 }

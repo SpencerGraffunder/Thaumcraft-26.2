@@ -1,15 +1,12 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.client.fx.FXDispatcher;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -31,10 +28,10 @@ public class PacketFXZap implements CustomPacketPayload {
     }
 
     
-    private final Vec3 source;
-    private final Vec3 target;
-    private final int color;
-    private final float width;
+    public final Vec3 source;
+    public final Vec3 target;
+    public final int color;
+    public final float width;
     
     public PacketFXZap(Vec3 source, Vec3 target, int color, float width) {
         this.source = source;
@@ -67,24 +64,10 @@ public class PacketFXZap implements CustomPacketPayload {
         );
     }
     
+    public static Consumer<PacketFXZap> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXZap packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            handleClient(packet);
-        });
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXZap packet) {
-        // Extract RGB from color integer
-        int color = packet.color;
-        float r = ((color >> 16) & 0xFF) / 255.0f;
-        float g = ((color >> 8) & 0xFF) / 255.0f;
-        float b = (color & 0xFF) / 255.0f;
-        
-        FXDispatcher.INSTANCE.arcBolt(
-                packet.source.x, packet.source.y, packet.source.z,
-                packet.target.x, packet.target.y, packet.target.z,
-                r, g, b,
-                packet.width);
-    }
 }

@@ -1,20 +1,12 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.api.casters.FocusEffect;
-import thaumcraft.api.casters.FocusEngine;
-import thaumcraft.api.casters.IFocusElement;
+import java.util.function.Consumer;
 
-import net.minecraft.util.RandomSource;
+
 
 /**
  * Packet to spawn focus impact particles at a specific location.
@@ -37,8 +29,8 @@ public class PacketFXFocusPartImpact implements CustomPacketPayload {
     }
 
     
-    private final float x, y, z;
-    private final String parts;
+    public final float x, y, z;
+    public final String parts;
     
     public PacketFXFocusPartImpact(double x, double y, double z, String[] parts) {
         this.x = (float) x;
@@ -77,32 +69,10 @@ public class PacketFXFocusPartImpact implements CustomPacketPayload {
         );
     }
     
+    public static Consumer<PacketFXFocusPartImpact> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXFocusPartImpact packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> handleClient(packet));
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXFocusPartImpact packet) {
-        Minecraft mc = Minecraft.getInstance();
-        Level level = mc.level;
-        if (level == null) return;
-        
-        String[] partKeys = packet.parts.split("%");
-        int amount = Math.max(1, 15 / partKeys.length);
-        RandomSource rand = level.getRandom();
-        
-        for (String key : partKeys) {
-            IFocusElement element = FocusEngine.getElement(key);
-            if (element instanceof FocusEffect effect) {
-                for (int i = 0; i < amount; i++) {
-                    // Random outward motion for impact burst
-                    double mx = rand.nextGaussian() * 0.15;
-                    double my = rand.nextGaussian() * 0.15;
-                    double mz = rand.nextGaussian() * 0.15;
-                    
-                    effect.renderParticleFX(level, packet.x, packet.y, packet.z, mx, my, mz);
-                }
-            }
-        }
-    }
 }

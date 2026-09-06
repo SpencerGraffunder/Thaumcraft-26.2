@@ -14,7 +14,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -81,12 +80,7 @@ public class PacketHandler {
         PayloadRegistrar reg = event.registrar(CHANNEL);
 
         // ---- Server -> Client ----
-        // Only register client-bound handlers on the client dist: these packet
-        // classes reference client-only code (Minecraft.getInstance().level),
-        // whose ClientLevel field descriptor cannot be loaded on a dedicated
-        // server (NeoForgeDevDistCleaner throws).
-        if (FMLEnvironment.getDist() == Dist.CLIENT) {
-            reg.playToClient(PacketSealToClient.TYPE, PacketSealToClient.STREAM_CODEC, PacketSealToClient::handle);
+        reg.playToClient(PacketSealToClient.TYPE, PacketSealToClient.STREAM_CODEC, PacketSealToClient::handle);
         reg.playToClient(PacketSyncKnowledge.TYPE, PacketSyncKnowledge.STREAM_CODEC, PacketSyncKnowledge::handle);
         reg.playToClient(PacketSyncWarp.TYPE, PacketSyncWarp.STREAM_CODEC, PacketSyncWarp::handle);
         reg.playToClient(PacketWarpMessage.TYPE, PacketWarpMessage.STREAM_CODEC, PacketWarpMessage::handle);
@@ -113,7 +107,6 @@ public class PacketHandler {
         reg.playToClient(PacketSealFilterToClient.TYPE, PacketSealFilterToClient.STREAM_CODEC, PacketSealFilterToClient::handle);
         reg.playToClient(PacketBiomeChange.TYPE, PacketBiomeChange.STREAM_CODEC, PacketBiomeChange::handle);
 
-        }
 
         // ---- Client -> Server ----
         reg.playToServer(PacketTileToServer.TYPE, PacketTileToServer.STREAM_CODEC, PacketTileToServer::handle);

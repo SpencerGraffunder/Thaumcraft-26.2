@@ -5,6 +5,40 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
+## P0: Multiplayer broken — S2C payload channels missing on server — RESOLVED (2026-09-05)
+
+Symptom: any client connecting to a Thaumcraft dedicated server is
+rejected during the NeoForge 26.2 channel handshake:
+`Channel [thaumcraft:packet<name>] failed to connect: This channel is
+missing on the server side, but required on the client!` followed by
+`Incompatible client!` disconnect.
+
+Root cause: `PacketHandler.register` wraps all 26 `playToClient`
+registrations in `if (FMLEnvironment.getDist() == Dist.CLIENT)`, because
+the S2C packet classes carry their client handler inline
+(`handleClient`/`handleOnClient` referencing `net.minecraft.client.*`),
+which cannot load on a dedicated server. Skipping registration leaves the
+server's channel list incomplete, so the handshake always fails — the mod
+has no working dedicated-server multiplayer.
+
+Fix (applied): split each S2C payload class into a server-safe common
+part (data + encode/decode + `TYPE`/`STREAM_CODEC`) and a client handler
+class in `thaumcraft.client.lib.network.*`:
+- common class gains `public static Consumer<P> CLIENT_HANDLER = msg -> {};`
+  and its `handle(msg, ctx)` delegates to it;
+- client class `<Name>Client` holds the extracted handler logic;
+- `thaumcraft.client.lib.network.PacketClientWiring.init()` assigns all 26;
+- `Thaumcraft.ClientModEvents.onClientSetup` calls `PacketClientWiring.init()`;
+- `PacketHandler.register` registers all 26 `playToClient` unconditionally.
+
+Verified (2026-09-05): `build` green → jar installed into the Modrinth
+26.2 profile (`sha256` matches build artifact) → client 26.2.0.75 joins
+the dev server 26.2.0.75 (localhost:25565): NeoForge handshake passes,
+**zero channel errors**, connection ESTABLISHED and stable; player in-world
+(server log: "joined the game", "was slain by Phantom"; pause menu shows
+"Disconnect"). All 38 `thaumcraft:packet*` channels register on both dists.
+`tools/` holds the evdev/Ding input drivers used for the GUI join test.
+
 ## Outstanding (runtime verification on a test server)
 
 - [ ] Entity spawning/behaviour, golem seals, bosses

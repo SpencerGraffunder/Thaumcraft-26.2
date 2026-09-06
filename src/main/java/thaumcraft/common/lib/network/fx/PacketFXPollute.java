@@ -1,15 +1,12 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.client.fx.FXDispatcher;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -31,10 +28,10 @@ public class PacketFXPollute implements CustomPacketPayload {
     }
 
     
-    private final int x;
-    private final int y;
-    private final int z;
-    private final byte amount;
+    public final int x;
+    public final int y;
+    public final int z;
+    public final byte amount;
     
     public PacketFXPollute(BlockPos pos, float amt) {
         this.x = pos.getX();
@@ -69,19 +66,10 @@ public class PacketFXPollute implements CustomPacketPayload {
         return new PacketFXPollute(x, y, z, amount);
     }
     
+    public static Consumer<PacketFXPollute> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXPollute packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            handleClient(packet);
-        });
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXPollute packet) {
-        BlockPos pos = new BlockPos(packet.x, packet.y, packet.z);
-        // Draw pollution particles - cap at 40 to avoid performance issues
-        int particleCount = Math.min(40, Math.abs(packet.amount));
-        for (int a = 0; a < particleCount; a++) {
-            FXDispatcher.INSTANCE.drawPollutionParticles(pos);
-        }
-    }
 }

@@ -1,16 +1,13 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.client.fx.FXDispatcher;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -32,15 +29,15 @@ public class PacketFXBlockArc implements CustomPacketPayload {
     }
 
     
-    private final int x;
-    private final int y;
-    private final int z;
-    private final float tx;
-    private final float ty;
-    private final float tz;
-    private final float r;
-    private final float g;
-    private final float b;
+    public final int x;
+    public final int y;
+    public final int z;
+    public final float tx;
+    public final float ty;
+    public final float tz;
+    public final float r;
+    public final float g;
+    public final float b;
     
     public PacketFXBlockArc(BlockPos pos, Entity target, float r, float g, float b) {
         this.x = pos.getX();
@@ -104,18 +101,10 @@ public class PacketFXBlockArc implements CustomPacketPayload {
         );
     }
     
+    public static Consumer<PacketFXBlockArc> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXBlockArc packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            handleClient(packet);
-        });
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXBlockArc packet) {
-        FXDispatcher.INSTANCE.arcLightning(
-                packet.tx, packet.ty, packet.tz,
-                packet.x + 0.5, packet.y + 0.5, packet.z + 0.5,
-                packet.r, packet.g, packet.b,
-                0.5f);
-    }
 }

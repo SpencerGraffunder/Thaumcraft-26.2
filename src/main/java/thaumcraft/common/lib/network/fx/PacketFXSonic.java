@@ -1,17 +1,12 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.client.fx.FXDispatcher;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -34,7 +29,7 @@ public class PacketFXSonic implements CustomPacketPayload {
     }
 
     
-    private final int sourceId;
+    public final int sourceId;
     
     public PacketFXSonic(Entity source) {
         this.sourceId = source.getId();
@@ -53,21 +48,10 @@ public class PacketFXSonic implements CustomPacketPayload {
         return new PacketFXSonic(sourceId);
     }
     
+    public static Consumer<PacketFXSonic> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXSonic packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            handleClient(packet);
-        });
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXSonic packet) {
-        Level level = Minecraft.getInstance().level;
-        if (level == null) return;
-        
-        Entity source = level.getEntity(packet.sourceId);
-        if (source != null) {
-            // Create sonic boom effect at entity position
-            FXDispatcher.INSTANCE.sonicBoom(source.getX(), source.getY(), source.getZ(), source, 10);
-        }
-    }
 }

@@ -1,15 +1,12 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.client.fx.FXDispatcher;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -31,14 +28,14 @@ public class PacketFXEssentiaSource implements CustomPacketPayload {
     }
 
     
-    private final int x;
-    private final int y;
-    private final int z;
-    private final byte dx;
-    private final byte dy;
-    private final byte dz;
-    private final int color;
-    private final int ext;
+    public final int x;
+    public final int y;
+    public final int z;
+    public final byte dx;
+    public final byte dy;
+    public final byte dz;
+    public final int color;
+    public final int ext;
     
     public PacketFXEssentiaSource(BlockPos source, byte dx, byte dy, byte dz, int color, int ext) {
         this.x = source.getX();
@@ -93,22 +90,10 @@ public class PacketFXEssentiaSource implements CustomPacketPayload {
         return new PacketFXEssentiaSource(x, y, z, dx, dy, dz, color, ext);
     }
     
+    public static Consumer<PacketFXEssentiaSource> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXEssentiaSource packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            handleClient(packet);
-        });
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXEssentiaSource packet) {
-        int tx = packet.x - packet.dx;
-        int ty = packet.y - packet.dy;
-        int tz = packet.z - packet.dz;
-        
-        // Draw essentia trail from source to target
-        BlockPos source = new BlockPos(packet.x, packet.y, packet.z);
-        BlockPos target = new BlockPos(tx, ty, tz);
-        
-        FXDispatcher.INSTANCE.essentiaTrailFx(source, target, 1, packet.color, 0.1f, packet.ext);
-    }
 }

@@ -1,15 +1,12 @@
 package thaumcraft.common.lib.network.fx;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import thaumcraft.client.fx.FXDispatcher;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -32,8 +29,8 @@ public class PacketFXBlockMist implements CustomPacketPayload {
     }
 
     
-    private final long loc;
-    private final int color;
+    public final long loc;
+    public final int color;
     
     public PacketFXBlockMist(BlockPos pos, int color) {
         this.loc = pos.asLong();
@@ -56,15 +53,10 @@ public class PacketFXBlockMist implements CustomPacketPayload {
         return new PacketFXBlockMist(loc, color);
     }
     
+    public static Consumer<PacketFXBlockMist> CLIENT_HANDLER = msg -> {};
+
     public static void handle(PacketFXBlockMist packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            handleClient(packet);
-        });
+        ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
     }
     
-    @OnlyIn(Dist.CLIENT)
-    private static void handleClient(PacketFXBlockMist packet) {
-        BlockPos pos = BlockPos.of(packet.loc);
-        FXDispatcher.INSTANCE.drawBlockMistParticles(pos, packet.color);
-    }
 }
