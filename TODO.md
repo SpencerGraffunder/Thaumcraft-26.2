@@ -29,6 +29,37 @@ warnings print with an **empty** list (benign 26.2 MaterialBaker quirk for
 `overrides` models; no rendering impact). Full detail in `TEXTURETODO.md`.
 
 
+## P0: Broken item textures (placeholder checkerboards) — RESOLVED (2026-09-06)
+
+Symptom: **69** Thaumcraft item/block/entity textures rendered as the
+missing-texture **purple/black checkerboard** placeholder (not real art) —
+e.g. `item/candle`, `item/shard_*`, `item/bucket_pure`, all casters/placers/
+grapple gun, golem pearls/charms, the void jars, arcane-workbench block, and
+the taint-spider/slime/dart entity art. (Distinct from the 362 missing
+ClientItem files above — this is the textures themselves being placeholders.)
+
+Root cause: the 1.20.1→26.2 port generated placeholder textures (a
+deterministic 8x8 purple/black grid) in place of the real Thaumcraft art,
+which was not carried over.
+
+Fix:
+- Mapped all 69 placeholder textures to their real art in the released
+  Thaumcraft jars (TC4 `1.7.10`, TC5 `1.8.9`, TC6 `1.12.2`) and copied the
+  real PNGs into `src/main/resources/assets/thaumcraft/textures/`.
+- Fixed the missing `bucket_pure` texture (referenced by
+  `models/item/bucket_pure.json` but absent) — copied real `bucket_pure` from TC5.
+- Added a regression test: `thaumcraft.common.resources.TextureIntegrityTest`
+  (2 tests) — (a) every texture ref in every JSON model/blockstate exists as
+  a file (catches `bucket_pure`-style dangling refs), (b) no PNG is a
+  placeholder checkerboard (catches this regression).
+
+Verified (2026-09-06): `TextureIntegrityTest` green; full suite **86 tests,
+0 failures**; rebuilt jar installed into the Modrinth 26.2 profile shows
+**0 placeholder textures** (was 69) with `candle`/`shard_fire`/`bucket_pure`
+confirmed as real art; `runClient` log shows **0 "Missing item model for"**.
+The 5 residual `Missing texture references …: particle` warnings are the
+cosmetic block-break particle texture only (items render fine).
+
 ## P0: Multiplayer broken — S2C payload channels missing on server — RESOLVED (2026-09-05)
 
 Symptom: any client connecting to a Thaumcraft dedicated server is

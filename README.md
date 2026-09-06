@@ -30,6 +30,14 @@ The 26.2 port is under active development.
   model texture refs re-pointed to existing textures, and 4 placeholder textures
   added — `runClient` now logs **0 "Missing item model for"** (items render
   correctly; see [`TEXTURETODO.md`](./TEXTURETODO.md)).
+- **Broken item textures fixed & verified:** 69 textures that shipped as
+  placeholder checkerboards (candles, elemental shards, casters, golem
+  pearls/charms, void jars, arcane workbench, taint mob art, …) are now
+  replaced with the real Thaumcraft art from the released TC4/TC5/TC6 jars,
+  and the dangling `bucket_pure` ref is fixed. A new
+  `TextureIntegrityTest` guards against regressions (dangling model refs +
+  placeholder checkerboards). Rebuilt jar shows **0 placeholder textures**;
+  full test suite **86 green** (see [`TODO.md`](./TODO.md) P0).
 
 Detailed task tracking lives in [`todo.md`](./todo.md)[`todo.md`](./todo.md] — 
 checklists and remaining runtime-testing items are maintained there, not here.
