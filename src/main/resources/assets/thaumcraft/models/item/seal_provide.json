@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "thaumcraft:item/seals/seal_provide"
+    "layer0": "thaumcraft:item/seals/seal_provider"
   }
 }

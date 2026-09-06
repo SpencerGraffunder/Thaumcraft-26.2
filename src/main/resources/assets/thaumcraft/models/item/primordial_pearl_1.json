@@ -1,6 +1,7 @@
 {
-    "parent": "minecraft:item/generated",
-    "textures": {
-        "layer0": "thaumcraft:item/primordial_pearl_nodule"
-    }
+ "parent": "minecraft:item/generated",
+ "textures": {
+  "layer0": "thaumcraft:item/primordial_pearl_nodule",
+  "particle": "thaumcraft:item/primordial_pearl_nodule"
+ }
 }

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "thaumcraft:item/curio_common"
+    "layer0": "thaumcraft:item/curiosity_band"
   }
 }

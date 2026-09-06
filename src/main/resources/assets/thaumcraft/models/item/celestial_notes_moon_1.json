@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "thaumcraft:item/celestial/moon_1"
+    "layer0": "thaumcraft:item/celestial/moon1"
   }
 }

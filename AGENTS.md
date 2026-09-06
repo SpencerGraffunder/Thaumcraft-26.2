@@ -9,3 +9,11 @@ Token usage is free, spin up subagents to keep context clean. Handoff tasks by d
 
 ### Give status updates periodically
 To keep the user up to date, provide simple easy to read statuses with the original prompt in mind.
+
+### Minecraft client/server GUI
+To launch, verify, screenshot, or drive the in-game client (or connect it to the dev
+server) on this box, follow `skills/minecraft-gui/SKILL.md`. Key points: most verification is
+log-based (`CI=true ./gradlew runClient` then grep the log) and needs **no** GUI input; GUI
+input on this Wayland box goes through the synthetic-hardware drivers in `tools/`
+(`ucursor.py`, `evdev_input.py`), not the `computer` tool (which is focus-only and can't see
+the Modrinth App webview).

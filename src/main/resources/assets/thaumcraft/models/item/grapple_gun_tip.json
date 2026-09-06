@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "thaumcraft:item/placeholder"
+    "layer0": "thaumcraft:item/enchanted_placeholder"
   }
 }

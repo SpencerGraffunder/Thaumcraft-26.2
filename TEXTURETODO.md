@@ -4,6 +4,36 @@ This document lists all placeholder textures and missing assets that need to be 
 
 ---
 
+## Resolved (2026-09-05) — purple/black items (ClientItem root cause)
+
+**Root cause:** 362 Thaumcraft items rendered **purple/black** because their
+`assets/thaumcraft/models/item/<id>.json` ClientItem files were **missing entirely** — a
+1.20.1→26.2 port gap. With no ClientItem, the item model never resolved, so every one of
+those items drew as the missing-texture purple/black checkerboard.
+
+**Fix (applied):**
+- Generated the missing `models/item/<id>.json` ClientItem files
+  (`tools/gen_client_items.py`).
+- Re-pointed 25 model `textures` refs that used wrong/missing texture ids to the textures
+  that actually exist (`tools/fix_item_textures.py`).
+- Generated 4 placeholder textures so their models resolve (real art still needed, see
+  below): `thaumometer.png`, `research_notes.png`, `complete_notes.png`, `primal_charm.png`.
+- Added a `particle` texture ref to the 10 concrete item models that lacked one
+  (casters, grapple gun, primordial pearl, verdant charm) — clears the residual
+  "Missing texture references … : particle" bake warnings (cosmetic; block-break particles).
+
+**Verified (2026-09-05):** `runClient` log shows **0 "Missing item model for"**
+(previously 362) — items no longer render purple/black. The `particle` refs above resolve the
+missing particle texture (it is no longer enumerated as missing). Note: 5 residual
+`Missing texture references in model …:` warnings still print with an **empty** list — a
+benign 26.2 MaterialBaker quirk for `overrides` models, with **no** rendering impact.
+
+> These items render correctly now; the entries below are **placeholder textures that still
+> need real art**, not rendering breakage.
+
+---
+
+
 ## Missing Item Textures
 
 These item models reference textures that don't exist:
@@ -134,9 +164,10 @@ Many models can use similar existing textures:
 ## Statistics
 
 - **Total Item Textures**: 212 files
-- **Total Block Textures**: 250 files  
-- **Missing Item Textures**: ~30
-- **Placeholder Textures**: 4
+- **Total Block Textures**: 250 files
+- **Purple/black items**: **0** (362 ClientItem files generated — resolved 2026-09-05)
+- **Placeholder Item Textures (need real art)**: 4 (thaumometer, research_notes,
+  complete_notes, primal_charm) + the High/Medium-priority lists above
 - **Substitute Block Textures**: 7
 
 ---
@@ -151,4 +182,4 @@ The following quick fixes have been applied to allow the mod to run:
 
 ---
 
-*Last Updated: January 25, 2026*
+*Last Updated: September 5, 2026*

@@ -24,6 +24,12 @@ The 26.2 port is under active development.
   channels register on both dists. A 26.2.0.75 client joins a 26.2.0.75
   dev server cleanly — NeoForge handshake passes with zero channel errors,
   player in-world (see [`TODO.md`](./TODO.md) P0 for details).
+- **Purple/black items fixed & verified:** the 1.20.1→26.2 port had dropped the
+  per-item `models/item/<id>.json` ClientItem files, so 362 items rendered as the
+  missing-texture checkerboard. All 362 ClientItem files are now generated, 25
+  model texture refs re-pointed to existing textures, and 4 placeholder textures
+  added — `runClient` now logs **0 "Missing item model for"** (items render
+  correctly; see [`TEXTURETODO.md`](./TEXTURETODO.md)).
 
 Detailed task tracking lives in [`todo.md`](./todo.md)[`todo.md`](./todo.md] — 
 checklists and remaining runtime-testing items are maintained there, not here.

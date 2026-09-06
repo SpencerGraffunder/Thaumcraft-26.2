@@ -5,6 +5,30 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
+## P0: Purple/black items — ClientItem files missing — RESOLVED (2026-09-05)
+
+Symptom: 362 Thaumcraft items rendered **purple/black** (missing-texture
+checkerboard) in the client.
+
+Root cause: the 1.20.1→26.2 port dropped the per-item
+`assets/thaumcraft/models/item/<id>.json` ClientItem files, so those item
+models never resolved.
+
+Fix:
+- Generated the 362 missing ClientItem files (`tools/gen_client_items.py`).
+- Re-pointed 25 model `textures` refs to the textures that exist
+  (`tools/fix_item_textures.py`); generated 4 placeholder textures
+  (thaumometer, research_notes, complete_notes, primal_charm).
+- Added a `particle` texture ref to the 10 concrete item models that lacked
+  one (casters, grapple gun, primordial pearl, verdant charm) so the missing
+  particle reference resolves.
+
+Verified (2026-09-05): `runClient` log shows **0 "Missing item model for"**
+(was 362) — items render correctly. 5 residual `Missing texture references …:`
+warnings print with an **empty** list (benign 26.2 MaterialBaker quirk for
+`overrides` models; no rendering impact). Full detail in `TEXTURETODO.md`.
+
+
 ## P0: Multiplayer broken — S2C payload channels missing on server — RESOLVED (2026-09-05)
 
 Symptom: any client connecting to a Thaumcraft dedicated server is
