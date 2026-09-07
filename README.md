@@ -53,6 +53,11 @@ Requires JDK 25.
 - Ubuntu 26.04: `sudo apt-get install openjdk-25-jdk-headless` puts JDK 25 on
   the `PATH` — no `JAVA_HOME` needed.
 - Otherwise: `export JAVA_HOME=/path/to/jdk-25` before running Gradle.
+- macOS: `brew install openjdk@25` (keg-only — set
+  `JAVA_HOME=/opt/homebrew/opt/openjdk@25`). If the repo checkout is on an SMB share,
+  Gradle fails (`FileHasher: Operation not supported`) — copy the repo to local disk
+  and build there. Full macOS build/launch/screenshot/click workflow is in
+  [`skills/minecraft-gui/SKILL.md`](./skills/minecraft-gui/SKILL.md).
 
 ```bash
 ./gradlew build

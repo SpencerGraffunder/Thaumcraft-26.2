@@ -1,6 +1,6 @@
 ---
 name: minecraft-gui
-description: Launch, verify, screenshot, and drive the Thaumcraft 26.2 Minecraft client/server on this GNOME Wayland box (Modrinth App + ./gradlew dev env). Use when asked to test the mod in-game, check item/block rendering, read load-time errors, or connect the client to the dev server.
+description: Launch, verify, screenshot, and drive the Thaumcraft 26.2 Minecraft client/server on the GNOME Wayland box or the macOS box (Modrinth App + ./gradlew). Use when asked to test the mod in-game, check item/block rendering, read load-time errors, or connect the client to the dev server.
 ---
 
 # Driving the Thaumcraft 26.2 Minecraft GUI
@@ -63,6 +63,74 @@ GNOME Wayland is **focus-only** for input:
 0..1440). To click a button you see in a window screenshot:
 `abs_x = window.x + btn_x_in_screenshot`, `abs_y = window.y + btn_y_in_screenshot`.
 Get `window.x/y` from `computer` → `desktop.windows()`.
+## macOS (Spencers-MacBook-Air — verified 2026-09-06)
+
+Different box, different failure modes. The repo here lives on an **SMB share**
+(`//graffunder@192.168.4.200/ai-workspace`), which changes the build flow.
+
+| What | Value |
+|------|-------|
+| Repo | `/Users/spencer/ai-workspace/Thaumcraft-26.2` (**SMB mount** — Gradle cannot hash files here) |
+| Local build dir | `~/mc-build/Thaumcraft-26.2` (repo copy on local disk) |
+| JDK 25 | `brew install openjdk@25` → `JAVA_HOME=/opt/homebrew/opt/openjdk@25` (keg-only) |
+| Modrinth App | `/Applications/Modrinth App.app`; data at `~/Library/Application Support/ModrinthApp/` |
+| Profile | `…/ModrinthApp/profiles/NeoForge 26.2/` (mods/, logs/, saves/) |
+| Bundled JRE | `…/ModrinthApp/meta/java_versions/zulu25…-macosx_aarch64/Contents/Home` (JRE only — no javac) |
+| Display | **1680x1050 logical**, Retina 2x → screenshots are **3360x2100** |
+| Input | `cliclick` (`brew install cliclick`) — `cliclick c:X,Y` click, `m:X,Y` move, `p` position |
+| Screenshots | `screencapture -x /tmp/shot.png` |
+
+### Build (SMB workaround)
+
+Gradle's `FileHasher` fails with `Operation not supported` on `smbfs`. Build from a local copy:
+
+```bash
+rm -rf ~/mc-build/Thaumcraft-26.2
+cp -a /Users/spencer/ai-workspace/Thaumcraft-26.2 ~/mc-build/   # slow over SMB — don't let it time out
+cd ~/mc-build/Thaumcraft-26.2
+CI=true JAVA_HOME=/opt/homebrew/opt/openjdk@25 ./gradlew build
+# jar: build/libs/thaumcraft-6.2.0+26.2.jar (~11MB with resources)
+cp build/libs/thaumcraft-*.jar "$HOME/Library/Application Support/ModrinthApp/profiles/NeoForge 26.2/mods/"
+```
+
+If the local tree is missing files relative to git (partial copy), `git checkout -- .`
+restores them from HEAD before rebuilding. A 3.7MB jar = no resources; FML dies with
+`NullPointerException ... "version" is null` during discovery (missing
+`META-INF/neoforge.mods.toml`) until rebuilt complete.
+
+### Launch — use the Modrinth App, not a manual java command
+
+```bash
+open -a "Modrinth App"
+# screenshot, then click the green Play button (top-right of the instance card)
+LOG="$HOME/Library/Application Support/ModrinthApp/profiles/NeoForge 26.2/logs/latest.log"
+until grep -q "Setting user" "$LOG"; do sleep 3; done
+```
+
+- Game window title: `Minecraft NeoForge* 26.2` (854x508); main menu in ~40s.
+- Manual launch (reconstructed from `meta/versions/26.2-26.2.0.76/26.2-26.2.0.76.json`)
+  gets past FML discovery but **dies in FML early display**: `Failed to find a primary
+  monitor / glfwGetPrimaryMonitor failed` — even though a standalone GLFW test in the
+  same session finds the monitor fine, and the app-launched client works. Use the app.
+  (Production launches need `--fml.mcVersion`, `--fml.neoForgeVersion`,
+  `--fml.neoFormVersion` — missing them is the discovery-stage NPE.)
+
+### Coordinates (pixel clicking)
+
+- cliclick space = logical **1680x1050**.
+- Screenshots are **3360x2100** (2x) → `cliclick_x = screenshot_px / 2`.
+- Agent image previews (~1568x980) are *not* cliclick space: scale by 1680/1568 = 1.0714.
+- Window geometry: `osascript -e 'tell application "System Events" to tell process "java" to get {position, size} of windows'`.
+
+### Permissions & display sleep (the two things that bite)
+
+- **TCC**: Terminal needs **Screen Recording** + **Accessibility**. macOS 26 also pops a
+  *"bypass the system private window picker"* prompt on first `screencapture` — **the
+  user must click Allow**; synthetic clicks do not reach TCC dialogs.
+- **Display sleep** (5 min): screenshots are solid black when the display is asleep.
+  `caffeinate -u -t 2` wakes it just before `screencapture`;
+  `caffeinate -d -t 600 &` keeps it awake while driving the game.
+- `screencapture` fails with "could not create image from display" until the TCC grant.
 
 ## Workflows
 
