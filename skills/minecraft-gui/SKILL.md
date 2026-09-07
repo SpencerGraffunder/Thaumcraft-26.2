@@ -77,7 +77,7 @@ Different box, different failure modes. The repo here lives on an **SMB share**
 | Profile | `…/ModrinthApp/profiles/NeoForge 26.2/` (mods/, logs/, saves/) |
 | Bundled JRE | `…/ModrinthApp/meta/java_versions/zulu25…-macosx_aarch64/Contents/Home` (JRE only — no javac) |
 | Display | **1680x1050 logical**, Retina 2x → screenshots are **3360x2100** |
-| Input | `cliclick` (`brew install cliclick`) — `cliclick c:X,Y` click, `m:X,Y` move, `p` position |
+| Input | `tools/mouse_mac.py` (CoreGraphics: click/drag/hold/type/key — preferred); `cliclick` for one-shot clicks only (no drag support) |
 | Screenshots | `screencapture -x /tmp/shot.png` |
 
 ### Build (SMB workaround)
@@ -131,6 +131,49 @@ until grep -q "Setting user" "$LOG"; do sleep 3; done
   `caffeinate -u -t 2` wakes it just before `screencapture`;
   `caffeinate -d -t 600 &` keeps it awake while driving the game.
 - `screencapture` fails with "could not create image from display" until the TCC grant.
+
+### Dedicated server + multiplayer (verified 2026-09-06)
+
+Production-style server straight from the Modrinth profile (bundled Zulu JRE +
+patched server jar), no Gradle involved. Script: `tools/launch-mc-server-macos.sh`
+(also `~/mc-build/launch-mc-server.sh`):
+
+- Server dir `~/mc-build/server` (world/mods/logs). **`cd` into it before exec** —
+  the vanilla 26.2 server main uses CWD as gameDir and *rejects* `--gameDir`,
+  `--assetsDir`, `--versionType`, `--version` ("not a recognized option"). Accepted
+  args: `--nogui --port 25565` + `--fml.mcVersion/--fml.neoForgeVersion/--fml.neoFormVersion`.
+- Boots to `Done (` in ~8s; Thaumcraft fully initializes (148 research entries, 13
+  seals, golem parts, crystal clusters in worldgen).
+- Client join: Modrinth App **Play** → `Multiplayer` → `Direct Connection` → type
+  `localhost:25565` → `Join Server`. Handshake clean; in-world; mobs spawn/kill
+  (cave spider, creeper); `/give`, `/gamemode`, Thaumium Block placement, Pech Wand
+  right-click all work; **zero exceptions in server+client logs**.
+- Player ops from console: `hub`/pty `op Specnor` etc. Player needs op for `/give`/
+  `/gamemode`.
+
+### macOS input & window quirks (verified 2026-09-06)
+
+- **`cliclick` cannot drag** (no mouse-down/move/up actions). Use
+  `tools/mouse_mac.py` (CoreGraphics via ctypes, zero deps) for everything:
+  `click|dclick|move|drag|rclick|type TEXT|key NAME|hold KEY MS`.
+- **Background-window clicks are swallowed** — macOS spends the first click
+  activating the window. Click the same point **twice**, or raise the app first.
+  The Terminal app re-grabs frontmost whenever the agent shell writes to it, so do
+  raise+click inside one shell command.
+- `set frontmost` via System Events and window-geometry queries are unreliable/empty
+  for the Modrinth app and the game — don't depend on them; double-click works.
+- **Display sleep** blackens `screencapture` (and `screencapture -R` fails outright
+  with "could not create image from rect"). During long GUI sessions hold
+  `caffeinate -dimsu -t 2700 &` to keep the display awake.
+- **Crosshair zoom without PIL:** `sips -c 500 700 shot.png --out zoom.png` crops
+  **centred**, and the in-game crosshair sits at image centre — instant zoom of
+  exactly where you're aiming.
+- **Aiming the camera:** synthetic LMB-drag (mouse-look) did not rotate the view on
+  this box. Use `/tp @s ~ ~ ~ <yaw> <pitch>` (pitch 90 = straight down) — reliable.
+  The new 26.2 `/rotate <target> rotation|facing …` command wants an unknown number
+  of doubles and failed in every form tried; don't bother.
+- In-game right-click acts at the **crosshair** (screen centre), not the mouse
+  cursor — the click position only matters for hitting the window.
 
 ## Workflows
 

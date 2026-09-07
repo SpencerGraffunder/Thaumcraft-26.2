@@ -24,6 +24,11 @@ The 26.2 port is under active development.
   channels register on both dists. A 26.2.0.75 client joins a 26.2.0.75
   dev server cleanly — NeoForge handshake passes with zero channel errors,
   player in-world (see [`TODO.md`](./TODO.md) P0 for details).
+- **Multiplayer verified on macOS (Spencers-MacBook-Air, 2026-09-06):** dedicated
+  server booted from the Modrinth profile (26.2.0.76, `Done` in ~8s) + client join
+  via Multiplayer → Direct Connect — clean handshake, in-world play, Thaumcraft
+  item give / block place / wand interactions, **zero exceptions in both logs**
+  (full workflow in `skills/minecraft-gui/SKILL.md`).
 - **Purple/black items fixed & verified:** the 1.20.1→26.2 port had dropped the
   per-item `models/item/<id>.json` ClientItem files, so 362 items rendered as the
   missing-texture checkerboard. All 362 ClientItem files are now generated, 25
