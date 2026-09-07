@@ -5,6 +5,38 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
+## P0: Thaumonomicon pickup freezes the server (infinite loop) — RESOLVED (2026-09-07)
+
+Symptom: picking up the **Thaumonomicon** hung the dedicated server thread
+until the `ServerWatchdog` killed it (`crash-2026-09-07_10.15.10-server.txt`).
+The thread dump showed the server thread stuck in
+`ResearchManager.progressResearch` → `completeResearch` (called from
+`PlayerEvents.onItemPickup`), spinning with no forward progress.
+
+Root cause: `completeResearch` loops on `while (progressResearch(...))`.
+`progressResearch` ends with an **unconditional `return true`**, and the loop
+only exits once `isResearchComplete(researchKey)` becomes true. The
+`!gotthaumonomicon` flag (and its siblings `!gotcrystal`, `!gotdream`,
+`!BATHSALTS`, `!INSTABILITY`) are **undefined** research keys — they have no
+`ResearchEntry`, so `getStages()` is never set and `isResearchComplete` can
+never flip to true. The loop therefore ran forever.
+
+Fix (`ResearchManager.progressResearch`): when there is **no staged entry to
+progress** (key undefined, or entry with no stages), mark the flag complete
+(`setResearchStage(key, 1)`) so prerequisite/flag checks pass, sync if
+requested, and `return false` so the `completeResearch` while-loop
+terminates. This preserves the intended "flag unlocked" semantics while
+guaranteeing termination.
+
+Verified (2026-09-07): rebuilt jar on local disk (repo is on SMB, where
+Gradle's `FileHasher` fails), installed into the Modrinth profile, server
+restarted clean (`Thaumcraft setup complete!`, 148 research entries loaded),
+and the compiled class was inspected to confirm the new
+`entry==null / stages==null / stages.length==0` guard is present. Player
+research state confirmed clean (no `!gotthaumonomicon`), so a real
+Thaumonomicon pickup exercises the fixed path.
+
+
 ## P0: Golem parts crash on plain client (creative inventory NPE) — RESOLVED (2026-09-07)
 
 Symptom: on a **plain (integrated / Modrinth) client**, opening the creative

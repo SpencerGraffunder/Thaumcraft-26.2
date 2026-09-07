@@ -161,6 +161,24 @@ public class ResearchManager {
         }
         
         ResearchEntry entry = ResearchCategories.getResearch(researchKey);
+
+        // No staged entry to progress - either an undefined key (the "!got..."
+        // pickup/warp flags such as "!gotthaumonomicon", "!gotcrystal",
+        // "!BATHSALTS", "!INSTABILITY") or an entry with no stages. Mark it
+        // complete so prerequisite/flag checks pass, and report no progress so
+        // the completeResearch() while-loop terminates. Previously this fell
+        // through to the unconditional 'return true' below; that loop only
+        // stops when isResearchComplete() becomes true, which a stage-less
+        // entry can never reach, so the server thread hung in an infinite
+        // loop until the ServerWatchdog killed it (the Thaumonomicon-pickup
+        // freeze).
+        if (entry == null || entry.getStages() == null || entry.getStages().length == 0) {
+            knowledge.setResearchStage(researchKey, 1);
+            if (sync) {
+                syncList.put(player.getName().getString(), true);
+            }
+            return false;
+        }
         if (entry != null) {
             boolean showPopups = true;
             
