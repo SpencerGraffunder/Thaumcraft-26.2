@@ -160,6 +160,13 @@ patched server jar), no Gradle involved. Script: `tools/launch-mc-server-macos.s
   activating the window. Click the same point **twice**, or raise the app first.
   The Terminal app re-grabs frontmost whenever the agent shell writes to it, so do
   raise+click inside one shell command.
+- **The Modrinth App (Tauri) steals frontmost focus and its window overlaps the
+  client, so clicks land on it** — this is the #1 macOS nav trap. Fix: quit it
+  `osascript -e 'tell application "Modrinth App" to quit'`. The client is an
+  **independent process** (parent is a shell, not the app) and **survives** — verify
+  with `pgrep -f fml.startup.Client` before and after. Then the game window is the
+  only game window and clicks/keys land where you aim. Don't fight it by pixel-clicking
+  its (non-AXMinimizable) traffic lights.
 - `set frontmost` via System Events and window-geometry queries are unreliable/empty
   for the Modrinth app and the game — don't depend on them; double-click works.
 - **Display sleep** blackens `screencapture` (and `screencapture -R` fails outright
