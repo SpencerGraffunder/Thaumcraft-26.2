@@ -43,6 +43,14 @@ The 26.2 port is under active development.
   `TextureIntegrityTest` guards against regressions (dangling model refs +
   placeholder checkerboards). Rebuilt jar shows **0 placeholder textures**;
   full test suite **86 green** (see [`TODO.md`](./TODO.md) P0).
+- **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
+  parts/seals/research were registered only on `ServerStartingEvent`, which a
+  plain (integrated / Modrinth) client never sees — so opening the creative
+  inventory NPE'd (`mat is null`). Runtime registration is now an idempotent
+  `bootstrap()` with a component-binding readiness probe, driven from both
+  `ServerStartingEvent` and `ClientTickEvent.Pre`. Verified: creative
+  inventory opens clean, all 15 golem items render with real art, log shows
+  `Registered golem parts` … `Thaumcraft runtime registration complete`.
 
 Detailed task tracking lives in [`todo.md`](./todo.md)[`todo.md`](./todo.md] — 
 checklists and remaining runtime-testing items are maintained there, not here.

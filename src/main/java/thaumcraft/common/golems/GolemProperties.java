@@ -211,7 +211,9 @@ public class GolemProperties implements IGolemProperties {
      * Register all default golem parts. Called during mod initialization.
      */
     public static void registerDefaultParts() {
-        // Materials
+        if (GolemMaterial.getMaterials()[0] != null) {
+            return; // already registered
+        }
         GolemMaterial.register(new GolemMaterial("WOOD", 
                 new String[]{"MATSTUDWOOD"}, 
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/mat_wood.png"), 

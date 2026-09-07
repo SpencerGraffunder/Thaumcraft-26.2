@@ -5,6 +5,45 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
+## P0: Golem parts crash on plain client (creative inventory NPE) — RESOLVED (2026-09-07)
+
+Symptom: on a **plain (integrated / Modrinth) client**, opening the creative
+inventory (or any screen that renders Thaumcraft golem items) crashed with
+`Cannot read field "id" because "mat" is null` — a `NullPointerException` in
+golem-material resolution. A dedicated server + client was unaffected, which
+hid the bug from the earlier multiplayer verification.
+
+Root cause: golem parts/seals/research/aspects/multiblocks are registered only
+on `ServerStartingEvent`. That event fires on a **server** (dedicated or the
+integrated server of a `runClient` dev run) but **never on a plain client**.
+On 26.2 those registrations construct vanilla `ItemStack`s, which is illegal
+before the registry set has bound its data-component initializers
+(`Components not bound yet`), so the original port deferred them to
+`ServerStartingEvent` — which a standalone Modrinth client never sees, leaving
+`GolemMaterial` empty and the creative-inventory render path to NPE.
+
+Fix:
+- `Thaumcraft.java`: extract the runtime registration into an idempotent
+  `bootstrap()` with a **readiness probe** (`new ItemStack(Items.IRON_INGOT)`
+  succeeds only once components are bound; otherwise it defers and retries the
+  next tick). `bootstrap()` is now called from **both**:
+  - `onServerStarting` (server, as before), and
+  - a new `onClientTick(ClientTickEvent.Pre)` — a plain client registers on
+    its first tick, before any in-game screen can read the data.
+  Guarded by a `volatile boolean bootstrapped` (double-checked, synchronized)
+  so it runs exactly once per side and is safe to call from both.
+- `GolemProperties.java`: `registerDefaultParts()` now returns early if
+  `GolemMaterial.getMaterials()[0] != null` (already registered), making the
+  both-sides call path idempotent.
+
+Verified (2026-09-07, macOS Modrinth client, 26.2.0.76): rebuilt jar installed
+into the profile → client boots, **creative inventory opens with no crash**
+(previously NPE), creative **search finds all 15 golem items** (builders,
+placers, seals, bells, pearls) and they **render with real art** (not
+checkerboard), and the client log shows
+`Registered golem parts` → `Registered golem seals` → … →
+`Thaumcraft runtime registration complete`.
+
 ## P0: Purple/black items — ClientItem files missing — RESOLVED (2026-09-05)
 
 Symptom: 362 Thaumcraft items rendered **purple/black** (missing-texture

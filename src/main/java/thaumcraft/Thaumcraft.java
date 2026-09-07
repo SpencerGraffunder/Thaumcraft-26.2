@@ -2,9 +2,12 @@ package thaumcraft;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -145,21 +148,50 @@ public class Thaumcraft {
         PacketHandler.register(event);
     }
 
-    // Entity attribute registration
-    @EventBusSubscriber(modid = MODID)
-    public static class ModEvents {
-        @SubscribeEvent
-        public static void onServerStarting(ServerStartingEvent event) {
-            dumpRegistryIds();
+    // ==================== Runtime registration (both sides) ====================
+
+    private static volatile boolean bootstrapped = false;
+
+    /**
+     * One-shot runtime registration for data that constructs vanilla ItemStacks
+     * (golem parts, seals, research, aspects, multiblocks). On 26.2 constructing
+     * these before the registry set has bound data-component initializers throws
+     * 'Components not bound yet'. That window differs per side: by
+     * ServerStartingEvent the server is ready, but a plain client is not until a
+     * world has loaded. So bootstrap probes readiness and defers (retrying on
+     * the next tick) until it passes. Idempotent - safe to call from both sides.
+     */
+    private static volatile boolean bootstrapWarned = false;
+
+    public static void bootstrap() {
+        if (bootstrapped) {
+            return;
+        }
+        synchronized (Thaumcraft.class) {
+            if (bootstrapped) {
+                return;
+            }
+            // Readiness probe: the exact operation registration performs. If
+            // components are not bound yet, defer - the next tick retries.
+            try {
+                new ItemStack(Items.IRON_INGOT);
+            } catch (Exception e) {
+                if (!bootstrapWarned) {
+                    LOGGER.warn("Registry components not bound yet - deferring Thaumcraft runtime registration");
+                    bootstrapWarned = true;
+                }
+                return;
+            }
+
             // Golem parts reference vanilla ItemStacks, which are only safe to
-            // construct after registry holders bind their components (commonSetup is
-            // too early: 'Components not bound yet'). Register them on server start.
+            // construct after registry holders bind their components.
             GolemProperties.registerDefaultParts();
             LOGGER.info("Registered golem parts");
             SealHandler.registerDefaultSeals();
             LOGGER.info("Registered golem seals");
 
             // Research, aspect, and multiblock scan registries also construct vanilla
+            // ItemStacks (ScanBlock/ScanObject), so they must run here as well.
             ConfigResearch.init();
             // Vanilla-item aspect + smelting-bonus data (identifier-based, safe here)
             CommonInternals.initAspects();
@@ -168,7 +200,26 @@ public class Thaumcraft {
             ConfigMultiblocks.init();
             ConfigResearch.postInit();
 
+            bootstrapped = true;
+            LOGGER.info("Thaumcraft runtime registration complete");
+        }
+    }
+
+    @EventBusSubscriber(modid = MODID)
+    public static class ModEvents {
+        @SubscribeEvent
+        public static void onServerStarting(ServerStartingEvent event) {
+            dumpRegistryIds();
+            bootstrap();
             LOGGER.info("Thaumcraft server starting");
+        }
+
+        // A plain client never sees ServerStartingEvent, so register the same
+        // runtime data on its first tick - before any in-game screen (creative
+        // inventory, research browser, seal GUI...) can read it.
+        @SubscribeEvent
+        public static void onClientTick(ClientTickEvent.Pre event) {
+            bootstrap();
         }
 
         @SubscribeEvent
