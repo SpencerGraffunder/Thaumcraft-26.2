@@ -3,7 +3,7 @@
         {
             "key": "FIRSTSTEPS",    
             "name": "research.FIRSTSTEPS.title",
-            "icons": [ "thaumcraft:textures/items/thaumonomicon.png" ],
+            "icons": [ "thaumcraft:textures/item/thaumonomicon.png" ],
             "category": "BASICS", "location": [ 0,0 ], 
             "parents": [ "!gotthaumonomicon" ],
             "siblings": [ "KNOWLEDGETYPES", "!gotdream" ],

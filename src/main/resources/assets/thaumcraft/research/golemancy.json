@@ -150,7 +150,7 @@
         },
         {
         "key": "SEALCOLLECT", "name": "research.SEALCOLLECT.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_pickup.png" ], "category": "GOLEMANCY", "location": [ -4, 4 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_pickup.png" ], "category": "GOLEMANCY", "location": [ -4, 4 ], 
         "parents": [ "CONTROLSEALS" ], "meta": [ "ROUND" ], "siblings": [ "SEALSTORE" ],
         "stages": [            
                 {
@@ -164,7 +164,7 @@
         },
         {
         "key": "SEALSTORE", "name": "research.SEALSTORE.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_fill.png" ], "category": "GOLEMANCY", "location": [ -6, 4 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_fill.png" ], "category": "GOLEMANCY", "location": [ -6, 4 ], 
         "parents": [ "SEALCOLLECT" ], 
         "stages": [            
                 {
@@ -178,7 +178,7 @@
         },
         {
         "key": "SEALEMPTY", "name": "research.SEALEMPTY.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_empty.png" ], "category": "GOLEMANCY", "location": [ -8, 4 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_empty.png" ], "category": "GOLEMANCY", "location": [ -8, 4 ], 
         "parents": [ "SEALSTORE" ], 
         "stages": [            
                 {
@@ -197,7 +197,7 @@
         },
         {
         "key": "SEALPROVIDE", "name": "research.SEALPROVIDE.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_provider.png" ], "category": "GOLEMANCY", "location": [ -7, 6 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_provider.png" ], "category": "GOLEMANCY", "location": [ -7, 6 ], 
         "parents": [ "SEALEMPTY","MINDBIOTHAUMIC" ], 
         "stages": [            
                 {
@@ -213,7 +213,7 @@
         },
         {
         "key": "SEALSTOCK", "name": "research.SEALSTOCK.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_stock.png" ], "category": "GOLEMANCY", "location": [ -6, 8 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_stock.png" ], "category": "GOLEMANCY", "location": [ -6, 8 ], 
         "parents": [ "SEALPROVIDE" ], 
         "stages": [            
                 {
@@ -228,7 +228,7 @@
         },
         {
         "key": "SEALGUARD", "name": "research.SEALGUARD.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_guard.png" ], "category": "GOLEMANCY", "location": [ -12, 4 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_guard.png" ], "category": "GOLEMANCY", "location": [ -12, 4 ], 
         "parents": [ "CONTROLSEALS" ], 
         "stages": [            
                 {
@@ -248,7 +248,7 @@
         },
         {
         "key": "SEALBUTCHER", "name": "research.SEALBUTCHER.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_butcher.png" ], "category": "GOLEMANCY", "location": [ -11, 6 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_butcher.png" ], "category": "GOLEMANCY", "location": [ -11, 6 ], 
         "parents": [ "SEALGUARD","INFUSION","MINDBIOTHAUMIC" ], 
         "stages": [            
                 {
@@ -265,7 +265,7 @@
         },
         {
         "key": "SEALUSE", "name": "research.SEALUSE.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_use.png" ], "category": "GOLEMANCY", "location": [ -3, 6 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_use.png" ], "category": "GOLEMANCY", "location": [ -3, 6 ], 
         "parents": [ "CONTROLSEALS","INFUSION","MINDBIOTHAUMIC" ], 
         "stages": [            
                 {
@@ -281,7 +281,7 @@
         },
         {
         "key": "SEALHARVEST", "name": "research.SEALHARVEST.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_harvest.png" ], "category": "GOLEMANCY", "location": [ -5, 6 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_harvest.png" ], "category": "GOLEMANCY", "location": [ -5, 6 ], 
         "parents": [ "SEALUSE" ], 
         "stages": [            
                 {
@@ -297,7 +297,7 @@
         },
         {
         "key": "SEALBREAK", "name": "research.SEALBREAK.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_breaker.png" ], "category": "GOLEMANCY", "location": [ -10, 4 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_breaker.png" ], "category": "GOLEMANCY", "location": [ -10, 4 ], 
         "parents": [ "CONTROLSEALS","INFUSION","GOLEMBREAKER" ], 
         "stages": [            
                 {
@@ -316,7 +316,7 @@
         },
         {
         "key": "SEALLUMBER", "name": "research.SEALLUMBER.title",
-        "icons": [ "thaumcraft:textures/items/seals/seal_lumber.png" ], "category": "GOLEMANCY", "location": [ -9, 6 ], 
+        "icons": [ "thaumcraft:textures/item/seals/seal_lumber.png" ], "category": "GOLEMANCY", "location": [ -9, 6 ], 
         "parents": [ "SEALBREAK","MINDBIOTHAUMIC" ], 
         "stages": [            
                 {

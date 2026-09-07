@@ -37,7 +37,7 @@ public class SealRenderer {
     
     // Default seal texture for seals without custom icons
     private static final Identifier DEFAULT_SEAL_TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/items/seals/seal_blank.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/item/seals/seal_blank.png");
     
     // Maximum render distance squared (16 blocks)
     private static final double MAX_RENDER_DIST_SQ = 256.0;
