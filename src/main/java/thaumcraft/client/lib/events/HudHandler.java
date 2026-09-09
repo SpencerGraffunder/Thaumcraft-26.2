@@ -136,8 +136,8 @@ public class HudHandler {
             int visTextY = y + 20;
             int fluxTextY = y + 40;
             
-            graphics.text(font, DECIMAL_FORMAT.format(vis), textX, visTextY, 0xEE99FF, false);
-            graphics.text(font, DECIMAL_FORMAT.format(flux), textX, fluxTextY, 0xAA33BB, false);
+            graphics.text(font, DECIMAL_FORMAT.format(vis), textX, visTextY, 0xFFEE99FF, false);
+            graphics.text(font, DECIMAL_FORMAT.format(flux), textX, fluxTextY, 0xFFAA33BB, false);
         }
     }
     
@@ -179,7 +179,7 @@ public class HudHandler {
         // Show current vis amount if sneaking
         if (player.isShiftKeyDown()) {
             String visStr = DECIMAL_FORMAT.format(currentVis);
-            graphics.text(mc.font, visStr, barX - 8, barY + 22, 0xFFFFFF, false);
+            graphics.text(mc.font, visStr, barX - 8, barY + 22, 0xFFFFFFFF, false);
         }
     }
     

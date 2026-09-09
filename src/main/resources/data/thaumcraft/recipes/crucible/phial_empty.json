@@ -1,9 +1,0 @@
-{
-  "type": "thaumcraft:crucible",
-  "research": "UNLOCKALCHEMY",
-  "catalyst": "minecraft:glass_bottle",
-  "aspects": {
-    "vacuos": 3
-  },
-  "result": "thaumcraft:phial_empty"
-}

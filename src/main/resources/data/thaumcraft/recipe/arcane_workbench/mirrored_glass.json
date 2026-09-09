@@ -1,0 +1,16 @@
+{
+  "type": "thaumcraft:arcane_workbench_shapeless",
+  "research": "BASEARTIFICE",
+  "vis": 50,
+  "crystals": {
+    "aqua": 1,
+    "ordo": 1
+  },
+  "ingredients": [
+    "thaumcraft:quicksilver",
+    "#c:glass_panes"
+  ],
+  "result": {
+    "id": "thaumcraft:mirrored_glass"
+  }
+}

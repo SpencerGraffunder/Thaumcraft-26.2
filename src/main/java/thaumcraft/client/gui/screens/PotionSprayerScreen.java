@@ -20,7 +20,7 @@ import thaumcraft.common.menu.PotionSprayerMenu;
 public class PotionSprayerScreen extends AbstractContainerScreen<PotionSprayerMenu> {
     
     private static final Identifier TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_potionsprayer.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_potion_sprayer.png");
     
     public PotionSprayerScreen(PotionSprayerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, 176, 232);
@@ -50,8 +50,8 @@ public class PotionSprayerScreen extends AbstractContainerScreen<PotionSprayerMe
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Draw title
-        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0x404040, false);
+        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0xFF404040, false);
         // Draw inventory label
-        graphics.text(this.font, this.playerInventoryTitle, 8, this.inventoryLabelY, 0x404040, false);
+        graphics.text(this.font, this.playerInventoryTitle, 8, this.inventoryLabelY, 0xFF404040, false);
     }
 }

@@ -34,7 +34,7 @@ import thaumcraft.common.tiles.crafting.TileGolemBuilder;
 public class GolemBuilderRenderer implements BlockEntityRenderer<TileGolemBuilder, GolemBuilderRenderState> {
 
     private static final Identifier TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/golembuilder.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/block/golembuilder.png");
 
     private final SpriteGetter sprites;
 

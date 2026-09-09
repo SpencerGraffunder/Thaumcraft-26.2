@@ -128,7 +128,7 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
         
         String availText = auraVis + " " + Component.translatable("gui.thaumcraft.workbench.available").getString();
         int textWidth = this.font.width(availText);
-        int textColor = (auraVis < visCost) ? 0xEE4444 : 0x6E8E5E; // Red if not enough);
+        int textColor = (auraVis < visCost) ? 0xFFEE4444 : 0xFF6E8E5E; // Red if not enough);
         
         graphics.text(this.font, availText, -textWidth / 2, 0, textColor, false);
         
@@ -145,7 +145,7 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
                 costText += " (" + discount + "% " + Component.translatable("gui.thaumcraft.workbench.discount").getString() + ")";
             }
             textWidth = this.font.width(costText);
-            graphics.text(this.font, costText, -textWidth / 2, 0, 0xC0C0FF, false);
+            graphics.text(this.font, costText, -textWidth / 2, 0, 0xFFC0C0FF, false);
             
             graphics.pose().popMatrix();
             
@@ -157,7 +157,7 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
         }
         
         // Draw inventory label
-        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
+        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
     }
     
     /**

@@ -23,7 +23,7 @@ import thaumcraft.common.menu.TurretMenu;
 public class TurretScreen extends AbstractContainerScreen<TurretMenu> {
     
     private static final Identifier TEXTURE_BASIC = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_turret.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_turret_basic.png");
     private static final Identifier TEXTURE_ADVANCED = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_turret_advanced.png");
     
@@ -109,8 +109,8 @@ public class TurretScreen extends AbstractContainerScreen<TurretMenu> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Draw title
-        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0x404040, false);
+        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0xFF404040, false);
         // Draw inventory label
-        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
+        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
     }
 }

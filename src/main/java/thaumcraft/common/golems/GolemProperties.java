@@ -346,7 +346,7 @@ public class GolemProperties implements IGolemProperties {
                 new String[]{"GOLEMCLIMBER"}, 
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/golem/legs_climber.png"), 
                 new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_legs_climber.obj"), 
-                             Identifier.fromNamespaceAndPath("thaumcraft", "textures/blocks/base_metal.png"), 
+                             Identifier.fromNamespaceAndPath("thaumcraft", "textures/block/base_metal.png"), 
                              PartModel.EnumAttachPoint.LEGS), 
                 new Object[]{new ItemStack(Items.FLINT, 4), "base", "mech", "mech"}, 
                 new EnumGolemTrait[]{EnumGolemTrait.CLIMBER}));

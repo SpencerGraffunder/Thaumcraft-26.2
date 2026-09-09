@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "UNLOCKAUROMANCY",
+  "vis": 10,
+  "crystals": {
+    "aer": 1,
+    "ordo": 1
+  },
+  "pattern": [
+    "  F",
+    " S ",
+    "I  "
+  ],
+  "key": {
+    "F": "minecraft:feather",
+    "S": "thaumcraft:shard_order",
+    "I": "#c:dyes/black"
+  },
+  "result": {
+    "id": "thaumcraft:scribing_tools"
+  }
+}

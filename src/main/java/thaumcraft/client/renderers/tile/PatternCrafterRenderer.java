@@ -29,7 +29,7 @@ import thaumcraft.common.tiles.crafting.TilePatternCrafter;
 public class PatternCrafterRenderer implements BlockEntityRenderer<TilePatternCrafter, PatternCrafterRenderState> {
 
     private static final Identifier MODES_TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/pattern_crafter_modes.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/block/pattern_crafter_modes.png");
     private static final Identifier GEAR_TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/gear_brass.png");
 

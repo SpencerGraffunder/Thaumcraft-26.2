@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "ELEMENTALTOOLS",
+  "instability": 3,
+  "input": "thaumcraft:thaumium_hoe",
+  "ingredients": [
+    "thaumcraft:shard_water",
+    "thaumcraft:shard_water",
+    "thaumcraft:shard_earth",
+    "thaumcraft:shard_earth",
+    "minecraft:blaze_powder",
+    "minecraft:blaze_powder"
+  ],
+  "aspects": {
+    "aqua": 30,
+    "terra": 30,
+    "herba": 20
+  },
+  "result": {
+    "id": "thaumcraft:elemental_hoe"
+  }
+}

@@ -39,7 +39,7 @@ public class ImageButton extends AbstractWidget {
     public ImageButton(int x, int y, int width, int height, String text, String description,
                       Identifier texture, int texX, int texY, int texWidth, int texHeight,
                       Consumer<ImageButton> onPress) {
-        this(x, y, width, height, text, description, texture, texX, texY, texWidth, texHeight, 0xFFFFFF, onPress);
+        this(x, y, width, height, text, description, texture, texX, texY, texWidth, texHeight, 0xFFFFFFFF, onPress);
     }
     
     public ImageButton(int x, int y, int width, int height, String text, String description,
@@ -98,11 +98,11 @@ public class ImageButton extends AbstractWidget {
         // Draw text if present
         String text = getMessage().getString();
         if (text != null && !text.isEmpty()) {
-            int textColor = 0xFFFFFF;
+            int textColor = 0xFFFFFFFF;
             if (!active) {
-                textColor = 0xA0A0A0;
+                textColor = 0xFFA0A0A0;
             } else if (hovered) {
-                textColor = 0xFFFFA0;
+                textColor = 0xFFFFFFA0;
             }
             
             graphics.pose().pushMatrix();

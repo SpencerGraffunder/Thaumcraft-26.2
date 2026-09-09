@@ -1,0 +1,24 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "BASICTURRET",
+  "vis": 100,
+  "aspects": {
+    "aer": 1
+  },
+  "pattern": [
+    "BGI",
+    "WMW",
+    "S S"
+  ],
+  "key": {
+    "B": "minecraft:bow",
+    "G": "thaumcraft:mechanism_simple",
+    "I": "#thaumcraft:plates/iron",
+    "W": "thaumcraft:greatwood_planks",
+    "M": "thaumcraft:brain_clockwork",
+    "S": "#c:rods/wooden"
+  },
+  "result": {
+    "id": "thaumcraft:turret_placer_basic"
+  }
+}

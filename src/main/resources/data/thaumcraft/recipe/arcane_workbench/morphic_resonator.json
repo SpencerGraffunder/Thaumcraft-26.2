@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "BASEALCHEMY",
+  "vis": 50,
+  "crystals": {
+    "aer": 1,
+    "ignis": 1
+  },
+  "pattern": [
+    " G ",
+    "BSB",
+    " G "
+  ],
+  "key": {
+    "G": "#c:glass_panes",
+    "B": "thaumcraft:plate_brass",
+    "S": "thaumcraft:quicksilver"
+  },
+  "result": {
+    "id": "thaumcraft:morphic_resonator"
+  }
+}

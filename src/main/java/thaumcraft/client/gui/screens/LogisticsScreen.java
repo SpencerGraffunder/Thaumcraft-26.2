@@ -107,7 +107,7 @@ public class LogisticsScreen extends AbstractContainerScreen<LogisticsMenu> {
         searchField.setMaxLength(10);
         searchField.setBordered(true);
         searchField.setVisible(true);
-        searchField.setTextColor(16777215);
+        searchField.setTextColor(0xFFFFFFFF);
         searchField.setResponder(this::onSearchTextChanged);
         addRenderableWidget(searchField);
         
@@ -221,13 +221,13 @@ public class LogisticsScreen extends AbstractContainerScreen<LogisticsMenu> {
         if (selectedSlot >= 0 && !selectedStack.isEmpty()) {
             String sizeText = String.valueOf(stackSize);
             int textWidth = font.width(sizeText);
-            graphics.text(font, sizeText, 83 - textWidth / 2, 196, 0x333333, false);
+            graphics.text(font, sizeText, 83 - textWidth / 2, 196, 0xFF333333, false);
         }
         
         // Draw search hint
         if (!searchField.isFocused() && searchField.getValue().isEmpty()) {
             graphics.text(font, Component.translatable("tc.logistics.search"), 
-                    143 - leftPos, 197 - topPos, 0x222222, false);
+                    143 - leftPos, 197 - topPos, 0xFF222222, false);
         }
     }
     

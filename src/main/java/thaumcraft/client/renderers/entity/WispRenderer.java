@@ -32,7 +32,7 @@ public class WispRenderer extends EntityRenderer<EntityWisp, WispRenderState> {
     
     // Texture atlas with wisp particles
     private static final Identifier WISP_TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/wisp.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/wispy.png");
     
     public WispRenderer(EntityRendererProvider.Context context) {
         super(context);

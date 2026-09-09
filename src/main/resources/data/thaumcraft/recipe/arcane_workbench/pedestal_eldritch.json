@@ -1,0 +1,17 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "INFUSIONELDRITCH",
+  "vis": 150,
+  "pattern": [
+    "SSS",
+    " B ",
+    "SSS"
+  ],
+  "key": {
+    "S": "thaumcraft:eldritch_stone_tile",
+    "B": "thaumcraft:eldritch_stone_tile"
+  },
+  "result": {
+    "id": "thaumcraft:pedestal_eldritch"
+  }
+}

@@ -7,6 +7,8 @@ import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.bus.api.IEventBus;
@@ -55,6 +57,13 @@ public class Thaumcraft {
     public static final String MODID = "thaumcraft";
     public static final String MODNAME = "Thaumcraft";
     public static final String VERSION = "6.2.0";
+
+    /**
+     * Live recipe manager, captured on server start (a thread that can see the
+     * server) so the client render thread - where both mc.level.getServer() and
+     * ServerLifecycleHooks.getCurrentServer() are null - can still resolve recipes.
+     */
+    public static net.minecraft.world.item.crafting.RecipeManager recipeManager;
     
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
@@ -212,6 +221,17 @@ public class Thaumcraft {
             dumpRegistryIds();
             bootstrap();
             LOGGER.info("Thaumcraft server starting");
+        }
+
+        @SubscribeEvent
+        public static void onServerStarted(ServerStartedEvent event) {
+            Thaumcraft.recipeManager = event.getServer().getRecipeManager();
+            LOGGER.info("Thaumcraft cached recipe manager (null=" + (Thaumcraft.recipeManager == null) + ")");
+        }
+
+        @SubscribeEvent
+        public static void onServerStopping(ServerStoppingEvent event) {
+            Thaumcraft.recipeManager = null;
         }
 
         // A plain client never sees ServerStartingEvent, so register the same

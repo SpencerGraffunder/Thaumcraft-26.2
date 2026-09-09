@@ -32,7 +32,7 @@ import java.awt.Color;
 public class JarRenderer implements BlockEntityRenderer<TileJar, JarRenderState> {
 
     private static final Identifier LIQUID_TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/animatedglow.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/block/animatedglow.png");
     private static final Identifier LABEL_TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/label.png");
 

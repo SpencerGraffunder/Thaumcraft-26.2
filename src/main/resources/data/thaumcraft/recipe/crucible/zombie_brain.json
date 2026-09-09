@@ -1,0 +1,13 @@
+{
+  "type": "thaumcraft:crucible",
+  "research": "MINDCLOCKWORK",
+  "catalyst": "minecraft:rotten_flesh",
+  "aspects": {
+    "cognitio": 10,
+    "exanimis": 10,
+    "spiritus": 5
+  },
+  "result": {
+    "id": "thaumcraft:zombie_brain"
+  }
+}

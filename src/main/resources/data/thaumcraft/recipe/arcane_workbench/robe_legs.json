@@ -1,0 +1,17 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "UNLOCKINFUSION",
+  "vis": 100,
+  "crystals": {},
+  "pattern": [
+    "III",
+    "I I",
+    "I I"
+  ],
+  "key": {
+    "I": "thaumcraft:enchanted_fabric"
+  },
+  "result": {
+    "id": "thaumcraft:cloth_legs"
+  }
+}

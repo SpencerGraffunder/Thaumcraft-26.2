@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "VISAMULET",
+  "instability": 6,
+  "center": "minecraft:gold_ingot",
+  "ingredients": [
+    "thaumcraft:vis_resonator",
+    "thaumcraft:crystal_essence",
+    "thaumcraft:crystal_essence",
+    "thaumcraft:crystal_essence",
+    "thaumcraft:crystal_essence",
+    "thaumcraft:crystal_essence"
+  ],
+  "aspects": {
+    "auram": 50,
+    "potentia": 100,
+    "vacuos": 50
+  },
+  "result": {
+    "id": "thaumcraft:amulet_vis_crafted"
+  }
+}

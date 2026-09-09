@@ -1,11 +1,11 @@
 {
     "textures": {
-        "side": "block/hopper_outside",
+        "side": "minecraft:block/hopper_outside",
         "face": "thaumcraft:block/base_wood",
-        "top": "block/hopper_top",
+        "top": "minecraft:block/hopper_top",
         "panels": "thaumcraft:block/pattern_crafter",
         "particle": "thaumcraft:block/pattern_crafter",
-        "inside": "block/hopper_inside"
+        "inside": "minecraft:block/hopper_inside"
     },
     "elements": [ 
         {

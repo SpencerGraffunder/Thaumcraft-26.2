@@ -65,9 +65,9 @@ public class ThaumatoriumScreen extends AbstractContainerScreen<ThaumatoriumMenu
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Draw title
-        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0x404040, false);
+        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0xFF404040, false);
         // Draw inventory label
-        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
+        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
         
         TileThaumatorium tile = menu.getBlockEntity();
         if (tile == null) return;
@@ -76,7 +76,7 @@ public class ThaumatoriumScreen extends AbstractContainerScreen<ThaumatoriumMenu
         if (tile.isCrafting()) {
             String status = Component.translatable("gui.thaumcraft.thaumatorium.crafting").getString();
             int progress = (int)(tile.getCraftingProgress() * 100);
-            graphics.text(this.font, status + " " + progress + "%", 8, 48, 0x404040, false);
+            graphics.text(this.font, status + " " + progress + "%", 8, 48, 0xFF404040, false);
         }
     }
     
@@ -112,7 +112,7 @@ public class ThaumatoriumScreen extends AbstractContainerScreen<ThaumatoriumMenu
             
             // Draw amount
             String amountStr = String.valueOf(amount);
-            graphics.text(this.font, amountStr, px + 8 - this.font.width(amountStr) / 2, py + 8, 0xFFFFFF, true);
+            graphics.text(this.font, amountStr, px + 8 - this.font.width(amountStr) / 2, py + 8, 0xFFFFFFFF, true);
             
             col++;
             if (col > 1) {

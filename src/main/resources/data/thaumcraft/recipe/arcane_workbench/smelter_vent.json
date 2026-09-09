@@ -1,0 +1,23 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "IMPROVEDSMELTING2",
+  "vis": 150,
+  "crystals": {
+    "aer": 1
+  },
+  "pattern": [
+    "IBI",
+    "MGA",
+    "IBI"
+  ],
+  "key": {
+    "I": "thaumcraft:plate_iron",
+    "B": "thaumcraft:plate_brass",
+    "M": "thaumcraft:filter",
+    "G": "thaumcraft:alchemical_brass_block",
+    "A": "thaumcraft:filter"
+  },
+  "result": {
+    "id": "thaumcraft:smelter_vent"
+  }
+}

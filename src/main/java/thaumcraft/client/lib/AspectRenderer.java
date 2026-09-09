@@ -93,16 +93,16 @@ public class AspectRenderer {
             int textY = y + ICON_SIZE - font.lineHeight;
             
             // Draw shadow for readability
-            graphics.text(font, amountStr, textX + 1, textY + 1, 0x000000, false);
-            graphics.text(font, amountStr, textX, textY, 0xFFFFFF, false);
+            graphics.text(font, amountStr, textX + 1, textY + 1, 0xFF000000, false);
+            graphics.text(font, amountStr, textX, textY, 0xFFFFFFFF, false);
         }
         
         // Render bonus indicator
         if (bonus > 0) {
             // Draw a small star/indicator at top-left
-            graphics.text(font, "+", x - 2, y - 4, 0xFFFF00, false);
+            graphics.text(font, "+", x - 2, y - 4, 0xFFFFFF00, false);
             if (bonus > 1) {
-                graphics.text(font, String.valueOf(bonus), x + 4, y - 2, 0xFFFFFF, false);
+                graphics.text(font, String.valueOf(bonus), x + 4, y - 2, 0xFFFFFFFF, false);
             }
         }
     }
@@ -192,7 +192,7 @@ public class AspectRenderer {
         // Name with color
         int color = aspect.getColor();
         tooltip.add(net.minecraft.network.chat.Component.literal(aspect.getName())
-                .withStyle(style -> style.withColor(color)));
+                .withStyle(style -> style.withColor(color | 0xFF000000)));
         
         // Description
         tooltip.add(net.minecraft.network.chat.Component.literal(aspect.getLocalizedDescription())

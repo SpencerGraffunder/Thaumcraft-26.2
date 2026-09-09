@@ -7,6 +7,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
@@ -40,13 +41,13 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
     
     private final String group;
     private final NonNullList<Ingredient> ingredients;
-    private final ItemStack result;
+    private final ItemStackTemplate result;
     private final int visCost;
     private final AspectList crystals;
     private final String research;
     
     public ShapelessArcaneRecipe(String group,
-                                 NonNullList<Ingredient> ingredients, ItemStack result,
+                                 NonNullList<Ingredient> ingredients, ItemStackTemplate result,
                                  int visCost, AspectList crystals, String research) {
         this.group = group;
         this.ingredients = ingredients;
@@ -74,12 +75,12 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
     
     @Override
     public ItemStack assemble(IArcaneWorkbench container) {
-        return result.copy();
+        return result.create();
     }
     
     @Override
     public ItemStack getResultItem() {
-        return result.copy();
+        return result.create();
     }
     
     @Override
@@ -161,7 +162,7 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
             ASPECTS_CODEC.optionalFieldOf("crystals", new AspectList()).forGetter(r -> r.crystals),
             ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.crystals),
             Ingredient.CODEC.listOf().optionalFieldOf("ingredients", List.of()).forGetter(r -> r.ingredients),
-            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result)
+            ItemStackTemplate.MAP_CODEC.fieldOf("result").forGetter(r -> r.result)
     ).apply(i, ShapelessArcaneRecipe::create));
     
     public static final StreamCodec<RegistryFriendlyByteBuf, ShapelessArcaneRecipe> STREAM_CODEC = new StreamCodec<>() {
@@ -179,7 +180,7 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
                 ingredients.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
             
-            ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
+            ItemStackTemplate result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
             
             return new ShapelessArcaneRecipe(group, ingredients, result, visCost, crystals, research);
         }
@@ -197,7 +198,7 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
             
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
         }
     };
     
@@ -205,7 +206,7 @@ public class ShapelessArcaneRecipe implements IArcaneRecipe {
     
     private static ShapelessArcaneRecipe create(String group, String research, int visCost,
                                                 AspectList crystals, AspectList aspects,
-                                                List<Ingredient> ingredients, ItemStack result) {
+                                                List<Ingredient> ingredients, ItemStackTemplate result) {
         NonNullList<Ingredient> list = NonNullList.create();
         list.addAll(ingredients);
         return new ShapelessArcaneRecipe(group, list, result, visCost,

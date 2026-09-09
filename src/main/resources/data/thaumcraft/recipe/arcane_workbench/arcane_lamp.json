@@ -1,0 +1,21 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "ARCANELAMP",
+  "vis": 50,
+  "crystals": {
+    "aer": 1,
+    "ignis": 1
+  },
+  "pattern": [
+    " I ",
+    "IAI",
+    " I "
+  ],
+  "key": {
+    "I": "thaumcraft:plate_iron",
+    "A": "thaumcraft:amber_block"
+  },
+  "result": {
+    "id": "thaumcraft:lamp_arcane"
+  }
+}

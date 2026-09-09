@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "INFUSIONBOOST",
+  "vis": 500,
+  "aspects": {
+    "aer": 1,
+    "ordo": 1
+  },
+  "pattern": [
+    "SNS",
+    "NGN",
+    "SNS"
+  ],
+  "key": {
+    "S": "thaumcraft:arcane_stone",
+    "N": "#thaumcraft:nitor",
+    "G": "minecraft:diamond_block"
+  },
+  "result": {
+    "id": "thaumcraft:matrix_speed"
+  }
+}

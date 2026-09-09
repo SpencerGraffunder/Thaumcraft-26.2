@@ -46,10 +46,10 @@ public class FocusPouchScreen extends AbstractContainerScreen<FocusPouchMenu> {
         // Draw title centered above pouch slots
         graphics.text(this.font, this.title, 
                 (this.imageWidth - this.font.width(this.title)) / 2, 
-                6, 0x404040, false);
+                6, 0xFF404040, false);
         // Draw inventory label
         graphics.text(this.font, this.playerInventoryTitle, 
-                8, this.inventoryLabelY, 0x404040, false);
+                8, this.inventoryLabelY, 0xFF404040, false);
     }
     
     @Override

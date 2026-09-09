@@ -1,0 +1,13 @@
+{
+  "type": "thaumcraft:crucible",
+  "research": "ALUMENTUM",
+  "catalyst": "minecraft:coal",
+  "aspects": {
+    "ignis": 10,
+    "potentia": 10,
+    "perditio": 5
+  },
+  "result": {
+    "id": "thaumcraft:alumentum"
+  }
+}

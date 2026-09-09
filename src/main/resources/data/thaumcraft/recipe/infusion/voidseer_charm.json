@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "VOIDSEERPEARL",
+  "instability": 4,
+  "input": "minecraft:ender_eye",
+  "ingredients": [
+    "thaumcraft:void_seed",
+    "thaumcraft:void_seed",
+    "thaumcraft:shard_entropy",
+    "thaumcraft:shard_entropy",
+    "minecraft:chorus_fruit",
+    "minecraft:chorus_fruit"
+  ],
+  "aspects": {
+    "alienis": 50,
+    "vacuos": 30,
+    "sensus": 30
+  },
+  "result": {
+    "id": "thaumcraft:voidseer_charm"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "ESSENTIATRANSPORT",
+  "vis": 100,
+  "aspects": {
+    "aer": 1,
+    "aqua": 1
+  },
+  "pattern": [
+    "   ",
+    "BQB",
+    "IGI"
+  ],
+  "key": {
+    "B": "#thaumcraft:plates/brass",
+    "Q": "minecraft:dispenser",
+    "I": "#thaumcraft:plates/iron",
+    "G": "thaumcraft:alchemical_brass_block"
+  },
+  "result": {
+    "id": "thaumcraft:essentia_input"
+  }
+}

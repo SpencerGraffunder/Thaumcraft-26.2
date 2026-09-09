@@ -18,6 +18,18 @@ The 26.2 port is under active development.
 - Recipe data migrated to the 26.2 format: `key` ingredients are plain strings
   and `result` uses `"id"` (not `"item"`); forge + thaumcraft item tags added
   for cross-mod interop.
+- **World-load abort ("Invalid data pack") & first-craft NPEs fixed (2026-09-09, macOS):**
+  26.2 decodes recipes in the parallel prepare phase *before* tags bind, and it
+  validates tag contents strictly — a `c:ingots/brass` tag pointing at a
+  non-existent item ID aborted every world load. Recipe codecs now follow the
+  26.2 rules: `create`/decode keep pure null/`Optional` logic (no
+  `isEmpty()`/`getStacks()`; 26.2 also removed `Ingredient.EMPTY`), shaped
+  arcane recipes use vanilla's `List<Optional<Ingredient>>` slot pattern with
+  `Ingredient.testOptionalIngredient`, infusion accepts both `center` and
+  `input` keys, and tag item IDs are validated against the registry
+  (`brass_ingot`, not `ingot_brass`). Verified: `CI=true ./gradlew runServer`
+  boots to `Done` with every recipe type decoded. Rules documented in
+  `skills/minecraft-gui/SKILL.md` (Troubleshooting).
 - Multiplayer fixed & verified: S2C payload handlers split into
   server-safe common classes + client handler classes
   (`thaumcraft.client.lib.network.*`), so all 38 `thaumcraft:packet*`

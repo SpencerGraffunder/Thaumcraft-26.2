@@ -8,7 +8,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
@@ -18,11 +17,14 @@ import thaumcraft.api.crafting.CrucibleRecipe;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.api.crafting.IThaumcraftRecipe;
 import thaumcraft.api.crafting.InfusionRecipe;
+import thaumcraft.common.lib.crafting.CrucibleRecipeType;
+import thaumcraft.common.lib.crafting.InfusionRecipeType;
 import thaumcraft.api.internal.CommonInternals;
 import thaumcraft.client.lib.AspectRenderer;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -48,6 +50,15 @@ public class RecipeRenderer {
     // Cycle counter for animated ingredients
     private static long lastCycleTime = 0;
     private static int cycleIndex = 0;
+
+    // Leaf-name -> recipe index, built lazily from the recipe manager.
+    // Recipe files live under data/<ns>/recipes/<typeFolder>/<leaf>.json, so the
+    // registry id is "<ns>:<typeFolder>/<leaf>" while research references the bare
+    // "<ns>:<leaf>". This index maps the bare leaf name back to the recipe.
+    // On a leaf-name collision (same item, multiple crafting methods) the
+    // higher-priority Thaumcraft method wins (see folderPriority).
+    private static Map<String, Object> recipeLeafIndex;
+    private static RecipeManager recipeIndexManager;
     
     /**
      * Render a recipe at the given position.
@@ -73,33 +84,46 @@ public class RecipeRenderer {
         
         if (recipe == null) {
             // Recipe not found - draw placeholder
-            graphics.centeredText(font, "Recipe not found:", x, y - 20, 0x804040);
+            graphics.centeredText(font, "Recipe not found:", x, y - 20, 0xFF804040);
             String idStr = recipeId.toString();
             if (idStr.length() > 30) {
                 idStr = "..." + idStr.substring(idStr.length() - 27);
             }
-            graphics.centeredText(font, idStr, x, y - 8, 0x606060);
+            graphics.centeredText(font, idStr, x, y - 8, 0xFF606060);
             return null;
         }
         
         // Render based on recipe type
-        if (recipe instanceof CrucibleRecipe crucible) {
-            return renderCrucibleRecipe(graphics, crucible, x, y, mouseX, mouseY, font);
-        } else if (recipe instanceof InfusionRecipe infusion) {
-            return renderInfusionRecipe(graphics, infusion, x, y, mouseX, mouseY, font);
+        if (recipe instanceof CrucibleRecipeType crucibleType) {
+            return renderCrucibleRecipeType(graphics, crucibleType, x, y, mouseX, mouseY, font);
+        } else if (recipe instanceof InfusionRecipeType infusionType) {
+            return renderInfusionRecipeType(graphics, infusionType, x, y, mouseX, mouseY, font);
         } else if (recipe instanceof IArcaneRecipe arcane) {
             return renderArcaneRecipe(graphics, arcane, x, y, mouseX, mouseY, font);
         } else if (recipe instanceof CraftingRecipe crafting) {
             return renderCraftingRecipe(graphics, crafting, x, y, mouseX, mouseY, font);
+        } else if (recipe instanceof SmeltingRecipe
+                || recipe instanceof BlastingRecipe
+                || recipe instanceof SmokingRecipe) {
+            return renderSmeltingRecipe(graphics, (SingleItemRecipe) recipe, x, y, mouseX, mouseY, font);
+        } else if (recipe instanceof CrucibleRecipe crucible) {
+            return renderCrucibleRecipe(graphics, crucible, x, y, mouseX, mouseY, font);
+        } else if (recipe instanceof InfusionRecipe infusion) {
+            return renderInfusionRecipe(graphics, infusion, x, y, mouseX, mouseY, font);
         } else {
             // Unknown recipe type
-            graphics.centeredText(font, "Unknown recipe type", x, y, 0x804040);
+            graphics.centeredText(font, "Unknown recipe type", x, y, 0xFF804040);
             return null;
         }
     }
     
     /**
      * Find a recipe by its resource location.
+     *
+     * Research entries reference recipes by bare leaf name (e.g. "thaumcraft:thaumometer"),
+     * but the data-driven recipe files live under a type folder so their registry ids are
+     * "thaumcraft:<typeFolder>/<leaf>". We resolve via a leaf-name index built from the live
+     * recipe manager, falling back to a direct registry lookup.
      */
     private static Object findRecipe(Identifier id) {
         // First check Thaumcraft's catalog
@@ -107,24 +131,154 @@ public class RecipeRenderer {
         if (tcRecipe != null) {
             return tcRecipe;
         }
-        
+
         // Check fake recipes
         Object fakeRecipe = CommonInternals.getCatalogRecipeFake(id);
         if (fakeRecipe != null) {
             return fakeRecipe;
         }
-        
-        // Try vanilla recipe manager
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null) {
-            Optional<RecipeHolder<?>> vanillaRecipe = mc.level.getServer().getRecipeManager()
+
+        // Resolve via the leaf-name index, built from the client recipe manager
+        // (getRecipeManager() picks the populated manager; see that helper).
+        RecipeManager rm = getRecipeManager();
+        if (rm != null) {
+            buildRecipeLeafIndex();
+            if (recipeLeafIndex != null) {
+                Object found = recipeLeafIndex.get(leafName(id));
+                if (found == null) {
+                    // Legacy research data references "fake" display recipes
+                    // (e.g. "salis_mundus_fake") that map to a real recipe of the
+                    // base name (e.g. "salis_mundus"). Try the de-faked leaf name.
+                    String defaked = stripFakeSuffix(leafName(id));
+                    if (defaked != null) {
+                        found = recipeLeafIndex.get(defaked);
+                    }
+                }
+                if (found != null) {
+                    return found;
+                }
+            }
+            // Fallback: direct registry lookup (in case the id is already a full registry id)
+            Optional<RecipeHolder<?>> vanillaRecipe = rm
                     .byKey(ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, id));
             if (vanillaRecipe.isPresent()) {
                 return vanillaRecipe.get().value();
             }
         }
-        
+
         return null;
+    }
+
+    /**
+     * Extract the bare leaf name from a recipe identifier (last path segment).
+     */
+    private static String leafName(Identifier id) {
+        String path = id.getPath();
+        int slash = path.lastIndexOf('/');
+        return slash >= 0 ? path.substring(slash + 1) : path;
+    }
+
+    /**
+     * Strip a legacy "_fake" / "_fake_N" suffix from a recipe leaf name.
+     * Returns the base name, or null if there was no such suffix.
+     */
+    private static String stripFakeSuffix(String leaf) {
+        if (leaf.endsWith("_fake")) {
+            return leaf.substring(0, leaf.length() - "_fake".length());
+        }
+        int idx = leaf.indexOf("_fake_");
+        if (idx >= 0) {
+            String num = leaf.substring(idx + "_fake_".length());
+            if (!num.isEmpty() && num.chars().allMatch(Character::isDigit)) {
+                return leaf.substring(0, idx);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Build (or refresh) the leaf-name -> recipe index from the live recipe manager.
+     * Only Thaumcraft-namespace recipes are indexed. On a leaf-name collision the
+     * higher-priority crafting method wins (see folderPriority). Rebuilt when the level
+     * changes (new world / new server).
+     */
+    private static void buildRecipeLeafIndex() {
+        RecipeManager rm = getRecipeManager();
+        if (rm == null) {
+            return;
+        }
+        if (recipeLeafIndex != null && recipeIndexManager == rm) {
+            return;
+        }
+
+        Map<String, Object> index = new HashMap<>();
+        Map<String, Integer> priority = new HashMap<>();
+
+        var recipeMap = rm.recipeMap();
+        for (RecipeHolder<?> holder : recipeMap.values()) {
+            Identifier id = holder.id().identifier();
+            if (!Thaumcraft.MODID.equals(id.getNamespace())) {
+                continue;
+            }
+            String leaf = leafName(id);
+            int pri = folderPriority(folderOf(id));
+            Integer existing = priority.get(leaf);
+            if (existing == null || pri < existing) {
+                index.put(leaf, holder.value());
+                priority.put(leaf, pri);
+            }
+        }
+
+
+        recipeLeafIndex = index;
+        recipeIndexManager = rm;
+    }
+
+    /**
+     * Resolve the recipe manager to use for lookups. The client owns a populated
+     * recipe manager (see "Loaded N recipes" on the Render thread), while the
+     * integrated server's manager may be empty in the 26.2 client render context.
+     * Prefer the client's manager (the pattern JEI and the crafting code use),
+     * falling back to the server-cached one.
+     */
+    private static RecipeManager getRecipeManager() {
+        try {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc != null && mc.level != null) {
+                var server = mc.level.getServer();
+                if (server != null) {
+                    return server.getRecipeManager();
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        return Thaumcraft.recipeManager;
+    }
+
+
+    /**
+     * The type-folder part of a recipe id (first path segment), or "" if none.
+     */
+    private static String folderOf(Identifier id) {
+        String path = id.getPath();
+        int slash = path.indexOf('/');
+        return slash >= 0 ? path.substring(0, slash) : "";
+    }
+
+    /**
+     * Priority for a recipe type folder. Lower value = higher priority when several recipes
+     * share a leaf name. The arcane workbench is the primary Thaumcraft crafting method, so
+     * it wins ties.
+     */
+    private static int folderPriority(String folder) {
+        return switch (folder) {
+            case "arcane_workbench" -> 0;
+            case "infusion" -> 1;
+            case "crucible" -> 2;
+            case "smelting" -> 3;
+            case "crafting" -> 4;
+            default -> 5;
+        };
     }
     
     /**
@@ -160,7 +314,7 @@ public class RecipeRenderer {
         
         // Draw title
         String title = recipe instanceof ShapedRecipe ? "Crafting (Shaped)" : "Crafting (Shapeless)";
-        graphics.centeredText(font, title, x, y - 70, 0x505050);
+        graphics.centeredText(font, title, x, y - 70, 0xFF505050);
         
         // Draw crafting grid background
         graphics.fill(x - 30, y - 50, x + 30, y + 10, 0x20000000);
@@ -175,7 +329,7 @@ public class RecipeRenderer {
         tooltip = checkItemTooltip(output, x - 8, y + 25, mouseX, mouseY, tooltip);
         
         // Draw arrow
-        graphics.text(font, "→", x + 20, y - 18, 0x404040, false);
+        graphics.text(font, "→", x + 20, y - 18, 0xFF404040, false);
         
         // Draw ingredients
         java.util.List<Optional<Ingredient>> ingredients;
@@ -223,7 +377,7 @@ public class RecipeRenderer {
         List<net.minecraft.network.chat.Component> tooltip = null;
         
         // Draw title
-        graphics.centeredText(font, "Arcane Crafting", x, y - 70, 0x505050);
+        graphics.centeredText(font, "Arcane Crafting", x, y - 70, 0xFF505050);
         
         // Draw crafting grid background
         graphics.fill(x - 30, y - 50, x + 30, y + 10, 0x20404080);
@@ -236,7 +390,7 @@ public class RecipeRenderer {
         // Draw vis cost
         int visCost = recipe.getVis();
         if (visCost > 0) {
-            graphics.centeredText(font, "Vis: " + visCost, x, y + 52, 0x8080FF);
+            graphics.centeredText(font, "Vis: " + visCost, x, y + 52, 0xFF8080FF);
         }
         
         // Draw crystal requirements
@@ -250,21 +404,22 @@ public class RecipeRenderer {
                 int amount = crystals.getAmount(aspect);
                 // Draw small aspect icon with amount for crystals
                 AspectRenderer.drawAspectSmall(graphics, crystalX, crystalY, aspect);
-                graphics.text(font, "x" + amount, crystalX + 10, crystalY + 2, 0xFFFFFF, false);
+                graphics.text(font, "x" + amount, crystalX + 10, crystalY + 2, 0xFFFFFFFF, false);
                 crystalX += 28;
             }
         }
         
         // Draw ingredients (3x3 grid)
-        NonNullList<Ingredient> ingredients = NonNullList.create();
+        java.util.List<Optional<Ingredient>> ingredients = java.util.List.of();
         if (recipe instanceof thaumcraft.common.lib.crafting.ShapedArcaneRecipe sar) {
             ingredients = sar.getIngredients();
         } else if (recipe instanceof thaumcraft.common.lib.crafting.ShapelessArcaneRecipe slar) {
-            ingredients = slar.getIngredients();
+            ingredients = slar.getIngredients().stream().map(Optional::of).toList();
         }
         for (int i = 0; i < ingredients.size() && i < 9; i++) {
-            Ingredient ing = ingredients.get(i);
-            if (ing.isEmpty()) continue;
+            Optional<Ingredient> oing = ingredients.get(i);
+            if (oing.isEmpty()) continue;
+            Ingredient ing = oing.get();
             
             int gridX = i % 3;
             int gridY = i / 3;
@@ -288,7 +443,7 @@ public class RecipeRenderer {
         List<net.minecraft.network.chat.Component> tooltip = null;
         
         // Draw title
-        graphics.centeredText(font, "Crucible", x, y - 70, 0x505050);
+        graphics.centeredText(font, "Crucible", x, y - 70, 0xFF505050);
         
         // Draw crucible shape (simplified)
         graphics.fill(x - 25, y - 30, x + 25, y + 30, 0x30804020);
@@ -303,13 +458,13 @@ public class RecipeRenderer {
         ItemStack catalyst = cycleIngredient(recipe.getCatalyst(), 0);
         renderItem(graphics, catalyst, x - 50, y - 10);
         tooltip = checkItemTooltip(catalyst, x - 50, y - 10, mouseX, mouseY, tooltip);
-        graphics.text(font, "→", x - 32, y - 6, 0x404040, false);
+        graphics.text(font, "→", x - 32, y - 6, 0xFF404040, false);
         
         // Draw aspects required
         AspectList aspects = recipe.getAspects();
         if (aspects != null && aspects.size() > 0) {
             int aspectY = y + 40;
-            graphics.centeredText(font, "Essentia:", x, aspectY, 0x606060);
+            graphics.centeredText(font, "Essentia:", x, aspectY, 0xFF606060);
             aspectY += 12;
             
             // Center the aspects
@@ -340,7 +495,7 @@ public class RecipeRenderer {
         List<net.minecraft.network.chat.Component> tooltip = null;
         
         // Draw title
-        graphics.centeredText(font, "Infusion", x, y - 70, 0x505050);
+        graphics.centeredText(font, "Infusion", x, y - 70, 0xFF505050);
         
         // Draw matrix shape (center circle)
         graphics.fill(x - 12, y - 12, x + 12, y + 12, 0x40800080);
@@ -376,7 +531,7 @@ public class RecipeRenderer {
         AspectList aspects = recipe.getAspects();
         if (aspects != null && aspects.size() > 0) {
             int aspectY = y + 50;
-            graphics.centeredText(font, "Essentia:", x, aspectY, 0x606060);
+            graphics.centeredText(font, "Essentia:", x, aspectY, 0xFF606060);
             aspectY += 12;
             
             // Limit to 5 aspects, center them
@@ -387,7 +542,7 @@ public class RecipeRenderer {
             int count = 0;
             for (Aspect aspect : aspects.getAspects()) {
                 if (count >= 5) {
-                    graphics.text(font, "...", aspectX, aspectY + 4, 0x808080, false);
+                    graphics.text(font, "...", aspectX, aspectY + 4, 0xFF808080, false);
                     break;
                 }
                 int amount = aspects.getAmount(aspect);
@@ -405,10 +560,163 @@ public class RecipeRenderer {
         // Draw instability
         if (recipe.instability > 0) {
             String instText = "Instability: " + recipe.instability;
-            int instColor = recipe.instability > 3 ? 0xFF6060 : (recipe.instability > 1 ? 0xFFFF60 : 0x60FF60);
+            int instColor = recipe.instability > 3 ? 0xFFFF6060 : (recipe.instability > 1 ? 0xFFFFFF60 : 0xFF60FF60);
             graphics.centeredText(font, instText, x, y + 80, instColor);
         }
         
+        return tooltip;
+    }
+
+    /**
+     * Render a data-driven crucible recipe (CrucibleRecipeType).
+     */
+    private static List<net.minecraft.network.chat.Component> renderCrucibleRecipeType(
+            GuiGraphicsExtractor graphics, CrucibleRecipeType recipe, int x, int y,
+            int mouseX, int mouseY, Font font) {
+
+        List<net.minecraft.network.chat.Component> tooltip = null;
+
+        // Draw title
+        graphics.centeredText(font, "Crucible", x, y - 70, 0xFF505050);
+
+        // Draw crucible shape (simplified)
+        graphics.fill(x - 25, y - 30, x + 25, y + 30, 0x30804020);
+        graphics.fill(x - 20, y - 25, x + 20, y + 25, 0x40402010);
+
+        // Draw output above
+        ItemStack output = recipe.getResultItem();
+        renderItem(graphics, output, x - 8, y - 55);
+        tooltip = checkItemTooltip(output, x - 8, y - 55, mouseX, mouseY, tooltip);
+
+        // Draw catalyst to the left
+        ItemStack catalyst = cycleIngredient(recipe.getCatalyst(), 0);
+        renderItem(graphics, catalyst, x - 50, y - 10);
+        tooltip = checkItemTooltip(catalyst, x - 50, y - 10, mouseX, mouseY, tooltip);
+        graphics.text(font, "\u2192", x - 32, y - 6, 0xFF404040, false);
+
+        // Draw aspects required
+        AspectList aspects = recipe.getAspects();
+        if (aspects != null && aspects.size() > 0) {
+            int aspectY = y + 40;
+            graphics.centeredText(font, "Essentia:", x, aspectY, 0xFF606060);
+            aspectY += 12;
+
+            int totalWidth = aspects.size() * 20 - 4;
+            int aspectX = x - totalWidth / 2;
+
+            for (Aspect aspect : aspects.getAspects()) {
+                int amount = aspects.getAmount(aspect);
+                List<net.minecraft.network.chat.Component> aspectTooltip =
+                        AspectRenderer.drawAspectWithTooltip(graphics, aspectX, aspectY,
+                                aspect, amount, mouseX, mouseY);
+                if (aspectTooltip != null && tooltip == null) {
+                    tooltip = aspectTooltip;
+                }
+                aspectX += 20;
+            }
+        }
+
+
+        return tooltip;
+    }
+
+    /**
+     * Render a data-driven infusion recipe (InfusionRecipeType).
+     */
+    private static List<net.minecraft.network.chat.Component> renderInfusionRecipeType(
+            GuiGraphicsExtractor graphics, InfusionRecipeType recipe, int x, int y,
+            int mouseX, int mouseY, Font font) {
+
+        List<net.minecraft.network.chat.Component> tooltip = null;
+
+        // Draw title
+        graphics.centeredText(font, "Infusion", x, y - 70, 0xFF505050);
+
+        // Draw matrix shape (center circle)
+        graphics.fill(x - 12, y - 12, x + 12, y + 12, 0x40800080);
+
+        // Draw central item
+        ItemStack central = recipe.getCentralItem() == null ? ItemStack.EMPTY : cycleIngredient(recipe.getCentralItem(), 0);
+        renderItem(graphics, central, x - 8, y - 8);
+        tooltip = checkItemTooltip(central, x - 8, y - 8, mouseX, mouseY, tooltip);
+
+        // Draw output above
+        ItemStack output = recipe.getResultItem();
+        renderItem(graphics, output, x - 8, y - 55);
+        tooltip = checkItemTooltip(output, x - 8, y - 55, mouseX, mouseY, tooltip);
+
+        // Draw components in a circle
+        List<Ingredient> components = recipe.getComponents();
+        int numComponents = components.size();
+        int radius = 35;
+
+        for (int i = 0; i < numComponents; i++) {
+            double angle = (2 * Math.PI * i / numComponents) - Math.PI / 2;
+            int compX = x + (int)(Math.cos(angle) * radius) - 8;
+            int compY = y + (int)(Math.sin(angle) * radius) - 8;
+
+            ItemStack comp = cycleIngredient(components.get(i), i);
+            renderItem(graphics, comp, compX, compY);
+            tooltip = checkItemTooltip(comp, compX, compY, mouseX, mouseY, tooltip);
+        }
+
+        // Draw aspects required
+        AspectList aspects = recipe.getAspects();
+        if (aspects != null && aspects.size() > 0) {
+            int aspectY = y + 50;
+            graphics.centeredText(font, "Essentia:", x, aspectY, 0xFF606060);
+            aspectY += 12;
+
+            int totalWidth = aspects.size() * 20 - 4;
+            int aspectX = x - totalWidth / 2;
+
+            for (Aspect aspect : aspects.getAspects()) {
+                int amount = aspects.getAmount(aspect);
+                List<net.minecraft.network.chat.Component> aspectTooltip =
+                        AspectRenderer.drawAspectWithTooltip(graphics, aspectX, aspectY,
+                                aspect, amount, mouseX, mouseY);
+                if (aspectTooltip != null && tooltip == null) {
+                    tooltip = aspectTooltip;
+                }
+                aspectX += 20;
+            }
+        }
+
+        // Draw instability
+        if (recipe.getInstability() > 0) {
+            int inst = recipe.getInstability();
+            String instText = "Instability: " + inst;
+            int instColor = inst > 3 ? 0xFFFF6060 : (inst > 1 ? 0xFFFFFF60 : 0xFF60FF60);
+            graphics.centeredText(font, instText, x, y + 80, instColor);
+        }
+
+        return tooltip;
+    }
+
+    /**
+     * Render a vanilla-style single-input recipe (smelting, blasting, smoking).
+     */
+    private static List<net.minecraft.network.chat.Component> renderSmeltingRecipe(
+            GuiGraphicsExtractor graphics, SingleItemRecipe recipe, int x, int y,
+            int mouseX, int mouseY, Font font) {
+
+        List<net.minecraft.network.chat.Component> tooltip = null;
+
+        // Draw title
+        graphics.centeredText(font, "Furnace", x, y - 70, 0xFF505050);
+
+        // Draw input on the left
+        Ingredient input = recipe.input();
+        ItemStack inputStack = cycleIngredient(input, 0);
+        renderItem(graphics, inputStack, x - 50, y - 8);
+        tooltip = checkItemTooltip(inputStack, x - 50, y - 8, mouseX, mouseY, tooltip);
+        graphics.text(font, "\u2192", x - 32, y - 4, 0xFF404040, false);
+
+        // Draw output on the right
+        ItemStack output = recipe.assemble(new SingleRecipeInput(ItemStack.EMPTY));
+        renderItem(graphics, output, x + 20, y - 8);
+        tooltip = checkItemTooltip(output, x + 20, y - 8, mouseX, mouseY, tooltip);
+
         return tooltip;
     }
     

@@ -34,11 +34,11 @@ import java.util.Random;
 public class InfusionMatrixRenderer implements BlockEntityRenderer<TileInfusionMatrix, InfusionMatrixRenderState> {
 
     private static final Identifier TEXTURE_NORMAL = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/infuser_normal.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/block/infuser_normal.png");
     private static final Identifier TEXTURE_ANCIENT = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/infuser_ancient.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/block/infuser_ancient.png");
     private static final Identifier TEXTURE_ELDRITCH = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/infuser_eldritch.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/infuser_eldritch.png");
 
     public InfusionMatrixRenderer(BlockEntityRendererProvider.Context context) {
     }

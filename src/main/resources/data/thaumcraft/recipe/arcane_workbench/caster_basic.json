@@ -1,0 +1,27 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "UNLOCKAUROMANCY",
+  "vis": 100,
+  "crystals": {
+    "aer": 1,
+    "aqua": 1,
+    "ignis": 1,
+    "terra": 1,
+    "ordo": 1,
+    "perditio": 1
+  },
+  "pattern": [
+    "III",
+    "LRL",
+    "LTL"
+  ],
+  "key": {
+    "T": "thaumcraft:thaumometer",
+    "R": "thaumcraft:vis_resonator",
+    "L": "#c:leathers",
+    "I": "#c:ingots/iron"
+  },
+  "result": {
+    "id": "thaumcraft:caster_basic"
+  }
+}

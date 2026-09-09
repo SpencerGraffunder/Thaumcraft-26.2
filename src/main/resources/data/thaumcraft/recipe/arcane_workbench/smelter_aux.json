@@ -1,0 +1,25 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "IMPROVEDSMELTING",
+  "vis": 100,
+  "crystals": {
+    "aer": 1,
+    "terra": 1
+  },
+  "pattern": [
+    "WTW",
+    "RGR",
+    "IBI"
+  ],
+  "key": {
+    "W": "thaumcraft:greatwood_planks",
+    "T": "thaumcraft:tube_filter",
+    "R": "thaumcraft:plate_brass",
+    "G": "thaumcraft:alchemical_brass_block",
+    "I": "thaumcraft:plate_iron",
+    "B": "thaumcraft:bellows"
+  },
+  "result": {
+    "id": "thaumcraft:smelter_aux"
+  }
+}

@@ -33,7 +33,7 @@ public class HoverButton extends AbstractWidget {
     private final Object content; // Can be Aspect, Identifier, ItemStack
     
     public HoverButton(int x, int y, int width, int height, String text, String description, Object content) {
-        this(x, y, width, height, text, description, content, 0xFFFFFF);
+        this(x, y, width, height, text, description, content, 0xFFFFFFFF);
     }
     
     public HoverButton(int x, int y, int width, int height, String text, String description, Object content, int color) {
@@ -112,7 +112,7 @@ public class HoverButton extends AbstractWidget {
         }
         
         if (description != null && !description.isEmpty()) {
-            tooltip.add(Component.literal(description).withStyle(style -> style.withItalic(true).withColor(0x5555FF)));
+            tooltip.add(Component.literal(description).withStyle(style -> style.withItalic(true).withColor(0xFF5555FF)));
         }
         
         if (!tooltip.isEmpty()) {

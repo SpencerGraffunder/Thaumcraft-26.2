@@ -1,0 +1,19 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "SEALBREAK",
+  "instability": 1,
+  "aspects": {
+    "instrumentum": 10,
+    "perditio": 10,
+    "humanus": 10
+  },
+  "input": "thaumcraft:blank_seal",
+  "ingredients": [
+    "minecraft:golden_axe",
+    "minecraft:golden_pickaxe",
+    "minecraft:golden_shovel"
+  ],
+  "result": {
+    "id": "thaumcraft:seal_breaker"
+  }
+}

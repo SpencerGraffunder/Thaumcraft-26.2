@@ -33,9 +33,9 @@ public class MirrorRenderer implements BlockEntityRenderer<TileMirror, MirrorRen
     private static final Identifier PORTAL_TEXTURE = 
             Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/misc/tunnel.png");
     private static final Identifier INACTIVE_TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/mirrorpane.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/block/mirrorpane.png");
     private static final Identifier ACTIVE_TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/mirrorpanetrans.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/block/mirrorpanetrans.png");
 
     public MirrorRenderer(BlockEntityRendererProvider.Context context) {
     }

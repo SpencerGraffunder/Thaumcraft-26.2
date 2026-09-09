@@ -1,0 +1,24 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "VISGENERATOR",
+  "vis": 25,
+  "crystals": {
+    "ignis": 1,
+    "ordo": 1
+  },
+  "pattern": [
+    "WSW",
+    "EPE",
+    "WRW"
+  ],
+  "key": {
+    "W": "#minecraft:planks",
+    "S": "#c:dusts/redstone",
+    "E": "thaumcraft:quicksilver",
+    "P": "minecraft:piston",
+    "R": "thaumcraft:vis_resonator"
+  },
+  "result": {
+    "id": "thaumcraft:vis_generator"
+  }
+}

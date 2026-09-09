@@ -98,10 +98,10 @@ public class ResearchToast implements Toast {
         graphics.fill(0, 0, this.width(), this.height(), 0x20800080);
         
         // Draw title
-        graphics.text(font, title, 30, 7, 0x8000A0, false);
+        graphics.text(font, title, 30, 7, 0xFF8000A0, false);
         
         // Draw research name
-        graphics.text(font, description, 30, 18, 0x404040, false);
+        graphics.text(font, description, 30, 18, 0xFF404040, false);
         
         // Draw icon
         if (!icon.isEmpty()) {

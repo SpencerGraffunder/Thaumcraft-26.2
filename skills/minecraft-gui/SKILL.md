@@ -1,6 +1,6 @@
 ---
 name: minecraft-gui
-description: Launch, verify, screenshot, and drive the Thaumcraft 26.2 Minecraft client/server on the GNOME Wayland box or the macOS box (Modrinth App + ./gradlew). Use when asked to test the mod in-game, check item/block rendering, read load-time errors, or connect the client to the dev server.
+description: Launch, verify, screenshot, and drive the Thaumcraft 26.2 Minecraft client/server on the GNOME Wayland box or the macOS box (Modrinth App + ./gradlew). ONLY when the user explicitly asks to test in-game — otherwise build, hand off, and stop. See Policy section.
 ---
 
 # Driving the Thaumcraft 26.2 Minecraft GUI
@@ -9,12 +9,32 @@ Covers launching the client/server, verifying changes, taking screenshots, readi
 load errors, and injecting GUI input — on **this** box: GNOME **Wayland**, Modrinth App
 profile, and the `./gradlew` dev environment. Repo: `/home/graffunder/Documents/Thaumcraft-26.2`.
 
-## TL;DR — the thing that saves you time
+## POLICY — read this first (2026-09-09, user directive)
 
-**Most verification needs NO GUI input at all.** Run `CI=true ./gradlew runClient`, wait
-for the main menu, and **read the log**. Model baking, missing-texture/model warnings, and
-load errors all land in the log — not the GUI. Only reach for GUI input when the check
-genuinely requires it (open JEI to render items, click through menus, join a server).
+**Do NOT launch Minecraft (client or server — Modrinth App, `runClient`, `runServer`,
+manual java) and do NOT drive the game, unless the user explicitly asks for in-game
+testing in the current conversation.**
+
+Default flow when a code change is made:
+1. Build: `CI=true ./gradlew build` (fix compile errors; verify resources statically,
+   e.g. cross-check tag refs against the NeoForge jar).
+2. Install the jar into the Modrinth profile mods dir (so the user's next launch has it).
+3. Tell the user: **"try it out"** — what to check, where (which world, which recipe) —
+   and STOP. Do not launch, click, screenshot, or wait for a game.
+
+Allowed without asking:
+- Reading **existing** profile logs / crash-reports to diagnose an error the user reported
+  (that is investigation, not testing).
+- Static verification: builds, greps, resource cross-checks.
+
+## TL;DR — the thing that saves you time (once in-game work is requested)
+
+**When in-game verification IS requested**, most of it needs NO GUI input: run
+`CI=true ./gradlew runClient`, wait for the main menu, and **read the log**. Model
+baking, missing-texture/model warnings, and load errors all land in the log — not the
+GUI. Only reach for GUI input when the check genuinely requires it (open JEI to render
+items, click through menus, join a server). Without an explicit request, deliver the
+build + jar and stop (see Policy above).
 
 ## Environment facts (verified 2026-09-05)
 
@@ -292,6 +312,10 @@ pkill -f "fml.startup.Server"   # dev server
 | `computer` `.ax()` finds no buttons | Modrinth App is a webview (no AT-SPI tree) | pixel-click via uinput, or drive the game (not the launcher) |
 | First-launch "Enter World Name"/intro | fresh profile | this profile is already past it (`options.txt` present) |
 | `neoFormPatch` fails | running without `CI` | prefix every gradle run with `CI=true` |
+| World load aborts: **"Invalid data pack"** / `Trying to access unbound tag` | (a) recipe codec/`create` calls a tag-resolving method (`isEmpty()`, `.size()`, `getStacks()`, `test()`) — 26.2 decodes recipes in the parallel prepare phase **before** tags bind; (b) a tag JSON references a non-existent item — 26.2 validates tag contents strictly | keep codec/`create` to pure null/`Optional` logic (null-check + `orElse` only); do all ingredient checks at runtime in `matches()`; validate every tag item ID against the real registry (brass is `thaumcraft:brass_ingot`, **not** `ingot_brass`) |
+| NPE on **first crafting** (`catalyst`/`centralItem` null in `matches()`) | 26.2 removed `Ingredient.EMPTY`; optional codec fields decode to `null` | null-check before `.isEmpty()`/`.test()`; or the vanilla 26.2 pattern — `List<Optional<Ingredient>>` slots + `Ingredient.testOptionalIngredient` (see `ShapedArcaneRecipe`) |
+| Recipe decodes, field silently `null` at runtime | codec key ≠ JSON key (e.g. infusion `"center"` vs `"input"`) | dual-key codec: two `optionalFieldOf`s, `a.orElseGet(() -> b.orElse(null))` in `create` (crucible/infusion pattern); `grep` **all** recipe JSONs for the key names before trusting one |
+| `Ingredient.EMPTY` / `NonNullList` compile errors | 26.2 API removals | empty = `Optional.empty()` slot; plain `List` is fine (vanilla `ShapedRecipe` keeps `List<Optional<Ingredient>>`) |
 
 ## GUI layout notes (for pixel clicking)
 

@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "ESSENTIASMELTERVOID",
+  "vis": 200,
+  "crystals": {
+    "terra": 1,
+    "ignis": 1
+  },
+  "pattern": [
+    " A ",
+    "VPV",
+    " A "
+  ],
+  "key": {
+    "A": "thaumcraft:alchemical_brass_block",
+    "V": "thaumcraft:plate_void",
+    "P": "thaumcraft:primordial_pearl"
+  },
+  "result": {
+    "id": "thaumcraft:alchemical_brass_advanced_block"
+  }
+}

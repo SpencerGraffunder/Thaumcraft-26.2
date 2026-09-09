@@ -119,7 +119,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         nameField = new EditBox(font, leftPos + 30, topPos + 11, 170, 12, Component.empty());
         nameField.setBordered(false);
         nameField.setMaxLength(50);
-        nameField.setTextColor(0xFFFFFF);
+        nameField.setTextColor(0xFFFFFFFF);
         nameField.setValue(getTile().focusName);
         nameField.setResponder(this::onNameChanged);
         addWidget(nameField);
@@ -213,29 +213,29 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
         
         // Draw complexity
         if (maxComplexity > 0) {
-            int complexColor = totalComplexity > maxComplexity ? 0xF65858 : 0xFFE59F;
+            int complexColor = totalComplexity > maxComplexity ? 0xFFF65858 : 0xFFFFE59F;
             graphics.text(font, totalComplexity + "/" + maxComplexity, x + 242, y + 36, complexColor, true);
         }
         
         // Draw XP cost
-        int xpColor = costXp > minecraft.player.experienceLevel ? 0xF65858 : 0x9A1B8D;
+        int xpColor = costXp > minecraft.player.experienceLevel ? 0xFFF65858 : 0xFF9A1B8D;
         graphics.text(font, String.valueOf(costXp), x + 242, y + 50, xpColor, true);
         
         // Draw vis cost
         int visCost = getTile().vis > 0 ? (int) getTile().vis : costVis;
-        graphics.text(font, ChatFormatting.AQUA + String.valueOf(visCost), x + 242, y + 64, 0x9A1B8D, true);
+        graphics.text(font, ChatFormatting.AQUA + String.valueOf(visCost), x + 242, y + 64, 0xFF9A1B8D, true);
         
         // Draw cast cost
         if (costCast > 0) {
             String cost = formatter.format(costCast);
             graphics.text(font, ChatFormatting.AQUA + Component.translatable("item.Focus.cost1").getString() + ": " + cost, 
-                x + 230, y + 80, 0x9A1B8D, true);
+                x + 230, y + 80, 0xFF9A1B8D, true);
         }
         
         // Draw component crystals label
         if (components != null && components.length > 0) {
             graphics.text(font, ChatFormatting.GOLD + Component.translatable("wandtable.text4").getString(), 
-                x + 230, y + 92, 0x9A1B8D, true);
+                x + 230, y + 92, 0xFF9A1B8D, true);
         }
         
         // Draw name field background
@@ -466,7 +466,7 @@ public class FocalManipulatorScreen extends AbstractContainerScreen<FocalManipul
             int settingX = leftPos + imageWidth;
             int settingY = topPos + imageHeight - 10 - fn.node.getSettingList().size() * 26 + idx * 26;
             
-            graphics.text(font, ChatFormatting.GOLD + setting.getLocalizedName(), settingX, settingY, 0xFFFFFF, true);
+            graphics.text(font, ChatFormatting.GOLD + setting.getLocalizedName(), settingX, settingY, 0xFFFFFFFF, true);
             idx++;
         }
     }

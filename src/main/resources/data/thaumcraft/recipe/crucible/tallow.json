@@ -1,0 +1,11 @@
+{
+  "type": "thaumcraft:crucible",
+  "research": "HEDGEALCHEMY",
+  "catalyst": "minecraft:rotten_flesh",
+  "aspects": {
+    "ignis": 1
+  },
+  "result": {
+    "id": "thaumcraft:tallow"
+  }
+}

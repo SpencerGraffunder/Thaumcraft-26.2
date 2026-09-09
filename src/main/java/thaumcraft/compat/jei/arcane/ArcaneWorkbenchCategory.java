@@ -80,11 +80,11 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, IArcaneRecipe recipe, IFocusGroup focuses) {
         // Get recipe ingredients
-        NonNullList<Ingredient> ingredients = NonNullList.create();
+        java.util.List<java.util.Optional<Ingredient>> ingredients = java.util.List.of();
         if (recipe instanceof thaumcraft.common.lib.crafting.ShapedArcaneRecipe sar) {
             ingredients = sar.getIngredients();
         } else if (recipe instanceof thaumcraft.common.lib.crafting.ShapelessArcaneRecipe slar) {
-            ingredients = slar.getIngredients();
+            ingredients = slar.getIngredients().stream().map(java.util.Optional::of).toList();
         }
         
         // Add input slots (3x3 grid)
@@ -95,10 +95,10 @@ public class ArcaneWorkbenchCategory implements IRecipeCategory<IArcaneRecipe> {
                 int y = row * 18 + 1;
                 
                 if (ingredientIndex < ingredients.size()) {
-                    Ingredient ingredient = ingredients.get(ingredientIndex);
-                    if (!ingredient.isEmpty()) {
+                    java.util.Optional<Ingredient> oing = ingredients.get(ingredientIndex);
+                    if (oing.isPresent()) {
                         builder.addSlot(RecipeIngredientRole.INPUT, x, y)
-                                .add(ingredient);
+                                .add(oing.get());
                     }
                 }
                 ingredientIndex++;

@@ -1,9 +1,0 @@
-{
-  "type": "thaumcraft:crucible",
-  "research": "UNLOCKALCHEMY",
-  "catalyst": "#c:slimeballs",
-  "aspects": {
-    "vinculum": 5
-  },
-  "result": "thaumcraft:amber"
-}

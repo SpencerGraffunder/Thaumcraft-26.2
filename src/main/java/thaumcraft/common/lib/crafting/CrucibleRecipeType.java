@@ -7,6 +7,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
@@ -40,11 +41,11 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     private final String group;
     private final Ingredient catalyst;
     private final AspectList aspects;
-    private final ItemStack result;
+    private final ItemStackTemplate result;
     private final String research;
     
     public CrucibleRecipeType(String group, Ingredient catalyst,
-                              AspectList aspects, ItemStack result, String research) {
+                              AspectList aspects, ItemStackTemplate result, String research) {
         this.group = group;
         this.catalyst = catalyst;
         this.aspects = aspects;
@@ -102,11 +103,11 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     
     @Override
     public ItemStack assemble(RecipeInput input) {
-        return result.copy();
+        return result.create();
     }
     
     public ItemStack getResultItem() {
-        return result.copy();
+        return result.create();
     }
     
     @Override
@@ -185,7 +186,7 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
             Ingredient.CODEC.optionalFieldOf("catalyst").forGetter(r -> java.util.Optional.ofNullable(r.catalyst)),
             Ingredient.CODEC.optionalFieldOf("ingredient").forGetter(r -> java.util.Optional.ofNullable(r.catalyst)),
             ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.aspects),
-            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result)
+            ItemStackTemplate.MAP_CODEC.fieldOf("result").forGetter(r -> r.result)
     ).apply(i, (group, research, catalyst, ingredient, aspects, result) -> CrucibleRecipeType.create(group, research, catalyst.orElse(null), ingredient.orElse(null), aspects, result)));
     
     public static final StreamCodec<RegistryFriendlyByteBuf, CrucibleRecipeType> STREAM_CODEC = new StreamCodec<>() {
@@ -198,7 +199,7 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
             
             AspectList aspects = readAspects(buffer);
             
-            ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
+            ItemStackTemplate result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
             
             return new CrucibleRecipeType(group, catalyst, aspects, result, research);
         }
@@ -212,7 +213,7 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
             
             writeAspects(buffer, recipe.aspects);
             
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
         }
     };
     
@@ -220,8 +221,14 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     
     private static CrucibleRecipeType create(String group, String research,
                                              Ingredient catalyst, Ingredient ingredient,
-                                             AspectList aspects, ItemStack result) {
-        return new CrucibleRecipeType(group, (catalyst != null && !catalyst.isEmpty()) ? catalyst : ingredient, aspects, result, research);
+                                             AspectList aspects, ItemStackTemplate result) {
+        // 26.2: recipes are decoded in the parallel "prepare" phase, BEFORE the tag
+        // stage has bound tags - forcing tag resolution here (isEmpty()/.size()/
+        // getStacks()) throws 'Trying to access unbound tag' and kills world load.
+        // No recipe defines both keys, so the legacy catalyst->ingredient fallback
+        // only needs the null check; an empty catalyst simply never matches at
+        // runtime (tags are bound by then).
+        return new CrucibleRecipeType(group, catalyst != null ? catalyst : ingredient, aspects, result, research);
     }
     
     private static AspectList readAspects(RegistryFriendlyByteBuf buffer) {

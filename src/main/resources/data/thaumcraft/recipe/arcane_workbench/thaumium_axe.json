@@ -1,0 +1,21 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "METALLURGY",
+  "vis": 50,
+  "crystals": {
+    "ignis": 2,
+    "aer": 2
+  },
+  "pattern": [
+    "TT ",
+    "TS ",
+    " S "
+  ],
+  "key": {
+    "T": "thaumcraft:thaumium_ingot",
+    "S": "#c:rods/wooden"
+  },
+  "result": {
+    "id": "thaumcraft:thaumium_axe"
+  }
+}

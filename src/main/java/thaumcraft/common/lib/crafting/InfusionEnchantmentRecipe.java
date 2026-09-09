@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
@@ -34,7 +35,7 @@ public class InfusionEnchantmentRecipe extends InfusionRecipeType {
     public final EnumInfusionEnchantment enchantment;
     
     public InfusionEnchantmentRecipe(EnumInfusionEnchantment ench, AspectList as, NonNullList<Ingredient> components) {
-        super("", null, components, as, ItemStack.EMPTY, ench.research, 4);
+        super("", null, components, as, ItemStackTemplate.fromStack(ItemStack.EMPTY), ench.research, 4);
         this.enchantment = ench;
     }
     

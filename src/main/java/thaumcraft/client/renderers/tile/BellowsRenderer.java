@@ -27,7 +27,7 @@ import thaumcraft.common.tiles.devices.TileBellows;
 public class BellowsRenderer implements BlockEntityRenderer<TileBellows, BellowsRenderState> {
 
     private static final Identifier TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/blocks/bellows.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/block/bellows.png");
 
     private final BellowsModel model;
 

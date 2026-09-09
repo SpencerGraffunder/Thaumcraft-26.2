@@ -1,0 +1,18 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "CRYSTALFARMER",
+  "instability": 0,
+  "aspects": {
+    "ordo": 10,
+    "vitreus": 10,
+    "vinculum": 5
+  },
+  "input": "thaumcraft:vis_crystal_order",
+  "ingredients": [
+    "minecraft:wheat_seeds",
+    "thaumcraft:salis_mundus"
+  ],
+  "result": {
+    "id": "thaumcraft:crystal_order"
+  }
+}

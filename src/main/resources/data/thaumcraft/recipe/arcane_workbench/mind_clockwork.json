@@ -1,0 +1,23 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "MINDCLOCKWORK",
+  "vis": 25,
+  "aspects": {
+    "ignis": 1,
+    "ordo": 1
+  },
+  "pattern": [
+    " P ",
+    "PGP",
+    "BCB"
+  ],
+  "key": {
+    "P": "#c:glass_panes",
+    "G": "thaumcraft:mechanism_simple",
+    "B": "#thaumcraft:plates/brass",
+    "C": "minecraft:comparator"
+  },
+  "result": {
+    "id": "thaumcraft:brain_clockwork"
+  }
+}

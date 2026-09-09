@@ -3,10 +3,10 @@ package thaumcraft.common.lib.crafting;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
@@ -42,14 +42,14 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
     private final String group;
     private final int width;
     private final int height;
-    private final NonNullList<Ingredient> ingredients;
-    private final ItemStack result;
+    private final List<Optional<Ingredient>> ingredients;
+    private final ItemStackTemplate result;
     private final int visCost;
     private final AspectList crystals;
     private final String research;
     
     public ShapedArcaneRecipe(String group, int width, int height,
-                              NonNullList<Ingredient> ingredients, ItemStack result,
+                              List<Optional<Ingredient>> ingredients, ItemStackTemplate result,
                               int visCost, AspectList crystals, String research) {
         this.group = group;
         this.width = width;
@@ -83,17 +83,18 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
                 int checkX = x - offsetX;
                 int checkY = y - offsetY;
                 
-                Ingredient ingredient = null;
+                Optional<Ingredient> slot = null;
                 if (checkX >= 0 && checkY >= 0 && checkX < width && checkY < height) {
                     if (mirrored) {
-                        ingredient = ingredients.get(width - checkX - 1 + checkY * width);
+                        slot = ingredients.get(width - checkX - 1 + checkY * width);
                     } else {
-                        ingredient = ingredients.get(checkX + checkY * width);
+                        slot = ingredients.get(checkX + checkY * width);
                     }
                 }
                 
-                // Slots 0-8 are the crafting grid
-                if (ingredient != null && !ingredient.test(container.getItem(x + y * 3))) {
+                // Slots 0-8 are the crafting grid; empty slots (Optional.empty)
+                // require no item, matching vanilla ShapedRecipe semantics.
+                if (slot != null && !Ingredient.testOptionalIngredient(slot, container.getItem(x + y * 3))) {
                     return false;
                 }
             }
@@ -103,12 +104,12 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
     
     @Override
     public ItemStack assemble(IArcaneWorkbench container) {
-        return result.copy();
+        return result.create();
     }
     
     @Override
     public ItemStack getResultItem() {
-        return result.copy();
+        return result.create();
     }
     
     @Override
@@ -145,7 +146,7 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
         return group;
     }
     
-    public NonNullList<Ingredient> getIngredients() {
+    public List<Optional<Ingredient>> getIngredients() {
         return ingredients;
     }
     
@@ -197,8 +198,8 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
             Codec.INT.optionalFieldOf("vis", 0).forGetter(r -> r.visCost),
             ASPECTS_CODEC.optionalFieldOf("crystals", new AspectList()).forGetter(r -> r.crystals),
             ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.crystals),
-            ShapedRecipePattern.MAP_CODEC.forGetter(r -> new ShapedRecipePattern(r.width, r.height, toOptionalIngredients(r.ingredients), Optional.empty())),
-            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result)
+            ShapedRecipePattern.MAP_CODEC.forGetter(r -> new ShapedRecipePattern(r.width, r.height, r.ingredients, Optional.empty())),
+            ItemStackTemplate.MAP_CODEC.fieldOf("result").forGetter(r -> r.result)
     ).apply(i, ShapedArcaneRecipe::create));
     
     public static final StreamCodec<RegistryFriendlyByteBuf, ShapedArcaneRecipe> STREAM_CODEC = new StreamCodec<>() {
@@ -212,12 +213,12 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
             
             int width = buffer.readVarInt();
             int height = buffer.readVarInt();
-            NonNullList<Ingredient> ingredients = NonNullList.create();
+            List<Optional<Ingredient>> ingredients = new ArrayList<>(width * height);
             for (int i = 0; i < width * height; i++) {
-                ingredients.add(Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.decode(buffer).orElse(null));
+                ingredients.add(Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.decode(buffer));
             }
             
-            ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
+            ItemStackTemplate result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
             
             return new ShapedArcaneRecipe(group, width, height, ingredients, result, visCost, crystals, research);
         }
@@ -232,11 +233,11 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
             
             buffer.writeVarInt(recipe.width);
             buffer.writeVarInt(recipe.height);
-            for (Ingredient ingredient : recipe.ingredients) {
-                Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.encode(buffer, ingredient.isEmpty() ? Optional.empty() : Optional.of(ingredient));
+            for (Optional<Ingredient> ingredient : recipe.ingredients) {
+                Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
             
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
         }
     };
     
@@ -244,26 +245,12 @@ public class ShapedArcaneRecipe implements IArcaneRecipe {
     
     private static ShapedArcaneRecipe create(String group, String research, int visCost,
                                              AspectList crystals, AspectList aspects,
-                                             ShapedRecipePattern pattern, ItemStack result) {
+                                             ShapedRecipePattern pattern, ItemStackTemplate result) {
+        // 26.2: keep the pattern's Optional slots verbatim (empty cell =
+        // Optional.empty, requires no item) - same as vanilla ShapedRecipe.
         return new ShapedArcaneRecipe(group, pattern.width(), pattern.height(),
-                toIngredients(pattern.ingredients()), result, visCost,
+                pattern.ingredients(), result, visCost,
                 aspects.size() > 0 ? aspects : crystals, research);
-    }
-    
-    private static NonNullList<Ingredient> toIngredients(List<Optional<Ingredient>> list) {
-        NonNullList<Ingredient> ingredients = NonNullList.create();
-        for (Optional<Ingredient> opt : list) {
-            ingredients.add(opt.orElse(null));
-        }
-        return ingredients;
-    }
-    
-    private static List<Optional<Ingredient>> toOptionalIngredients(NonNullList<Ingredient> ingredients) {
-        List<Optional<Ingredient>> list = new ArrayList<>(ingredients.size());
-        for (Ingredient ingredient : ingredients) {
-            list.add(ingredient.isEmpty() ? Optional.empty() : Optional.of(ingredient));
-        }
-        return list;
     }
     
     private static AspectList readAspects(RegistryFriendlyByteBuf buffer) {

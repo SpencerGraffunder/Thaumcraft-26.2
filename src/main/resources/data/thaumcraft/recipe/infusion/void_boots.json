@@ -1,0 +1,21 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "VOIDROBEARMOR",
+  "instability": 3,
+  "input": "thaumcraft:thaumium_boots",
+  "ingredients": [
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_seed"
+  ],
+  "aspects": {
+    "alienis": 15,
+    "vacuos": 15,
+    "praemunio": 10,
+    "tenebrae": 8
+  },
+  "result": {
+    "id": "thaumcraft:void_boots"
+  }
+}

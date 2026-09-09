@@ -140,7 +140,7 @@ public class ResearchBrowserScreen extends Screen {
         
         // Add search button
         addRenderableWidget(Button.builder(Component.translatable("tc.search"), b -> toggleSearch())
-                .bounds(1, height - 17, 16, 16)
+                .bounds(1, height - 17, 40, 16)
                 .build());
         
         // Create search field
@@ -148,7 +148,7 @@ public class ResearchBrowserScreen extends Screen {
         searchField.setMaxLength(15);
         searchField.setBordered(true);
         searchField.setVisible(false);
-        searchField.setTextColor(0xFFFFFF);
+        searchField.setTextColor(0xFFFFFFFF);
         
         if (searching) {
             searchField.setVisible(true);
@@ -478,37 +478,15 @@ public class ResearchBrowserScreen extends Screen {
         
         // Draw popup message
         if (popuptime > System.currentTimeMillis()) {
-            graphics.text(font, popupmessage, 10, 34, 0xFFFFFF);
+            graphics.text(font, popupmessage, 10, 34, 0xFFFFFFFF);
         }
     }
     
     private void handleDragging(int mouseX, int mouseY) {
-        if (minecraft.hasShiftDown() || isDragging) {
-            if (isDragging) {
-                guiMapX -= (mouseX - lastMouseX) * screenZoom;
-                guiMapY -= (mouseY - lastMouseY) * screenZoom;
-                curMouseX = guiMapX;
-                tempMapX = guiMapX;
-                curMouseY = guiMapY;
-                tempMapY = guiMapY;
-            }
-            lastMouseX = mouseX;
-            lastMouseY = mouseY;
-        }
-        
-        // Clamp position to bounds
-        if (tempMapX < guiBoundsLeft * screenZoom) {
-            tempMapX = guiBoundsLeft * screenZoom;
-        }
-        if (tempMapY < guiBoundsTop * screenZoom) {
-            tempMapY = guiBoundsTop * screenZoom;
-        }
-        if (tempMapX >= guiBoundsRight * screenZoom) {
-            tempMapX = guiBoundsRight * screenZoom - 1.0f;
-        }
-        if (tempMapY >= guiBoundsBottom * screenZoom) {
-            tempMapY = guiBoundsBottom * screenZoom - 1.0f;
-        }
+        // Drag panning is handled by mouseDragged (event-based). This method only
+        // tracks the cursor position; the render pass clamps the visible position.
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
     }
     
     private void handleZoom() {
@@ -906,12 +884,12 @@ public class ResearchBrowserScreen extends Screen {
         int q = 0;
         for (Pair<String, SearchResult> p : searchResults) {
             SearchResult sr = p.getRight();
-            int color = sr.cat ? 0xDDCF9A : (sr.recipe == null ? 0xDDDDDD : 0xAAAAAA);
+            int color = sr.cat ? 0xFFDDCF9A : (sr.recipe == null ? 0xFFDDDDDD : 0xFFAAAAAA);
             
             // Highlight on hover
             if (mouseX > 22 && mouseX < 18 + screenX 
                     && mouseY >= 32 + q * 10 && mouseY < 40 + q * 10) {
-                color = sr.recipe == null ? 0xFFFFFF : (sr.cat ? 0xFFDD6C : 0xCCFFFF);
+                color = sr.recipe == null ? 0xFFFFFFFF : (sr.cat ? 0xFFFFDD6C : 0xFFCCFFFF);
             }
             
             // Draw recipe icon if applicable
@@ -926,7 +904,7 @@ public class ResearchBrowserScreen extends Screen {
             q++;
             
             if (32 + (q + 1) * 10 > screenY) {
-                graphics.text(font, Component.translatable("tc.search.more").getString(), 22, 34 + q * 10, 0xAAAAAA);
+                graphics.text(font, Component.translatable("tc.search.more").getString(), 22, 34 + q * 10, 0xFFAAAAAA);
                 break;
             }
         }
@@ -1062,7 +1040,7 @@ public class ResearchBrowserScreen extends Screen {
             if (isHovered) {
                 String displayText = getMessage().getString() + " (" + completion + "%)";
                 int textX = isRightSide ? (screenX + 9 - font.width(displayText)) : (getX() + 22);
-                graphics.text(font, displayText, textX, getY() + 4 + addonShift, 0xFFFFFF);
+                graphics.text(font, displayText, textX, getY() + 4 + addonShift, 0xFFFFFFFF);
             }
         }
     }

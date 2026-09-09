@@ -18,7 +18,7 @@ import thaumcraft.common.entities.monster.tainted.EntityTaintSeed;
 public class TaintSeedRenderer extends MobRenderer<EntityTaintSeed, TaintSeedRenderState, TaintSeedModel> {
     
     private static final Identifier TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/taint_seed.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/entity/taintseed.png");
     
     public TaintSeedRenderer(EntityRendererProvider.Context context) {
         super(context, new TaintSeedModel(context.bakeLayer(TaintSeedModel.LAYER_LOCATION)), 0.5F);

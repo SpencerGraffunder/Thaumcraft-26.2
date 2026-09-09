@@ -1,12 +1,19 @@
 {
     "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "thaumcraft:item/enchanted_placeholder"
+    },
     "overrides": [
         {
-            "predicate": { "type": 0 },
+            "predicate": {
+                "type": 0
+            },
             "model": "thaumcraft:item/grapple_gun_1"
         },
         {
-            "predicate": { "type": 1 },
+            "predicate": {
+                "type": 1
+            },
             "model": "thaumcraft:item/grapple_gun_2"
         }
     ]

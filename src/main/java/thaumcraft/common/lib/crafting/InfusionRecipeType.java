@@ -4,6 +4,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
@@ -46,13 +47,13 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     private final Ingredient centralItem;
     private final List<Ingredient> components;
     private final AspectList aspects;
-    private final ItemStack result;
+    private final ItemStackTemplate result;
     private final String research;
     private final int instability;
     
     public InfusionRecipeType(String group, Ingredient centralItem,
                               List<Ingredient> components, AspectList aspects,
-                              ItemStack result, String research, int instability) {
+                              ItemStackTemplate result, String research, int instability) {
         this.group = group;
         this.centralItem = centralItem;
         this.components = components;
@@ -91,7 +92,7 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
         }
         
         // Check central item (empty ingredient means any item is valid)
-        if (!centralItem.isEmpty() && !centralItem.test(centralItemStack)) {
+        if (centralItem != null && !centralItem.isEmpty() && !centralItem.test(centralItemStack)) {
             return false;
         }
         
@@ -101,11 +102,11 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     
     @Override
     public ItemStack assemble(RecipeInput input) {
-        return result.copy();
+        return result.create();
     }
     
     public ItemStack getResultItem() {
-        return result.copy();
+        return result.create();
     }
     
     @Override
@@ -144,7 +145,7 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     
     public List<Ingredient> getIngredients() {
         List<Ingredient> allIngredients = new java.util.ArrayList<>();
-        allIngredients.add(centralItem);
+        if (centralItem != null) allIngredients.add(centralItem);
         allIngredients.addAll(components);
         return allIngredients;
     }
@@ -175,7 +176,7 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
      * Override this in subclasses for recipes that modify the output based on input properties.
      */
     public ItemStack getRecipeOutput(Player player, ItemStack input, List<ItemStack> pedestalItems) {
-        return result.copy();
+        return result.create();
     }
     
     /**
@@ -213,14 +214,15 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
 
     public static final MapCodec<InfusionRecipeType> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
-            Ingredient.CODEC.optionalFieldOf("center").forGetter(r -> java.util.Optional.ofNullable(r.centralItem)),
+            Ingredient.CODEC.optionalFieldOf("center").forGetter(r -> Optional.ofNullable(r.centralItem)),
+            Ingredient.CODEC.optionalFieldOf("input").forGetter(r -> Optional.ofNullable(r.centralItem)),
             Ingredient.CODEC.listOf().optionalFieldOf("ingredients", List.of()).forGetter(r -> r.components),
             ASPECTS_CODEC.optionalFieldOf("aspects", new AspectList()).forGetter(r -> r.aspects),
-            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(r -> r.result),
+            ItemStackTemplate.MAP_CODEC.fieldOf("result").forGetter(r -> r.result),
             Codec.STRING.optionalFieldOf("research", "").forGetter(r -> r.research),
             Codec.INT.optionalFieldOf("instability", 0).forGetter(r -> r.instability)
-    ).apply(i, (group, center, ingredients, aspects, result, research, instability) ->
-            new InfusionRecipeType(group, center.orElse(null), ingredients, aspects, result, research, instability)));
+    ).apply(i, (group, center, input, ingredients, aspects, result, research, instability) ->
+            new InfusionRecipeType(group, center.orElseGet(() -> input.orElse(null)), ingredients, aspects, result, research, instability)));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, InfusionRecipeType> STREAM_CODEC = new StreamCodec<>() {
         @Override
@@ -248,7 +250,7 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
                 }
             }
 
-            ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
+            ItemStackTemplate result = ItemStackTemplate.STREAM_CODEC.decode(buffer);
 
             return new InfusionRecipeType(group, centralItem, components, aspects, result, research, instability);
         }
@@ -273,7 +275,7 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
                 buffer.writeVarInt(recipe.aspects.getAmount(aspect));
             }
 
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            ItemStackTemplate.STREAM_CODEC.encode(buffer, recipe.result);
         }
     };
 

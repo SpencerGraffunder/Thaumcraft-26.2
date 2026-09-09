@@ -28,7 +28,7 @@ import thaumcraft.common.tiles.essentia.TileJarBrain;
 public class JarBrainRenderer implements BlockEntityRenderer<TileJarBrain, JarBrainRenderState> {
 
     private static final Identifier BRAIN_TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/models/brain.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/item/brain.png");
 
     private final BrainModel brainModel;
 

@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "ESSENTIASMELTERTHAUMIUM",
+  "vis": 250,
+  "crystals": {
+    "ignis": 2
+  },
+  "pattern": [
+    "BFB",
+    "IGI",
+    "III"
+  ],
+  "key": {
+    "B": "thaumcraft:plate_brass",
+    "F": "thaumcraft:smelter",
+    "I": "thaumcraft:plate_thaumium",
+    "G": "thaumcraft:alchemical_brass_block"
+  },
+  "result": {
+    "id": "thaumcraft:smelter_thaumium"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "METALLURGY",
+  "vis": 50,
+  "crystals": {
+    "terra": 2,
+    "aqua": 2
+  },
+  "pattern": [
+    " T ",
+    " S ",
+    " S "
+  ],
+  "key": {
+    "T": "thaumcraft:thaumium_ingot",
+    "S": "#c:rods/wooden"
+  },
+  "result": {
+    "id": "thaumcraft:thaumium_shovel"
+  }
+}

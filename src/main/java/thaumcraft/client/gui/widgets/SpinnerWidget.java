@@ -64,7 +64,7 @@ public class SpinnerWidget extends AbstractWidget {
         // Draw value text centered between arrows
         String valueText = setting.getValueText();
         int textX = getX() + (width + 10) / 2 - font.width(valueText) / 2;
-        graphics.text(font, valueText, textX, getY() + 1, 0xFFFFFF, true);
+        graphics.text(font, valueText, textX, getY() + 1, 0xFFFFFFFF, true);
     }
     
     @Override

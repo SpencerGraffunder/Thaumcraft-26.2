@@ -20,7 +20,7 @@ import thaumcraft.common.menu.VoidSiphonMenu;
 public class VoidSiphonScreen extends AbstractContainerScreen<VoidSiphonMenu> {
     
     private static final Identifier TEXTURE = 
-            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_voidsiphon.png");
+            Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_void_siphon.png");
     
     public VoidSiphonScreen(VoidSiphonMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title, 176, 166);
@@ -51,8 +51,8 @@ public class VoidSiphonScreen extends AbstractContainerScreen<VoidSiphonMenu> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         // Draw title
-        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0x404040, false);
+        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0xFF404040, false);
         // Draw inventory label
-        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
+        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
     }
 }

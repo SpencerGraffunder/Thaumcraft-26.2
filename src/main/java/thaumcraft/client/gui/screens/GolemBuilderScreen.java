@@ -133,33 +133,33 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
         // Material name (left top)
         if (mat != null) {
             Component matName = mat.getLocalizedName();
-            graphics.centeredText(this.font, matName, x + 24, y + 8, 0xFFFFFF);
+            graphics.centeredText(this.font, matName, x + 24, y + 8, 0xFFFFFFFF);
         }
         
         // Head name (right top)
         if (head != null) {
             Component headName = head.getLocalizedName();
-            graphics.centeredText(this.font, headName, x + 120, y + 8, 0xFFFFFF);
+            graphics.centeredText(this.font, headName, x + 120, y + 8, 0xFFFFFFFF);
         }
         
         // Arms name (right middle)
         if (arms != null) {
             Component armsName = arms.getLocalizedName();
-            graphics.centeredText(this.font, armsName, x + 120, y + 32, 0xFFFFFF);
+            graphics.centeredText(this.font, armsName, x + 120, y + 32, 0xFFFFFFFF);
         }
         
         // Legs name (right bottom)
         if (legs != null) {
             Component legsName = legs.getLocalizedName();
-            graphics.centeredText(this.font, legsName, x + 120, y + 56, 0xFFFFFF);
+            graphics.centeredText(this.font, legsName, x + 120, y + 56, 0xFFFFFFFF);
         }
         
         // Addon name (left bottom)
         if (addon != null && !addon.key.equalsIgnoreCase("none")) {
             Component addonName = addon.getLocalizedName();
-            graphics.centeredText(this.font, addonName, x + 24, y + 56, 0xFFFFFF);
+            graphics.centeredText(this.font, addonName, x + 24, y + 56, 0xFFFFFFFF);
         } else {
-            graphics.centeredText(this.font, Component.literal("No Addon"), x + 24, y + 56, 0x888888);
+            graphics.centeredText(this.font, Component.literal("No Addon"), x + 24, y + 56, 0xFF888888);
         }
         
         // Calculate and display stats
@@ -189,9 +189,9 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
         float armorVal = armor / 2.0f;
         float damageVal = damage / 2.0f;
         
-        graphics.centeredText(this.font, String.format("%.1f", hearts), x + 48, y + 108, 0xFFFFFF);
-        graphics.centeredText(this.font, String.format("%.1f", armorVal), x + 72, y + 108, 0xFFFFFF);
-        graphics.centeredText(this.font, String.format("%.1f", damageVal), x + 97, y + 108, 0xFFFFFF);
+        graphics.centeredText(this.font, String.format("%.1f", hearts), x + 48, y + 108, 0xFFFFFFFF);
+        graphics.centeredText(this.font, String.format("%.1f", armorVal), x + 72, y + 108, 0xFFFFFFFF);
+        graphics.centeredText(this.font, String.format("%.1f", damageVal), x + 97, y + 108, 0xFFFFFFFF);
         
         // Draw trait icons/names
         int traitX = x + 56;
@@ -202,7 +202,7 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
             int tx = traitX + (traitCount % 4) * 18;
             int ty = traitY - (traitCount / 4) * 10;
             graphics.text(this.font, trait.name().substring(0, Math.min(3, trait.name().length())), 
-                    tx, ty, 0xFFFFFF, false);
+                    tx, ty, 0xFFFFFFFF, false);
             traitCount++;
         }
         
@@ -210,7 +210,7 @@ public class GolemBuilderScreen extends AbstractContainerScreen<GolemBuilderMenu
         int cost = menu.getCost();
         int maxCost = menu.getMaxCost();
         if (maxCost > 0) {
-            graphics.text(this.font, "Cost: " + cost + "/" + maxCost, x + 145, y + 78, 0xFFFFFF);
+            graphics.text(this.font, "Cost: " + cost + "/" + maxCost, x + 145, y + 78, 0xFFFFFFFF);
         }
     }
     

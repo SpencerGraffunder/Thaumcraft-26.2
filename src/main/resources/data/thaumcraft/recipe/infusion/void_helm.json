@@ -1,0 +1,23 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "VOIDROBEARMOR",
+  "instability": 4,
+  "input": "thaumcraft:thaumium_helm",
+  "ingredients": [
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_metal_ingot",
+    "thaumcraft:void_seed",
+    "thaumcraft:void_seed"
+  ],
+  "aspects": {
+    "alienis": 20,
+    "vacuos": 20,
+    "praemunio": 15,
+    "tenebrae": 10
+  },
+  "result": {
+    "id": "thaumcraft:void_helm"
+  }
+}

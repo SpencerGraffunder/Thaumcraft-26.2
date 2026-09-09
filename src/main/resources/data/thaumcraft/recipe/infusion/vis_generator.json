@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "VISGENERATOR",
+  "instability": 3,
+  "input": "thaumcraft:vis_resonator",
+  "ingredients": [
+    "thaumcraft:thaumium_ingot",
+    "thaumcraft:thaumium_ingot",
+    "thaumcraft:balanced_shard",
+    "thaumcraft:balanced_shard",
+    "minecraft:redstone_block",
+    "minecraft:redstone_block"
+  ],
+  "aspects": {
+    "potentia": 50,
+    "praecantatio": 40,
+    "machina": 30
+  },
+  "result": {
+    "id": "thaumcraft:vis_generator"
+  }
+}

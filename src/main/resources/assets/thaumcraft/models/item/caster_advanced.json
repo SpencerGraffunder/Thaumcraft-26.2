@@ -1,12 +1,19 @@
 {
-    "parent": "minecraft:item/generated",    
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "thaumcraft:item/caster_basic_model"
+    },
     "overrides": [
         {
-            "predicate": { "focus": 0 },
+            "predicate": {
+                "focus": 0
+            },
             "model": "thaumcraft:item/caster_advanced_model"
         },
         {
-            "predicate": { "focus": 1 },
+            "predicate": {
+                "focus": 1
+            },
             "model": "thaumcraft:item/caster_advanced_focus_model"
         }
     ]

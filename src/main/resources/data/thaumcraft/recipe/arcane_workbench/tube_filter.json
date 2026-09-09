@@ -1,0 +1,12 @@
+{
+  "type": "thaumcraft:arcane_workbench_shapeless",
+  "research": "TUBES",
+  "vis": 10,
+  "ingredients": [
+    "thaumcraft:tube_normal",
+    "thaumcraft:filter"
+  ],
+  "result": {
+    "id": "thaumcraft:tube_filter"
+  }
+}

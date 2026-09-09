@@ -3,6 +3,7 @@ package thaumcraft.client.gui.screens;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -44,7 +45,7 @@ public class ResearchPageScreen extends Screen {
     private static final int PANE_WIDTH = 256;
     private static final int PANE_HEIGHT = 181;
     private static final int PAGE_WIDTH = 140;
-    private static final int PAGE_HEIGHT = 210;
+    private static final float FONT_SCALE = 0.7f;
     
     // Research data
     private final ResearchEntry research;
@@ -87,9 +88,29 @@ public class ResearchPageScreen extends Screen {
         player = minecraft.player;
         ThaumcraftCapabilities.getKnowledge(player).ifPresent(k -> playerKnowledge = k);
         
+        // Exit/close button (top-right of the 1.3x book)
+        int sw = (width - PANE_WIDTH) / 2;
+        int sh = (height - PANE_HEIGHT) / 2;
+        int bookRight = (width + (int)(PANE_WIDTH * 1.3f)) / 2;
+        int bookTop = (height - (int)(PANE_HEIGHT * 1.3f)) / 2;
+        addRenderableWidget(Button.builder(Component.literal("✕"), b -> this.onClose())
+                .bounds(bookRight - 18, bookTop + 4, 16, 16)
+                .build());
         parsePages();
     }
     
+    /**
+     * Strips custom formatting tags (BR, IMG, PAGE, DIV, LINE) from research text.
+     */
+    private String stripFormattingTags(String text) {
+        text = text.replaceAll("<IMG>[^<]*</IMG>", "");
+        text = text.replaceAll("<BR>", " ");
+        text = text.replaceAll("<PAGE>", " ");
+        text = text.replaceAll("<DIV>", " ");
+        text = text.replaceAll("<LINE>", " ");
+        return text;
+    }
+
     /**
      * Parse research content into displayable pages.
      */
@@ -129,9 +150,9 @@ public class ResearchPageScreen extends Screen {
             
             // Add stage text
             if (stage.getText() != null) {
-                String text = Component.translatable(stage.getText()).getString();
+                String text = stripFormattingTags(Component.translatable(stage.getText()).getString());
                 // Split text into lines that fit the page width
-                List<String> lines = wrapText(text, PAGE_WIDTH - 10);
+                List<String> lines = wrapText(text, (int)((PAGE_WIDTH - 10) / FONT_SCALE));
                 textPage.contents.addAll(lines);
             }
             
@@ -167,8 +188,8 @@ public class ResearchPageScreen extends Screen {
                     addendumPage.isAddendum = true;
                     
                     if (addendum.getText() != null) {
-                        String text = Component.translatable(addendum.getText()).getString();
-                        List<String> lines = wrapText(text, PAGE_WIDTH - 10);
+                        String text = stripFormattingTags(Component.translatable(addendum.getText()).getString());
+                        List<String> lines = wrapText(text, (int)((PAGE_WIDTH - 10) / FONT_SCALE));
                         addendumPage.contents.addAll(lines);
                     }
                     
@@ -312,45 +333,39 @@ public class ResearchPageScreen extends Screen {
         int sw = (width - PANE_WIDTH) / 2;
         int sh = (height - PANE_HEIGHT) / 2;
         
-        // Draw book background
-        // Scale and draw background
+        // Draw book background at 1.3x scale (matching 1.12.2 GuiResearchPage)
         graphics.pose().pushMatrix();
-        float scale = 1.3f;
-        float offsetX = (width - PANE_WIDTH * scale) / 2.0f;
-        float offsetY = (height - PANE_HEIGHT * scale) / 2.0f;
-        graphics.pose().translate(offsetX, offsetY);
-        graphics.pose().scale(scale);
+        graphics.pose().translate((width - PANE_WIDTH * 1.3f) / 2.0f, (height - PANE_HEIGHT * 1.3f) / 2.0f);
+        graphics.pose().scale(1.3f);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 0.0F, 0.0F, PANE_WIDTH, PANE_HEIGHT, 256, 256);
         graphics.pose().popMatrix();
         
-        // Draw title on first page
+        // Draw title and separator on first page
         if (page == 0) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh - 17, 24.0F, 184.0F, 96, 4, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh, 24.0F, 184.0F, 96, 4, 256, 256);
+            
             String title = research.getLocalizedName().getString();
             int titleWidth = font.width(title);
-            int titleX = sw + 70 - titleWidth / 2;
-            graphics.text(font, title, titleX, sh + 8, 0x202020, false);
-            
-            // Draw separator line
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh + 3, 24.0F, 184.0F, 96, 4, 256, 256);
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh + 20, 24.0F, 184.0F, 96, 4, 256, 256);
+            graphics.text(font, title, sw + 55 - titleWidth / 2, sh - 10, 0xFF202020, false);
         }
         
-        // Draw page content
-        int contentY = sh + (page == 0 ? 38 : 15);
+        // Draw page content (1.12.2 coordinates)
+        int contentY = (page == 0) ? sh + 12 : sh - 16;
         List<net.minecraft.network.chat.Component> tooltip = null;
         
-        // Draw left page (even page number)
+        // Draw left page
         if (page < pages.size()) {
-            tooltip = drawPageContent(graphics, pages.get(page), sw + 12, contentY, mouseX, mouseY, false);
+            tooltip = drawPageContent(graphics, pages.get(page), sw - 15, contentY, mouseX, mouseY, false);
         }
         
-        // Draw right page (odd page number)
+        // Draw right page
         if (page + 1 < pages.size()) {
-            List<net.minecraft.network.chat.Component> rightTooltip = drawPageContent(graphics, pages.get(page + 1), sw + 152, contentY, mouseX, mouseY, true);
+            List<net.minecraft.network.chat.Component> rightTooltip = drawPageContent(graphics, pages.get(page + 1), sw + 137, contentY, mouseX, mouseY, true);
             if (tooltip == null) tooltip = rightTooltip;
         }
         
-        // Draw navigation arrows
+        // Draw navigation arrows (1.12.2 positions)
         float bob = (float) Math.sin(System.currentTimeMillis() / 300.0) * 0.2f + 0.1f;
         
         if (page > 0) {
@@ -370,9 +385,10 @@ public class ResearchPageScreen extends Screen {
             drawCompleteButton(graphics, sw, sh, mouseX, mouseY);
         }
         
-        // Draw page numbers
+        // Draw page numbers below the 1.3x book
         String pageNum = (page / 2 + 1) + " / " + ((maxPages + 1) / 2);
-        graphics.centeredText(font, pageNum, sw + PANE_WIDTH / 2, sh + PANE_HEIGHT + 5, 0x808080);
+        int bookBottom = (height + (int)(PANE_HEIGHT * 1.3f)) / 2;
+        graphics.centeredText(font, pageNum, sw + PANE_WIDTH / 2, bookBottom + 5, 0xFF808080);
         
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         
@@ -391,18 +407,24 @@ public class ResearchPageScreen extends Screen {
             return drawRecipe(graphics, x, y, page.recipeId, mouseX, mouseY);
         }
         
-        // Draw text content
-        int lineY = y;
+        // Draw text content at reduced scale to fit more lines per page
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x, y);
+        graphics.pose().scale(FONT_SCALE);
+        
+        int lineY = 0;
         for (Object content : page.contents) {
             if (content instanceof String text) {
-                graphics.text(font, text, x, lineY, 0x202020, false);
-                lineY += font.lineHeight + 2;
+                graphics.text(font, text, 0, lineY, 0xFF202020, false);
+                lineY += font.lineHeight;
             }
         }
         
-        // Mark addendum pages
+        graphics.pose().popMatrix();
+        
+        // Mark addendum pages (at normal scale)
         if (page.isAddendum) {
-            graphics.text(font, "§o[Addendum]", x, y - 12, 0x606060, false);
+            graphics.text(font, "§o[Addendum]", x, y - 12, 0xFF606060, false);
         }
         
         return null;
@@ -413,7 +435,7 @@ public class ResearchPageScreen extends Screen {
      */
     private List<net.minecraft.network.chat.Component> drawRecipe(GuiGraphicsExtractor graphics, int x, int y, Identifier recipeId, int mouseX, int mouseY) {
         if (recipeId == null) {
-            graphics.text(font, "No recipe", x + 40, y + 40, 0x808080, false);
+            graphics.text(font, "No recipe", x + 40, y + 40, 0xFF808080, false);
             return null;
         }
         
@@ -430,38 +452,38 @@ public class ResearchPageScreen extends Screen {
         
         // Draw requirement sections
         if (stage.getResearch() != null && stage.getResearch().length > 0) {
-            graphics.text(font, "§7Required Research:", x, y, 0xFFFFFF, false);
+            graphics.text(font, "§7Required Research:", x, y, 0xFFFFFFFF, false);
             y += 10;
             for (int i = 0; i < stage.getResearch().length; i++) {
                 String reqKey = stage.getResearch()[i];
                 ResearchEntry reqEntry = ResearchCategories.getResearch(reqKey);
                 String reqName = reqEntry != null ? reqEntry.getLocalizedName().getString() : reqKey;
                 String checkmark = (hasResearch != null && hasResearch[i]) ? "§a✓ " : "§c✗ ";
-                graphics.text(font, checkmark + reqName, x + 5, y, 0xFFFFFF, false);
+                graphics.text(font, checkmark + reqName, x + 5, y, 0xFFFFFFFF, false);
                 y += 10;
             }
         }
         
         if (stage.getObtain() != null && stage.getObtain().length > 0) {
-            graphics.text(font, "§7Items to Obtain:", x, y, 0xFFFFFF, false);
+            graphics.text(font, "§7Items to Obtain:", x, y, 0xFFFFFFFF, false);
             y += 10;
             for (int i = 0; i < stage.getObtain().length; i++) {
                 Object o = stage.getObtain()[i];
                 String itemName = o instanceof ItemStack ? ((ItemStack) o).getHoverName().getString() : "Item";
                 String checkmark = (hasItem != null && hasItem[i]) ? "§a✓ " : "§c✗ ";
-                graphics.text(font, checkmark + itemName, x + 5, y, 0xFFFFFF, false);
+                graphics.text(font, checkmark + itemName, x + 5, y, 0xFFFFFFFF, false);
                 y += 10;
             }
         }
         
         if (stage.getKnow() != null && stage.getKnow().length > 0) {
-            graphics.text(font, "§7Knowledge Required:", x, y, 0xFFFFFF, false);
+            graphics.text(font, "§7Knowledge Required:", x, y, 0xFFFFFFFF, false);
             y += 10;
             for (int i = 0; i < stage.getKnow().length; i++) {
                 ResearchStage.Knowledge k = stage.getKnow()[i];
                 String knowName = k.type.name() + (k.category != null ? " (" + k.category.key + ")" : "") + ": " + k.amount;
                 String checkmark = (hasKnow != null && hasKnow[i]) ? "§a✓ " : "§c✗ ";
-                graphics.text(font, checkmark + knowName, x + 5, y, 0xFFFFFF, false);
+                graphics.text(font, checkmark + knowName, x + 5, y, 0xFFFFFFFF, false);
                 y += 10;
             }
         }
@@ -501,7 +523,7 @@ public class ResearchPageScreen extends Screen {
         graphics.fill(buttonX, buttonY, buttonX + buttonW, buttonY + buttonH, color);
         
         String text = "Complete Stage";
-        graphics.centeredText(font, text, buttonX + buttonW / 2, buttonY + 2, hover ? 0xFFFFFF : 0xC0C0C0);
+        graphics.centeredText(font, text, buttonX + buttonW / 2, buttonY + 2, hover ? 0xFFFFFFFF : 0xFFC0C0C0);
     }
     
     @Override

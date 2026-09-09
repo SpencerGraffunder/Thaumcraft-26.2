@@ -1,16 +1,25 @@
 {
     "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "thaumcraft:item/verdant_charm"
+    },
     "overrides": [
         {
-            "predicate": { "type": 0 },
+            "predicate": {
+                "type": 0
+            },
             "model": "thaumcraft:item/verdant_charm_0"
         },
         {
-            "predicate": { "type": 1 },
+            "predicate": {
+                "type": 1
+            },
             "model": "thaumcraft:item/verdant_charm_1"
         },
         {
-            "predicate": { "type": 2 },
+            "predicate": {
+                "type": 2
+            },
             "model": "thaumcraft:item/verdant_charm_2"
         }
     ]

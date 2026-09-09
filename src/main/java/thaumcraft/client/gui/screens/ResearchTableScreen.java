@@ -555,8 +555,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
                 s = s + " (-" + penalty + ")";
             }
             
-            int color = data.categoriesBlocked.contains(cat) ? 0x606060 : 
-                       (i <= data.penaltyStart ? 0x00E100 : 0xFFFFFF);
+            int color = data.categoriesBlocked.contains(cat) ? 0xFF606060 : 
+                       (i <= data.penaltyStart ? 0xFF00E100 : 0xFFFFFFFF);
             
             graphics.text(font, s, xx + 276, yy + 20 + i * 18 + (i > data.penaltyStart ? 4 : 0), color, true);
             
