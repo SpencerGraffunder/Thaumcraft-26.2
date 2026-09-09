@@ -41,11 +41,19 @@ public class ResearchPageScreen extends Screen {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_researchbook.png");
     private static final Identifier OVERLAY = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/gui_researchbook_overlay.png");
     
-    // Pane dimensions
+    // Pane dimensions (the book is blitted at 1.3x around screen center sw/sh)
     private static final int PANE_WIDTH = 256;
     private static final int PANE_HEIGHT = 181;
-    private static final int PAGE_WIDTH = 140;
-    private static final float FONT_SCALE = 0.7f;
+    // Paper area in world coordinates, relative to sw/sh. Measured from the book
+    // texture (512px, paper occupies texture x 26..486 / y 8..346; the visible book
+    // is texture 512x362 drawn as 256x181 at 1.3x around the screen center).
+    private static final int PAPER_TOP = -22;
+    private static final int PAPER_BOTTOM = 197;
+    // Text pages use the full-size font (lineHeight = 9). A full page must fit the
+    // ~219px paper: 21 lines = 189px with 15px top/bottom margins.
+    private static final int TEXT_WIDTH = 118;
+    private static final int MAX_TEXT_LINES = 21;
+    private static final int MAX_TEXT_LINES_FIRST = 17; // first page leaves room for the title cluster
     
     // Research data
     private final ResearchEntry research;
@@ -145,18 +153,17 @@ public class ResearchPageScreen extends Screen {
         for (int s = 0; s < maxStage; s++) {
             ResearchStage stage = stages[s];
             
-            // Create page for stage text
-            Page textPage = new Page();
+            // Create page(s) for stage text
             
             // Add stage text
             if (stage.getText() != null) {
                 String text = stripFormattingTags(Component.translatable(stage.getText()).getString());
                 // Split text into lines that fit the page width
-                List<String> lines = wrapText(text, (int)((PAGE_WIDTH - 10) / FONT_SCALE));
-                textPage.contents.addAll(lines);
+                List<String> lines = wrapText(text, TEXT_WIDTH);
+                addTextPages(pages, lines, pages.isEmpty() ? MAX_TEXT_LINES_FIRST : MAX_TEXT_LINES);
+            } else {
+                pages.add(new Page());
             }
-            
-            pages.add(textPage);
             
             // Add recipe pages if any
             if (stage.getRecipes() != null && stage.getRecipes().length > 0) {
@@ -189,11 +196,11 @@ public class ResearchPageScreen extends Screen {
                     
                     if (addendum.getText() != null) {
                         String text = stripFormattingTags(Component.translatable(addendum.getText()).getString());
-                        List<String> lines = wrapText(text, (int)((PAGE_WIDTH - 10) / FONT_SCALE));
-                        addendumPage.contents.addAll(lines);
+                        List<String> lines = wrapText(text, TEXT_WIDTH);
+                        addTextPages(pages, lines, MAX_TEXT_LINES);
+                    } else {
+                        pages.add(new Page());
                     }
-                    
-                    pages.add(addendumPage);
                     
                     // Add addendum recipes
                     if (addendum.getRecipes() != null) {
@@ -287,6 +294,21 @@ public class ResearchPageScreen extends Screen {
     }
     
     /**
+     * Split wrapped text lines into as many pages as needed so content
+     * fits the book page height instead of overflowing the bottom edge.
+     */
+    private void addTextPages(List<Page> pages, List<String> lines, int maxLines) {
+        for (int i = 0; i < lines.size(); i += maxLines) {
+            Page p = new Page();
+            p.contents.addAll(lines.subList(i, Math.min(i + maxLines, lines.size())));
+            pages.add(p);
+        }
+        if (lines.isEmpty()) {
+            pages.add(new Page());
+        }
+    }
+    
+    /**
      * Wrap text to fit within a given width.
      */
     private List<String> wrapText(String text, int maxWidth) {
@@ -296,7 +318,7 @@ public class ResearchPageScreen extends Screen {
         String[] paragraphs = text.split("<LINE>|\\n");
         
         for (String paragraph : paragraphs) {
-            if (paragraph.trim().isEmpty()) {
+            if (paragraph.isEmpty()) {
                 lines.add("");
                 continue;
             }
@@ -340,28 +362,30 @@ public class ResearchPageScreen extends Screen {
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 0.0F, 0.0F, PANE_WIDTH, PANE_HEIGHT, 256, 256);
         graphics.pose().popMatrix();
         
-        // Draw title and separator on first page
+        // Draw title and separators on first page (inside the paper area)
         if (page == 0) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh - 17, 24.0F, 184.0F, 96, 4, 256, 256);
-            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh, 24.0F, 184.0F, 96, 4, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh + 2, 24.0F, 184.0F, 96, 4, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, sw + 4, sh + 19, 24.0F, 184.0F, 96, 4, 256, 256);
             
             String title = research.getLocalizedName().getString();
             int titleWidth = font.width(title);
-            graphics.text(font, title, sw + 55 - titleWidth / 2, sh - 10, 0xFF202020, false);
+            graphics.text(font, title, sw + 55 - titleWidth / 2, sh + 8, 0xFF202020, false);
         }
         
-        // Draw page content (1.12.2 coordinates)
-        int contentY = (page == 0) ? sh + 12 : sh - 16;
+        // Page content: text blocks are centered vertically inside the paper area.
+        int paperTop = sh + PAPER_TOP;
+        int textTop = (page == 0) ? sh + 27 : paperTop + 14;
+        int textBottom = sh + PAPER_BOTTOM - 14;
         List<net.minecraft.network.chat.Component> tooltip = null;
         
         // Draw left page
         if (page < pages.size()) {
-            tooltip = drawPageContent(graphics, pages.get(page), sw - 15, contentY, mouseX, mouseY, false);
+            tooltip = drawPageContent(graphics, pages.get(page), sw - 15, textTop, textBottom, mouseX, mouseY, false);
         }
         
         // Draw right page
         if (page + 1 < pages.size()) {
-            List<net.minecraft.network.chat.Component> rightTooltip = drawPageContent(graphics, pages.get(page + 1), sw + 137, contentY, mouseX, mouseY, true);
+            List<net.minecraft.network.chat.Component> rightTooltip = drawPageContent(graphics, pages.get(page + 1), sw + 137, textTop, textBottom, mouseX, mouseY, true);
             if (tooltip == null) tooltip = rightTooltip;
         }
         
@@ -402,45 +426,48 @@ public class ResearchPageScreen extends Screen {
      * Draw the content of a single page.
      * Returns tooltip to display if hovering over an item.
      */
-    private List<net.minecraft.network.chat.Component> drawPageContent(GuiGraphicsExtractor graphics, Page page, int x, int y, int mouseX, int mouseY, boolean rightSide) {
+    private List<net.minecraft.network.chat.Component> drawPageContent(GuiGraphicsExtractor graphics, Page page, int x, int y, int bottomY, int mouseX, int mouseY, boolean rightSide) {
         if (page.isRecipePage) {
-            return drawRecipe(graphics, x, y, page.recipeId, mouseX, mouseY);
+            return drawRecipe(graphics, x, y, bottomY, page.recipeId, mouseX, mouseY);
         }
         
-        // Draw text content at reduced scale to fit more lines per page
-        graphics.pose().pushMatrix();
-        graphics.pose().translate(x, y);
-        graphics.pose().scale(FONT_SCALE);
+        // Center the text block vertically inside the paper area
+        int lines = 0;
+        for (Object content : page.contents) {
+            if (content instanceof String) lines++;
+        }
+        int blockH = lines * font.lineHeight;
+        int startY = y + Math.max(0, (bottomY - y - blockH) / 2);
         
         int lineY = 0;
         for (Object content : page.contents) {
             if (content instanceof String text) {
-                graphics.text(font, text, 0, lineY, 0xFF202020, false);
+                graphics.text(font, text, x, startY + lineY, 0xFF202020, false);
                 lineY += font.lineHeight;
             }
         }
         
-        graphics.pose().popMatrix();
-        
-        // Mark addendum pages (at normal scale)
+        // Mark addendum pages
         if (page.isAddendum) {
-            graphics.text(font, "§o[Addendum]", x, y - 12, 0xFF606060, false);
+            graphics.text(font, "§o[Addendum]", x, startY - 12, 0xFF606060, false);
         }
         
         return null;
     }
     
     /**
-     * Draw recipe using the RecipeRenderer.
+     * Draw recipe using the RecipeRenderer, centered in the paper area.
      */
-    private List<net.minecraft.network.chat.Component> drawRecipe(GuiGraphicsExtractor graphics, int x, int y, Identifier recipeId, int mouseX, int mouseY) {
+    private List<net.minecraft.network.chat.Component> drawRecipe(GuiGraphicsExtractor graphics, int x, int y, int bottomY, Identifier recipeId, int mouseX, int mouseY) {
         if (recipeId == null) {
             graphics.text(font, "No recipe", x + 40, y + 40, 0xFF808080, false);
             return null;
         }
         
-        // Use RecipeRenderer to draw the recipe
-        return RecipeRenderer.renderRecipe(graphics, recipeId, x + 60, y + 60, mouseX, mouseY, font);
+        // Recipe layouts are drawn relative to their center; place that center at
+        // the vertical middle of the paper area (same sw/sh frame as the book blit).
+        int sh = (height - PANE_HEIGHT) / 2;
+        return RecipeRenderer.renderRecipe(graphics, recipeId, x + 60, sh + (PAPER_TOP + PAPER_BOTTOM) / 2, mouseX, mouseY, font);
     }
     
     /**

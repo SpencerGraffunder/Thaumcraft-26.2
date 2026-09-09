@@ -11,6 +11,7 @@ import net.minecraft.world.item.crafting.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.Thaumcraft;
+import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.CrucibleRecipe;
@@ -110,6 +111,8 @@ public class RecipeRenderer {
             return renderCrucibleRecipe(graphics, crucible, x, y, mouseX, mouseY, font);
         } else if (recipe instanceof InfusionRecipe infusion) {
             return renderInfusionRecipe(graphics, infusion, x, y, mouseX, mouseY, font);
+        } else if (recipe instanceof ThaumcraftApi.BluePrint bp) {
+            return renderBluePrint(graphics, bp, x, y, mouseX, mouseY, font);
         } else {
             // Unknown recipe type
             graphics.centeredText(font, "Unknown recipe type", x, y, 0xFF804040);
@@ -153,6 +156,11 @@ public class RecipeRenderer {
                     if (defaked != null) {
                         found = recipeLeafIndex.get(defaked);
                     }
+                    if (found == null) {
+                        // Legacy book ids that never matched a file name
+                        // (e.g. "nitor_color", "infusion_altar").
+                        found = findRecipeAlias(leafName(id));
+                    }
                 }
                 if (found != null) {
                     return found;
@@ -176,6 +184,54 @@ public class RecipeRenderer {
         String path = id.getPath();
         int slash = path.lastIndexOf('/');
         return slash >= 0 ? path.substring(slash + 1) : path;
+    }
+
+    /**
+     * Legacy book recipe ids that do not match any recipe file or catalog entry.
+     * Maps the book leaf name to the real leaf name (recipe file) or catalog id.
+     */
+    private static final Map<String, String> RECIPE_ALIASES = Map.ofEntries(
+            Map.entry("nitor_color", "nitor_yellow"),
+            Map.entry("nitor_group", "nitor_yellow"),
+            Map.entry("vis_crystal_group", "vis_crystal_aer"),
+            Map.entry("brass_stuff", "brass_block"),
+            Map.entry("thaumium_stuff", "thaumium_block"),
+            Map.entry("void_stuff", "void_block"),
+            Map.entry("voidingot", "void_metal_ingot"),
+            Map.entry("arcane_workbench_charger", "workbench_charger"),
+            Map.entry("mnemonic_matrix", "brain_box"),
+            Map.entry("jar_label", "label_blank"),
+            Map.entry("jar_label_essentia", "label_filled"),
+            Map.entry("banners", "banner_red"),
+            Map.entry("baubles_stuff", "charm_undying"),
+            Map.entry("arcane_brick", "arcane_stone_brick"),
+            Map.entry("infusion_altar", "infusionaltar"),
+            Map.entry("infusion_altar_ancient", "infusionaltarancient"),
+            Map.entry("infusion_altar_eldritch", "infusionaltareldritch"),
+            Map.entry("golem_press", "golempress"));
+
+    /**
+     * Resolve a legacy book recipe id via the alias table: real catalog first
+     * (multiblock BluePrints), then the fake catalog, then the leaf index.
+     */
+    private static Object findRecipeAlias(String leaf) {
+        String alias = RECIPE_ALIASES.get(leaf);
+        if (alias == null) {
+            return null;
+        }
+        Identifier aid = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, alias);
+        Object catalog = CommonInternals.getCatalogRecipe(aid);
+        if (catalog != null) {
+            return catalog;
+        }
+        Object fake = CommonInternals.getCatalogRecipeFake(aid);
+        if (fake != null) {
+            return fake;
+        }
+        if (recipeLeafIndex != null) {
+            return recipeLeafIndex.get(leafName(aid));
+        }
+        return null;
     }
 
     /**
@@ -380,32 +436,39 @@ public class RecipeRenderer {
         graphics.centeredText(font, "Arcane Crafting", x, y - 70, 0xFF505050);
         
         // Draw crafting grid background
-        graphics.fill(x - 30, y - 50, x + 30, y + 10, 0x20404080);
+        graphics.fill(x - 30, y - 54, x + 30, y + 6, 0x20404080);
+        
+        // Draw arrow from grid to output
+        graphics.fill(x - 1, y + 8, x + 1, y + 16, 0xFF303030);
+        graphics.fill(x - 2, y + 16, x + 2, y + 18, 0xFF303030);
+        graphics.fill(x - 3, y + 18, x + 3, y + 20, 0xFF303030);
         
         // Draw output
         ItemStack output = recipe.getResultItem();
-        renderItem(graphics, output, x - 8, y + 30);
-        tooltip = checkItemTooltip(output, x - 8, y + 30, mouseX, mouseY, tooltip);
+        renderItem(graphics, output, x - 8, y + 24);
+        tooltip = checkItemTooltip(output, x - 8, y + 24, mouseX, mouseY, tooltip);
         
         // Draw vis cost
         int visCost = recipe.getVis();
         if (visCost > 0) {
-            graphics.centeredText(font, "Vis: " + visCost, x, y + 52, 0xFF8080FF);
+            graphics.centeredText(font, "Vis: " + visCost, x, y + 48, 0xFF8080FF);
         }
         
-        // Draw crystal requirements
+        // Draw crystal requirements (max 3 per row)
         AspectList crystals = recipe.getCrystals();
         if (crystals != null && crystals.size() > 0) {
-            int totalWidth = crystals.size() * 20 - 4;
-            int crystalX = x - totalWidth / 2;
-            int crystalY = y + 58;
-            
-            for (Aspect aspect : crystals.getAspects()) {
-                int amount = crystals.getAmount(aspect);
-                // Draw small aspect icon with amount for crystals
+            Aspect[] caspects = crystals.getAspects();
+            int perRow = 3;
+            for (int ci = 0; ci < caspects.length; ci++) {
+                Aspect aspect = caspects[ci];
+                int row = ci / perRow;
+                int col = ci % perRow;
+                int inRow = Math.min(perRow, caspects.length - row * perRow);
+                int xStart = x - (inRow * 28 - 12) / 2;
+                int crystalX = xStart + col * 28;
+                int crystalY = y + 60 + row * 18;
                 AspectRenderer.drawAspectSmall(graphics, crystalX, crystalY, aspect);
-                graphics.text(font, "x" + amount, crystalX + 10, crystalY + 2, 0xFFFFFFFF, false);
-                crystalX += 28;
+                graphics.text(font, "x" + crystals.getAmount(aspect), crystalX + 10, crystalY + 2, 0xFFFFFFFF, false);
             }
         }
         
@@ -424,12 +487,17 @@ public class RecipeRenderer {
             int gridX = i % 3;
             int gridY = i / 3;
             int itemX = x - 28 + gridX * SLOT_SIZE;
-            int itemY = y - 48 + gridY * SLOT_SIZE;
+            int itemY = y - 52 + gridY * SLOT_SIZE;
             
             ItemStack stack = cycleIngredient(ing, i);
             renderItem(graphics, stack, itemX, itemY);
             tooltip = checkItemTooltip(stack, itemX, itemY, mouseX, mouseY, tooltip);
         }
+        
+        // Draw the arcane workbench this recipe is crafted on
+        ItemStack bench = new ItemStack(thaumcraft.init.ModBlocks.ARCANE_WORKBENCH.get());
+        renderItem(graphics, bench, x - 8, y + 100);
+        tooltip = checkItemTooltip(bench, x - 8, y + 100, mouseX, mouseY, tooltip);
         
         return tooltip;
     }
@@ -445,9 +513,10 @@ public class RecipeRenderer {
         // Draw title
         graphics.centeredText(font, "Crucible", x, y - 70, 0xFF505050);
         
-        // Draw crucible shape (simplified)
-        graphics.fill(x - 25, y - 30, x + 25, y + 30, 0x30804020);
-        graphics.fill(x - 20, y - 25, x + 20, y + 25, 0x40402010);
+        // Draw the crucible block
+        ItemStack crucible = new ItemStack(thaumcraft.init.ModBlocks.CRUCIBLE.get());
+        renderItem(graphics, crucible, x - 8, y - 8);
+        tooltip = checkItemTooltip(crucible, x - 8, y - 8, mouseX, mouseY, tooltip);
         
         // Draw output above
         ItemStack output = recipe.getRecipeOutput();
@@ -579,9 +648,10 @@ public class RecipeRenderer {
         // Draw title
         graphics.centeredText(font, "Crucible", x, y - 70, 0xFF505050);
 
-        // Draw crucible shape (simplified)
-        graphics.fill(x - 25, y - 30, x + 25, y + 30, 0x30804020);
-        graphics.fill(x - 20, y - 25, x + 20, y + 25, 0x40402010);
+        // Draw the crucible block
+        ItemStack crucible = new ItemStack(thaumcraft.init.ModBlocks.CRUCIBLE.get());
+        renderItem(graphics, crucible, x - 8, y - 8);
+        tooltip = checkItemTooltip(crucible, x - 8, y - 8, mouseX, mouseY, tooltip);
 
         // Draw output above
         ItemStack output = recipe.getResultItem();
@@ -719,14 +789,52 @@ public class RecipeRenderer {
 
         return tooltip;
     }
+
+    // ==================== Multiblock BluePrint ====================
+    
+    private static List<net.minecraft.network.chat.Component> renderBluePrint(
+            GuiGraphicsExtractor graphics, ThaumcraftApi.BluePrint bp, int x, int y,
+            int mouseX, int mouseY, Font font) {
+        
+        List<net.minecraft.network.chat.Component> tooltip = null;
+        
+        // Draw title
+        graphics.centeredText(font, "Multiblock", x, y - 70, 0xFF505050);
+        
+        // Draw the display item
+        ItemStack display = bp.getDisplayStack();
+        renderItem(graphics, display, x - 8, y - 40);
+        tooltip = checkItemTooltip(display, x - 8, y - 40, mouseX, mouseY, tooltip);
+        
+        // Draw arrow
+        graphics.fill(x - 1, y - 16, x + 1, y - 8, 0xFF505050);
+        
+        // Draw ingredients (max 6 per row)
+        ItemStack[] ingredients = bp.getIngredientList();
+        int shown = Math.min(ingredients.length, 6);
+        int startX = x - (shown * 18 - 12) / 2;
+        for (int i = 0; i < shown; i++) {
+            ItemStack ing = ingredients[i];
+            int ix = startX + i * 18;
+            renderItem(graphics, ing, ix, y);
+            tooltip = checkItemTooltip(ing, ix, y, mouseX, mouseY, tooltip);
+        }
+        if (ingredients.length > 6) {
+            graphics.text(font, "...", x + (shown * 18 - 12) / 2 + 2, y + 4, 0xFF808080, false);
+        }
+        
+        return tooltip;
+    }
     
     // ==================== Helpers ====================
     
     /**
-     * Render an item stack at the given position.
+     * Render an item stack at the given position, on a dark slot background so
+     * items read clearly against the book paper.
      */
     private static void renderItem(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y) {
         if (stack.isEmpty()) return;
+        graphics.fill(x - 1, y - 1, x + 17, y + 17, 0x50303030);
         graphics.item(stack, x, y);
         graphics.itemDecorations(Minecraft.getInstance().font, stack, x, y);
     }
