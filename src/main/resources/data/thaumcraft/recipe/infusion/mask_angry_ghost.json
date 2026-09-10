@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "FORTRESSMASK",
+  "instability": 8,
+  "input": "thaumcraft:fortress_helm",
+  "ingredients": [
+    "minecraft:bone_meal",
+    "thaumcraft:plate_iron",
+    "minecraft:leather",
+    "minecraft:poisonous_potato",
+    "minecraft:skeleton_skull",
+    "thaumcraft:plate_iron"
+  ],
+  "aspects": {
+    "perditio": 80,
+    "mortuus": 80,
+    "praemunio": 20
+  },
+  "result": {
+    "id": "thaumcraft:mask_angry_ghost"
+  }
+}

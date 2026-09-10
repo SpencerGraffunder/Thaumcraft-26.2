@@ -1,0 +1,13 @@
+{
+  "type": "thaumcraft:arcane_workbench_shapeless",
+  "research": "JARS",
+  "vis": 20,
+  "ingredients": [
+    "thaumcraft:label_blank",
+    "thaumcraft:crystal_essence"
+  ],
+  "result": {
+    "id": "thaumcraft:label_filled",
+    "count": 2
+  }
+}

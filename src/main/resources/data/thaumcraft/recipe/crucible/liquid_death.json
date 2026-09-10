@@ -1,0 +1,14 @@
+{
+  "type": "thaumcraft:crucible",
+  "research": "ESSENTIASMELTER",
+  "catalyst": "minecraft:bucket",
+  "aspects": {
+    "mortuus": 100,
+    "alkimia": 20,
+    "perditio": 50
+  },
+  "result": {
+    "id": "minecraft:bucket",
+    "count": 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "thaumcraft:crucible",
+  "research": "SEALGUARD",
+  "catalyst": "thaumcraft:seal_guard",
+  "aspects": {
+    "sensus": 20,
+    "cognitio": 20
+  },
+  "result": {
+    "id": "thaumcraft:seal_guard_advanced"
+  }
+}

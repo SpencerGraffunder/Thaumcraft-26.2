@@ -4,6 +4,9 @@
     "thaumcraft:cluster_iron",
     "thaumcraft:cluster_gold",
     "thaumcraft:cluster_copper",
-    "thaumcraft:cluster_cinnabar"
+    "thaumcraft:cluster_cinnabar",
+    "thaumcraft:cluster_tin",
+    "thaumcraft:cluster_silver",
+    "thaumcraft:cluster_lead"
   ]
 }

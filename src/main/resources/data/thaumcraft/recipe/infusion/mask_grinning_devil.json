@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "FORTRESSMASK",
+  "instability": 8,
+  "input": "thaumcraft:fortress_helm",
+  "ingredients": [
+    "minecraft:ink_sac",
+    "thaumcraft:plate_iron",
+    "minecraft:leather",
+    "thaumcraft:shimmerleaf",
+    "thaumcraft:brain_normal",
+    "thaumcraft:plate_iron"
+  ],
+  "aspects": {
+    "cognitio": 80,
+    "victus": 80,
+    "praemunio": 20
+  },
+  "result": {
+    "id": "thaumcraft:mask_grinning_devil"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "VERDANTCHARMS",
+  "instability": 5,
+  "input": "thaumcraft:verdant_charm",
+  "ingredients": [
+    "minecraft:golden_apple",
+    "thaumcraft:crystal_essence",
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:strong_healing"
+        }
+      }
+    },
+    "thaumcraft:crystal_essence"
+  ],
+  "aspects": {
+    "victus": 80,
+    "humanus": 80
+  },
+  "result": {
+    "id": "thaumcraft:verdant_charm_life"
+  }
+}

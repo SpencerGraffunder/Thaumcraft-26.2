@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "thaumcraft:arcane_ear",
+    "minecraft:lever"
+  ],
+  "result": {
+    "id": "thaumcraft:arcane_ear_toggle",
+    "count": 1
+  }
+}

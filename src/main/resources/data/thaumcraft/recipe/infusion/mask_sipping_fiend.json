@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:infusion",
+  "research": "FORTRESSMASK",
+  "instability": 8,
+  "input": "thaumcraft:fortress_helm",
+  "ingredients": [
+    "minecraft:poppy",
+    "thaumcraft:plate_iron",
+    "minecraft:leather",
+    "minecraft:ghast_tear",
+    "minecraft:milk_bucket",
+    "thaumcraft:plate_iron"
+  ],
+  "aspects": {
+    "exanimis": 80,
+    "victus": 80,
+    "praemunio": 20
+  },
+  "result": {
+    "id": "thaumcraft:mask_sipping_fiend"
+  }
+}

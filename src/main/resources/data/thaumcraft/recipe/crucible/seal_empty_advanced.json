@@ -1,0 +1,12 @@
+{
+  "type": "thaumcraft:crucible",
+  "research": "SEALEMPTY",
+  "catalyst": "thaumcraft:seal_empty",
+  "aspects": {
+    "sensus": 10,
+    "cognitio": 10
+  },
+  "result": {
+    "id": "thaumcraft:seal_empty_advanced"
+  }
+}

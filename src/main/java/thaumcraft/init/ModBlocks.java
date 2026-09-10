@@ -245,6 +245,9 @@ public class ModBlocks {
     public static final DeferredHolder<Block, Block> ARCANE_WORKBENCH_CHARGER = registerBlock("arcane_workbench_charger",
             BlockArcaneWorkbenchCharger::create);
 
+    public static final DeferredHolder<Block, Block> WAND_WORKBENCH = registerBlock("wand_workbench",
+            () -> new Block(BlockRegistration.id(BlockBehaviour.Properties.of().strength(2.0F, 3.0F).requiresCorrectToolForDrops())));
+
     public static final DeferredHolder<Block, Block> CRUCIBLE = registerBlock("crucible",
             BlockCrucible::new);
 

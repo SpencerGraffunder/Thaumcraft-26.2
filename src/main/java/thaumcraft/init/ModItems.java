@@ -266,6 +266,15 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> CLUSTER_CINNABAR = registerItem("cluster_cinnabar",
             ItemMaterial::basic);
 
+    public static final DeferredHolder<Item, Item> CLUSTER_TIN = registerItem("cluster_tin",
+            ItemMaterial::basic);
+
+    public static final DeferredHolder<Item, Item> CLUSTER_SILVER = registerItem("cluster_silver",
+            ItemMaterial::basic);
+
+    public static final DeferredHolder<Item, Item> CLUSTER_LEAD = registerItem("cluster_lead",
+            ItemMaterial::basic);
+
     // ==================== Golem Materials ====================
 
     public static final DeferredHolder<Item, Item> BRAIN_NORMAL = registerItem("brain_normal",
@@ -535,6 +544,16 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> VERDANT_CHARM_SUSTAIN = registerItem("verdant_charm_sustain",
             ItemVerdantCharm::createSustain);
 
+    // Fortresses masks (3 variants)
+    public static final DeferredHolder<Item, Item> MASK_GRINNING_DEVIL = registerItem("mask_grinning_devil",
+            () -> new Item(ItemRegistration.id(new Item.Properties()).stacksTo(1)));
+
+    public static final DeferredHolder<Item, Item> MASK_ANGRY_GHOST = registerItem("mask_angry_ghost",
+            () -> new Item(ItemRegistration.id(new Item.Properties()).stacksTo(1)));
+
+    public static final DeferredHolder<Item, Item> MASK_SIPPING_FIEND = registerItem("mask_sipping_fiend",
+            () -> new Item(ItemRegistration.id(new Item.Properties()).stacksTo(1)));
+
     public static final DeferredHolder<Item, Item> VOIDSEER_CHARM = registerItem("voidseer_charm",
             ItemVoidseerCharm::new);
 
@@ -710,6 +729,13 @@ public class ModItems {
             () -> ItemSealPlacer.create("thaumcraft:breaker_advanced"));
     public static final DeferredHolder<Item, Item> SEAL_PICKUP_ADVANCED = registerItem("seal_pickup_advanced",
             () -> ItemSealPlacer.create("thaumcraft:pickup_advanced"));
+
+    public static final DeferredHolder<Item, Item> SEAL_EMPTY_ADVANCED = registerItem("seal_empty_advanced",
+            () -> ItemSealPlacer.create("thaumcraft:empty_advanced"));
+    public static final DeferredHolder<Item, Item> SEAL_FILL_ADVANCED = registerItem("seal_fill_advanced",
+            () -> ItemSealPlacer.create("thaumcraft:fill_advanced"));
+    public static final DeferredHolder<Item, Item> SEAL_GUARD_ADVANCED = registerItem("seal_guard_advanced",
+            () -> ItemSealPlacer.create("thaumcraft:guard_advanced"));
     // ==================== Crystal Essence ====================
 
     public static final DeferredHolder<Item, Item> CRYSTAL_ESSENCE = registerItem("crystal_essence",

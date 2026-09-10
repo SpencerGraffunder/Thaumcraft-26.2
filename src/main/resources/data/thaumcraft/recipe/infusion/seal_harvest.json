@@ -2,12 +2,7 @@
   "type": "thaumcraft:infusion",
   "research": "SEALHARVEST",
   "instability": 0,
-  "aspects": {
-    "herba": 10,
-    "sensus": 10,
-    "humanus": 10
-  },
-  "input": "thaumcraft:blank_seal",
+  "input": "thaumcraft:seal_blank",
   "ingredients": [
     "minecraft:wheat_seeds",
     "minecraft:pumpkin_seeds",
@@ -16,6 +11,11 @@
     "minecraft:sugar_cane",
     "minecraft:cactus"
   ],
+  "aspects": {
+    "herba": 10,
+    "sensus": 10,
+    "humanus": 10
+  },
   "result": {
     "id": "thaumcraft:seal_harvest"
   }

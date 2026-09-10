@@ -1,0 +1,20 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "BASICTURRET",
+  "vis": 50,
+  "aspects": {
+    "potentia": 1
+  },
+  "pattern": [
+    "RTR",
+    " S "
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "T": "#thaumcraft:plates/iron",
+    "S": "#c:rods/wooden"
+  },
+  "result": {
+    "id": "minecraft:activator_rail"
+  }
+}

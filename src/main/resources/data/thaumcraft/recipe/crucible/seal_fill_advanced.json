@@ -1,12 +1,12 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "SEALSTOCK",
+  "research": "SEALSTORE",
   "catalyst": "thaumcraft:seal_fill",
   "aspects": {
-    "cognitio": 10,
-    "desiderium": 10
+    "sensus": 10,
+    "cognitio": 10
   },
   "result": {
-    "id": "thaumcraft:seal_stock"
+    "id": "thaumcraft:seal_fill_advanced"
   }
 }

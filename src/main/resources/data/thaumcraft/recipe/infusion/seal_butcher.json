@@ -2,20 +2,20 @@
   "type": "thaumcraft:infusion",
   "research": "SEALBUTCHER",
   "instability": 0,
-  "aspects": {
-    "bestia": 10,
-    "sensus": 10,
-    "humanus": 10
-  },
   "input": "thaumcraft:seal_guard",
   "ingredients": [
-    "#c:leathers",
+    "minecraft:leather",
     "#minecraft:wool",
     "minecraft:rabbit_hide",
     "minecraft:porkchop",
     "minecraft:mutton",
     "minecraft:beef"
   ],
+  "aspects": {
+    "bestia": 10,
+    "sensus": 10,
+    "humanus": 10
+  },
   "result": {
     "id": "thaumcraft:seal_butcher"
   }
