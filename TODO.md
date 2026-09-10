@@ -46,12 +46,22 @@ Fix:
   pose order also offset them left/up by 10% of the screen position).
 - `ResearchPageScreen`: text-block vertical centering uses the exact
   scaled line height (11.25px) instead of the truncated int (11px).
+- `ShapedArcaneRecipe` / `ShapelessArcaneRecipe` / `CrucibleRecipeType` /
+  `InfusionRecipeType`: override `isSpecial()` -> `true`. 26.2 vanilla
+  `finalizeRecipeLoading` drops any non-special recipe whose
+  `placementInfo()` is `NOT_PLACEABLE` ("can't be placed due to empty
+  ingredients"), which silently removed **every** arcane/infusion/crucible
+  recipe from the recipe map — so the Thaumonomicon's leaf-name index (built
+  from the recipe manager) had nothing to resolve and pages showed
+  `Recipe not found`. Marking them special keeps them in the map (station
+  matching, JEI, Thaumonomicon all resolve them) while hiding them from the
+  vanilla recipe book.
 
 Verified (2026-09-10): compiles clean; **all 253 book recipe references
 resolve** (218 recipe files, 16 fake-catalog, 4 `_fake`-suffix, 14 alias);
 dev server boots clean (`Thaumcraft runtime registration complete`, 148
 research entries, populated recipe manager, no data-pack errors). Jar
-`thaumcraft-6.2.0+26.2.jar` (md5 100d125e795e4e37b7631040864bf9e2) installed
+`thaumcraft-6.2.0+26.2.jar` (md5 8622cc983c43656e082f43dd7005be0b) installed
 into the Modrinth 26.2 profile — user in-game verification pending.
 
 

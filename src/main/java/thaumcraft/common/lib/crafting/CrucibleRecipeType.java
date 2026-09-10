@@ -124,6 +124,18 @@ public class CrucibleRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     public PlacementInfo placementInfo() {
         return PlacementInfo.NOT_PLACEABLE;
     }
+
+    @Override
+    public boolean isSpecial() {
+        // 26.2: vanilla finalizeRecipeLoading drops any non-special recipe whose
+        // placementInfo() is impossible to place ("can't be placed due to empty
+        // ingredients"), which removed every crucible recipe from the recipe map
+        // on both the client and the server. Crucible alchemy has no 3x3 grid
+        // placement, so mark it special: it stays in the recipe map (station
+        // matching, JEI and the Thaumonomicon all resolve it) but is hidden from
+        // the vanilla recipe book.
+        return true;
+    }
     
     @Override
     public RecipeBookCategory recipeBookCategory() {
