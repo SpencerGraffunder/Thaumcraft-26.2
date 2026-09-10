@@ -5,7 +5,49 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
-## P0: Thaumonomicon pickup freezes the server (infinite loop) — RESOLVED (2026-09-07)
+## P0: Thaumonomicon recipe pages broken — RESOLVED (2026-09-09)
+
+Symptom (user-reported): in the book, the arcane-workbench recipe popup
+showed a bare white ring instead of the workbench, with no arrow to the
+output; the crucible (Salis Mundus) popup had no crucible image in the
+center; several pages said `Recipe not found` (e.g.
+`thaumcraft:nitor_color`, all infusion-enchantment + runic-shielding +
+multiblock pages); page text overflowed the bottom and titles sat too high.
+
+Root causes:
+- The 1.20.1 fork registered **display-only "fake" recipes** (IE
+  enchantments, runic shielding, multiblocks) in a code-side catalog; the
+  26.2 port lost that registration, so 16 book references had nothing to
+  render.
+- 18 legacy book ids never matched a recipe file name (`nitor_color`,
+  `brass_stuff`, …) — the port's alias table was incomplete.
+- Popup renderers predated the user-facing layout expectations.
+
+Fix (commits 4d3cde8 + 73411d8):
+- `ConfigRecipes` (ported from the 1.20.1 fork): 8 IE enchantment fakes +
+  3 runic-shielding fakes with the correct base tools, aspects,
+  instability — render as infusion recipe popups.
+- `FakeRecipes` + `FakeRecipe` (new): 5 multiblock display recipes
+  (infusion altar x3, thaumatorium, golem press) with a dedicated
+  title + item-row popup.
+- `RecipeRenderer`: `RECIPE_ALIASES` for the 18 legacy ids,
+  `_fake[_N]` suffix stripping, `FakeRecipe` dispatch + `resolveOutput`
+  (bookmarks); 4 dead aliases removed.
+- `BookPopupRenderer`: arcane popup now draws grid + workbench item +
+  arrow -> output ring + crystals + vis; crucible popup draws the crucible
+  block in the center with the catalyst above it + arrow -> output +
+  aspects.
+- Registered both catalogs in `bootstrap()` (server start + first client
+  tick).
+
+Verified (2026-09-09): static check — **all 253 book recipe references
+resolve** (218 recipe files, 16 fake-catalog, 4 `_fake`-suffix, 14
+alias). Dev server boots clean (`Registered 5 fake book recipes
+(multiblocks)`, `Thaumcraft runtime registration complete`, no data-pack
+errors). Jar installed into the Modrinth 26.2 profile — user in-game
+verification pending.
+
+
 
 Symptom: picking up the **Thaumonomicon** hung the dedicated server thread
 until the `ServerWatchdog` killed it (`crash-2026-09-07_10.15.10-server.txt`).
@@ -258,8 +300,7 @@ Copy the 26.2 constructor pattern from a working block, e.g. `BlockCondenser`:
    alembic/lamps/mirrors/stabilizer tiles function
 2. Re-run the Outstanding list — entity spawning/behaviour, crafting UIs,
    taint biome
-3. Port `wand_workbench` (Known issues)
-4. Full feature-gap audit vs the 1.20.1 reference — a subagent pass was
+3. Full feature-gap audit vs the 1.20.1 reference — a subagent pass was
    aborted before writing its report (partial transcript:
    `history://GapAudit`; reference tarball may still be at `/tmp/refrepo`)
 
@@ -294,9 +335,6 @@ Copy the 26.2 constructor pattern from a working block, e.g. `BlockCondenser`:
   `CI=true ./gradlew …`.
 - **Dev-server console**: `stop` typed into the `runServer` console is not
   forwarded to the server process — stop with SIGINT/Ctrl+C.
-- **Missing content**: `thaumcraft:wand_workbench` — the wand workbench
-  block/item was never ported; research icons for it fall back to the
-  texture id until the block is ported.
 
 ## Known build warnings
 
