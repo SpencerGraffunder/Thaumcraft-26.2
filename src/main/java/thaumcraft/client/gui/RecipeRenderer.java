@@ -15,6 +15,7 @@ import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.CrucibleRecipe;
+import thaumcraft.api.crafting.FakeRecipe;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.api.crafting.IThaumcraftRecipe;
 import thaumcraft.api.crafting.InfusionRecipe;
@@ -23,6 +24,7 @@ import thaumcraft.common.lib.crafting.InfusionRecipeType;
 import thaumcraft.api.internal.CommonInternals;
 import thaumcraft.client.lib.AspectRenderer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,6 +115,8 @@ public class RecipeRenderer {
             return renderInfusionRecipe(graphics, infusion, x, y, mouseX, mouseY, font);
         } else if (recipe instanceof ThaumcraftApi.BluePrint bp) {
             return renderBluePrint(graphics, bp, x, y, mouseX, mouseY, font);
+        } else if (recipe instanceof FakeRecipe fake) {
+            return renderFake(graphics, fake, x, y, mouseX, mouseY, font);
         } else {
             // Unknown recipe type
             graphics.centeredText(font, "Unknown recipe type", x, y, 0xFF804040);
@@ -128,7 +132,7 @@ public class RecipeRenderer {
      * "thaumcraft:<typeFolder>/<leaf>". We resolve via a leaf-name index built from the live
      * recipe manager, falling back to a direct registry lookup.
      */
-    private static Object findRecipe(Identifier id) {
+    public static Object findRecipe(Identifier id) {
         // First check Thaumcraft's catalog
         IThaumcraftRecipe tcRecipe = CommonInternals.getCatalogRecipe(id);
         if (tcRecipe != null) {
@@ -204,11 +208,7 @@ public class RecipeRenderer {
             Map.entry("jar_label_essentia", "label_filled"),
             Map.entry("banners", "banner_red"),
             Map.entry("baubles_stuff", "charm_undying"),
-            Map.entry("arcane_brick", "arcane_stone_brick"),
-            Map.entry("infusion_altar", "infusionaltar"),
-            Map.entry("infusion_altar_ancient", "infusionaltarancient"),
-            Map.entry("infusion_altar_eldritch", "infusionaltareldritch"),
-            Map.entry("golem_press", "golempress"));
+            Map.entry("arcane_brick", "arcane_stone_brick"));
 
     /**
      * Resolve a legacy book recipe id via the alias table: real catalog first
@@ -351,7 +351,7 @@ public class RecipeRenderer {
     /**
      * Get the current item from an ingredient (cycles through options).
      */
-    private static ItemStack cycleIngredient(Ingredient ingredient, int slotIndex) {
+    public static ItemStack cycleIngredient(Ingredient ingredient, int slotIndex) {
         ItemStack[] items = ingredient.items()
                 .map(net.minecraft.core.Holder::value)
                 .map(ItemStack::new)
@@ -825,14 +825,64 @@ public class RecipeRenderer {
         
         return tooltip;
     }
+
+    private static List<net.minecraft.network.chat.Component> renderFake(
+            GuiGraphicsExtractor graphics, FakeRecipe fake, int x, int y,
+            int mouseX, int mouseY, Font font) {
+
+        graphics.centeredText(font, fake.getTitle(), x, y - 30, 0xFF202020);
+
+        ItemStack[] items = fake.getItems();
+        List<net.minecraft.network.chat.Component> tooltip = new ArrayList<>();
+        if (items.length > 0) {
+            int startX = x - items.length * 10;
+            for (int i = 0; i < items.length; i++) {
+                ItemStack stack = items[i];
+                int ix = startX + i * 20;
+                renderItem(graphics, stack, ix, y);
+                tooltip = checkItemTooltip(stack, ix, y, mouseX, mouseY, tooltip);
+            }
+        }
+        return tooltip;
+    }
     
     // ==================== Helpers ====================
-    
+
+    /**
+     * Resolve the result item of any recipe type (used for book bookmarks).
+     */
+    public static net.minecraft.world.item.ItemStack resolveOutput(Object recipe) {
+        if (recipe instanceof IArcaneRecipe arcane) {
+            return arcane.getResultItem();
+        } else if (recipe instanceof CrucibleRecipeType crucible) {
+            return crucible.getResultItem();
+        } else if (recipe instanceof InfusionRecipeType infusion) {
+            return infusion.getResultItem();
+        } else if (recipe instanceof CrucibleRecipe crucible) {
+            return crucible.getRecipeOutput();
+        } else if (recipe instanceof InfusionRecipe infusion) {
+            Object out = infusion.getRecipeOutput();
+            return out instanceof net.minecraft.world.item.ItemStack stack ? stack : net.minecraft.world.item.ItemStack.EMPTY;
+        } else if (recipe instanceof CraftingRecipe crafting) {
+            if (!crafting.display().isEmpty()) {
+                return crafting.display().get(0).result()
+                        .resolveForFirstStack(net.minecraft.world.item.crafting.display.SlotDisplayContext.fromLevel(Minecraft.getInstance().level));
+            }
+            return net.minecraft.world.item.ItemStack.EMPTY;
+        } else if (recipe instanceof SingleItemRecipe single) {
+            return single.assemble(new net.minecraft.world.item.crafting.SingleRecipeInput(net.minecraft.world.item.ItemStack.EMPTY));
+        } else if (recipe instanceof ThaumcraftApi.BluePrint bp) {
+            return bp.getDisplayStack();
+        } else if (recipe instanceof FakeRecipe fake) {
+            return fake.getItems().length > 0 ? fake.getItems()[0] : net.minecraft.world.item.ItemStack.EMPTY;
+        }
+        return net.minecraft.world.item.ItemStack.EMPTY;
+    }
     /**
      * Render an item stack at the given position, on a dark slot background so
      * items read clearly against the book paper.
      */
-    private static void renderItem(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y) {
+    public static void renderItem(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y) {
         if (stack.isEmpty()) return;
         graphics.fill(x - 1, y - 1, x + 17, y + 17, 0x50303030);
         graphics.item(stack, x, y);
@@ -842,7 +892,7 @@ public class RecipeRenderer {
     /**
      * Check if mouse is hovering over an item and return tooltip if so.
      */
-    private static List<net.minecraft.network.chat.Component> checkItemTooltip(
+    public static List<net.minecraft.network.chat.Component> checkItemTooltip(
             ItemStack stack, int itemX, int itemY, int mouseX, int mouseY,
             List<net.minecraft.network.chat.Component> existingTooltip) {
         

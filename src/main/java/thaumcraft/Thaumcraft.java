@@ -43,6 +43,8 @@ import thaumcraft.common.config.ConfigResearch;
 import thaumcraft.common.config.ConfigAspects;
 import thaumcraft.common.lib.CommonInternals;
 import thaumcraft.common.config.ConfigMultiblocks;
+import thaumcraft.common.config.ConfigRecipes;
+import thaumcraft.common.lib.crafting.FakeRecipes;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.client.lib.events.KeyHandler;
 
@@ -207,6 +209,8 @@ public class Thaumcraft {
             CommonInternals.initSmeltingBonuses();
             ConfigAspects.init();
             ConfigMultiblocks.init();
+            ConfigRecipes.init();
+            FakeRecipes.register();
             ConfigResearch.postInit();
 
             bootstrapped = true;

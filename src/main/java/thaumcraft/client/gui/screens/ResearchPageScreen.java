@@ -18,13 +18,16 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.research.*;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
+import thaumcraft.client.gui.BookPopupRenderer;
 import thaumcraft.client.gui.RecipeRenderer;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.playerdata.PacketSyncProgressToServer;
 import thaumcraft.common.lib.research.ResearchManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ResearchPageScreen - Displays detailed information about a research entry.
@@ -49,11 +52,12 @@ public class ResearchPageScreen extends Screen {
     // is texture 512x362 drawn as 256x181 at 1.3x around the screen center).
     private static final int PAPER_TOP = -22;
     private static final int PAPER_BOTTOM = 197;
-    // Text pages use the full-size font (lineHeight = 9). A full page must fit the
-    // ~219px paper: 21 lines = 189px with 15px top/bottom margins.
-    private static final int TEXT_WIDTH = 118;
-    private static final int MAX_TEXT_LINES = 21;
-    private static final int MAX_TEXT_LINES_FIRST = 17; // first page leaves room for the title cluster
+    // 1.12-style text: 1.25x font scale, wrapped to 104 font-pixels, 13 lines on
+    // the first page (leaving room for the title cluster), 16 on later pages.
+    private static final float TEXT_SCALE = 1.25f;
+    private static final int TEXT_WIDTH = 104;
+    private static final int MAX_TEXT_LINES = 16;
+    private static final int MAX_TEXT_LINES_FIRST = 13; // first page leaves room for the title cluster
     
     // Research data
     private final ResearchEntry research;
@@ -74,6 +78,16 @@ public class ResearchPageScreen extends Screen {
     
     // Parsed page content
     private ArrayList<Page> pages = new ArrayList<>();
+
+    // Recipe bookmarks per stage (drawn on the right edge of the book; clicking
+    // one opens a 1.12-style recipe popup)
+    private final Map<Integer, List<Identifier>> stageBookmarks = new HashMap<>();
+
+    // Popup state
+    private boolean aspectPopup = false;
+    private int aspectPage = 0;
+    private Identifier activeRecipe = null;
+    private BookPopupRenderer.Bounds popupBounds = null;
     
     // Requirement tracking
     private boolean[] hasItem;
@@ -152,9 +166,8 @@ public class ResearchPageScreen extends Screen {
         // Build pages for each visible stage
         for (int s = 0; s < maxStage; s++) {
             ResearchStage stage = stages[s];
-            
-            // Create page(s) for stage text
-            
+            int startIdx = pages.size();
+
             // Add stage text
             if (stage.getText() != null) {
                 String text = stripFormattingTags(Component.translatable(stage.getText()).getString());
@@ -164,20 +177,20 @@ public class ResearchPageScreen extends Screen {
             } else {
                 pages.add(new Page());
             }
-            
-            // Add recipe pages if any
+
+            for (int i = startIdx; i < pages.size(); i++) {
+                pages.get(i).stageId = s;
+            }
+
+            // Recipe bookmarks (1.12-style: icons on the book's right edge)
             if (stage.getRecipes() != null && stage.getRecipes().length > 0) {
-                for (Identifier recipe : stage.getRecipes()) {
-                    Page recipePage = new Page();
-                    recipePage.isRecipePage = true;
-                    recipePage.recipeId = recipe;
-                    pages.add(recipePage);
-                }
+                stageBookmarks.put(s, java.util.Arrays.asList(stage.getRecipes()));
             }
         }
         
         // Add addenda if research is complete
         if (isComplete && research.getAddenda() != null) {
+            int a = 0;
             for (ResearchAddendum addendum : research.getAddenda()) {
                 // Check if addendum requirements are met
                 boolean canShow = true;
@@ -189,11 +202,10 @@ public class ResearchPageScreen extends Screen {
                         }
                     }
                 }
-                
+
                 if (canShow) {
-                    Page addendumPage = new Page();
-                    addendumPage.isAddendum = true;
-                    
+                    int startIdx = pages.size();
+
                     if (addendum.getText() != null) {
                         String text = stripFormattingTags(Component.translatable(addendum.getText()).getString());
                         List<String> lines = wrapText(text, TEXT_WIDTH);
@@ -201,18 +213,18 @@ public class ResearchPageScreen extends Screen {
                     } else {
                         pages.add(new Page());
                     }
-                    
-                    // Add addendum recipes
-                    if (addendum.getRecipes() != null) {
-                        for (Identifier recipe : addendum.getRecipes()) {
-                            Page recipePage = new Page();
-                            recipePage.isRecipePage = true;
-                            recipePage.isAddendum = true;
-                            recipePage.recipeId = recipe;
-                            pages.add(recipePage);
-                        }
+
+                    for (int i = startIdx; i < pages.size(); i++) {
+                        pages.get(i).stageId = maxStage + a;
+                        pages.get(i).isAddendum = true;
+                    }
+
+                    // Addendum recipe bookmarks
+                    if (addendum.getRecipes() != null && addendum.getRecipes().length > 0) {
+                        stageBookmarks.put(maxStage + a, java.util.Arrays.asList(addendum.getRecipes()));
                     }
                 }
+                a++;
             }
         }
         
@@ -408,6 +420,22 @@ public class ResearchPageScreen extends Screen {
         if (!isComplete && hasAllRequisites && allCurrentRequirementsMet()) {
             drawCompleteButton(graphics, sw, sh, mouseX, mouseY);
         }
+
+        // Recipe bookmarks (right edge) + aspect bookmark (left edge)
+        drawBookmarks(graphics);
+
+        // Recipe / aspect popup (1.12-style overlay)
+        if (activeRecipe != null || aspectPopup) {
+            int cx = sw + PANE_WIDTH / 2;
+            int cy = sh + PANE_HEIGHT / 2;
+            List<net.minecraft.network.chat.Component> popupTip = new ArrayList<>();
+            if (aspectPopup) {
+                popupBounds = BookPopupRenderer.drawAspectPopup(graphics, cx, cy, aspectPage, mouseX, mouseY, font, popupTip);
+            } else {
+                popupBounds = BookPopupRenderer.drawRecipePopup(graphics, cx, cy, activeRecipe, mouseX, mouseY, font, popupTip);
+            }
+            if (!popupTip.isEmpty()) tooltip = popupTip;
+        }
         
         // Draw page numbers below the 1.3x book
         String pageNum = (page / 2 + 1) + " / " + ((maxPages + 1) / 2);
@@ -427,47 +455,89 @@ public class ResearchPageScreen extends Screen {
      * Returns tooltip to display if hovering over an item.
      */
     private List<net.minecraft.network.chat.Component> drawPageContent(GuiGraphicsExtractor graphics, Page page, int x, int y, int bottomY, int mouseX, int mouseY, boolean rightSide) {
-        if (page.isRecipePage) {
-            return drawRecipe(graphics, x, y, bottomY, page.recipeId, mouseX, mouseY);
-        }
-        
-        // Center the text block vertically inside the paper area
+        // Count text lines and center the block vertically inside the paper area
         int lines = 0;
         for (Object content : page.contents) {
             if (content instanceof String) lines++;
         }
-        int blockH = lines * font.lineHeight;
+        int lineHeight = (int) (font.lineHeight * TEXT_SCALE);
+        int blockH = lines * lineHeight;
         int startY = y + Math.max(0, (bottomY - y - blockH) / 2);
-        
+
+        // Mark addendum pages (clamped inside the paper area)
+        if (page.isAddendum) {
+            int sh = (height - PANE_HEIGHT) / 2;
+            graphics.text(font, "§o[Addendum]", x, Math.max(startY - 12, sh + PAPER_TOP + 2), 0xFF606060, false);
+        }
+
+        // 1.12-style text: 1.25x font scale
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x, startY);
+        graphics.pose().scale(TEXT_SCALE);
         int lineY = 0;
         for (Object content : page.contents) {
             if (content instanceof String text) {
-                graphics.text(font, text, x, startY + lineY, 0xFF202020, false);
+                graphics.text(font, text, 0, lineY, 0xFF202020, false);
                 lineY += font.lineHeight;
             }
         }
-        
-        // Mark addendum pages
-        if (page.isAddendum) {
-            graphics.text(font, "§o[Addendum]", x, startY - 12, 0xFF606060, false);
-        }
-        
+        graphics.pose().popMatrix();
+
         return null;
     }
-    
+
     /**
-     * Draw recipe using the RecipeRenderer, centered in the paper area.
+     * Hit rect (x, y, w, h) for the i-th recipe bookmark on the book's right edge.
      */
-    private List<net.minecraft.network.chat.Component> drawRecipe(GuiGraphicsExtractor graphics, int x, int y, int bottomY, Identifier recipeId, int mouseX, int mouseY) {
-        if (recipeId == null) {
-            graphics.text(font, "No recipe", x + 40, y + 40, 0xFF808080, false);
-            return null;
-        }
-        
-        // Recipe layouts are drawn relative to their center; place that center at
-        // the vertical middle of the paper area (same sw/sh frame as the book blit).
+    private int[] bookmarkRect(int i) {
+        int sw = (width - PANE_WIDTH) / 2;
         int sh = (height - PANE_HEIGHT) / 2;
-        return RecipeRenderer.renderRecipe(graphics, recipeId, x + 60, sh + (PAPER_TOP + PAPER_BOTTOM) / 2, mouseX, mouseY, font);
+        return new int[] {sw + PANE_WIDTH + 22, sh + 56 + i * 26, 24, 30};
+    }
+
+    /**
+     * Bookmarks for the current spread: the right page's stage, falling back to
+     * the left page's stage.
+     */
+    private List<Identifier> currentBookmarks() {
+        if (page >= pages.size()) return List.of();
+        Page left = pages.get(page);
+        Page right = pages.get(Math.min(page + 1, pages.size() - 1));
+        List<Identifier> bm = stageBookmarks.get(right.stageId);
+        if (bm == null || bm.isEmpty()) bm = stageBookmarks.get(left.stageId);
+        return bm != null ? bm : List.of();
+    }
+
+    /**
+     * Draw the recipe bookmarks on the book's right edge and the aspect compass
+     * bookmark on the left edge.
+     */
+    private void drawBookmarks(GuiGraphicsExtractor graphics) {
+        int sw = (width - PANE_WIDTH) / 2;
+        int sh = (height - PANE_HEIGHT) / 2;
+
+        List<Identifier> bm = currentBookmarks();
+        for (int i = 0; i < Math.min(5, bm.size()); i++) {
+            int x = sw + PANE_WIDTH + 22, y = sh + 56 + i * 26;
+            // ribbon behind the item icon
+            graphics.fill(x - 2, y - 2, x + 22, y + 28, 0xFF703848);
+            graphics.fill(x - 2, y + 24, x + 22, y + 28, 0xFF502838);
+            ItemStack out = RecipeRenderer.resolveOutput(RecipeRenderer.findRecipe(bm.get(i)));
+            if (!out.isEmpty()) {
+                RecipeRenderer.renderItem(graphics, out, x, y);
+            }
+        }
+
+        // aspect compass bookmark: a purple diamond on the book's left edge
+        int ax = sw - 52, ay = sh + 78;
+        graphics.fill(ax + 6, ay, ax + 10, ay + 2, 0xFF6060C0);
+        graphics.fill(ax + 4, ay + 2, ax + 12, ay + 4, 0xFF6060C0);
+        graphics.fill(ax + 2, ay + 4, ax + 14, ay + 6, 0xFF7070D0);
+        graphics.fill(ax, ay + 6, ax + 16, ay + 10, 0xFF8080E0);
+        graphics.fill(ax + 2, ay + 10, ax + 14, ay + 12, 0xFF7070D0);
+        graphics.fill(ax + 4, ay + 12, ax + 12, ay + 14, 0xFF6060C0);
+        graphics.fill(ax + 6, ay + 14, ax + 10, ay + 16, 0xFF6060C0);
+        graphics.fill(ax + 7, ay + 7, ax + 9, ay + 9, 0xFFFFFFFF);
     }
     
     /**
@@ -557,8 +627,48 @@ public class ResearchPageScreen extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mouseX = event.x();
         double mouseY = event.y();
+        int mx = (int) mouseX, my = (int) mouseY;
         int sw = (width - PANE_WIDTH) / 2;
         int sh = (height - PANE_HEIGHT) / 2;
+
+        // A popup is open: arrows page (aspect popup), anything else closes it
+        if (aspectPopup || activeRecipe != null) {
+            if (aspectPopup && popupBounds != null) {
+                BookPopupRenderer.Bounds prev = BookPopupRenderer.prevArrow(popupBounds);
+                BookPopupRenderer.Bounds next = BookPopupRenderer.nextArrow(popupBounds);
+                if (prev.contains(mx, my)) {
+                    if (aspectPage > 0) aspectPage--;
+                    return true;
+                }
+                if (next.contains(mx, my)) {
+                    if (aspectPage < BookPopupRenderer.aspectPageCount() - 1) aspectPage++;
+                    return true;
+                }
+            }
+            if (popupBounds == null || !popupBounds.contains(mx, my)) {
+                closePopup();
+                return true;
+            }
+            return true; // clicks inside the panel are absorbed
+        }
+
+        // Right-edge recipe bookmarks
+        List<Identifier> bm = currentBookmarks();
+        for (int i = 0; i < Math.min(5, bm.size()); i++) {
+            int[] r = bookmarkRect(i);
+            if (mx >= r[0] - 4 && mx < r[0] + r[2] + 2 && my >= r[1] - 4 && my < r[1] + r[3] + 2) {
+                activeRecipe = bm.get(i);
+                return true;
+            }
+        }
+
+        // Left-edge aspect bookmark
+        int ax = sw - 52, ay = sh + 78;
+        if (mx >= ax - 4 && mx < ax + 20 && my >= ay - 4 && my < ay + 20) {
+            aspectPopup = true;
+            aspectPage = 0;
+            return true;
+        }
         
         // Check navigation arrows
         if (page > 0 && mouseX >= sw - 16 && mouseX < sw - 4 && mouseY >= sh + 190 && mouseY < sh + 198) {
@@ -594,6 +704,26 @@ public class ResearchPageScreen extends Screen {
     
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (scrollY == 0) {
+            return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        }
+
+        // Aspect popup pages with the wheel; recipe popup swallows scrolling
+        if (aspectPopup) {
+            int pageCount = BookPopupRenderer.aspectPageCount();
+            if (scrollY < 0 && aspectPage < pageCount - 1) {
+                aspectPage++;
+                return true;
+            } else if (scrollY > 0 && aspectPage > 0) {
+                aspectPage--;
+                return true;
+            }
+            return true;
+        }
+        if (activeRecipe != null) {
+            return true;
+        }
+
         if (scrollY < 0 && page < maxPages - 2) {
             page += 2;
             return true;
@@ -615,7 +745,16 @@ public class ResearchPageScreen extends Screen {
     public boolean isPauseScreen() {
         return false;
     }
-    
+
+    /**
+     * Close any open popup.
+     */
+    private void closePopup() {
+        activeRecipe = null;
+        aspectPopup = false;
+        aspectPage = 0;
+        popupBounds = null;
+    }
     // ==================== Inner Classes ====================
     
     /**
@@ -623,8 +762,7 @@ public class ResearchPageScreen extends Screen {
      */
     private static class Page {
         ArrayList<Object> contents = new ArrayList<>();
-        boolean isRecipePage = false;
         boolean isAddendum = false;
-        Identifier recipeId = null;
+        int stageId = -1;
     }
 }
