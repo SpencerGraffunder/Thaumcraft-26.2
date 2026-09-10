@@ -460,8 +460,8 @@ public class ResearchPageScreen extends Screen {
         for (Object content : page.contents) {
             if (content instanceof String) lines++;
         }
-        int lineHeight = (int) (font.lineHeight * TEXT_SCALE);
-        int blockH = lines * lineHeight;
+        float lineHeight = font.lineHeight * TEXT_SCALE;
+        int blockH = (int) Math.round(lines * lineHeight);
         int startY = y + Math.max(0, (bottomY - y - blockH) / 2);
 
         // Mark addendum pages (clamped inside the paper area)

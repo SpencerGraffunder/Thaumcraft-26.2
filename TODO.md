@@ -23,29 +23,36 @@ Root causes:
   `brass_stuff`, …) — the port's alias table was incomplete.
 - Popup renderers predated the user-facing layout expectations.
 
-Fix (commits 4d3cde8 + 73411d8):
-- `ConfigRecipes` (ported from the 1.20.1 fork): 8 IE enchantment fakes +
-  3 runic-shielding fakes with the correct base tools, aspects,
-  instability — render as infusion recipe popups.
-- `FakeRecipes` + `FakeRecipe` (new): 5 multiblock display recipes
-  (infusion altar x3, thaumatorium, golem press) with a dedicated
+Fix:
+- `ConfigRecipes` (ported from the 1.20.1 fork, commit 4d3cde8): 8 IE
+  enchantment fakes + 3 runic-shielding fakes with the correct base tools,
+  aspects, instability — render as infusion recipe popups.
+- `FakeRecipes` + `FakeRecipe` (new, commit 73411d8): 5 multiblock display
+  recipes (infusion altar x3, thaumatorium, golem press) with a dedicated
   title + item-row popup.
-- `RecipeRenderer`: `RECIPE_ALIASES` for the 18 legacy ids,
-  `_fake[_N]` suffix stripping, `FakeRecipe` dispatch + `resolveOutput`
-  (bookmarks); 4 dead aliases removed.
-- `BookPopupRenderer`: arcane popup now draws grid + workbench item +
-  arrow -> output ring + crystals + vis; crucible popup draws the crucible
-  block in the center with the catalyst above it + arrow -> output +
-  aspects.
+- `RecipeRenderer`: `RECIPE_ALIASES` for 18 legacy ids, `_fake[_N]` suffix
+  stripping, `FakeRecipe` dispatch + `resolveOutput` (bookmarks).
 - Registered both catalogs in `bootstrap()` (server start + first client
   tick).
+- `BookPopupRenderer` full rewrite (2026-09-10) to the 1.12 overlay look:
+  gilded-paper panels blitted from the **full 256x256** texture (the old
+  code blitted only its top-left quarter, so panels had no right/bottom
+  frame); station line-art blitted from `gui_researchbook_overlay.png`
+  (crucible pot + flame/arrow, infusion altar diamond, arcane workbench
+  grid); every recipe popup shows the output item with an arrow, aspect
+  rows, and (arcane) crystal row + vis cost; aspect popup is a 256x256
+  paper page with 1.5x aspect icons, names, and primal/secondary type
+  text; titles sit below the panel frame (old `scale`-then-`translate`
+  pose order also offset them left/up by 10% of the screen position).
+- `ResearchPageScreen`: text-block vertical centering uses the exact
+  scaled line height (11.25px) instead of the truncated int (11px).
 
-Verified (2026-09-09): static check — **all 253 book recipe references
-resolve** (218 recipe files, 16 fake-catalog, 4 `_fake`-suffix, 14
-alias). Dev server boots clean (`Registered 5 fake book recipes
-(multiblocks)`, `Thaumcraft runtime registration complete`, no data-pack
-errors). Jar installed into the Modrinth 26.2 profile — user in-game
-verification pending.
+Verified (2026-09-10): compiles clean; **all 253 book recipe references
+resolve** (218 recipe files, 16 fake-catalog, 4 `_fake`-suffix, 14 alias);
+dev server boots clean (`Thaumcraft runtime registration complete`, 148
+research entries, populated recipe manager, no data-pack errors). Jar
+`thaumcraft-6.2.0+26.2.jar` (md5 100d125e795e4e37b7631040864bf9e2) installed
+into the Modrinth 26.2 profile — user in-game verification pending.
 
 
 
