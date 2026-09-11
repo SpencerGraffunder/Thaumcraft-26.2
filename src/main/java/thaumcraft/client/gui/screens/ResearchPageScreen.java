@@ -520,11 +520,15 @@ public class ResearchPageScreen extends Screen {
 
     /**
      * Hit rect (x, y, w, h) for the i-th recipe bookmark on the book's right edge.
+     * Must match drawBookmarks(): ribbon at (sw+280, sh-8 + i*space), 28×16, space=min(25,200/count).
      */
     private int[] bookmarkRect(int i) {
         int sw = (width - PANE_WIDTH) / 2;
         int sh = (height - PANE_HEIGHT) / 2;
-        return new int[] {sw + PANE_WIDTH + 22, sh + 56 + i * 26, 24, 30};
+        List<Identifier> bm = currentBookmarks();
+        int count = Math.min(5, bm.size());
+        int space = count > 0 ? Math.min(25, 200 / count) : 25;
+        return new int[] {sw + 280, sh - 8 + i * space, 28, 16};
     }
 
     /**
@@ -570,8 +574,11 @@ public class ResearchPageScreen extends Screen {
 
         // aspect bookmark (1.12): a texture on the book's left edge — tex1 uv 76,232 (24×16)
         // main icon + uv 100,232 (4×16) strip, near the top of the book (GuiResearchPage: bookY+8).
+        // Pop-out on hover (1.12 drawRecipeBookmarks 'le' offset: icon shifts + clips when flat).
         int ax = sw - 52, ay = sh + 10;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, ax, ay, 76, 232, 24, 16, 256, 256);
+        boolean ahov = mouseX >= ax - 4 && mouseX < ax + 20 && mouseY >= ay - 4 && mouseY < ay + 16;
+        int ale = ahov ? 0 : 3;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, ax + ale, ay, 76, 232, 24 - ale, 16, 256, 256);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, ax + 20, ay, 100, 232, 4, 16, 256, 256);
     }
     
@@ -682,6 +689,16 @@ public class ResearchPageScreen extends Screen {
         } else if (icon instanceof ItemStack s) {
             if (!s.isEmpty()) RecipeRenderer.renderItem(g, s, x, y);
         } else if (icon instanceof Identifier id) {
+            // 1.12 rendered research icons that are items (e.g. the infusion matrix block)
+            // as 3D items, not flat texture blits. If this identifier is a registered item,
+            // render it in 3D; otherwise fall back to the flat texture blit (category icons).
+            try {
+                net.minecraft.world.item.Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(id);
+                if (item != null && item != net.minecraft.world.item.Items.AIR) {
+                    RecipeRenderer.renderItem(g, new ItemStack(item), x, y);
+                    return;
+                }
+            } catch (Exception ignored) {}
             g.blit(RenderPipelines.GUI_TEXTURED, id, x, y, 0, 0, 16, 16, 16, 16);
         } else {
             g.fill(x + 2, y + 2, x + 14, y + 14, 0xFF707070);
