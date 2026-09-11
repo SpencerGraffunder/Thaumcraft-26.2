@@ -171,10 +171,17 @@ public class ResearchPageScreen extends Screen {
 
             // Add stage text
             if (stage.getText() != null) {
-                String text = stripFormattingTags(Component.translatable(stage.getText()).getString());
+                String rawText = Component.translatable(stage.getText()).getString();
+                List<PageImage> images = extractImages(rawText);
+                String text = stripFormattingTags(rawText);
                 // Split text into lines that fit the page width
                 List<String> lines = wrapText(text, TEXT_WIDTH);
                 addTextPages(pages, lines, pages.isEmpty() ? MAX_TEXT_LINES_FIRST : MAX_TEXT_LINES);
+                // Append inline images (<IMG>) to the last page, in order
+                if (!images.isEmpty() && !pages.isEmpty()) {
+                    Page lastPage = pages.get(pages.size() - 1);
+                    for (PageImage pi : images) lastPage.contents.add(pi);
+                }
             } else {
                 pages.add(new Page());
             }
@@ -208,9 +215,15 @@ public class ResearchPageScreen extends Screen {
                     int startIdx = pages.size();
 
                     if (addendum.getText() != null) {
-                        String text = stripFormattingTags(Component.translatable(addendum.getText()).getString());
+                        String rawText = Component.translatable(addendum.getText()).getString();
+                        List<PageImage> images = extractImages(rawText);
+                        String text = stripFormattingTags(rawText);
                         List<String> lines = wrapText(text, TEXT_WIDTH);
                         addTextPages(pages, lines, MAX_TEXT_LINES);
+                        if (!images.isEmpty() && !pages.isEmpty()) {
+                            Page lastPage = pages.get(pages.size() - 1);
+                            for (PageImage pi : images) lastPage.contents.add(pi);
+                        }
                     } else {
                         pages.add(new Page());
                     }
@@ -456,13 +469,18 @@ public class ResearchPageScreen extends Screen {
      * Returns tooltip to display if hovering over an item.
      */
     private List<net.minecraft.network.chat.Component> drawPageContent(GuiGraphicsExtractor graphics, Page page, int x, int y, int bottomY, int mouseX, int mouseY, boolean rightSide) {
-        // Count text lines and center the block vertically inside the paper area
+        // Count text lines + inline-image height, then center the block vertically in the paper
         int lines = 0;
+        int imageH = 0;
         for (Object content : page.contents) {
             if (content instanceof String) lines++;
+            else if (content instanceof PageImage pi) {
+                float s = Math.min(1.0f, TEXT_WIDTH / (float) pi.aw);
+                imageH += (int) (pi.ah * s) + 2;
+            }
         }
         float lineHeight = font.lineHeight * TEXT_SCALE;
-        int blockH = (int) Math.round(lines * lineHeight);
+        int blockH = (int) Math.round(lines * lineHeight) + imageH;
         int startY = y + Math.max(0, (bottomY - y - blockH) / 2);
 
         // Mark addendum pages (clamped inside the paper area)
@@ -481,6 +499,18 @@ public class ResearchPageScreen extends Screen {
                 // 1.12 page text color: 5263440 (0x505050 dark grey), not near-black
                 graphics.text(font, text, 0, lineY, 0xFF505050, false);
                 lineY += font.lineHeight;
+            } else if (content instanceof PageImage pi) {
+                // Inline image (<IMG>): blit the referenced texture, centered in the text column,
+                // scaled to fit the column width (1.12 centers it in the 140px page column).
+                float s = Math.min(1.0f, TEXT_WIDTH / (float) pi.aw);
+                int iw = (int) (pi.aw * s);
+                int pad = (TEXT_WIDTH - iw) / 2;
+                graphics.pose().pushMatrix();
+                graphics.pose().translate(pad, lineY);
+                graphics.pose().scale(s);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, pi.texture, 0, 0, pi.u, pi.v, pi.w, pi.h, 256, 256);
+                graphics.pose().popMatrix();
+                lineY += (int) (pi.ah * s) + 2;
             }
         }
         graphics.pose().popMatrix();
@@ -836,5 +866,51 @@ public class ResearchPageScreen extends Screen {
         ArrayList<Object> contents = new ArrayList<>();
         boolean isAddendum = false;
         int stageId = -1;
+    }
+
+    /**
+     * An inline image in page text, parsed from a <IMG> tag:
+     * {@code <IMG>domain:path:u:v:w:h:scale</IMG>} (7 colon-separated fields, 1.12 format).
+     */
+    private static class PageImage {
+        int u, v, w, h;
+        float scale;
+        int aw, ah;
+        Identifier texture;
+        static PageImage parse(String text) {
+            String[] s = text.trim().split(":");
+            if (s.length != 7) return null;
+            try {
+                PageImage pi = new PageImage();
+                pi.texture = Identifier.parse(s[0] + ":" + s[1]);
+                pi.u = Integer.parseInt(s[2]);
+                pi.v = Integer.parseInt(s[3]);
+                pi.w = Integer.parseInt(s[4]);
+                pi.h = Integer.parseInt(s[5]);
+                pi.scale = Float.parseFloat(s[6]);
+                pi.aw = (int) (pi.w * pi.scale);
+                pi.ah = (int) (pi.h * pi.scale);
+                if (pi.ah > 208 || pi.aw > 140) return null;
+                return pi;
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+    }
+
+    /** Extract and parse all <IMG> tags from text (in order). */
+    private List<PageImage> extractImages(String text) {
+        List<PageImage> images = new ArrayList<>();
+        int i = 0;
+        while (true) {
+            int start = text.indexOf("<IMG>", i);
+            if (start < 0) break;
+            int end = text.indexOf("</IMG>", start);
+            if (end < 0) break;
+            PageImage pi = PageImage.parse(text.substring(start + 5, end));
+            if (pi != null) images.add(pi);
+            i = end + 6;
+        }
+        return images;
     }
 }
