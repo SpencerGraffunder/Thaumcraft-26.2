@@ -20,6 +20,7 @@ import thaumcraft.api.research.*;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
 import thaumcraft.client.gui.BookPopupRenderer;
 import thaumcraft.client.gui.RecipeRenderer;
+import thaumcraft.client.lib.AspectRenderer;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.playerdata.PacketSyncProgressToServer;
 import thaumcraft.common.lib.research.ResearchManager;
@@ -528,61 +529,123 @@ public class ResearchPageScreen extends Screen {
             }
         }
 
-        // aspect compass bookmark: a purple diamond on the book's left edge
+        // aspect bookmark (1.12): a texture on the book's left edge — tex1 uv 76,232 (24×16)
+        // main icon + uv 100,232 (4×16) strip, exactly as GuiResearchPage drew it.
         int ax = sw - 52, ay = sh + 78;
-        graphics.fill(ax + 6, ay, ax + 10, ay + 2, 0xFF6060C0);
-        graphics.fill(ax + 4, ay + 2, ax + 12, ay + 4, 0xFF6060C0);
-        graphics.fill(ax + 2, ay + 4, ax + 14, ay + 6, 0xFF7070D0);
-        graphics.fill(ax, ay + 6, ax + 16, ay + 10, 0xFF8080E0);
-        graphics.fill(ax + 2, ay + 10, ax + 14, ay + 12, 0xFF7070D0);
-        graphics.fill(ax + 4, ay + 12, ax + 12, ay + 14, 0xFF6060C0);
-        graphics.fill(ax + 6, ay + 14, ax + 10, ay + 16, 0xFF6060C0);
-        graphics.fill(ax + 7, ay + 7, ax + 9, ay + 9, 0xFFFFFFFF);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, ax, ay, 76, 232, 24, 16, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, ax + 20, ay, 100, 232, 4, 16, 256, 256);
     }
     
     /**
      * Draw current stage requirements at the bottom of the page.
      */
     private void drawRequirements(GuiGraphicsExtractor graphics, int sw, int sh, int mx, int my, ResearchStage stage) {
-        int y = sh + PANE_HEIGHT - 30;
-        int x = sw + 12;
+        // 1.12 style (GuiResearchPage.drawRequirements): horizontal icon rows with a
+        // translucent background bar + icons + checkmarks, stacked from the bottom of the
+        // book (research lowest, then obtain, craft, know).
+        int x = sw;
+        int y = sh + PANE_HEIGHT - 22;
         
-        // Draw requirement sections
         if (stage.getResearch() != null && stage.getResearch().length > 0) {
-            graphics.text(font, "§7Required Research:", x, y, 0xFFFFFFFF, false);
-            y += 10;
-            for (int i = 0; i < stage.getResearch().length; i++) {
-                String reqKey = stage.getResearch()[i];
-                ResearchEntry reqEntry = ResearchCategories.getResearch(reqKey);
-                String reqName = reqEntry != null ? reqEntry.getLocalizedName().getString() : reqKey;
-                String checkmark = (hasResearch != null && hasResearch[i]) ? "§a✓ " : "§c✗ ";
-                graphics.text(font, checkmark + reqName, x + 5, y, 0xFFFFFFFF, false);
-                y += 10;
-            }
+            y -= 18;
+            drawResearchRow(graphics, x, y, stage, mx, my);
         }
-        
         if (stage.getObtain() != null && stage.getObtain().length > 0) {
-            graphics.text(font, "§7Items to Obtain:", x, y, 0xFFFFFFFF, false);
-            y += 10;
-            for (int i = 0; i < stage.getObtain().length; i++) {
-                Object o = stage.getObtain()[i];
-                String itemName = o instanceof ItemStack ? ((ItemStack) o).getHoverName().getString() : "Item";
-                String checkmark = (hasItem != null && hasItem[i]) ? "§a✓ " : "§c✗ ";
-                graphics.text(font, checkmark + itemName, x + 5, y, 0xFFFFFFFF, false);
-                y += 10;
-            }
+            y -= 18;
+            drawItemRow(graphics, x, y, stage.getObtain(), hasItem, 216, mx, my);
         }
-        
+        if (stage.getCraft() != null && stage.getCraft().length > 0) {
+            y -= 18;
+            drawItemRow(graphics, x, y, stage.getCraft(), hasCraft, 200, mx, my);
+        }
         if (stage.getKnow() != null && stage.getKnow().length > 0) {
-            graphics.text(font, "§7Knowledge Required:", x, y, 0xFFFFFFFF, false);
-            y += 10;
-            for (int i = 0; i < stage.getKnow().length; i++) {
-                ResearchStage.Knowledge k = stage.getKnow()[i];
-                String knowName = k.type.name() + (k.category != null ? " (" + k.category.key + ")" : "") + ": " + k.amount;
-                String checkmark = (hasKnow != null && hasKnow[i]) ? "§a✓ " : "§c✗ ";
-                graphics.text(font, checkmark + knowName, x + 5, y, 0xFFFFFFFF, false);
-                y += 10;
-            }
+            y -= 18;
+            drawKnowRow(graphics, x, y, stage, mx, my);
+        }
+    }
+    
+    /** Translucent 56×16 row background bar (1.12: tex1 uv 200,<barUvY>, alpha 0.25). */
+    private void drawRowBar(GuiGraphicsExtractor g, int x, int y, int barUvY) {
+        g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x - 12, y - 1, 200, barUvY, 56, 16, 256, 256, ARGB.white(0.25f));
+    }
+    
+    /** 1.12 checkmark: tex1 uv 159,207, 10×10, drawn over a satisfied icon. */
+    private void drawCheckmark(GuiGraphicsExtractor g, int iconX, int y) {
+        g.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, iconX + 8, y, 159, 207, 10, 10, 256, 256);
+    }
+    
+    private void drawResearchRow(GuiGraphicsExtractor g, int x, int y, ResearchStage stage, int mx, int my) {
+        int count = stage.getResearch().length;
+        drawRowBar(g, x, y, 232);
+        int shift = 24, ss = 18;
+        if (count > 6) ss = 110 / count;
+        String[] icons = stage.getResearchIcon();
+        for (int a = 0; a < count; a++) {
+            int ix = x - 15 + shift;
+            Object icon = resolveResearchIcon(stage, a, icons);
+            drawReqIcon(g, icon, ix, y);
+            if (hasResearch != null && hasResearch.length > a && hasResearch[a]) drawCheckmark(g, ix, y);
+            shift += ss;
+        }
+    }
+    
+    private Object resolveResearchIcon(ResearchStage stage, int a, String[] icons) {
+        String key = stage.getResearch()[a];
+        if (key != null && key.startsWith("!")) {
+            Aspect as = Aspect.aspects.get(key.substring(1));
+            if (as != null) return as;
+        }
+        ResearchEntry re = ResearchCategories.getResearch(key);
+        if (re != null && re.getIcons() != null && re.getIcons().length > 0) return re.getIcons()[0];
+        if (icons != null && a < icons.length && icons[a] != null && !icons[a].isEmpty()) {
+            try {
+                String[] parts = icons[a].split(":", 2);
+                return parts.length == 2
+                        ? Identifier.fromNamespaceAndPath(parts[0], parts[1])
+                        : Identifier.fromNamespaceAndPath(Thaumcraft.MODID, icons[a]);
+            } catch (Exception ignored) {}
+        }
+        return null;
+    }
+    
+    private void drawItemRow(GuiGraphicsExtractor g, int x, int y, Object[] items, boolean[] has, int barUvY, int mx, int my) {
+        int count = items.length;
+        drawRowBar(g, x, y, barUvY);
+        int shift = 24, ss = 18;
+        if (count > 6) ss = 110 / count;
+        for (int i = 0; i < count; i++) {
+            int ix = x - 15 + shift;
+            if (items[i] instanceof ItemStack s && !s.isEmpty()) RecipeRenderer.renderItem(g, s, ix, y);
+            if (has != null && has.length > i && has[i]) drawCheckmark(g, ix, y);
+            shift += ss;
+        }
+    }
+    
+    private void drawKnowRow(GuiGraphicsExtractor g, int x, int y, ResearchStage stage, int mx, int my) {
+        int count = stage.getKnow().length;
+        drawRowBar(g, x, y, 184);
+        int shift = 24, ss = 18;
+        if (count > 6) ss = 110 / count;
+        for (int i = 0; i < count; i++) {
+            int ix = x - 15 + shift;
+            // knowledge: a small book/scroll glyph (1.12 uses a knowledge icon here)
+            g.fill(ix + 3, y + 2, ix + 13, y + 14, 0xFF9090A0);
+            g.fill(ix + 4, y + 3, ix + 12, y + 4, 0xFFC0C0D0);
+            if (hasKnow != null && hasKnow.length > i && hasKnow[i]) drawCheckmark(g, ix, y);
+            shift += ss;
+        }
+    }
+    
+    /** Draw a requirement icon (Aspect / ItemStack / Identifier / placeholder). */
+    private static void drawReqIcon(GuiGraphicsExtractor g, Object icon, int x, int y) {
+        if (icon instanceof Aspect a) {
+            AspectRenderer.drawAspect(g, x, y, a);
+        } else if (icon instanceof ItemStack s) {
+            if (!s.isEmpty()) RecipeRenderer.renderItem(g, s, x, y);
+        } else if (icon instanceof Identifier id) {
+            g.blit(RenderPipelines.GUI_TEXTURED, id, x, y, 0, 0, 16, 16, 16, 16);
+        } else {
+            g.fill(x + 2, y + 2, x + 14, y + 14, 0xFF707070);
         }
     }
     
