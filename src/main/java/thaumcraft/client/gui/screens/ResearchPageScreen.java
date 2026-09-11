@@ -530,8 +530,8 @@ public class ResearchPageScreen extends Screen {
         }
 
         // aspect bookmark (1.12): a texture on the book's left edge — tex1 uv 76,232 (24×16)
-        // main icon + uv 100,232 (4×16) strip, exactly as GuiResearchPage drew it.
-        int ax = sw - 52, ay = sh + 78;
+        // main icon + uv 100,232 (4×16) strip, near the top of the book (GuiResearchPage: bookY+8).
+        int ax = sw - 52, ay = sh + 10;
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, ax, ay, 76, 232, 24, 16, 256, 256);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, ax + 20, ay, 100, 232, 4, 16, 256, 256);
     }
@@ -726,7 +726,7 @@ public class ResearchPageScreen extends Screen {
         }
 
         // Left-edge aspect bookmark
-        int ax = sw - 52, ay = sh + 78;
+        int ax = sw - 52, ay = sh + 10;
         if (mx >= ax - 4 && mx < ax + 20 && my >= ay - 4 && my < ay + 20) {
             aspectPopup = true;
             aspectPage = 0;
