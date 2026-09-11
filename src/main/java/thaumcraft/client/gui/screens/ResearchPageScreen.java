@@ -423,7 +423,7 @@ public class ResearchPageScreen extends Screen {
         }
 
         // Recipe bookmarks (right edge) + aspect bookmark (left edge)
-        drawBookmarks(graphics);
+        drawBookmarks(graphics, mouseX, mouseY);
 
         // Recipe / aspect popup (1.12-style overlay)
         if (activeRecipe != null || aspectPopup) {
@@ -513,19 +513,27 @@ public class ResearchPageScreen extends Screen {
      * Draw the recipe bookmarks on the book's right edge and the aspect compass
      * bookmark on the left edge.
      */
-    private void drawBookmarks(GuiGraphicsExtractor graphics) {
+    private void drawBookmarks(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         int sw = (width - PANE_WIDTH) / 2;
         int sh = (height - PANE_HEIGHT) / 2;
 
+        // Right-edge recipe bookmarks (1.12 drawRecipeBookmarks): a ribbon texture
+        // (tex1 uv 120,232 28×16) + left strip (uv 116,232 4×16) + item icon, starting near
+        // the top of the book's right edge (bookY-8). Selected recipe tinted salmon (1,0.5,0.5).
         List<Identifier> bm = currentBookmarks();
-        for (int i = 0; i < Math.min(5, bm.size()); i++) {
-            int x = sw + PANE_WIDTH + 22, y = sh + 56 + i * 26;
-            // ribbon behind the item icon
-            graphics.fill(x - 2, y - 2, x + 22, y + 28, 0xFF703848);
-            graphics.fill(x - 2, y + 24, x + 22, y + 28, 0xFF502838);
+        int count = Math.min(5, bm.size());
+        int space = count > 0 ? Math.min(25, 200 / count) : 25;
+        int by = sh - 8;
+        for (int i = 0; i < count; i++) {
+            int x = sw + 280, y = by + i * space;
+            boolean hov = mouseX >= x && mouseX < x + 30 && mouseY >= y - 1 && mouseY < y + 15;
+            int le = hov ? 0 : 3;
+            int color = (bm.get(i).equals(activeRecipe)) ? 0xFFFF8080 : 0xFFFFFFFF;
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y - 1, 120 + le, 232, 28, 16, 256, 256, color);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y - 1, 116, 232, 4, 16, 256, 256, color);
             ItemStack out = RecipeRenderer.resolveOutput(RecipeRenderer.findRecipe(bm.get(i)));
             if (!out.isEmpty()) {
-                RecipeRenderer.renderItem(graphics, out, x, y);
+                RecipeRenderer.renderItem(graphics, out, x + 7 - le, y - 1);
             }
         }
 
