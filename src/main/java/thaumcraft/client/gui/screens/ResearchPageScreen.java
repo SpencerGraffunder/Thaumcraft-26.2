@@ -478,7 +478,8 @@ public class ResearchPageScreen extends Screen {
         int lineY = 0;
         for (Object content : page.contents) {
             if (content instanceof String text) {
-                graphics.text(font, text, 0, lineY, 0xFF202020, false);
+                // 1.12 page text color: 5263440 (0x505050 dark grey), not near-black
+                graphics.text(font, text, 0, lineY, 0xFF505050, false);
                 lineY += font.lineHeight;
             }
         }
