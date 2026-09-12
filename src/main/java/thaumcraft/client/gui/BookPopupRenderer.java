@@ -22,6 +22,7 @@ import thaumcraft.api.crafting.CrucibleRecipe;
 import thaumcraft.api.crafting.FakeRecipe;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.api.crafting.InfusionRecipe;
+import thaumcraft.api.crafting.Part;
 import thaumcraft.client.lib.AspectRenderer;
 import thaumcraft.common.lib.crafting.CrucibleRecipeType;
 import thaumcraft.common.lib.crafting.InfusionRecipeType;
@@ -81,6 +82,15 @@ public class BookPopupRenderer {
         public boolean contains(int mx, int my) {
             return mx >= x && mx < x + w && my >= y && my < y + h;
         }
+    }
+
+    /**
+     * Centered text WITHOUT a drop shadow. 1.12 drew the recipe title and vis
+     * cost with drawString (no shadow); the 5-arg {@code centeredText} overload
+     * defaults to shadow=true, which is wrong here.
+     */
+    private static void centerNoShadow(GuiGraphicsExtractor g, Font font, String text, int x, int y, int color) {
+        g.text(font, text, x - font.width(text) / 2, y, color, false);
     }
 
     /** 1.12 drawRecipe: prev arrow at (panelX+40, panelY+232), 12×8. */
@@ -262,7 +272,7 @@ public class BookPopupRenderer {
         // Title (1.12: recipe.type.arcane/.shapeless centered at y-104)
         String title = (a instanceof ShapelessArcaneRecipe)
                 ? "Arcane Workbench (Shapeless)" : "Arcane Workbench";
-        g.centeredText(font, title, cx, cy - 104, TEXT_DARK);
+        centerNoShadow(g, font, title, cx, cy - 104, TEXT_DARK);
 
         // Output above the arrow
         ItemStack output = a.getResultItem();
@@ -302,7 +312,7 @@ public class BookPopupRenderer {
         }
 
         // Vis number over the faded glyph (1.12: centered at y+90)
-        g.centeredText(font, String.valueOf(a.getVis()), cx, cy + 90, TEXT_DARK);
+        centerNoShadow(g, font, String.valueOf(a.getVis()), cx, cy + 90, TEXT_DARK);
     }
 
     /** 1.12 drawCraftingPage. */
@@ -316,7 +326,7 @@ public class BookPopupRenderer {
         blit2x(g, cx, cy, -8, -46, 20, 3, 16, 16);
 
         boolean shaped = cr instanceof net.minecraft.world.item.crafting.ShapedRecipe;
-        g.centeredText(font, shaped ? "Workbench" : "Workbench (Shapeless)", cx, cy - 104, TEXT_DARK);
+        centerNoShadow(g, font, shaped ? "Workbench" : "Workbench (Shapeless)", cx, cy - 104, TEXT_DARK);
 
         ItemStack output = RecipeRenderer.resolveOutput(cr);
         drawItem(g, output, cx - 8, cy - 84);
@@ -345,7 +355,7 @@ public class BookPopupRenderer {
             int mouseX, int mouseY, Font font, List<Component> tooltip) {
 
         drawPaper(g, cx - PANEL / 2, cy - PANEL / 2);
-        g.centeredText(font, "Crucible", cx, cy - 104, TEXT_DARK);
+        centerNoShadow(g, font, "Crucible", cx, cy - 104, TEXT_DARK);
 
         // Station art: flame, pot, redstone/curved arrow (1.12 uv 0,3 / 0,20 / 100,84 @2×)
         blit2x(g, cx, cy, -28, -29, 0, 3, 56, 17);
@@ -374,7 +384,7 @@ public class BookPopupRenderer {
             int mouseX, int mouseY, Font font, List<Component> tooltip) {
 
         drawPaper(g, cx - PANEL / 2, cy - PANEL / 2);
-        g.centeredText(font, "Arcane Infusion", cx, cy - 104, TEXT_DARK);
+        centerNoShadow(g, font, "Arcane Infusion", cx, cy - 104, TEXT_DARK);
 
         // Station art: band + altar (1.12 uv 0,3 / 200,77 @2×, base offset y+20 baked in)
         blit2x(g, cx, cy + 20, -28, -56, 0, 3, 56, 17);
@@ -415,7 +425,7 @@ public class BookPopupRenderer {
         // Instability (1.12: "tc.inst tc.inst.<min(5, inst/2)>" centered at y+94)
         int level = Math.min(5, instability / 2);
         String[] instNames = {"Negligible", "Minor", "Moderate", "High", "Very High", "Dangerous"};
-        g.centeredText(font, "Instability: " + instNames[level], cx, cy + 94, TEXT_DARK);
+        centerNoShadow(g, font, "Instability: " + instNames[level], cx, cy + 94, TEXT_DARK);
     }
 
     // ==================== Fallback popups ====================
@@ -423,7 +433,7 @@ public class BookPopupRenderer {
     private static void drawSmelting(GuiGraphicsExtractor g, int cx, int cy, SingleItemRecipe sr,
             int mouseX, int mouseY, Font font, List<Component> tooltip) {
         drawPaper(g, cx - PANEL / 2, cy - PANEL / 2);
-        g.centeredText(font, "Furnace", cx, cy - 104, TEXT_DARK);
+        centerNoShadow(g, font, "Furnace", cx, cy - 104, TEXT_DARK);
 
         ItemStack input = RecipeRenderer.cycleIngredient(sr.input(), 0);
         drawItem(g, input, cx - 48, cy - 8);
@@ -437,31 +447,76 @@ public class BookPopupRenderer {
     private static void drawBlueprint(GuiGraphicsExtractor g, int cx, int cy,
             ThaumcraftApi.BluePrint bp, int mouseX, int mouseY, Font font, List<Component> tooltip) {
         drawPaper(g, cx - PANEL / 2, cy - PANEL / 2);
-        g.centeredText(font, "Multiblock", cx, cy - 104, TEXT_DARK);
+        centerNoShadow(g, font, "Multiblock", cx, cy - 104, TEXT_DARK);
 
-        ItemStack display = bp.getDisplayStack();
-        if (display != null) {
-            drawItem(g, display, cx - 8, cy - 40);
-            addHoverTooltip(tooltip, display, cx - 8, cy - 40, mouseX, mouseY);
+        // 1.12 renderBluePrint: render the 3×3×3 structure isometrically, back-to-front
+        // (bottom→top, then far→near), each part as a 3D block. Centered on (cx, cy).
+        Part[][][] parts = bp.getParts();
+        if (parts != null) {
+            int ySize = parts.length;
+            int xSize = ySize > 0 ? parts[0].length : 0;
+            int zSize = (ySize > 0 && xSize > 0) ? parts[0][0].length : 0;
+
+            record Placed(int x, int y, int z, ItemStack stack) {}
+            List<Placed> blocks = new ArrayList<>();
+            for (int y = 0; y < ySize; y++)
+                for (int x = 0; x < xSize; x++)
+                    for (int z = 0; z < zSize; z++) {
+                        ItemStack stack = partStack(parts[y][x][z]);
+                        if (stack != null) blocks.add(new Placed(x, y, z, stack));
+                    }
+            // Depth order: bottom→top, then far (small x+z) → near (large x+z).
+            blocks.sort((a, b) -> {
+                if (a.y() != b.y()) return Integer.compare(a.y(), b.y());
+                return Integer.compare(a.x() + a.z(), b.x() + b.z());
+            });
+
+            // Isometric projection (2:1 tile): screen offset from structure origin.
+            // tileW=16 → halfW=8, tileH=8 → halfH=4, blockH=16.
+            int maxSpan = Math.max(xSize, Math.max(ySize, zSize));
+            int originY = cy - maxSpan * 4; // lift so the structure sits in the panel
+            for (Placed p : blocks) {
+                int sx = cx + (p.x() - p.z()) * 8 - 8;
+                int sy = originY + (p.x() + p.z()) * 4 - p.y() * 16 - 8;
+                drawItem(g, p.stack(), sx, sy);
+                addHoverTooltip(tooltip, p.stack(), sx, sy, mouseX, mouseY);
+            }
         }
 
-        ItemStack[] parts = bp.getIngredientList();
-        int shown = Math.min(6, parts.length);
-        int startX = cx - (shown * 20 - 4) / 2;
-        for (int i = 0; i < shown; i++) {
-            int ix = startX + i * 20;
-            drawItem(g, parts[i], ix, cy + 20);
-            addHoverTooltip(tooltip, parts[i], ix, cy + 20, mouseX, mouseY);
+        // Ingredient list along the bottom (1.12 shows the required blocks).
+        ItemStack[] ings = bp.getIngredientList();
+        if (ings != null && ings.length > 0) {
+            int shown = Math.min(6, ings.length);
+            int startX = cx - (shown * 20 - 4) / 2;
+            for (int i = 0; i < shown; i++) {
+                int ix = startX + i * 20;
+                drawItem(g, ings[i], ix, cy + 70);
+                addHoverTooltip(tooltip, ings[i], ix, cy + 70, mouseX, mouseY);
+            }
+            if (ings.length > 6) {
+                g.text(font, "...", startX + shown * 20 + 2, cy + 74, TEXT_MID, false);
+            }
         }
-        if (parts.length > 6) {
-            g.text(font, "...", startX + shown * 20 + 2, cy + 24, TEXT_MID, false);
+    }
+
+    /** Convert a multiblock {@link Part} source to an ItemStack (or null for air). */
+    private static ItemStack partStack(Part part) {
+        if (part == null) return null;
+        Object src = part.getSource();
+        if (src instanceof net.minecraft.world.level.block.state.BlockState state) {
+            return new ItemStack(state.getBlock());
+        } else if (src instanceof net.minecraft.world.level.block.Block block) {
+            return new ItemStack(block);
+        } else if (src instanceof ItemStack stack) {
+            return stack;
         }
+        return null;
     }
 
     private static void drawFake(GuiGraphicsExtractor g, int cx, int cy, FakeRecipe fake,
             int mouseX, int mouseY, Font font, List<Component> tooltip) {
         drawPaper(g, cx - PANEL / 2, cy - PANEL / 2);
-        g.centeredText(font, fake.getTitle(), cx, cy - 104, TEXT_DARK);
+        centerNoShadow(g, font, fake.getTitle(), cx, cy - 104, TEXT_DARK);
 
         ItemStack[] items = fake.getItems();
         if (items.length > 0) {

@@ -53,9 +53,10 @@ public class ResearchPageScreen extends Screen {
     // is texture 512x362 drawn as 256x181 at 1.3x around the screen center).
     private static final int PAPER_TOP = -22;
     private static final int PAPER_BOTTOM = 197;
-    // 1.12-style text: 1.25x font scale, wrapped to 104 font-pixels, 13 lines on
-    // the first page (leaving room for the title cluster), 16 on later pages.
-    private static final float TEXT_SCALE = 1.25f;
+    // 1.12-style text: 1.12 drew page text at the default 1.0x font scale (no GL
+    // scale), wrapped to ~104 font-pixels; 13 lines on the first page (leaving room
+    // for the title cluster), 16 on later pages. (Was 1.25x — too big vs 1.12.)
+    private static final float TEXT_SCALE = 1.0f;
     private static final int TEXT_WIDTH = 104;
     private static final int MAX_TEXT_LINES = 16;
     private static final int MAX_TEXT_LINES_FIRST = 13; // first page leaves room for the title cluster
@@ -162,38 +163,40 @@ public class ResearchPageScreen extends Screen {
             return;
         }
         
-        int maxStage = isComplete ? stages.length : Math.min(currentStage, stages.length);
-        
-        // Build pages for each visible stage
-        for (int s = 0; s < maxStage; s++) {
-            ResearchStage stage = stages[s];
-            int startIdx = pages.size();
+        // 1.12 shows ONLY the current stage's text (not all stages). getResearchStage()
+        // is 1-based (1 on the first stage; stages.length+1 when complete), so the
+        // 0-based stage to show is min(currentStage-1, stages.length-1). This hides the
+        // "pre" text (earlier stages) once the player has moved on / completed.
+        int displayStage = Math.min(currentStage - 1, stages.length - 1);
+        if (displayStage < 0) displayStage = 0;
 
-            // Add stage text
-            if (stage.getText() != null) {
-                String rawText = Component.translatable(stage.getText()).getString();
-                List<PageImage> images = extractImages(rawText);
-                String text = stripFormattingTags(rawText);
-                // Split text into lines that fit the page width
-                List<String> lines = wrapText(text, TEXT_WIDTH);
-                addTextPages(pages, lines, pages.isEmpty() ? MAX_TEXT_LINES_FIRST : MAX_TEXT_LINES);
-                // Append inline images (<IMG>) to the last page, in order
-                if (!images.isEmpty() && !pages.isEmpty()) {
-                    Page lastPage = pages.get(pages.size() - 1);
-                    for (PageImage pi : images) lastPage.contents.add(pi);
-                }
-            } else {
-                pages.add(new Page());
-            }
+        ResearchStage stage = stages[displayStage];
+        int startIdx = pages.size();
 
-            for (int i = startIdx; i < pages.size(); i++) {
-                pages.get(i).stageId = s;
+        // Add stage text
+        if (stage.getText() != null) {
+            String rawText = Component.translatable(stage.getText()).getString();
+            List<PageImage> images = extractImages(rawText);
+            String text = stripFormattingTags(rawText);
+            // Split text into lines that fit the page width
+            List<String> lines = wrapText(text, TEXT_WIDTH);
+            addTextPages(pages, lines, pages.isEmpty() ? MAX_TEXT_LINES_FIRST : MAX_TEXT_LINES);
+            // Append inline images (<IMG>) to the last page, in order
+            if (!images.isEmpty() && !pages.isEmpty()) {
+                Page lastPage = pages.get(pages.size() - 1);
+                for (PageImage pi : images) lastPage.contents.add(pi);
             }
+        } else {
+            pages.add(new Page());
+        }
 
-            // Recipe bookmarks (1.12-style: icons on the book's right edge)
-            if (stage.getRecipes() != null && stage.getRecipes().length > 0) {
-                stageBookmarks.put(s, java.util.Arrays.asList(stage.getRecipes()));
-            }
+        for (int i = startIdx; i < pages.size(); i++) {
+            pages.get(i).stageId = displayStage;
+        }
+
+        // Recipe bookmarks (1.12-style: icons on the book's right edge)
+        if (stage.getRecipes() != null && stage.getRecipes().length > 0) {
+            stageBookmarks.put(displayStage, java.util.Arrays.asList(stage.getRecipes()));
         }
         
         // Add addenda if research is complete
@@ -212,7 +215,7 @@ public class ResearchPageScreen extends Screen {
                 }
 
                 if (canShow) {
-                    int startIdx = pages.size();
+                    int addStartIdx = pages.size();
 
                     if (addendum.getText() != null) {
                         String rawText = Component.translatable(addendum.getText()).getString();
@@ -228,14 +231,14 @@ public class ResearchPageScreen extends Screen {
                         pages.add(new Page());
                     }
 
-                    for (int i = startIdx; i < pages.size(); i++) {
-                        pages.get(i).stageId = maxStage + a;
+                    for (int i = addStartIdx; i < pages.size(); i++) {
+                        pages.get(i).stageId = stages.length + a;
                         pages.get(i).isAddendum = true;
                     }
 
                     // Addendum recipe bookmarks
                     if (addendum.getRecipes() != null && addendum.getRecipes().length > 0) {
-                        stageBookmarks.put(maxStage + a, java.util.Arrays.asList(addendum.getRecipes()));
+                        stageBookmarks.put(stages.length + a, java.util.Arrays.asList(addendum.getRecipes()));
                     }
                 }
                 a++;
