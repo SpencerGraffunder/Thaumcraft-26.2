@@ -58,8 +58,11 @@ The 26.2 port is under active development.
 - **Thaumonomicon 1.12 parity (rounds 1–5, 2026-09-11/12):** recipe popups
   rewritten to the 1.12 overlay look, bookmarks/ribbon positions, 1.0x text
   scale at 140px wrap width, 1.12 completion semantics (pre/post stage text),
-  requirement rows at the book bottom, 3D infusion-matrix + altar popups, and
-  16 colored nitor items rendered 1.12-style (color overlay over the core).
+  requirement rows at the book bottom, 3D infusion-matrix + altar popups, 16
+  colored nitor items rendered 1.12-style (color overlay over the core), and
+  the "new research" gold-star markers (fixed: knowledge sync after research
+  completion was dead, so flags/toasts never reached the client; added the
+  missing category-sidebar stars).
   All 253 book recipe references resolve; see [`TODO.md`](./TODO.md).
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a

@@ -5,6 +5,33 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
+## 1.12 Book Parity — Star Markers (2026-09-12, shipped 3c157f6)
+
+User asked for the 1.12 "new" star markers (gold star on a research icon /
+category when something new happened; clears when the page is opened).
+Audit of the port found the system 90% present (flag set on server,
+synced via PacketSyncKnowledge, map-icon stars + hover tooltips drawn,
+flags cleared on open) but **broken end-to-end**:
+
+- **Root cause**: `ResearchManager` sets RESEARCH/PAGE flags and marks
+  `ResearchManager.syncList` (ResearchManager.java:91/178/273), but
+  `PlayerEvents.livingTick` only checked `PlayerEvents.syncList` (its own
+  HashSet, never populated) → `PacketSyncKnowledge` never sent after
+  research completion → stars/toasts only appeared after rejoin.
+  1.12 reference (PlayerEvents:123) removes from `ResearchManager.syncList`.
+- **Fix** (`PlayerEvents.java` livingTick): now consumes both sets —
+  `syncList.remove(name) || ResearchManager.syncList.remove(name) != null`.
+- **Missing 1.12 feature added**: category-sidebar stars. `CategoryButton`
+  (ResearchBrowserScreen.java) now computes per-category nr/np (any known
+  research in the category with RESEARCH/PAGE flag) and draws the gold star
+  (texture 176,16 / 208,16 @ 0.25 scale, alpha 0.7) at (x-2, y-2) / (x-2, y+9)
+  + hover lines "Newly discovered research" / "New page added" — 1:1 with
+  GuiResearchBrowser:1118-1148. (26.2 pose API is 2D: `scale(0.25f)`.
+  Lambda can't mutate locals → `boolean[] newFlags` holder.)
+
+Verified: build green, **86/86 tests**. Jar `thaumcraft-6.2.0+26.2.jar`
+reinstalled into the `NeoForge 26.2` Modrinth profile.
+
 ## 1.12 Book Parity — Round 5 (2026-09-12, built & installed; in-game check pending)
 
 - **Nitor item display (16 colors)**: item models were parented to the 3D
