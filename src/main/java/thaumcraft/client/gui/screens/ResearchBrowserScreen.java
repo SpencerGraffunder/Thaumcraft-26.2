@@ -1036,11 +1036,60 @@ public class ResearchBrowserScreen extends Screen {
                         ARGB.colorFromFloat(isHovered ? 1.0f : 0.8f, iconBrightness, iconBrightness, iconBrightness));
             }
             
+            // Draw new-research / new-page stars (1.12 parity: star if any known
+            // research in this category still has a RESEARCH / PAGE flag)
+            boolean[] newFlags = new boolean[] { false, false };
+            ThaumcraftCapabilities.getKnowledge(player).ifPresent(knowledge -> {
+                for (String rk : category.research.keySet()) {
+                    if (ThaumcraftCapabilities.isResearchKnown(player, rk)) {
+                        if (!newFlags[0] && knowledge.hasResearchFlag(rk, IPlayerKnowledge.EnumResearchFlag.RESEARCH)) {
+                            newFlags[0] = true;
+                        }
+                        if (!newFlags[1] && knowledge.hasResearchFlag(rk, IPlayerKnowledge.EnumResearchFlag.PAGE)) {
+                            newFlags[1] = true;
+                        }
+                        if (newFlags[0] && newFlags[1]) {
+                            break;
+                        }
+                    }
+                }
+            });
+            boolean nr = newFlags[0];
+            boolean np = newFlags[1];
+            if (nr) {
+                graphics.pose().pushMatrix();
+                graphics.pose().translate(getX() - 2, getY() + addonShift - 2);
+                graphics.pose().scale(0.25f);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 176.0F, 16.0F, 32, 32, 256, 256,
+                        ARGB.colorFromFloat(1.0f, 1.0f, 1.0f, 0.7f));
+                graphics.pose().popMatrix();
+            }
+            if (np) {
+                graphics.pose().pushMatrix();
+                graphics.pose().translate(getX() - 2, getY() + addonShift + 9);
+                graphics.pose().scale(0.25f);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 208.0F, 16.0F, 32, 32, 256, 256,
+                        ARGB.colorFromFloat(1.0f, 1.0f, 1.0f, 0.7f));
+                graphics.pose().popMatrix();
+            }
+            
             // Draw hover text
             if (isHovered) {
                 String displayText = getMessage().getString() + " (" + completion + "%)";
                 int textX = isRightSide ? (screenX + 9 - font.width(displayText)) : (getX() + 22);
                 graphics.text(font, displayText, textX, getY() + 4 + addonShift, 0xFFFFFFFF);
+                int t = 9;
+                if (nr) {
+                    String newResearchText = Component.translatable("tc.research.newresearch").getString();
+                    int newResearchTextX = isRightSide ? (screenX + 9 - font.width(newResearchText)) : (getX() + 22);
+                    graphics.text(font, newResearchText, newResearchTextX, getY() + 4 + t + addonShift, 0xFFFFFFFF);
+                    t += 9;
+                }
+                if (np) {
+                    String newPageText = Component.translatable("tc.research.newpage").getString();
+                    int newPageTextX = isRightSide ? (screenX + 9 - font.width(newPageText)) : (getX() + 22);
+                    graphics.text(font, newPageText, newPageTextX, getY() + 4 + t + addonShift, 0xFFFFFFFF);
+                }
             }
         }
     }

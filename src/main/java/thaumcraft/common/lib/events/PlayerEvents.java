@@ -25,6 +25,7 @@ import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.capabilities.IPlayerWarp;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.common.blocks.world.ore.BlockCrystalTC;
+import thaumcraft.common.lib.research.ResearchManager;
 import thaumcraft.common.items.resources.ItemVisCrystal;
 import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModItems;
@@ -123,7 +124,7 @@ public class PlayerEvents {
                 // Periodic knowledge sync (every 20 ticks)
                 if (player.tickCount % 20 == 0 && player instanceof ServerPlayer serverPlayer) {
                     String playerName = player.getName().getString();
-                    if (syncList.remove(playerName)) {
+                    if (syncList.remove(playerName) || ResearchManager.syncList.remove(playerName) != null) {
                         IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
                         if (knowledge != null) {
                             knowledge.sync(serverPlayer);
