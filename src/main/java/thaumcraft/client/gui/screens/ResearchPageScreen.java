@@ -54,10 +54,10 @@ public class ResearchPageScreen extends Screen {
     private static final int PAPER_TOP = -22;
     private static final int PAPER_BOTTOM = 197;
     // 1.12-style text: 1.12 drew page text at the default 1.0x font scale (no GL
-    // scale), wrapped to ~104 font-pixels; 13 lines on the first page (leaving room
+    // scale), wrapped to ~140 font-pixels; 13 lines on the first page (leaving room
     // for the title cluster), 16 on later pages. (Was 1.25x — too big vs 1.12.)
     private static final float TEXT_SCALE = 1.0f;
-    private static final int TEXT_WIDTH = 104;
+    private static final int TEXT_WIDTH = 140;
     private static final int MAX_TEXT_LINES = 16;
     private static final int MAX_TEXT_LINES_FIRST = 13; // first page leaves room for the title cluster
     
@@ -149,7 +149,6 @@ public class ResearchPageScreen extends Screen {
         currentStage = playerKnowledge.getResearchStage(research.getKey());
         if (currentStage < 1) currentStage = 1;
         
-        isComplete = playerKnowledge.isResearchComplete(research.getKey());
         hasAllRequisites = ResearchManager.doesPlayerHaveRequisites(player, research.getKey());
         
         // Get stages up to current (or all if complete)
@@ -162,6 +161,12 @@ public class ResearchPageScreen extends Screen {
             maxPages = 1;
             return;
         }
+        
+        // 1.12: a research is "complete" only once the player has progressed PAST the
+        // last stage (getResearchStage() > stages.length). Until then the book shows the
+        // current stage's "pre" text; once complete it shows the final "post" text
+        // (and unlocks addenda). This matches the map-view blink: blinking = not complete.
+        isComplete = currentStage > stages.length;
         
         // 1.12 shows ONLY the current stage's text (not all stages). getResearchStage()
         // is 1-based (1 on the first stage; stages.length+1 when complete), so the
@@ -592,8 +597,12 @@ public class ResearchPageScreen extends Screen {
         // 1.12 style (GuiResearchPage.drawRequirements): horizontal icon rows with a
         // translucent background bar + icons + checkmarks, stacked from the bottom of the
         // book (research lowest, then obtain, craft, know).
+        // 1.12 starts at (height-paneHeight)/2 - 16 + 210 == sh+194, then each row does y-=18,
+        // so the lowest (research) row sits at sh+176 — near the SCALED book's bottom (the
+        // book is drawn at 1.3x, so its bottom is ~sh+197). The old sh+159 start floated the
+        // rows up into the text area (the ALUMENTUM 'icons over the text' bug).
         int x = sw;
-        int y = sh + PANE_HEIGHT - 22;
+        int y = sh + PANE_HEIGHT + 13;
         
         if (stage.getResearch() != null && stage.getResearch().length > 0) {
             y -= 18;

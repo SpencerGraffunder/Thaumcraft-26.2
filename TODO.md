@@ -5,6 +5,40 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
+## 1.12 Book Parity — Round 5 (2026-09-12, built & installed; in-game check pending)
+
+- **Nitor item display (16 colors)**: item models were parented to the 3D
+  `cube_all` block model, which all rendered as the plain `nitor_core` cube.
+  Now 1.12-style flat generated items: `minecraft:item/generated` with
+  `layer0: thaumcraft:block/nitor_<color>` (new 16×16 real-art PNGs, verified
+  non-placeholder) over `layer1: thaumcraft:block/nitor_core`. Block models
+  unchanged (placed blocks stay 3D cubes).
+- **Research page text width**: `TEXT_WIDTH` 104 → **140** font-pixels (104
+  wrapped too aggressively vs 1.12);
+  `ResearchPageScreen.java:55-62`.
+- **Research completion semantics** (`ResearchPageScreen.java:162-169`):
+  `isComplete` was `playerKnowledge.isResearchComplete(key)`; now
+  `isComplete = currentStage > stages.length` — 1.12 shows the current stage's
+  "pre" text until the player has progressed *past* the last stage, then the
+  final "post" text + addenda. Matches the map-view blink (blinking = not
+  complete).
+- **Requirement icon rows** (`ResearchPageScreen.java:597-608`): start moved
+  from `sh + PANE_HEIGHT - 22` to `sh + PANE_HEIGHT + 13` — 1.12 puts the
+  lowest (research) row at ~`sh+176`, near the scaled book's bottom; the old
+  position floated the rows up into the text area (the ALUMENTUM "icons over
+  the text" bug).
+- **Scan entity names** (`research/scans.json`): 12 `name` keys renamed from
+  1.12 legacy `entity.<Name>.name` to the 26.2 namespaced
+  `entity.thaumcraft.<Name>` keys that the lang files already define
+  (Wisp, ThaumSlime, Firebat, TaintSeed, …).
+
+Verified: `CI=true ./gradlew build` green, **86/86 tests**, jar
+`thaumcraft-6.2.0+26.2.jar` (md5 `12bcc08ec26caccc05dcce5b829e0566`) installed
+into the `NeoForge 26.2` Modrinth profile. **User in-game verification pending:**
+nitor items show the colored overlay in inventory; book text wraps at ~140px;
+requirement rows sit at the book bottom, not over the text; scans show entity
+names; research text flips pre→post on completion.
+
 ## P0: Thaumonomicon recipe pages broken — RESOLVED (2026-09-09)
 
 Symptom (user-reported): in the book, the arcane-workbench recipe popup

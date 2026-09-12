@@ -55,6 +55,12 @@ The 26.2 port is under active development.
   `TextureIntegrityTest` guards against regressions (dangling model refs +
   placeholder checkerboards). Rebuilt jar shows **0 placeholder textures**;
   full test suite **86 green** (see [`TODO.md`](./TODO.md) P0).
+- **Thaumonomicon 1.12 parity (rounds 1–5, 2026-09-11/12):** recipe popups
+  rewritten to the 1.12 overlay look, bookmarks/ribbon positions, 1.0x text
+  scale at 140px wrap width, 1.12 completion semantics (pre/post stage text),
+  requirement rows at the book bottom, 3D infusion-matrix + altar popups, and
+  16 colored nitor items rendered 1.12-style (color overlay over the core).
+  All 253 book recipe references resolve; see [`TODO.md`](./TODO.md).
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a
   plain (integrated / Modrinth) client never sees — so opening the creative

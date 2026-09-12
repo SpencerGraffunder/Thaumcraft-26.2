@@ -1,3 +1,7 @@
 {
-  "parent": "thaumcraft:block/nitor_blue"
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "thaumcraft:block/nitor_blue",
+        "layer1": "thaumcraft:block/nitor_core"
+    }
 }
