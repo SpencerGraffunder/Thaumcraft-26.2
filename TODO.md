@@ -310,6 +310,24 @@ Fixes:
 
 All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 
+## P1: Golem parts (DARTS arms, SMART heads, advanced seals, modules) — RESOLVED (2026-09-14)
+
+Golems were missing several 1.12 parts. Added:
+- **DARTS arms**: `GolemArmDart` — ranged attack spawning `EntityGolemDart`
+  projectiles. Registered in `GolemProperties` with `GOLEMRANGED` tag and
+  FIGHTER/DEFT/RANGED traits. Build green.
+- **SMART_ARMORED head**: Registered in `GolemProperties` with MIND +
+  IRON_CHESTPLATE + LEATHER requirements, SMART trait. Build green.
+- **SMART_SCOUT head**: Registered in `GolemProperties` with MIND +
+  GOLEM_MODULE_AGGRESSION requirements, SCOUT/SMART/FRAGILE traits. Build green.
+- **SealEmptyAdvanced**: Advanced seal with 9 filter slots, requires SMART
+  trait. Registered in `SealHandler.registerDefaultSeals()`. Build green.
+- **ItemGolemModule**: Right-click on golem to add trait (FIGHTER for
+  AGGRESSION module, SCOUT for VISION module). Consumes item on success.
+  Registered in `ModItems` replacing placeholder items. Build green.
+
+All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
+
 ## Outstanding (runtime verification on a test server)
 
 - [ ] Entity spawning/behaviour, golem seals, bosses
