@@ -150,6 +150,11 @@ public class Thaumcraft {
             // Initialize focus system
             FocusInit.registerFoci();
             LOGGER.info("Registered {} focus elements", FocusInit.getAllFocusKeys().length);
+            
+            // Initialize biome aura modifiers
+            thaumcraft.common.world.biomes.BiomeHandler.registerBiomeInfo();
+            LOGGER.info("Registered biome aura modifiers");
+            
             LOGGER.info("Thaumcraft setup complete!");
         });
     }
