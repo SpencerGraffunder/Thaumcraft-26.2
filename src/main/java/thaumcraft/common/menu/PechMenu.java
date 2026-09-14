@@ -101,7 +101,8 @@ public class PechMenu extends AbstractContainerMenu implements ContainerListener
     
     /**
      * Generate trade results based on the input item.
-     * TODO: Implement full trading logic based on item value and Pech type.
+     * Consumes 1 item from input and gives items from the Pech's loot
+     * inventory proportional to the item's value.
      */
     private void generateTradeResults() {
         if (player.level().isClientSide()) return;
@@ -122,15 +123,57 @@ public class PechMenu extends AbstractContainerMenu implements ContainerListener
         // Check if Pech values this item
         if (!pech.isValued(input)) return;
         
-        // Get value and generate results
+        // Get value of input item (determines how much loot we give)
         int value = pech.getValue(input);
+        if (value <= 0) return;
         
-        // TODO: Implement full trading logic with tradeInventory and loot
-        // For now, just consume the input
-        tradeInventory.removeItem(0, 1);
+        // Consume 1 from input
+        input.shrink(1);
+        if (input.isEmpty()) {
+            tradeInventory.setItem(0, ItemStack.EMPTY);
+        }
+        
+        // Give items from pech's loot inventory proportional to value
+        // Each loot slot has a chance based on value to give 1-3 items
+        java.util.List<Integer> lootSlots = new java.util.ArrayList<>();
+        for (int i = 0; i < pech.loot.size(); i++) {
+            if (!pech.loot.get(i).isEmpty()) {
+                lootSlots.add(i);
+            }
+        }
+        
+        if (lootSlots.isEmpty()) {
+            // No loot to give, just consume input
+            broadcastChanges();
+            return;
+        }
+        
+        // Shuffle loot slots for variety
+        java.util.Collections.shuffle(lootSlots);
+        
+        // Determine how many output slots to fill based on value
+        int outputsToFill = Math.min(4, Math.max(1, value / 2));
+        
+        for (int outSlot = 0; outSlot < outputsToFill && !lootSlots.isEmpty(); outSlot++) {
+            int lootIdx = lootSlots.remove(0);
+            ItemStack lootStack = pech.loot.get(lootIdx).copy();
+            
+            // Give 1-3 items based on value
+            int count = Math.min(lootStack.getMaxStackSize(), Math.max(1, value / 4));
+            lootStack.setCount(Math.min(count, lootStack.getCount()));
+            
+            // Place in output slot (slots 1-4 in tradeInventory)
+            tradeInventory.setItem(1 + outSlot, lootStack);
+            
+            // Remove from pech's loot
+            pech.loot.get(lootIdx).shrink(lootStack.getCount());
+            if (pech.loot.get(lootIdx).getCount() <= 0) {
+                pech.loot.set(lootIdx, ItemStack.EMPTY);
+            }
+        }
         
         // Play trade sound
-        // TODO: pech.playSound(SoundsTC.pech_trade, 0.4f, 1.0f);
+        pech.playSound(thaumcraft.init.ModSounds.PECH_TRADE.get(), 0.4f, 1.0f);
         
         broadcastChanges();
     }

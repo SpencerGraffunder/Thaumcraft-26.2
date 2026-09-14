@@ -39,6 +39,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.BowItem;
@@ -405,10 +406,20 @@ public class EntityPech extends Monster implements RangedAttackMob {
             return InteractionResult.PASS;
         }
         
-        if (isTamed()) {
-            // TODO: Open trade GUI when implemented
-            // player.openMenu(...)
-            return level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
+        if (isTamed() && !level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            final int entityId = getId();
+            serverPlayer.openMenu(new net.minecraft.world.MenuProvider() {
+                @Override
+                public net.minecraft.network.chat.Component getDisplayName() {
+                    return net.minecraft.network.chat.Component.translatable("container.thaumcraft.pech_trade");
+                }
+
+                @Override
+                public net.minecraft.world.inventory.AbstractContainerMenu createMenu(int containerId, net.minecraft.world.entity.player.Inventory playerInventory, Player menuPlayer) {
+                    return new thaumcraft.common.menu.PechMenu(containerId, playerInventory, EntityPech.this);
+                }
+            }, buf -> buf.writeInt(entityId));
+            return InteractionResult.CONSUME;
         }
         
         return super.mobInteract(player, hand);

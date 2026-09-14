@@ -29,6 +29,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import thaumcraft.api.entities.ITaintedMob;
+import thaumcraft.common.world.aura.AuraHandler;
+import thaumcraft.common.blocks.world.taint.TaintHelper;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModEntities;
 import thaumcraft.init.ModItems;
@@ -128,8 +130,8 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
         
         if (!level().isClientSide()) {
             // Register with taint system
-            if (!firstRun || tickCount % 1200 == 0) {
-                // TODO: TaintHelper.removeTaintSeed/addTaintSeed
+            if (!firstRun) {
+                TaintHelper.addTaintSeed(level(), blockPosition());
                 firstRun = true;
             }
             
@@ -187,8 +189,7 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
     }
     
     private float getFluxSaturation() {
-        // TODO: Integrate with AuraHandler.getFluxSaturation
-        return 0.5f; // Default moderate saturation
+        return AuraHandler.getFluxSaturation(level(), blockPosition());
     }
     
     private void spreadTaint() {
@@ -198,7 +199,7 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
                 Mth.randomBetweenInclusive(random, -area, area),
                 Mth.randomBetweenInclusive(random, -area * 3, area * 3));
         
-        // TODO: TaintHelper.spreadFibres when implemented
+        TaintHelper.spreadFibres(level(), spreadPos, true);
     }
     
     protected void spawnTentacles(Entity target) {
@@ -250,7 +251,7 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
     
     @Override
     public void die(DamageSource source) {
-        // TODO: TaintHelper.removeTaintSeed
+        TaintHelper.removeTaintSeed(level(), blockPosition());
         super.die(source);
     }
     

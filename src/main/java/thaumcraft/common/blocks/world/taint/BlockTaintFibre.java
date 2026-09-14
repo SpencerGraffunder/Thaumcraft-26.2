@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import thaumcraft.common.blocks.world.taint.TaintHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.LevelAccessor;
@@ -197,14 +198,12 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
             return;
         }
         
-        // TODO: Check if near taint seed when TaintHelper is implemented
-        // if (!TaintHelper.isNearTaintSeed(level, pos)) {
-        //     die(level, pos, state);
-        //     return;
-        // }
+        if (!TaintHelper.isNearTaintSeed(level, pos)) {
+            die(level, pos, state);
+            return;
+        }
         
-        // TODO: Spread taint fibers when TaintHelper is implemented
-        // TaintHelper.spreadFibres(level, pos);
+        TaintHelper.spreadFibres(level, pos);
     }
     
     /**
