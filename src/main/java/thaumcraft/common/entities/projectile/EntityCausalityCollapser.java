@@ -8,6 +8,7 @@ import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import thaumcraft.init.ModEntities;
+import java.util.List;
 
 /**
  * EntityCausalityCollapser - Special projectile that closes flux rifts.
@@ -80,11 +81,13 @@ public class EntityCausalityCollapser extends ThrowableProjectile {
             // Create medium explosion (larger than alumentum)
             level().explode(this, getX(), getY(), getZ(), 2.0f, Level.ExplosionInteraction.TNT);
             
-            // TODO: Find and collapse nearby flux rifts when EntityFluxRift is implemented
-            // List<EntityFluxRift> rifts = EntityUtils.getEntitiesInRange(level(), getX(), getY(), getZ(), this, EntityFluxRift.class, 3.0);
-            // for (EntityFluxRift rift : rifts) {
-            //     rift.setCollapse(true);
-            // }
+            // Find and collapse nearby flux rifts
+            List<thaumcraft.common.entities.EntityFluxRift> rifts = 
+                level().getEntitiesOfClass(thaumcraft.common.entities.EntityFluxRift.class,
+                    new net.minecraft.world.phys.AABB(getX(), getY(), getZ(), getX(), getY(), getZ()).inflate(3.0));
+            for (thaumcraft.common.entities.EntityFluxRift rift : rifts) {
+                rift.setCollapsing(true);
+            }
             
             discard();
         }

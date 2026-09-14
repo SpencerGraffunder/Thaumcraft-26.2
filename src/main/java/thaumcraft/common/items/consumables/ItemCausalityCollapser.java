@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
+import thaumcraft.common.entities.projectile.EntityCausalityCollapser;
 
 /**
  * Causality Collapser - A powerful throwable that creates a void implosion.
@@ -43,11 +44,9 @@ public class ItemCausalityCollapser extends Item {
                 0.4f / (level.getRandom().nextFloat() * 0.4f + 0.8f));
 
         if (!level.isClientSide()) {
-            // TODO: Spawn EntityCausalityCollapser projectile
-            // This creates a devastating void implosion where it lands
-            // EntityCausalityCollapser proj = new EntityCausalityCollapser(level, player);
-            // proj.shootFromRotation(player, player.getXRot(), player.getYRot(), -5.0f, 0.8f, 2.0f);
-            // level.addFreshEntity(proj);
+            EntityCausalityCollapser proj = new EntityCausalityCollapser(level, player);
+            proj.shootFromRotation(player, player.getXRot(), player.getYRot(), -5.0f, 0.8f, 2.0f);
+            level.addFreshEntity(proj);
         }
 
         return InteractionResult.SUCCESS;

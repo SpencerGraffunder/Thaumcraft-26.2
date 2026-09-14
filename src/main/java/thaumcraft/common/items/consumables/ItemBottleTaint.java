@@ -32,10 +32,10 @@ public class ItemBottleTaint extends Item {
                 0.4f / (level.getRandom().nextFloat() * 0.4f + 0.8f));
 
         if (!level.isClientSide()) {
-            // TODO: Spawn EntityBottleTaint projectile
-            // EntityBottleTaint bottle = new EntityBottleTaint(level, player);
-            // bottle.shootFromRotation(player, player.getXRot(), player.getYRot(), -5.0f, 0.66f, 1.0f);
-            // level.addFreshEntity(bottle);
+            thaumcraft.common.entities.projectile.EntityBottleTaint bottle = 
+                new thaumcraft.common.entities.projectile.EntityBottleTaint(level, player);
+            bottle.shootFromRotation(player, player.getXRot(), player.getYRot(), -5.0f, 0.66f, 1.0f);
+            level.addFreshEntity(bottle);
         }
 
         return InteractionResult.SUCCESS;
