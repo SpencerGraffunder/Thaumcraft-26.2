@@ -281,8 +281,21 @@ public class PlayerKnowledge {
                 }
             }
             
-            // TODO: Add auto-unlock research when ResearchCategories is implemented
-            // addAutoUnlockResearch();
+            // Add auto-unlock research
+            addAutoUnlockResearch();
+        }
+        
+        /**
+         * Automatically unlock research entries that have the AUTOUNLOCK meta flag.
+         */
+        private void addAutoUnlockResearch() {
+            for (thaumcraft.api.research.ResearchCategory cat : thaumcraft.api.research.ResearchCategories.researchCategories.values()) {
+                for (thaumcraft.api.research.ResearchEntry ri : cat.research.values()) {
+                    if (ri.hasMeta(thaumcraft.api.research.ResearchEntry.EnumResearchMeta.AUTOUNLOCK)) {
+                        addResearch(ri.getKey());
+                    }
+                }
+            }
         }
     }
 }
