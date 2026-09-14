@@ -337,6 +337,28 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
       (billboard beams, block-atlas sprite substitutions, banner tint limits)
 - [ ] Focus projectile behavior (impact, cloud, mine) — newly wired
 - [ ] Arcane workbench crafting with validation — newly wired
+- [ ] Golem DARTS arms — newly wired (need in-game test)
+- [ ] Golem SMART heads (ARMORED, SCOUT) — newly wired (need in-game test)
+- [ ] SealEmptyAdvanced — newly wired (need in-game test)
+- [ ] GolemModule item (AGGRESSION/VISION) — newly wired (need in-game test)
+
+## New gaps found in feature-gap audit (2026-09-14)
+
+### Golem system
+- **Golem part functions missing** (MEDIUM): 1.12 has `parts/` package with `GolemArmDart`, `GolemLegLevitator`, `GolemLegWheels`. 26.2 has no `parts/` package — all `IArmFunction`/`ILegFunction` fields on registered parts are `null`. FLYER works via built-in `GolemFlyingMoveControl`. DARTS arm needs `IArmFunction` implementation for `onRangedAttack`.
+- **Seal config GUI unwired** (MEDIUM): `SealMenu` + `SealScreen` exist but every seal's `getContainer`/`getGUI` returns null. Filtered/guard/use seals' config UIs are unreachable.
+- **Golem components use placeholder vanilla items** (MEDIUM): WOOD→oak_planks, BRASS→gold_ingot, THAUMIUM→diamond, VOID→obsidian, mechanism→clock. System works but crafting/disassembly uses wrong items.
+
+### Taint system
+- **Taint spread cycle disconnected** (MEDIUM): `TaintHelper.isNearTaintSeed` doesn't check actual `EntityTaintSeed` ("TODO: Check for EntityTaintSeed when ported" — even though it IS ported). `EntityTaintSeed` never calls `TaintHelper.addTaintSeed/removeTaintSeed/spreadFibres`. `BlockTaintFibre` fiber spread near seeds is TODO.
+
+### Entity wiring
+- **EntityCausalityCollapser↔EntityFluxRift** (MEDIUM): `EntityCausalityCollapser.java:83` — "TODO: Find and collapse nearby flux rifts when EntityFluxRift is implemented" (EntityFluxRift exists — wiring gap).
+- **EntityFluxRift wisp spawning** (LOW): `EntityFluxRift.java:380` — wisp spawning TODO.
+
+### Items
+- **Vis-discount mundane/fancy gear missing** (MEDIUM): 1.12 `baubles/ItemBaubles.java` (mundane/fancy amulet, ring, girdle = vis-discount gear) not ported. 26.2 has `ItemCloudRing`, `ItemVoidseerCharm`, vis amulets, but not the mundane/fancy set.
+- **ItemFocusPouch Curios integration** (LOW): `ItemFocusPouch.java:131` — "TODO: Implement Curios integration for belt slot".
 
 ## P1: Functional gaps — RESOLVED (2026-09-04)
 
