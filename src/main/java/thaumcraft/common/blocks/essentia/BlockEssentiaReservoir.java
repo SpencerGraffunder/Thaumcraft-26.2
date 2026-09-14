@@ -83,11 +83,22 @@ public class BlockEssentiaReservoir extends Block implements EntityBlock {
         }
 
 
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof TileEssentiaReservoir reservoir) {
-            // TODO: Implement interaction
-            // - Right-click with phial to fill/drain
-            // - Apply label for filtering
+        // Fill from phial to reservoir
+        ItemStack held2 = player.getMainHandItem();
+        if (held2.getItem() instanceof IEssentiaContainerItem container2) {
+            AspectList heldAspects2 = container2.getAspects(held2);
+            if (heldAspects2 != null && heldAspects2.size() > 0) {
+                BlockEntity be2 = level.getBlockEntity(pos);
+                if (be2 instanceof TileEssentiaReservoir tile2) {
+                    Aspect aspect2 = heldAspects2.getAspects()[0];
+                    if (tile2.addToContainer(aspect2, 1) > 0) {
+                        AspectList cur2 = container2.getAspects(held2);
+                        cur2.add(aspect2, -1);
+                        container2.setAspects(held2, cur2);
+                        return InteractionResult.CONSUME;
+                    }
+                }
+            }
         }
 
         return InteractionResult.CONSUME;
