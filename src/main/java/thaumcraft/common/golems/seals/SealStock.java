@@ -136,7 +136,12 @@ public class SealStock extends SealFiltered implements ISealConfigToggles {
         if (!ItemStack.isSameItem(stack, filter)) {
             // Check ore/tag matching
             if (props[2].getValue()) {
-                // TODO: Implement tag-based matching
+                // Tag-based matching: check if both items share any common tag
+                for (var tag : stack.getItem().builtInRegistryHolder().tags().toList()) {
+                    if (filter.is(tag)) {
+                        return true;
+                    }
+                }
                 return false;
             }
             // Check mod matching
