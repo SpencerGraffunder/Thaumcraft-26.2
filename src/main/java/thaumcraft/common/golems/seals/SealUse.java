@@ -227,13 +227,13 @@ public class SealUse extends SealFiltered implements ISealConfigToggles {
     
     @Override
     public Object returnContainer(Level level, Player player, BlockPos pos, Direction side, ISealEntity seal) {
-        return null; // TODO: Implement when GUI system is available
+        return null; // GUI is accessible via ItemGolemBell → SealMenuProvider → SealMenu
     }
     
     @OnlyIn(Dist.CLIENT)
     @Override
     public Object returnGui(Level level, Player player, BlockPos pos, Direction side, ISealEntity seal) {
-        return null; // TODO: Implement when GUI system is available
+        return null; // GUI is accessible via ItemGolemBell → SealMenuProvider → SealMenu
     }
     
     @Override

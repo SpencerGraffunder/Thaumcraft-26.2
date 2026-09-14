@@ -67,6 +67,13 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
     @Nullable
     private ItemStack recipeResult = null;
 
+    // Recipe queue system
+    private final java.util.ArrayList<Integer> recipeHash = new java.util.ArrayList<>();
+    private final java.util.ArrayList<AspectList> recipeEssentia = new java.util.ArrayList<>();
+    private final java.util.ArrayList<String> recipePlayer = new java.util.ArrayList<>();
+    public int maxRecipes = 5;
+    public int currentCraft = 0;
+
     // Animation (client-side)
     public float rotation = 0;
     public float rotationLast = 0;
@@ -98,6 +105,20 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
         if (recipeResult != null && !recipeResult.isEmpty()) {
             output.store("RecipeResult", ItemStack.OPTIONAL_CODEC, recipeResult);
         }
+        
+        // Recipe queue
+        output.putInt("MaxRecipes", maxRecipes);
+        output.putInt("CurrentCraft", currentCraft);
+        output.putInt("RecipeCount", recipeHash.size());
+        for (int i = 0; i < recipeHash.size(); i++) {
+            output.putInt("RecipeHash" + i, recipeHash.get(i));
+            if (i < recipeEssentia.size()) {
+                recipeEssentia.get(i).writeToNBT(output, "RecipeEssentia" + i);
+            }
+            if (i < recipePlayer.size()) {
+                output.putString("RecipePlayer" + i, recipePlayer.get(i));
+            }
+        }
     }
 
     @Override
@@ -120,6 +141,25 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
             recipeResult = input.read("RecipeResult", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
         } else {
             recipeResult = null;
+        }
+        
+        // Recipe queue
+        maxRecipes = input.getIntOr("MaxRecipes", 5);
+        currentCraft = input.getIntOr("CurrentCraft", 0);
+        int recipeCount = input.getIntOr("RecipeCount", 0);
+        recipeHash.clear();
+        recipeEssentia.clear();
+        recipePlayer.clear();
+        for (int i = 0; i < recipeCount; i++) {
+            recipeHash.add(input.getIntOr("RecipeHash" + i, -1));
+            if (input.keySet().contains("RecipeEssentia" + i)) {
+                AspectList aspects = new AspectList();
+                aspects.readFromNBT(input, "RecipeEssentia" + i);
+                recipeEssentia.add(aspects);
+            }
+            if (input.keySet().contains("RecipePlayer" + i)) {
+                recipePlayer.add(input.getStringOr("RecipePlayer" + i, ""));
+            }
         }
     }
 
@@ -311,6 +351,93 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
         if (level == null) return 0;
         return TileBellows.getBellows(level, worldPosition, 
                 new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST});
+    }
+
+    // ==================== Recipe Queue ====================
+
+    /**
+     * Add a recipe to the crafting queue.
+     * @return true if the recipe was added, false if the queue is full
+     */
+    public boolean addRecipeToQueue(int hash, AspectList aspects, String playerName) {
+        if (recipeHash.size() >= maxRecipes) {
+            return false;
+        }
+        recipeHash.add(hash);
+        recipeEssentia.add(aspects.copy());
+        recipePlayer.add(playerName);
+        markDirtyAndSync();
+        return true;
+    }
+
+    /**
+     * Remove a recipe from the queue.
+     */
+    public void removeRecipeFromQueue(int index) {
+        if (index >= 0 && index < recipeHash.size()) {
+            recipeHash.remove(index);
+            if (index < recipeEssentia.size()) recipeEssentia.remove(index);
+            if (index < recipePlayer.size()) recipePlayer.remove(index);
+            // Adjust currentCraft index if needed
+            if (index < currentCraft) {
+                currentCraft--;
+            }
+            markDirtyAndSync();
+        }
+    }
+
+    /**
+     * Clear the entire recipe queue.
+     */
+    public void clearRecipeQueue() {
+        recipeHash.clear();
+        recipeEssentia.clear();
+        recipePlayer.clear();
+        currentCraft = 0;
+        markDirtyAndSync();
+    }
+
+    /**
+     * Get the recipe hash at the given queue index.
+     */
+    public int getRecipeHash(int index) {
+        return (index >= 0 && index < recipeHash.size()) ? recipeHash.get(index) : -1;
+    }
+
+    /**
+     * Get the recipe count in the queue.
+     */
+    public int getRecipeCount() {
+        return recipeHash.size();
+    }
+
+    /**
+     * Get the max queue size.
+     */
+    public int getMaxRecipes() {
+        return maxRecipes;
+    }
+
+    /**
+     * Set the max queue size.
+     */
+    public void setMaxRecipes(int max) {
+        this.maxRecipes = Math.max(1, Math.min(10, max));
+        markDirtyAndSync();
+    }
+
+    /**
+     * Get the current crafting index.
+     */
+    public int getCurrentCraft() {
+        return currentCraft;
+    }
+
+    /**
+     * Get the player name for a queued recipe.
+     */
+    public String getRecipePlayer(int index) {
+        return (index >= 0 && index < recipePlayer.size()) ? recipePlayer.get(index) : "";
     }
 
     // ==================== IAspectSource ====================

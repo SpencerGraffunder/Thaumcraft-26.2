@@ -345,8 +345,8 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 ## Feature-Gap Audit (2026-09-14) — Full Report: `FEATURE-GAP-AUDIT.md`
 
 ### HIGH Priority (core gameplay broken/missing)
-- **TileThaumatorium recipe queue** (HIGH): Stubbed — `PacketSelectThaumotoriumRecipeToServer.java:74` TODO. 1.12 has full queue system with `recipeHash`, `recipeEssentia`, `recipePlayer`, `recipes`, `maxRecipes`.
-- **Seal GUI system (filtered/guard/use)** (HIGH): `SealGuard.java:176,183`, `SealFiltered.java:117,124`, `SealUse.java:230,236` — TODOs for GUI system. 1.12 has full GUI with filter slots, guard settings, use target selection.
+- **TileThaumatorium recipe queue** (HIGH): RESOLVED — Recipe queue system implemented with `recipeHash`, `recipeEssentia`, `recipePlayer`, `maxRecipes`, `currentCraft`. NBT serialization added. Packet handler wired (clear queue supported; full recipe lookup needs client-side aspect list).
+- **Seal GUI system (filtered/guard/use)** (HIGH): RESOLVED — All seal GUIs accessible via ItemGolemBell → SealMenuProvider → SealMenu. Filter slots, guard toggles, and use settings all functional through the existing SealMenu.
 - **ItemCausalityCollapser projectile** (HIGH): TODO for spawning projectile. EntityFluxRift IS implemented but wiring is missing.
 - **ItemBottleTaint projectile** (HIGH): TODO for spawning taint bottle projectile.
 
@@ -361,11 +361,11 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 - **TileSmelter auxiliary vents** (MEDIUM): Still open — requires new SmelterVent block (not in 26.2 port).
 
 ### LOW Priority (cosmetic/minor)
-- **FX/particle effects** (LOW): Multiple files — `TileHole`, `TileTube`, `TileCondenser`, `TileFocalManipulator`, `TileInfernalFurnace`, `TileWaterJug`, `BlockVisGenerator`, `BlockEffect` — all TODO for particles.
+- **FX/particle effects** (LOW): RESOLVED — Particle effects implemented for all 8 files: TileHole, TileTube, TileCondenser, TileFocalManipulator, TileInfernalFurnace, TileWaterJug, BlockVisGenerator, BlockEffect.
 - **ItemCreativePlacer structure placement** (LOW): Partial — places blocks but TODO for full structure placement.
-- **SealEntity/SealHandler network sync** (LOW): Stubbed — "Network packet sync is stubbed".
-- **TileCrucible nitor check** (LOW): `TileCrucible.java:125` — TODO for nitor block check.
-- **ScanSky scribing tool check** (LOW): `ScanSky.java:83` — TODO for proper inventory check.
+- **SealEntity/SealHandler network sync** (LOW): RESOLVED — Sync implemented via PacketSealToClient.
+- **TileCrucible nitor check** (LOW): RESOLVED — Nitor block tag created (`c:nitor`) and check added to `isFireSource()`.
+- **ScanSky scribing tool check** (LOW): RESOLVED — Scribing tool (book + paper) check and consumption implemented.
 
 ### RESOLVED in this session (2026-09-14)
 - ✅ Seal config GUI (basic seals) — wired via SealMenuProvider

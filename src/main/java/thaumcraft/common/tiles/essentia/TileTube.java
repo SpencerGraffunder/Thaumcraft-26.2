@@ -141,7 +141,12 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
             double fx = -Mth.sin(ry / 180.0f * (float) Math.PI) * Mth.cos(rp / 180.0f * (float) Math.PI);
             double fz = Mth.cos(ry / 180.0f * (float) Math.PI) * Mth.cos(rp / 180.0f * (float) Math.PI);
             double fy = -Mth.sin(rp / 180.0f * (float) Math.PI);
-            // TODO: FXDispatcher.INSTANCE.drawVentParticles(...)
+            // Spawn vent particles
+            level.addParticle(net.minecraft.core.particles.ParticleTypes.PORTAL,
+                pos.getX() + 0.5 + fx * 0.3,
+                pos.getY() + 0.5 + fy * 0.3,
+                pos.getZ() + 0.5 + fz * 0.3,
+                fx * 0.1, fy * 0.1, fz * 0.1);
         }
     }
 

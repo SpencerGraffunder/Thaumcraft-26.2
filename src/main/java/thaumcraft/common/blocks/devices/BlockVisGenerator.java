@@ -93,7 +93,9 @@ public class BlockVisGenerator extends Block implements EntityBlock {
                 double x = pos.getX() + 0.5 + (face.getStepX() == 0 ? random.nextGaussian() * 0.1 : face.getStepX() * 0.1);
                 double y = pos.getY() + 0.5 + (face.getStepY() == 0 ? random.nextGaussian() * 0.1 : face.getStepY() * 0.1);
                 double z = pos.getZ() + 0.5 + (face.getStepZ() == 0 ? random.nextGaussian() * 0.1 : face.getStepZ() * 0.1);
-                // TODO: Spawn spark particles when FXDispatcher is implemented
+                // Spawn spark particles
+                level.addParticle(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                    x, y, z, 0, 0, 0);
             }
         }
     }

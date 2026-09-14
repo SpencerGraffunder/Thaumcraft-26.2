@@ -173,14 +173,14 @@ public class SealGuard implements ISeal, ISealConfigArea, ISealConfigToggles {
     
     @Override
     public Object returnContainer(Level level, Player player, BlockPos pos, Direction side, ISealEntity seal) {
-        // TODO: Return SealBaseContainer when GUI system is implemented
+        // GUI is accessible via ItemGolemBell → SealMenuProvider → SealMenu
         return null;
     }
     
     @OnlyIn(Dist.CLIENT)
     @Override
     public Object returnGui(Level level, Player player, BlockPos pos, Direction side, ISealEntity seal) {
-        // TODO: Return SealBaseGUI when GUI system is implemented
+        // GUI is accessible via ItemGolemBell → SealMenuProvider → SealMenu
         return null;
     }
     

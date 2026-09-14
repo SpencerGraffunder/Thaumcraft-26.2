@@ -348,8 +348,14 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
     public boolean triggerEvent(int id, int param) {
         if (id == 3) {
             if (level != null && level.isClientSide()) {
-                // TODO: Add particle effects when FX system is ported
-                // FXDispatcher.INSTANCE.furnaceLavaFx(...)
+                // Spawn lava particles
+                for (int i = 0; i < 5; i++) {
+                    double px = worldPosition.getX() + 0.3 + level.getRandom().nextDouble() * 0.4;
+                    double py = worldPosition.getY() + 0.3 + level.getRandom().nextDouble() * 0.4;
+                    double pz = worldPosition.getZ() + 0.3 + level.getRandom().nextDouble() * 0.4;
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.LAVA,
+                        px, py, pz, 0, 0.05, 0);
+                }
                 level.playLocalSound(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
                         SoundEvents.LAVA_POP, SoundSource.BLOCKS,
                         0.1f + level.getRandom().nextFloat() * 0.1f,

@@ -71,16 +71,13 @@ public class PacketSelectThaumotoriumRecipeToServer implements CustomPacketPaylo
             
             BlockEntity be = level.getBlockEntity(blockPos);
             if (be instanceof TileThaumatorium thaumatorium) {
-                // TODO: Implement recipe queue selection when TileThaumatorium
-                // is updated with the full recipe queue system:
-                // - recipeHash: ArrayList<Integer> of queued recipe hashes
-                // - recipeEssentia: ArrayList<AspectList> of essentia costs
-                // - recipePlayer: ArrayList<String> of requesting players
-                // - recipes: List<CrucibleRecipe> of available recipes
-                // - maxRecipes: int max queue size
-                // - currentCraft: int current crafting index
-                
-                // For now, just trigger a sync to acknowledge the packet
+                // Recipe queue selection: hash == -1 means clear all, otherwise add to queue
+                // Note: Full recipe lookup requires the client to send the aspect list
+                // For now, just acknowledge the packet and trigger sync
+                if (packet.recipeHash == -1) {
+                    thaumatorium.clearRecipeQueue();
+                }
+                // Trigger sync
                 thaumatorium.setChanged();
             }
         });

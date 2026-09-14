@@ -173,7 +173,13 @@ public class TileWaterJug extends TileThaumcraft {
                 int vy = (tile.visualZone / 5 / 5) % 3;
                 int vz = tile.visualZone % 5;
                 
-                // TODO: FXDispatcher.INSTANCE.waterTrailFx(pos, pos.offset(vx - 2, vy - 1, vz - 2), tile.counter, 0x2870DA, 0.1f);
+                // Spawn water trail particles
+                BlockPos targetPos = pos.offset(vx - 2, vy - 1, vz - 2);
+                double px = targetPos.getX() + 0.5;
+                double py = targetPos.getY() + 0.5;
+                double pz = targetPos.getZ() + 0.5;
+                level.addParticle(net.minecraft.core.particles.ParticleTypes.DRIPPING_WATER,
+                    px, py, pz, 0, 0, 0);
             }
             tile.visualCounter--;
         }

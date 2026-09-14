@@ -183,8 +183,12 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
         
         // Visual effects during crafting
         if (tile.vis > 0.0f && level.getRandom().nextFloat() < 0.5f) {
-            // TODO: Add particle effects when FX system is ported
-            // FXDispatcher.INSTANCE.drawGenericParticles(...)
+            // Spawn generic particles during crafting
+            double px = pos.getX() + 0.5 + level.getRandom().nextDouble() * 0.4 - 0.2;
+            double py = pos.getY() + 0.5 + level.getRandom().nextDouble() * 0.4 - 0.2;
+            double pz = pos.getZ() + 0.5 + level.getRandom().nextDouble() * 0.4 - 0.2;
+            level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT,
+                px, py, pz, 0, 0.05, 0);
         }
     }
     
@@ -442,7 +446,15 @@ public class TileFocalManipulator extends TileThaumcraftInventory {
         }
         if (id == 5) {
             // Vis sparkle effect
-            // TODO: Add particle effect when FX system is ported
+            if (level.isClientSide()) {
+                for (int i = 0; i < 10; i++) {
+                    double px = worldPosition.getX() + 0.5 + level.getRandom().nextDouble() * 0.4 - 0.2;
+                    double py = worldPosition.getY() + 0.5 + level.getRandom().nextDouble() * 0.4 - 0.2;
+                    double pz = worldPosition.getZ() + 0.5 + level.getRandom().nextDouble() * 0.4 - 0.2;
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT,
+                        px, py, pz, 0, 0.1, 0);
+                }
+            }
             return true;
         }
         return super.triggerEvent(id, param);

@@ -114,7 +114,15 @@ public class TileCondenser extends TileThaumcraft implements IEssentiaTransport 
     public static void clientTick(Level level, BlockPos pos, BlockState state, TileCondenser tile) {
         // Client-side particle effects
         if (tile.essentia > 0 && !tile.uncloggedList.isEmpty() && tile.count % Math.max(3, tile.interval / 50) == 0) {
-            // TODO: Spawn spark particles at random lattice block
+            // Spawn spark particles at random lattice block
+            if (!tile.uncloggedList.isEmpty()) {
+                BlockPos latticeBlock = BlockPos.of(tile.uncloggedList.get(level.getRandom().nextInt(tile.uncloggedList.size())));
+                double px = latticeBlock.getX() + 0.5 + level.getRandom().nextDouble() * 0.2 - 0.1;
+                double py = latticeBlock.getY() + 0.5 + level.getRandom().nextDouble() * 0.2 - 0.1;
+                double pz = latticeBlock.getZ() + 0.5 + level.getRandom().nextDouble() * 0.2 - 0.1;
+                level.addParticle(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                    px, py, pz, 0, 0, 0);
+            }
         }
         tile.count++;
     }

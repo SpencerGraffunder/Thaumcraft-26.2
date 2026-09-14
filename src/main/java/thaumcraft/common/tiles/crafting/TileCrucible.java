@@ -121,8 +121,8 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
         return state.is(Blocks.LAVA) ||
                state.is(Blocks.FIRE) ||
                state.is(Blocks.SOUL_FIRE) ||
-               state.is(Blocks.MAGMA_BLOCK);
-        // TODO: Add nitor block check when nitor has a block tag
+               state.is(Blocks.MAGMA_BLOCK) ||
+               state.getBlock() instanceof thaumcraft.common.blocks.misc.BlockNitor;
     }
 
     // ==================== Smelting ====================

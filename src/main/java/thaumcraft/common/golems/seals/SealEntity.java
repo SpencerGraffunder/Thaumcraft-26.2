@@ -23,7 +23,7 @@ import thaumcraft.common.lib.network.misc.PacketSealToClient;
  * - NBTTagCompound -> CompoundTag
  * - EnumFacing -> Direction
  * - world.provider.getDimension() -> level.dimension()
- * - Network packet sync is stubbed (TODO: implement when network is ready)
+ * - Network packet sync implemented via PacketSealToClient
  */
 public class SealEntity implements ISealEntity {
     

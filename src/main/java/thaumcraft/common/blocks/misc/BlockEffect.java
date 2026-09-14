@@ -111,10 +111,22 @@ public class BlockEffect extends Block {
     
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        // TODO: Add particle effects when FXDispatcher is implemented
-        // For shock: spark particles
-        // For sap: purple spark particles
-        // Glimmer: no particles
+        // Spawn particles based on effect type
+        if (effectType == EffectType.SAP) {
+            // Purple spark particles for sap
+            double x = pos.getX() + 0.5 + random.nextDouble() * 0.2 - 0.1;
+            double y = pos.getY() + 0.5 + random.nextDouble() * 0.2 - 0.1;
+            double z = pos.getZ() + 0.5 + random.nextDouble() * 0.2 - 0.1;
+            level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT,
+                x, y, z, 0, 0.05, 0);
+        } else if (effectType == EffectType.SHOCK) {
+            // Spark particles for shock
+            double x = pos.getX() + 0.5 + random.nextDouble() * 0.2 - 0.1;
+            double y = pos.getY() + 0.5 + random.nextDouble() * 0.2 - 0.1;
+            double z = pos.getZ() + 0.5 + random.nextDouble() * 0.2 - 0.1;
+            level.addParticle(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                x, y, z, 0, 0, 0);
+        }
     }
     
     // ==================== Factory Methods ====================

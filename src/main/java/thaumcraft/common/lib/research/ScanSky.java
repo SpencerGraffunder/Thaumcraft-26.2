@@ -80,8 +80,14 @@ public class ScanSky implements IScanThing {
             }
             
             // Check for scribing tools and paper
-            // TODO: Implement proper inventory check for scribing tools
-            // For now, just progress the research
+            if (!hasScribingTools(player)) {
+                player.sendSystemMessage(Component.translatable("tc.celestial.fail.2"));
+                return;
+            }
+            
+            // Consume scribing tools and paper
+            consumeScribingTools(player);
+            
             ThaumcraftApi.internalMethods.progressResearch(player, key);
             cleanResearch(player, dayPrefix);
             
@@ -130,6 +136,46 @@ public class ScanSky implements IScanThing {
         }
         
         ResearchManager.syncList.put(player.getName().getString(), true);
+    }
+    
+    /**
+     * Check if the player has scribing tools (quill/brush + paper).
+     */
+    private boolean hasScribingTools(Player player) {
+        for (ItemStack stack : player.getInventory()) {
+            if (stack.getItem() instanceof net.minecraft.world.item.BucketItem) {
+                // Quill pen equivalent
+                if (stack.getItem() == net.minecraft.world.item.Items.WRITABLE_BOOK ||
+                    stack.getItem() == net.minecraft.world.item.Items.BOOK) {
+                    // Check for paper
+                    for (ItemStack paper : player.getInventory()) {
+                        if (paper.getItem() == net.minecraft.world.item.Items.PAPER) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Consume scribing tools and paper from inventory.
+     */
+    private void consumeScribingTools(Player player) {
+        for (ItemStack stack : player.getInventory()) {
+            if ((stack.getItem() == net.minecraft.world.item.Items.WRITABLE_BOOK ||
+                stack.getItem() == net.minecraft.world.item.Items.BOOK) && stack.getCount() > 0) {
+                stack.shrink(1);
+                break;
+            }
+        }
+        for (ItemStack paper : player.getInventory()) {
+            if (paper.getItem() == net.minecraft.world.item.Items.PAPER && paper.getCount() > 0) {
+                paper.shrink(1);
+                break;
+            }
+        }
     }
     
     @Override

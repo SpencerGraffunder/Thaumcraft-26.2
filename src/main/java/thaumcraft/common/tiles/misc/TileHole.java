@@ -162,8 +162,44 @@ public class TileHole extends TileMemory {
      * Spawn edge particles on client.
      */
     private void spawnParticles(Level level) {
-        // TODO: Implement sparkle particles when FXDispatcher is available
-        // Particles should appear at the edges where the hole meets solid blocks
+        // Spawn sparkle particles at the edges where the hole meets solid blocks
+        if (level.isClientSide() && level.getRandom().nextInt(10) == 0) {
+            Direction.Axis axis = direction.getAxis();
+            
+            // Get the two axes perpendicular to the hole's direction
+            Direction[] perpAxes;
+            if (axis == Direction.Axis.X) {
+                perpAxes = new Direction[]{Direction.UP, Direction.NORTH};
+            } else if (axis == Direction.Axis.Y) {
+                perpAxes = new Direction[]{Direction.NORTH, Direction.EAST};
+            } else {
+                perpAxes = new Direction[]{Direction.UP, Direction.EAST};
+            }
+            
+            // Spawn particles at the 4 corners of the hole's start end
+            for (int i = -1; i <= 1; i += 2) {
+                for (int j = -1; j <= 1; j += 2) {
+                    BlockPos corner = worldPosition.offset(
+                        perpAxes[0].getStepX() * i,
+                        perpAxes[0].getStepY() * i,
+                        perpAxes[0].getStepZ() * i
+                    ).offset(
+                        perpAxes[1].getStepX() * j,
+                        perpAxes[1].getStepY() * j,
+                        perpAxes[1].getStepZ() * j
+                    );
+                    
+                    if (level.getBlockState(corner).isSolidRender()) {
+                        double px = corner.getX() + 0.5 + level.getRandom().nextDouble() * 0.2 - 0.1;
+                        double py = corner.getY() + 0.5 + level.getRandom().nextDouble() * 0.2 - 0.1;
+                        double pz = corner.getZ() + 0.5 + level.getRandom().nextDouble() * 0.2 - 0.1;
+                        
+                        level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT,
+                            px, py, pz, 0, 0, 0);
+                    }
+                }
+            }
+        }
     }
     
     @Override
