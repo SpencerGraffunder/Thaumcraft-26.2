@@ -351,14 +351,14 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 - **ItemBottleTaint projectile** (HIGH): TODO for spawning taint bottle projectile.
 
 ### MEDIUM Priority
-- **TileEssentiaReservoir interaction** (MEDIUM): `BlockEssentiaReservoir.java:88,99` — TODO for phial fill/drain + flux pollution.
-- **SealHarvest replanting** (MEDIUM): `SealHarvest.java:131` — TODO for seed system replanting.
+- **TileEssentiaReservoir interaction** (MEDIUM): RESOLVED — Phial fill/drain wired. Flux pollution on break still TODO.
+- **SealHarvest replanting** (MEDIUM): Still open — requires seed system (`ThaumcraftApi.getSeed`). Complex API differences between 1.12 and 26.2.
 - **SealStock tag-based matching** (MEDIUM): `SealStock.java:139` — TODO for tag filters.
-- **AuraHandler biome modifiers** (MEDIUM): `AuraHandler.java:243` — TODO for BiomeHandler.
-- **ResearchManager events** (MEDIUM): `ResearchManager.java:75` — TODO for ResearchEvent.Knowledge/Research.
+- **AuraHandler biome modifiers** (MEDIUM): RESOLVED — `BiomeHandler.registerBiomeInfo()` called during mod init. Biome aura modifiers now active.
+- **ResearchManager events** (MEDIUM): `ResearchManager.java:75` — TODO for ResearchEvent.Knowledge/Research. Requires full event system.
 - **PlayerKnowledge auto-unlock** (MEDIUM): `PlayerKnowledge.java:284` — TODO for auto-unlock research.
 - **ConfigResearch stat-based discoveries** (MEDIUM): `ConfigResearch.java:359` — TODO for stat tracking.
-- **TileSmelter auxiliary vents** (MEDIUM): `TileSmelter.java:148,252` — TODO for vent pollution reduction.
+- **TileSmelter auxiliary vents** (MEDIUM): Still open — requires new SmelterVent block (not in 26.2 port).
 
 ### LOW Priority (cosmetic/minor)
 - **FX/particle effects** (LOW): Multiple files — `TileHole`, `TileTube`, `TileCondenser`, `TileFocalManipulator`, `TileInfernalFurnace`, `TileWaterJug`, `BlockVisGenerator`, `BlockEffect` — all TODO for particles.
