@@ -557,7 +557,30 @@ public class ModItems {
 
     public static final DeferredHolder<Item, Item> VOIDSEER_CHARM = registerItem("voidseer_charm",
             ItemVoidseerCharm::new);
-
+    
+    // ==================== Vis Discount Gear (Mundane/Fancy) ====================
+    
+    public static final DeferredHolder<Item, Item> AMULET_MUNDANE = registerItem("amulet_mundane",
+            thaumcraft.common.items.baubles.ItemMundaneGear::new);
+    
+    public static final DeferredHolder<Item, Item> RING_MUNDANE = registerItem("ring_mundane",
+            thaumcraft.common.items.baubles.ItemMundaneGear::new);
+    
+    public static final DeferredHolder<Item, Item> GIRDLE_MUNDANE = registerItem("girdle_mundane",
+            thaumcraft.common.items.baubles.ItemMundaneGear::new);
+    
+    public static final DeferredHolder<Item, Item> RING_APPRENTICE = registerItem("ring_apprentice",
+            thaumcraft.common.items.baubles.ItemApprenticeRing::new);
+    
+    public static final DeferredHolder<Item, Item> AMULET_FANCY = registerItem("amulet_fancy",
+            thaumcraft.common.items.baubles.ItemFancyGear::new);
+    
+    public static final DeferredHolder<Item, Item> RING_FANCY = registerItem("ring_fancy",
+            thaumcraft.common.items.baubles.ItemFancyGear::new);
+    
+    public static final DeferredHolder<Item, Item> GIRDLE_FANCY = registerItem("girdle_fancy",
+            thaumcraft.common.items.baubles.ItemFancyGear::new);
+    
     // ==================== Elemental Tools ====================
 
     public static final DeferredHolder<Item, Item> ELEMENTAL_PICK = registerItem("elemental_pick",
