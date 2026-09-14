@@ -67,6 +67,7 @@ import thaumcraft.common.items.curios.ItemPrimordialPearl;
 import thaumcraft.common.items.casters.ItemFocusPouch;
 import thaumcraft.common.golems.ItemGolemBell;
 import thaumcraft.common.golems.ItemGolemPlacer;
+import thaumcraft.common.items.golems.ItemGolemModule;
 import thaumcraft.common.golems.seals.ItemSealPlacer;
 import thaumcraft.common.entities.construct.ItemTurretPlacer;
 import thaumcraft.common.items.misc.ItemCreativeFluxSponge;
@@ -763,10 +764,10 @@ public class ModItems {
     // ==================== Golem Modules ====================
 
     public static final DeferredHolder<Item, Item> GOLEM_MODULE_AGGRESSION = registerItem("golem_module_aggression",
-            ItemMaterial::uncommon);
+            () -> ItemGolemModule.create(thaumcraft.api.golems.EnumGolemTrait.FIGHTER));
 
     public static final DeferredHolder<Item, Item> GOLEM_MODULE_VISION = registerItem("golem_module_vision",
-            ItemMaterial::uncommon);
+            () -> ItemGolemModule.create(thaumcraft.api.golems.EnumGolemTrait.SCOUT));
 
     // ==================== Creative-Only Items ====================
 
