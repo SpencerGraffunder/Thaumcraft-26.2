@@ -1066,7 +1066,8 @@ public class ResearchPageScreen extends Screen {
 
         // Complete button (1.12: hrx/hry 64x12, packet + write sound + hold state)
         if (!hold && hasAllRequisites && mouseInside(hrx, hry, 64, 12, mx, my)) {
-            PacketHandler.sendToServer(new PacketSyncProgressToServer(research.getKey(), false, true, true));
+            boolean first = playerKnowledge != null && !playerKnowledge.isResearchKnown(research.getKey());
+            PacketHandler.sendToServer(new PacketSyncProgressToServer(research.getKey(), first, true, true));
             minecraft.getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.WRITE.get(), 0.66f));
             lastStage = currentStage;
             hold = true;
