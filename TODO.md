@@ -355,7 +355,7 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 - **SealHarvest replanting** (MEDIUM): Still open — requires seed system (`ThaumcraftApi.getSeed`). Complex API differences between 1.12 and 26.2.
 - **SealStock tag-based matching** (MEDIUM): RESOLVED — Tag-based matching implemented using `ItemStack.is(TagKey)` API.
 - **AuraHandler biome modifiers** (MEDIUM): RESOLVED — `BiomeHandler.registerBiomeInfo()` called during mod init. Biome aura modifiers now active.
-- **ResearchManager events** (MEDIUM): `ResearchManager.java:75` — TODO for ResearchEvent.Knowledge/Research. Requires full event system.
+- **ResearchManager events** (MEDIUM): RESOLVED — ResearchEvent system implemented. Knowledge and Research events fired via NeoForge.EVENT_BUS.
 - **PlayerKnowledge auto-unlock** (MEDIUM): RESOLVED — Auto-unlock research implemented. Research entries with AUTOUNLOCK meta are automatically unlocked when knowledge is loaded.
 - **ConfigResearch stat-based discoveries** (MEDIUM): Still open — requires modern stats API (walking/running/jumping/swimming thresholds). Complex API differences between 1.12 and 26.2.
 - **TileSmelter auxiliary vents** (MEDIUM): Still open — requires new SmelterVent block (not in 26.2 port).
