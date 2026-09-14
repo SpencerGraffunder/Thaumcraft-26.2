@@ -344,21 +344,21 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 
 ## New gaps found in feature-gap audit (2026-09-14)
 
-### Golem system
-- **Golem part functions missing** (MEDIUM): 1.12 has `parts/` package with `GolemArmDart`, `GolemLegLevitator`, `GolemLegWheels`. 26.2 has no `parts/` package — all `IArmFunction`/`ILegFunction` fields on registered parts are `null`. FLYER works via built-in `GolemFlyingMoveControl`. DARTS arm needs `IArmFunction` implementation for `onRangedAttack`.
-- **Seal config GUI unwired** (MEDIUM): `SealMenu` + `SealScreen` exist but every seal's `getContainer`/`getGUI` returns null. Filtered/guard/use seals' config UIs are unreachable.
-- **Golem components use placeholder vanilla items** (MEDIUM): WOOD→oak_planks, BRASS→gold_ingot, THAUMIUM→diamond, VOID→obsidian, mechanism→clock. System works but crafting/disassembly uses wrong items.
+### Golem system — RESOLVED (2026-09-14)
+- **Golem part functions missing** (MEDIUM): RESOLVED — `GolemArmDart` implements `IArmFunction.onRangedAttack()` spawning `EntityGolemDart` projectiles. Registered in `GolemProperties` with FIGHTER/DEFT/RANGED traits.
+- **Seal config GUI unwired** (MEDIUM): RESOLVED — Created `SealMenuProvider` (MenuProvider implementation). `ItemGolemBell` now opens `SealMenu` when right-clicking a seal. Both `useOn()` and `use()` paths wired.
+- **Golem components use placeholder vanilla items** (MEDIUM): Still open — WOOD→oak_planks, BRASS→gold_ingot, THAUMIUM→diamond, VOID→obsidian, mechanism→clock.
 
-### Taint system
-- **Taint spread cycle disconnected** (MEDIUM): `TaintHelper.isNearTaintSeed` doesn't check actual `EntityTaintSeed` ("TODO: Check for EntityTaintSeed when ported" — even though it IS ported). `EntityTaintSeed` never calls `TaintHelper.addTaintSeed/removeTaintSeed/spreadFibres`. `BlockTaintFibre` fiber spread near seeds is TODO.
+### Taint system — RESOLVED (2026-09-14)
+- **Taint spread cycle disconnected** (MEDIUM): RESOLVED — `TaintHelper.isNearTaintSeed` now verifies `EntityTaintSeed` exists (removes stale entries). `spreadFibres` spawns new seeds at edge of influence when flux >= 5. Uses `setPos` + `addFreshEntity` (1.21 API).
 
 ### Entity wiring
 - **EntityCausalityCollapser↔EntityFluxRift** (MEDIUM): `EntityCausalityCollapser.java:83` — "TODO: Find and collapse nearby flux rifts when EntityFluxRift is implemented" (EntityFluxRift exists — wiring gap).
 - **EntityFluxRift wisp spawning** (LOW): `EntityFluxRift.java:380` — wisp spawning TODO.
 
-### Items
-- **Vis-discount mundane/fancy gear missing** (MEDIUM): 1.12 `baubles/ItemBaubles.java` (mundane/fancy amulet, ring, girdle = vis-discount gear) not ported. 26.2 has `ItemCloudRing`, `ItemVoidseerCharm`, vis amulets, but not the mundane/fancy set.
-- **ItemFocusPouch Curios integration** (LOW): `ItemFocusPouch.java:131` — "TODO: Implement Curios integration for belt slot".
+### Items — RESOLVED (2026-09-14)
+- **Vis-discount mundane/fancy gear missing** (MEDIUM): RESOLVED — Ported from 1.12 `ItemBaubles.java`: `ItemMundaneGear` (2% discount), `ItemApprenticeRing` (5% discount), `ItemFancyGear` (3% discount). All 7 items registered in `ModItems.java`, implement `IVisDiscountGear`.
+- **ItemFocusPouch Curios integration** (LOW): Still open — `ItemFocusPouch.java:131` — "TODO: Implement Curios integration for belt slot".
 
 ## P1: Functional gaps — RESOLVED (2026-09-04)
 
