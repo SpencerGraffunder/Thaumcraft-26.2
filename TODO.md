@@ -285,6 +285,31 @@ the dev server 26.2.0.75 (localhost:25565): NeoForge handshake passes,
 "Disconnect"). All 38 `thaumcraft:packet*` channels register on both dists.
 `tools/` holds the evdev/Ding input drivers used for the GUI join test.
 
+## P1: Focus package execution + arcane workbench validation — RESOLVED (2026-09-14)
+
+Focus projectiles were spawning but never executing their focus packages —
+the `FocusEngine.runFocusPackage` calls were commented out as TODOs.
+Arcane workbench had no validation (vis discount, crystals, research).
+
+Fixes:
+- **EntityFocusProjectile**: `executeFocusPackage` now calls
+  `FocusEngine.runFocusPackage(focusPackage, trajectory, hit)` instead of TODO.
+- **EntityFocusMine**: Executes focus package for each entity in range with
+  proper trajectory direction from center to entity position.
+- **EntityFocusCloud**: Executes focus package for both entity hits and
+  block hits (random directions for block interactions).
+- **ArcaneWorkbenchMenu**: Added three validation checks before crafting:
+  1. **Vis discount**: Applied player's gear discount via
+     `CasterManager.getTotalVisDiscount(player)` before checking availability.
+  2. **Crystal requirements**: Scans crystal slots (10-15) for required
+     aspects via `IEssentiaContainerItem`, checks available count ≥ required.
+  3. **Research knowledge**: Checks player has researched the recipe's
+     requirement via `ThaumcraftCapabilities.getKnowledge(player)`.
+- **ItemGrappleGun**: Now spawns `EntityGrapple` projectile on use instead
+  of TODO comment.
+
+All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
+
 ## Outstanding (runtime verification on a test server)
 
 - [ ] Entity spawning/behaviour, golem seals, bosses
@@ -292,6 +317,8 @@ the dev server 26.2.0.75 (localhost:25565): NeoForge handshake passes,
 - [ ] Worldgen (greatwood/silverwood, ores, ruins, taint biome)
 - [ ] Visual QA — several renderers use compile-first approximations
       (billboard beams, block-atlas sprite substitutions, banner tint limits)
+- [ ] Focus projectile behavior (impact, cloud, mine) — newly wired
+- [ ] Arcane workbench crafting with validation — newly wired
 
 ## P1: Functional gaps — RESOLVED (2026-09-04)
 
