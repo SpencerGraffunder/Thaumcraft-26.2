@@ -279,6 +279,11 @@ public class ResearchPageScreen extends Screen {
         // KNOWLEDGETYPES in-page knowledge grid)
         int lineHeight = font.lineHeight;
         int heightRemaining = FIRST_PAGE_BUDGET;
+        // 1.12: the left side of the first spread has a 28px title, so reduce
+        // the budget for text content to match the available space.
+        if (page == 0) {
+            heightRemaining -= 28;
+        }
         int dividerSpace = 0;
         if ("KNOWLEDGETYPES".equals(research.getKey())) {
             heightRemaining -= 2;
@@ -633,6 +638,10 @@ public class ResearchPageScreen extends Screen {
             ItemStack out = RecipeRenderer.resolveOutput(RecipeRenderer.findRecipe(bookmarks.get(i)));
             if (!out.isEmpty()) {
                 RecipeRenderer.renderItem(graphics, out, x + 280 + 7 - le, ry - 1);
+                if (hov) {
+                    // 1.12 drawStackAt: show item tooltip on hover
+                    setTip(out.getHoverName().getString());
+                }
             }
         }
 
