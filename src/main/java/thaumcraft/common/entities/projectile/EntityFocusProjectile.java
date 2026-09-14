@@ -19,6 +19,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import thaumcraft.api.casters.FocusEngine;
 import thaumcraft.api.casters.FocusPackage;
 import thaumcraft.api.casters.Trajectory;
 import thaumcraft.init.ModEntities;
@@ -183,10 +184,9 @@ public class EntityFocusProjectile extends ThrowableProjectile {
         Vec3 prevPos = new Vec3(xOld, yOld, zOld);
         Vec3 motion = getDeltaMovement().normalize();
         
-        // TODO: Execute focus package through FocusEngine
-        // FocusEngine.runFocusPackage(focusPackage, 
-        //     new Trajectory[] { new Trajectory(prevPos, motion) },
-        //     new HitResult[] { hit });
+        FocusEngine.runFocusPackage(focusPackage, 
+            new Trajectory[] { new Trajectory(prevPos, motion) },
+            new HitResult[] { hit });
     }
     
     @Override

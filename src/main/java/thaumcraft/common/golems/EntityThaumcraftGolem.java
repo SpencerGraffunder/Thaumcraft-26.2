@@ -318,7 +318,10 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         
         // Part function updates
         IGolemProperties props = getProperties();
-        // TODO: Call part function onUpdateTick when implemented
+        if (props.getHead().function != null) props.getHead().function.onUpdateTick(this);
+        if (props.getArms().function != null) props.getArms().function.onUpdateTick(this);
+        if (props.getLegs().function != null) props.getLegs().function.onUpdateTick(this);
+        if (props.getAddon().function != null) props.getAddon().function.onUpdateTick(this);
     }
 
     @Override

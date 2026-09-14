@@ -13,7 +13,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import thaumcraft.api.casters.FocusEngine;
 import thaumcraft.api.casters.FocusPackage;
 import thaumcraft.api.casters.Trajectory;
 import thaumcraft.init.ModEntities;
@@ -188,11 +190,10 @@ public class EntityFocusCloud extends Entity {
             Vec3 entityPos = entity.getBoundingBox().getCenter();
             Vec3 direction = entityPos.subtract(position()).normalize();
             
-            // TODO: Execute focus package
-            // Trajectory trajectory = new Trajectory(position(), direction);
-            // EntityHitResult hit = new EntityHitResult(entity, entityPos);
-            // FocusEngine.runFocusPackage(focusPackage.copy(getOwner()), 
-            //     new Trajectory[] { trajectory }, new HitResult[] { hit });
+            Trajectory trajectory = new Trajectory(position(), direction);
+            EntityHitResult hit = new EntityHitResult(entity, entityPos);
+            FocusEngine.runFocusPackage(focusPackage, 
+                new Trajectory[] { trajectory }, new HitResult[] { hit });
         }
         
         // Also randomly hit blocks in radius
@@ -216,10 +217,9 @@ public class EntityFocusCloud extends Entity {
                 if (!COOLDOWN_MAP.containsKey(blockKey) || COOLDOWN_MAP.get(blockKey) <= currentTime) {
                     COOLDOWN_MAP.put(blockKey, currentTime + 2000L);
                     
-                    // TODO: Execute focus package for block
-                    // Trajectory trajectory = new Trajectory(position(), randomDir);
-                    // FocusEngine.runFocusPackage(focusPackage.copy(getOwner()),
-                    //     new Trajectory[] { trajectory }, new HitResult[] { blockHit });
+                    Trajectory trajectory = new Trajectory(position(), randomDir);
+                    FocusEngine.runFocusPackage(focusPackage,
+                        new Trajectory[] { trajectory }, new HitResult[] { blockHit });
                 }
             }
         }

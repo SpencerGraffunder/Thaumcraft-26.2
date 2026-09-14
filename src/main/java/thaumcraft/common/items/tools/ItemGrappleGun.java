@@ -19,6 +19,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.api.items.IRechargable;
 import thaumcraft.api.items.RechargeHelper;
+import thaumcraft.common.entities.projectile.EntityGrapple;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -89,11 +90,9 @@ public class ItemGrappleGun extends Item implements IRechargable {
         player.playSound(SoundEvents.GLASS_BREAK, 3.0f, 0.8f + level.getRandom().nextFloat() * 0.1f);
 
         if (!level.isClientSide() && RechargeHelper.getCharge(stack) > 0) {
-            // TODO: Spawn EntityGrapple projectile
-            // EntityGrapple grapple = new EntityGrapple(level, player, hand);
-            // grapple.shootFromRotation(player, player.getXRot(), player.getYRot(), -5.0f, 1.5f, 0.0f);
-            // Adjust position based on hand
-            // level.addFreshEntity(grapple);
+            EntityGrapple grapple = new EntityGrapple(level, player, hand);
+            grapple.shootFromRotation(player, player.getXRot(), player.getYRot(), -5.0f, 1.5f, 0.0f);
+            level.addFreshEntity(grapple);
             
             // Consume charge and mark as loaded
             RechargeHelper.consumeCharge(stack, player, 1);

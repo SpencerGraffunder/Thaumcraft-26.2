@@ -18,7 +18,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IEssentiaContainerItem;
 import thaumcraft.api.crafting.IArcaneRecipe;
+import thaumcraft.common.items.casters.CasterManager;
+import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
 import thaumcraft.common.lib.crafting.ArcaneWorkbenchCraftingContainer;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 import thaumcraft.common.menu.slot.ArcaneWorkbenchResultSlot;
@@ -155,20 +159,47 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
         IArcaneRecipe arcaneRecipe = ThaumcraftCraftingManager.findMatchingArcaneRecipe(craftMatrix, player);
         
         if (arcaneRecipe != null) {
-            // TODO: Check if player has required research
-            // TODO: Check if there's enough vis
-            // TODO: Check if crystals are available
-            
             TileArcaneWorkbench tile = craftMatrix.getTile();
             tile.updateAura();
             
-            int visCost = arcaneRecipe.getVis();
-            // TODO: Apply vis discount
+            // Apply vis discount from player's gear
+            float discount = CasterManager.getTotalVisDiscount(player);
+            int visCost = (int)(arcaneRecipe.getVis() * (1.0f - discount));
             
             boolean hasVis = tile.auraVisServer >= visCost;
-            boolean hasCrystals = true; // TODO: Check crystal requirements
             
-            if (hasVis && hasCrystals) {
+            // Check crystal requirements
+            boolean hasCrystals = true;
+            AspectList crystals = arcaneRecipe.getCrystals();
+            if (crystals != null && crystals.size() > 0) {
+                for (Aspect aspect : crystals.getAspects()) {
+                    int required = crystals.getAmount(aspect);
+                    int available = 0;
+                    for (int i = 10; i <= 15; i++) {
+                        ItemStack stack = craftMatrix.getItem(i);
+                        if (!stack.isEmpty() && stack.getItem() instanceof IEssentiaContainerItem crystalItem) {
+                            var aspects = crystalItem.getAspects(stack);
+                            if (aspects != null && aspects.size() > 0) {
+                                Aspect[] contained = aspects.getAspects();
+                                if (contained != null && contained.length > 0 && contained[0] == aspect) {
+                                    available += stack.getCount();
+                                }
+                            }
+                        }
+                    }
+                    if (available < required) {
+                        hasCrystals = false;
+                        break;
+                    }
+                }
+            }
+            
+            // Check research requirement
+            boolean hasResearch = ThaumcraftCapabilities.getKnowledge(player)
+                    .map(k -> k.isResearchKnown(arcaneRecipe.getResearch()))
+                    .orElse(false);
+            
+            if (hasVis && hasCrystals && hasResearch) {
                 craftResult.setRecipeUsed(new net.minecraft.world.item.crafting.RecipeHolder<>(
                         net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
                                 net.minecraft.resources.Identifier.fromNamespaceAndPath("thaumcraft", "arcane_workbench")),

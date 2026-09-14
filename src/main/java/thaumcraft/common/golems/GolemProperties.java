@@ -5,6 +5,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import thaumcraft.api.golems.EnumGolemTrait;
+import thaumcraft.init.ModBlocks;
+import thaumcraft.init.ModItems;
 import thaumcraft.api.golems.IGolemProperties;
 import thaumcraft.api.golems.parts.*;
 
@@ -218,48 +220,48 @@ public class GolemProperties implements IGolemProperties {
                 new String[]{"MATSTUDWOOD"}, 
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/mat_wood.png"), 
                 0x4D3B1F, 6, 2, 1, 
-                new ItemStack(Blocks.OAK_PLANKS), // TODO: Use greatwood when implemented
-                new ItemStack(Items.CLOCK), // TODO: Use mechanismSimple when implemented
+                new ItemStack(ModBlocks.GREATWOOD_PLANKS.get()),
+                new ItemStack(ModItems.MECHANISM_SIMPLE.get()),
                 new EnumGolemTrait[]{EnumGolemTrait.LIGHT}));
 
         GolemMaterial.register(new GolemMaterial("IRON", 
                 new String[]{"MATSTUDIRON"}, 
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/mat_iron.png"), 
                 0xFFFFFF, 20, 8, 3, 
-                new ItemStack(Items.IRON_INGOT), 
-                new ItemStack(Items.CLOCK), 
+                new ItemStack(ModItems.PLATE_IRON.get()),
+                new ItemStack(ModItems.MECHANISM_SIMPLE.get()),
                 new EnumGolemTrait[]{EnumGolemTrait.HEAVY, EnumGolemTrait.FIREPROOF, EnumGolemTrait.BLASTPROOF}));
 
         GolemMaterial.register(new GolemMaterial("CLAY", 
                 new String[]{"MATSTUDCLAY"}, 
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/mat_clay.png"), 
                 0xC7A37A, 10, 4, 2, 
-                new ItemStack(Blocks.TERRACOTTA), 
-                new ItemStack(Items.CLOCK), 
+                new ItemStack(Blocks.TERRACOTTA),
+                new ItemStack(ModItems.MECHANISM_SIMPLE.get()),
                 new EnumGolemTrait[]{EnumGolemTrait.FIREPROOF}));
 
         GolemMaterial.register(new GolemMaterial("BRASS", 
                 new String[]{"MATSTUDBRASS"}, 
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/mat_brass.png"), 
                 0xEEA04C, 16, 6, 3, 
-                new ItemStack(Items.GOLD_INGOT), // TODO: Use brass plate when implemented
-                new ItemStack(Items.CLOCK), 
+                new ItemStack(ModItems.PLATE_BRASS.get()),
+                new ItemStack(ModItems.MECHANISM_SIMPLE.get()),
                 new EnumGolemTrait[]{EnumGolemTrait.LIGHT}));
 
         GolemMaterial.register(new GolemMaterial("THAUMIUM", 
                 new String[]{"MATSTUDTHAUMIUM"}, 
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/mat_thaumium.png"), 
                 0x503A72, 24, 10, 4, 
-                new ItemStack(Items.DIAMOND), // TODO: Use thaumium plate when implemented
-                new ItemStack(Items.CLOCK), 
+                new ItemStack(ModItems.PLATE_THAUMIUM.get()),
+                new ItemStack(ModItems.MECHANISM_SIMPLE.get()),
                 new EnumGolemTrait[]{EnumGolemTrait.HEAVY, EnumGolemTrait.FIREPROOF, EnumGolemTrait.BLASTPROOF}));
 
         GolemMaterial.register(new GolemMaterial("VOID", 
                 new String[]{"MATSTUDVOID"}, 
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/mat_void.png"), 
                 0x160929, 20, 6, 4, 
-                new ItemStack(Items.OBSIDIAN), // TODO: Use void plate when implemented
-                new ItemStack(Items.CLOCK), 
+                new ItemStack(ModItems.PLATE_VOID.get()),
+                new ItemStack(ModItems.MECHANISM_SIMPLE.get()),
                 new EnumGolemTrait[]{EnumGolemTrait.REPAIR}));
 
         // Heads
@@ -268,7 +270,7 @@ public class GolemProperties implements IGolemProperties {
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/golem/head_basic.png"), 
                 new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_head_basic.obj"), 
                              null, PartModel.EnumAttachPoint.HEAD), 
-                new Object[]{new ItemStack(Items.REDSTONE)}, // TODO: Use clockwork mind
+                new Object[]{new ItemStack(ModItems.MIND.get())},
                 new EnumGolemTrait[]{}));
 
         GolemHead.register(new GolemHead("SMART", 
@@ -277,7 +279,7 @@ public class GolemProperties implements IGolemProperties {
                 new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_head_smart.obj"), 
                              Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/golem_head_other.png"), 
                              PartModel.EnumAttachPoint.HEAD), 
-                new Object[]{new ItemStack(Items.ENDER_PEARL)}, // TODO: Use biothaumic mind
+                new Object[]{new ItemStack(ModItems.MIND.get())},
                 new EnumGolemTrait[]{EnumGolemTrait.SMART, EnumGolemTrait.FRAGILE}));
 
         GolemHead.register(new GolemHead("SCOUT", 
@@ -303,7 +305,7 @@ public class GolemProperties implements IGolemProperties {
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/golem/arms_fine.png"), 
                 new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_arms_fine.obj"), 
                              null, PartModel.EnumAttachPoint.ARMS), 
-                new Object[]{new ItemStack(Items.CLOCK), "base"}, 
+                new Object[]{new ItemStack(ModItems.MECHANISM_SIMPLE.get()), "base"},
                 new EnumGolemTrait[]{EnumGolemTrait.DEFT, EnumGolemTrait.FRAGILE}));
 
         GolemArm.register(new GolemArm("CLAWS", 
@@ -312,7 +314,7 @@ public class GolemProperties implements IGolemProperties {
                 new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_arms_claws.obj"), 
                              Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/golem_arms_claws.png"), 
                              PartModel.EnumAttachPoint.ARMS), 
-                new Object[]{new ItemStack(Items.SHEARS, 2), "base"}, 
+                new Object[]{new ItemStack(ModItems.GOLEM_MODULE_AGGRESSION.get()), new ItemStack(Items.SHEARS, 2), "base"},
                 new EnumGolemTrait[]{EnumGolemTrait.FIGHTER, EnumGolemTrait.CLUMSY, EnumGolemTrait.BRUTAL}));
 
         GolemArm.register(new GolemArm("BREAKERS", 
@@ -357,7 +359,7 @@ public class GolemProperties implements IGolemProperties {
                 new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_legs_floater.obj"), 
                              Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/golem_legs_floater.png"), 
                              PartModel.EnumAttachPoint.BODY), 
-                new Object[]{new ItemStack(Items.PHANTOM_MEMBRANE), new ItemStack(Items.SLIME_BALL), "mech"}, 
+                new Object[]{new ItemStack(ModBlocks.LEVITATOR.get()), new ItemStack(ModItems.PLATE_BRASS.get(), 4), new ItemStack(Items.SLIME_BALL), "mech"},
                 new EnumGolemTrait[]{EnumGolemTrait.FLYER, EnumGolemTrait.FRAGILE}));
 
         // Addons

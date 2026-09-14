@@ -50,6 +50,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 import thaumcraft.init.ModEntities;
+import thaumcraft.init.ModItems;
 import thaumcraft.init.ModSounds;
 
 import javax.annotation.Nullable;
@@ -179,7 +180,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
             ItemStack weapon = getMainHandItem();
             if (weapon.getItem() instanceof BowItem) {
                 goalSelector.addGoal(2, aiArrowAttack);
-            } else if (weapon.is(Items.STICK)) { // TODO: Check for pechWand when implemented
+            } else if (weapon.is(ModItems.PECH_WAND.get())) {
                 goalSelector.addGoal(2, aiBlastAttack);
             } else {
                 goalSelector.addGoal(2, aiMeleeAttack);
@@ -223,7 +224,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
         setEquipmentBasedOnDifficulty(difficulty);
         
         ItemStack weapon = getMainHandItem();
-        if (weapon.is(Items.STICK)) { // TODO: pechWand
+        if (weapon.is(ModItems.PECH_WAND.get())) {
             setPechType(TYPE_MAGE);
             setDropChance(EquipmentSlot.MAINHAND, 0.1f);
         } else if (!weapon.isEmpty()) {
@@ -244,7 +245,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
     protected void populateDefaultEquipmentSlots(net.minecraft.util.RandomSource random, DifficultyInstance difficulty) {
         int roll = random.nextInt(20);
         ItemStack weapon = switch (roll) {
-            case 0, 12 -> new ItemStack(Items.STICK); // TODO: pechWand
+            case 0, 12 -> new ItemStack(ModItems.PECH_WAND.get());
             case 1 -> new ItemStack(Items.STONE_SWORD);
             case 3 -> new ItemStack(Items.STONE_AXE);
             case 5 -> new ItemStack(Items.IRON_SWORD);
