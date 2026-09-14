@@ -17,6 +17,8 @@ import thaumcraft.common.lib.utils.EntityUtils;
 import thaumcraft.common.world.aura.AuraHandler;
 import thaumcraft.init.ModBlocks;
 
+import thaumcraft.common.entities.monster.tainted.EntityTaintSeed;
+
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -65,8 +67,12 @@ public class TaintHelper {
             for (BlockPos p : new ArrayList<>(locs)) { // Copy to avoid CME
                 if (p.distSqr(pos) <= area) {
                     // Verify the seed entity still exists
-                    // TODO: Check for EntityTaintSeed when ported
-                    // For now, just return true if within range
+                    var entities = level.getEntitiesOfClass(EntityTaintSeed.class,
+                        new net.minecraft.world.phys.AABB(p).inflate(1.0));
+                    if (entities.isEmpty()) {
+                        removeTaintSeed(level, p);
+                        return false;
+                    }
                     return true;
                 }
             }
@@ -235,7 +241,18 @@ public class TaintHelper {
         }
         
         // Spawn new taint seeds at the edge of influence when flux is high
-        // TODO: Implement when EntityTaintSeed is ported
+        if ((level.getBlockState(target).getBlock() == ModBlocks.TAINT_SOIL.get() || 
+             level.getBlockState(target).getBlock() == ModBlocks.TAINT_ROCK.get()) && 
+            level.isEmptyBlock(target.above()) && 
+            AuraHelper.getFlux(level, target) >= 5.0f && 
+            level.getRandom().nextFloat() < ModConfig.taintSpreadRate / 100.0f * 0.33f && 
+            isAtTaintSeedEdge(level, target)) {
+            EntityTaintSeed seed = new EntityTaintSeed(level);
+            seed.setPos(target.getX() + 0.5, target.above().getY(), target.getZ() + 0.5);
+            seed.setYRot(level.getRandom().nextInt(360));
+            AuraHelper.drainFlux(level, target, 5.0f, false);
+            level.addFreshEntity(seed);
+        }
     }
     
     /**
