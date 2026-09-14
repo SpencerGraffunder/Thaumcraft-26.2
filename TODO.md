@@ -377,7 +377,7 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 
 ### Still open (not addressed)
 - **Golem components use placeholder vanilla items** (MEDIUM): WOOD→oak_planks, BRASS→gold_ingot, THAUMIUM→diamond, VOID→obsidian, mechanism→clock.
-- **ItemFocusPouch Curios integration** (LOW): `ItemFocusPouch.java:131` — TODO for belt slot.
+- **ItemFocusPouch Curios integration** (LOW): Deferred — requires implementing `ICuriosItem` interface and slot definitions. Current implementation works as a held item; Curios support would allow wearing it for quick focus access.
 
 ## P1: Functional gaps — RESOLVED (2026-09-04)
 
