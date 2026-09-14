@@ -342,23 +342,42 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 - [ ] SealEmptyAdvanced — newly wired (need in-game test)
 - [ ] GolemModule item (AGGRESSION/VISION) — newly wired (need in-game test)
 
-## New gaps found in feature-gap audit (2026-09-14)
+## Feature-Gap Audit (2026-09-14) — Full Report: `FEATURE-GAP-AUDIT.md`
 
-### Golem system — RESOLVED (2026-09-14)
-- **Golem part functions missing** (MEDIUM): RESOLVED — `GolemArmDart` implements `IArmFunction.onRangedAttack()` spawning `EntityGolemDart` projectiles. Registered in `GolemProperties` with FIGHTER/DEFT/RANGED traits.
-- **Seal config GUI unwired** (MEDIUM): RESOLVED — Created `SealMenuProvider` (MenuProvider implementation). `ItemGolemBell` now opens `SealMenu` when right-clicking a seal. Both `useOn()` and `use()` paths wired.
-- **Golem components use placeholder vanilla items** (MEDIUM): Still open — WOOD→oak_planks, BRASS→gold_ingot, THAUMIUM→diamond, VOID→obsidian, mechanism→clock.
+### HIGH Priority (core gameplay broken/missing)
+- **TileThaumatorium recipe queue** (HIGH): Stubbed — `PacketSelectThaumotoriumRecipeToServer.java:74` TODO. 1.12 has full queue system with `recipeHash`, `recipeEssentia`, `recipePlayer`, `recipes`, `maxRecipes`.
+- **Seal GUI system (filtered/guard/use)** (HIGH): `SealGuard.java:176,183`, `SealFiltered.java:117,124`, `SealUse.java:230,236` — TODOs for GUI system. 1.12 has full GUI with filter slots, guard settings, use target selection.
+- **ItemCausalityCollapser projectile** (HIGH): TODO for spawning projectile. EntityFluxRift IS implemented but wiring is missing.
+- **ItemBottleTaint projectile** (HIGH): TODO for spawning taint bottle projectile.
 
-### Taint system — RESOLVED (2026-09-14)
-- **Taint spread cycle disconnected** (MEDIUM): RESOLVED — `TaintHelper.isNearTaintSeed` now verifies `EntityTaintSeed` exists (removes stale entries). `spreadFibres` spawns new seeds at edge of influence when flux >= 5. Uses `setPos` + `addFreshEntity` (1.21 API).
+### MEDIUM Priority
+- **TileEssentiaReservoir interaction** (MEDIUM): `BlockEssentiaReservoir.java:88,99` — TODO for phial fill/drain + flux pollution.
+- **SealHarvest replanting** (MEDIUM): `SealHarvest.java:131` — TODO for seed system replanting.
+- **SealStock tag-based matching** (MEDIUM): `SealStock.java:139` — TODO for tag filters.
+- **AuraHandler biome modifiers** (MEDIUM): `AuraHandler.java:243` — TODO for BiomeHandler.
+- **ResearchManager events** (MEDIUM): `ResearchManager.java:75` — TODO for ResearchEvent.Knowledge/Research.
+- **PlayerKnowledge auto-unlock** (MEDIUM): `PlayerKnowledge.java:284` — TODO for auto-unlock research.
+- **ConfigResearch stat-based discoveries** (MEDIUM): `ConfigResearch.java:359` — TODO for stat tracking.
+- **TileSmelter auxiliary vents** (MEDIUM): `TileSmelter.java:148,252` — TODO for vent pollution reduction.
 
-### Entity wiring
-- **EntityCausalityCollapser↔EntityFluxRift** (MEDIUM): `EntityCausalityCollapser.java:83` — "TODO: Find and collapse nearby flux rifts when EntityFluxRift is implemented" (EntityFluxRift exists — wiring gap).
-- **EntityFluxRift wisp spawning** (LOW): `EntityFluxRift.java:380` — wisp spawning TODO.
+### LOW Priority (cosmetic/minor)
+- **FX/particle effects** (LOW): Multiple files — `TileHole`, `TileTube`, `TileCondenser`, `TileFocalManipulator`, `TileInfernalFurnace`, `TileWaterJug`, `BlockVisGenerator`, `BlockEffect` — all TODO for particles.
+- **ItemCreativePlacer structure placement** (LOW): Partial — places blocks but TODO for full structure placement.
+- **SealEntity/SealHandler network sync** (LOW): Stubbed — "Network packet sync is stubbed".
+- **TileCrucible nitor check** (LOW): `TileCrucible.java:125` — TODO for nitor block check.
+- **ScanSky scribing tool check** (LOW): `ScanSky.java:83` — TODO for proper inventory check.
 
-### Items — RESOLVED (2026-09-14)
-- **Vis-discount mundane/fancy gear missing** (MEDIUM): RESOLVED — Ported from 1.12 `ItemBaubles.java`: `ItemMundaneGear` (2% discount), `ItemApprenticeRing` (5% discount), `ItemFancyGear` (3% discount). All 7 items registered in `ModItems.java`, implement `IVisDiscountGear`.
-- **ItemFocusPouch Curios integration** (LOW): Still open — `ItemFocusPouch.java:131` — "TODO: Implement Curios integration for belt slot".
+### RESOLVED in this session (2026-09-14)
+- ✅ Seal config GUI (basic seals) — wired via SealMenuProvider
+- ✅ Taint spread cycle — TaintHelper↔EntityTaintSeed wired
+- ✅ Vis-discount mundane/fancy gear — 7 items ported from 1.12
+- ✅ Golem DARTS arms — GolemArmDart implements IArmFunction
+- ✅ Golem SMART/SCOUT heads — traits wired (XP system, range bonus)
+- ✅ NeoForge transfer API — already using IFluidHandler/IItemHandler
+
+### Still open (not addressed)
+- **Golem components use placeholder vanilla items** (MEDIUM): WOOD→oak_planks, BRASS→gold_ingot, THAUMIUM→diamond, VOID→obsidian, mechanism→clock.
+- **ItemFocusPouch Curios integration** (LOW): `ItemFocusPouch.java:131` — TODO for belt slot.
 
 ## P1: Functional gaps — RESOLVED (2026-09-04)
 
