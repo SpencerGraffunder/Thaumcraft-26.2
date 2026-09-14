@@ -353,7 +353,7 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 ### MEDIUM Priority
 - **TileEssentiaReservoir interaction** (MEDIUM): RESOLVED — Phial fill/drain wired. Flux pollution on break still TODO.
 - **SealHarvest replanting** (MEDIUM): Still open — requires seed system (`ThaumcraftApi.getSeed`). Complex API differences between 1.12 and 26.2.
-- **SealStock tag-based matching** (MEDIUM): `SealStock.java:139` — TODO for tag filters.
+- **SealStock tag-based matching** (MEDIUM): RESOLVED — Tag-based matching implemented using `ItemStack.is(TagKey)` API.
 - **AuraHandler biome modifiers** (MEDIUM): RESOLVED — `BiomeHandler.registerBiomeInfo()` called during mod init. Biome aura modifiers now active.
 - **ResearchManager events** (MEDIUM): `ResearchManager.java:75` — TODO for ResearchEvent.Knowledge/Research. Requires full event system.
 - **PlayerKnowledge auto-unlock** (MEDIUM): `PlayerKnowledge.java:284` — TODO for auto-unlock research.
