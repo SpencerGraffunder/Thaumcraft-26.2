@@ -357,7 +357,7 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 - **AuraHandler biome modifiers** (MEDIUM): RESOLVED — `BiomeHandler.registerBiomeInfo()` called during mod init. Biome aura modifiers now active.
 - **ResearchManager events** (MEDIUM): `ResearchManager.java:75` — TODO for ResearchEvent.Knowledge/Research. Requires full event system.
 - **PlayerKnowledge auto-unlock** (MEDIUM): RESOLVED — Auto-unlock research implemented. Research entries with AUTOUNLOCK meta are automatically unlocked when knowledge is loaded.
-- **ConfigResearch stat-based discoveries** (MEDIUM): `ConfigResearch.java:359` — TODO for stat tracking.
+- **ConfigResearch stat-based discoveries** (MEDIUM): Still open — requires modern stats API (walking/running/jumping/swimming thresholds). Complex API differences between 1.12 and 26.2.
 - **TileSmelter auxiliary vents** (MEDIUM): Still open — requires new SmelterVent block (not in 26.2 port).
 
 ### LOW Priority (cosmetic/minor)

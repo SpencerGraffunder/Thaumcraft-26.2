@@ -72,10 +72,9 @@ public class ResearchManager {
             catKey = null;
         }
         
-        // TODO: Fire ResearchEvent.Knowledge event when event system is implemented
-        // if (NeoForge.EVENT_BUS.post(new ResearchEvent.Knowledge(player, type, category, amount))) {
-        //     return false;
-        // }
+        // Fire ResearchEvent.Knowledge event
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
+            new thaumcraft.api.research.ResearchEvent.Knowledge(player, type, category, amount));
         
         int before = knowledge.getKnowledge(type, catKey);
         knowledge.addKnowledge(type, catKey, amount);
@@ -150,10 +149,9 @@ public class ResearchManager {
             return false;
         }
         
-        // TODO: Fire ResearchEvent.Research event
-        // if (NeoForge.EVENT_BUS.post(new ResearchEvent.Research(player, researchKey))) {
-        //     return false;
-        // }
+        // Fire ResearchEvent.Research event
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(
+            new thaumcraft.api.research.ResearchEvent.Research(player, researchKey));
         
         // Add research if not known
         if (!knowledge.isResearchKnown(researchKey)) {
