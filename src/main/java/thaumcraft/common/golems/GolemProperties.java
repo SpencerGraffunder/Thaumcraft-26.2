@@ -291,6 +291,23 @@ public class GolemProperties implements IGolemProperties {
                 new Object[]{new ItemStack(Items.REDSTONE), new ItemStack(Items.SPYGLASS)}, 
                 new EnumGolemTrait[]{EnumGolemTrait.SCOUT, EnumGolemTrait.FRAGILE}));
 
+        GolemHead.register(new GolemHead("SMART_ARMORED", 
+                new String[]{"MINDBIOTHAUMIC", "GOLEMCOMBATADV"}, 
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/golem/head_smartarmor.png"), 
+                new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_head_smart_armor.obj"), 
+                             null, PartModel.EnumAttachPoint.HEAD), 
+                new Object[]{new ItemStack(ModItems.MIND.get()), new ItemStack(Items.IRON_CHESTPLATE), "base", new ItemStack(Items.LEATHER)}, 
+                new EnumGolemTrait[]{EnumGolemTrait.SMART}));
+
+        GolemHead.register(new GolemHead("SMART_SCOUT", 
+                new String[]{"GOLEMVISION", "MINDBIOTHAUMIC"}, 
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/golem/head_smartscout.png"), 
+                new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_head_scout_smart.obj"), 
+                             Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/golem_head_other.png"), 
+                             PartModel.EnumAttachPoint.HEAD), 
+                new Object[]{new ItemStack(ModItems.MIND.get()), new ItemStack(ModItems.GOLEM_MODULE_AGGRESSION.get())}, 
+                new EnumGolemTrait[]{EnumGolemTrait.SCOUT, EnumGolemTrait.SMART, EnumGolemTrait.FRAGILE}));
+
         // Arms
         GolemArm.register(new GolemArm("BASIC", 
                 new String[]{"MINDCLOCKWORK"}, 
@@ -325,6 +342,16 @@ public class GolemProperties implements IGolemProperties {
                              PartModel.EnumAttachPoint.ARMS), 
                 new Object[]{new ItemStack(Items.DIAMOND, 2), "base", new ItemStack(Blocks.PISTON, 2)}, 
                 new EnumGolemTrait[]{EnumGolemTrait.BREAKER, EnumGolemTrait.CLUMSY, EnumGolemTrait.BRUTAL}));
+
+        GolemArm.register(new GolemArm("DARTS", 
+                new String[]{"GOLEMRANGED"}, 
+                Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/golem/arms_darts.png"), 
+                new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_arms_darts.obj"), 
+                             Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/golem_arms_darts.png"), 
+                             PartModel.EnumAttachPoint.ARMS), 
+                new Object[]{new ItemStack(ModItems.GOLEM_MODULE_AGGRESSION.get()), new ItemStack(Items.ARROW, 4), "base"}, 
+                new thaumcraft.common.golems.parts.GolemArmDart(),
+                new EnumGolemTrait[]{EnumGolemTrait.FIGHTER, EnumGolemTrait.DEFT, EnumGolemTrait.RANGED}));
 
         // Legs
         GolemLeg.register(new GolemLeg("WALKER", 
