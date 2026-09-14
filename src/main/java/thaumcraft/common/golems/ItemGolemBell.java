@@ -23,6 +23,7 @@ import thaumcraft.api.golems.ISealDisplayer;
 import thaumcraft.api.golems.seals.ISealEntity;
 import thaumcraft.api.golems.seals.SealPos;
 import thaumcraft.common.golems.seals.SealHandler;
+import thaumcraft.common.menu.SealMenuProvider;
 
 import java.util.List;
 
@@ -65,9 +66,11 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
                     SealHandler.removeSealEntity(level, sealEntity.getSealPos(), false);
                     level.playSound(null, pos, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
                 } else {
-                    // TODO: Open seal GUI
-                    // For now just play a sound
-                    level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
+                    // Open seal GUI
+                    if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                        serverPlayer.openMenu(new SealMenuProvider(sealEntity), 
+                            buf -> SealMenuProvider.writeSealPos(buf, sealEntity));
+                    }
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -96,8 +99,11 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
                     SealHandler.removeSealEntity(level, sealEntity.getSealPos(), false);
                     level.playSound(null, sealEntity.getSealPos().pos, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
                 } else {
-                    // TODO: Open seal GUI
-                    level.playSound(null, sealEntity.getSealPos().pos, SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.BLOCKS, 0.5f, 1.0f);
+                    // Open seal GUI
+                    if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                        serverPlayer.openMenu(new SealMenuProvider(sealEntity), 
+                            buf -> SealMenuProvider.writeSealPos(buf, sealEntity));
+                    }
                 }
                 return InteractionResult.SUCCESS;
             }
