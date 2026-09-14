@@ -356,7 +356,7 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 - **SealStock tag-based matching** (MEDIUM): RESOLVED — Tag-based matching implemented using `ItemStack.is(TagKey)` API.
 - **AuraHandler biome modifiers** (MEDIUM): RESOLVED — `BiomeHandler.registerBiomeInfo()` called during mod init. Biome aura modifiers now active.
 - **ResearchManager events** (MEDIUM): `ResearchManager.java:75` — TODO for ResearchEvent.Knowledge/Research. Requires full event system.
-- **PlayerKnowledge auto-unlock** (MEDIUM): `PlayerKnowledge.java:284` — TODO for auto-unlock research.
+- **PlayerKnowledge auto-unlock** (MEDIUM): RESOLVED — Auto-unlock research implemented. Research entries with AUTOUNLOCK meta are automatically unlocked when knowledge is loaded.
 - **ConfigResearch stat-based discoveries** (MEDIUM): `ConfigResearch.java:359` — TODO for stat tracking.
 - **TileSmelter auxiliary vents** (MEDIUM): Still open — requires new SmelterVent block (not in 26.2 port).
 
