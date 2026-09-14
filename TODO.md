@@ -347,8 +347,8 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 ### HIGH Priority (core gameplay broken/missing)
 - **TileThaumatorium recipe queue** (HIGH): RESOLVED — Recipe queue system implemented with `recipeHash`, `recipeEssentia`, `recipePlayer`, `maxRecipes`, `currentCraft`. NBT serialization added. Packet handler wired (clear queue supported; full recipe lookup needs client-side aspect list).
 - **Seal GUI system (filtered/guard/use)** (HIGH): RESOLVED — All seal GUIs accessible via ItemGolemBell → SealMenuProvider → SealMenu. Filter slots, guard toggles, and use settings all functional through the existing SealMenu.
-- **ItemCausalityCollapser projectile** (HIGH): TODO for spawning projectile. EntityFluxRift IS implemented but wiring is missing.
-- **ItemBottleTaint projectile** (HIGH): TODO for spawning taint bottle projectile.
+- **ItemCausalityCollapser projectile** (HIGH): RESOLVED — Projectile spawning implemented (EntityCausalityCollapser).
+- **ItemBottleTaint projectile** (HIGH): RESOLVED — Projectile spawning implemented (EntityBottleTaint).
 
 ### MEDIUM Priority
 - **TileEssentiaReservoir interaction** (MEDIUM): RESOLVED — Phial fill/drain wired. Flux pollution on break still TODO.
