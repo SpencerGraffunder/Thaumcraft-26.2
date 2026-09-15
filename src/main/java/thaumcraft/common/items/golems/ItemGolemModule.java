@@ -8,6 +8,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.golems.EnumGolemTrait;
+import thaumcraft.init.ItemRegistration;
 
 /**
  * Golem module item - modifies golem behavior when right-clicked on a golem.
@@ -59,6 +60,6 @@ public class ItemGolemModule extends Item {
     }
 
     public static Item create(EnumGolemTrait trait) {
-        return new ItemGolemModule(new Item.Properties(), trait);
+        return new ItemGolemModule(ItemRegistration.id(new Item.Properties().stacksTo(1)), trait);
     }
 }
