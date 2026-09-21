@@ -320,6 +320,9 @@ public class ResearchBrowserScreen extends Screen {
      * Checks if a research entry should be visible to the player.
      */
     private boolean isVisible(ResearchEntry res) {
+        // 1.12: entry is visible if it's known (started or complete), OR all
+        // parents are COMPLETE (not just visible). Children only appear after
+        // their parent research is fully finished, not merely opened.
         if (ThaumcraftCapabilities.isResearchKnown(player, res.getKey())) {
             return true;
         }
@@ -338,8 +341,8 @@ public class ResearchBrowserScreen extends Screen {
                 if (cleanParent.contains("@")) {
                     cleanParent = cleanParent.substring(0, cleanParent.indexOf("@"));
                 }
-                ResearchEntry ri = ResearchCategories.getResearch(cleanParent);
-                if (ri != null && !isVisible(ri)) {
+                // 1.12: parent must be COMPLETE for child to be visible
+                if (!ThaumcraftCapabilities.isResearchComplete(player, cleanParent)) {
                     invisible.add(r);
                     return false;
                 }
@@ -537,26 +540,16 @@ public class ResearchBrowserScreen extends Screen {
         popuptime = System.currentTimeMillis() - 1L;
         
         if (!searching && currentHighlight != null) {
-            // Handle research click
-            if (!ThaumcraftCapabilities.isResearchKnown(player, currentHighlight.getKey()) 
-                    && canUnlockResearch(currentHighlight)) {
-                // Start new research - send packet to server to sync progress
-                PacketHandler.sendToServer(new PacketSyncProgressToServer(currentHighlight.getKey(), true));
-                minecraft.gui.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
-                popuptime = System.currentTimeMillis() + 3000L;
-                popupmessage = Component.translatable("tc.research.popup", currentHighlight.getLocalizedName()).getString();
-                return true;
-            } else if (ThaumcraftCapabilities.isResearchKnown(player, currentHighlight.getKey())) {
-                // View existing research - clear flags and sync to server
-                ThaumcraftCapabilities.getKnowledge(player).ifPresent(knowledge -> {
-                    knowledge.clearResearchFlag(currentHighlight.getKey(), IPlayerKnowledge.EnumResearchFlag.RESEARCH);
-                    knowledge.clearResearchFlag(currentHighlight.getKey(), IPlayerKnowledge.EnumResearchFlag.PAGE);
-                });
-                // Send flag sync packet to server
-                PacketHandler.sendToServer(new PacketSyncResearchFlagsToServer(currentHighlight.getKey(), false, false, false));
-                minecraft.gui.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
-                return true;
-            }
+            // Handle research click (1.12: just opens the page, doesn't auto-start)
+            // Clear the RESEARCH/PAGE flags so the entry stops blinking
+            ThaumcraftCapabilities.getKnowledge(player).ifPresent(knowledge -> {
+                knowledge.clearResearchFlag(currentHighlight.getKey(), IPlayerKnowledge.EnumResearchFlag.RESEARCH);
+                knowledge.clearResearchFlag(currentHighlight.getKey(), IPlayerKnowledge.EnumResearchFlag.PAGE);
+            });
+            // Send flag sync packet to server
+            PacketHandler.sendToServer(new PacketSyncResearchFlagsToServer(currentHighlight.getKey(), false, false, false));
+            minecraft.gui.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
+            return true;
         } else if (searching) {
             // Handle search result click
             int q = 0;

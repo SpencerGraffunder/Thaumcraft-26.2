@@ -1084,7 +1084,8 @@ public class ResearchPageScreen extends Screen {
             return true;
         }
 
-        // Left-edge aspect bookmark
+        // Left-edge bookmarks (1.12: x-48, sh+9 / x-49, sh+32)
+        // Aspect bookmark
         if (playerKnowledge != null && playerKnowledge.isResearchComplete("FIRSTSTEPS")
                 && mouseInside(sw - 48, sh + 9, 25, 16, mx, my)) {
             aspectPopup = true;
@@ -1095,7 +1096,7 @@ public class ResearchPageScreen extends Screen {
             return true;
         }
 
-        // Left-edge knowledge bookmark
+        // Knowledge bookmark
         if (playerKnowledge != null && playerKnowledge.isResearchComplete("KNOWLEDGETYPES")
                 && !"KNOWLEDGETYPES".equals(research.getKey())
                 && mouseInside(sw - 49, sh + 32, 25, 16, mx, my)) {
