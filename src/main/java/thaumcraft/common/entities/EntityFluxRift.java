@@ -16,7 +16,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -413,7 +412,7 @@ public class EntityFluxRift extends Entity {
                 if (random.nextInt(5) == 0) {
                     wisp.setWispType("flux");
                 }
-                if (wisp.checkSpawnRules(level(), MobSpawnType.NATURAL) && level().addFreshEntity(wisp)) {
+                if (level().addFreshEntity(wisp)) {
                     didIt = true;
                 }
                 break;
@@ -433,7 +432,7 @@ public class EntityFluxRift extends Entity {
                 // Infectious vis exhaustion on nearby entities
                 for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(16.0))) {
                     didIt = true;
-                    target.addEffect(new MobEffectInstance(ModEffects.INFECTIOUS_VIS_EXHAUST.get(), 600, 0));
+                    target.addEffect(new MobEffectInstance(ModEffects.INFECTIOUS_VIS_EXHAUST, 600, 0));
                 }
                 break;
             }

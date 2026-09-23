@@ -23,6 +23,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.tiles.essentia.TileEssentiaReservoir;
 import thaumcraft.init.ModBlockEntities;
 
@@ -107,7 +108,14 @@ public class BlockEssentiaReservoir extends Block implements EntityBlock {
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide()) {
-            // TODO: Spawn flux pollution for lost essentia
+            // 1.12: breaking a reservoir pollutes the aura with the lost essentia
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof TileEssentiaReservoir res) {
+                int lost = res.getAmount();
+                if (lost > 0) {
+                    AuraHelper.polluteAura(level, pos, lost / 10f, true);
+                }
+            }
         }
         return super.playerWillDestroy(level, pos, state, player);
     }
