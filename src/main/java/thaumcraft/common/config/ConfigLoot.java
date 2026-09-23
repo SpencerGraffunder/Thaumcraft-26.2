@@ -1,50 +1,61 @@
 package thaumcraft.common.config;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.init.ModItems;
 
 /**
- * ConfigLoot - Loot bag item registration (ported from 1.12 ModConfig.postInitLoot).
+ * Populates the loot-bag loot tables. Ported from 1.12 {@code ModConfig.postInitLoot()}.
  *
- * 1.12 had a single `postInitLoot()` in ModConfig that called
- * {@link ThaumcraftApi#addLootBagItem} ~40 times to populate the three loot-bag
- * tiers (0=common, 1=uncommon, 2=rare). 26.2 had the API but never called it,
- * so loot bags were empty. This restores the 1.12 loot table.
- *
- * Mapping notes:
- * - 1.12 `ItemsTC.X` -> 26.2 `ModItems.X` (DeferredHolder).
- * - 1.12 damage/metadata (e.g. primordialPearl meta, baubles meta, golden_apple meta 1)
- *   is dropped or mapped to the equivalent 1.21.1 item (components / separate items).
- * - Potions use 1.21.1 `PotionUtils.createPotion`; only the common potions are listed
- *   (the 1.12 loop over PotionType.REGISTRY is not a drop-in in 1.21.1).
+ * <p>1.12 item-to-1.21.1 mapping notes:
+ * <ul>
+ *   <li>{@code ItemsTC.salisMundus} &rarr; {@link ModItems#SALIS_MUNDUS}</li>
+ *   <li>{@code ItemsTC.primordialPearl} (meta 7/6/5/3/-) &rarr; base {@link ModItems#PRIMORDIAL_PEARL}
+ *       (1.21.1 uses components; the pearl's aspect content is data-driven, so the base item is used).</li>
+ *   <li>{@code ItemsTC.amuletVis} (meta 0) &rarr; {@link ModItems#AMULET_VIS_FOUND} (1.21.1 splits found/crafted).</li>
+ *   <li>{@code ItemsTC.baubles} meta 0-6 (amulet/ring/girdle mundane, ring apprentice,
+ *       amulet/ring/girdle fancy) &rarr; the discrete 26.2 gear items.</li>
+ *   <li>{@code Items.GOLDEN_APPLE} meta 1 &rarr; {@link Items#ENCHANTED_GOLDEN_APPLE}; meta 0 &rarr; {@link Items#GOLDEN_APPLE}.</li>
+ *   <li>Potions: 1.12 {@code PotionUtils.addPotionToItemStack} &rarr;
+ *       1.21.1 {@link PotionContents#createItemStack(Item, Holder)}; the 1.12
+ *       {@code PotionType.REGISTRY} loop &rarr; iterate {@link BuiltInRegistries#POTION} holders.</li>
+ * </ul>
  */
 public class ConfigLoot {
 
     public static void postInitLoot() {
-        // --- Gold nuggets (tier-scaled quantity) ---
+        // Gold nuggets (1.12 kept the stack size in the ItemStack).
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLD_NUGGET, 1), 2500, 0);
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLD_NUGGET, 2), 2250, 1);
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLD_NUGGET, 3), 2000, 2);
 
-        // --- Salis Mundus (tier-scaled) ---
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.SALIS_MUNDUS), 3, 0);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.SALIS_MUNDUS), 6, 1);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.SALIS_MUNDUS), 9, 2);
+        // Salis Mundus (dust).
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.SALIS_MUNDUS.get()), 3, 0);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.SALIS_MUNDUS.get()), 6, 1);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.SALIS_MUNDUS.get()), 9, 2);
 
-        // --- Utility items (all tiers) ---
+        // Common vanilla drops across all tiers.
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.CHORUS_FRUIT), 5, 0, 1, 2);
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.COMPASS), 5, 0, 1, 2);
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.COOKIE), 5, 0, 1, 2);
 
-        // --- Primordial Pearl (1.12 used meta for tier; 26.2 drops meta) ---
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.PRIMORDIAL_PEARL), 1, 0);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.PRIMORDIAL_PEARL), 3, 1);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.PRIMORDIAL_PEARL), 9, 2);
+        // Primordial pearls. 1.12 used metadata to pick the pearl "level"; 1.21.1
+        // drops that distinction (aspect content is data-driven), so the base item
+        // is used for every tier while the 1.12 weights are preserved.
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()), 1, 0);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()), 3, 1);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()), 1, 1);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()), 9, 2);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()), 3, 2);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()), 1, 2);
 
-        // --- Rare gems ---
+        // Rare / value items.
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.NETHER_STAR), 1, 2);
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.DIAMOND), 10, 0);
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.DIAMOND), 50, 1, 2);
@@ -53,36 +64,42 @@ public class ConfigLoot {
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLD_INGOT), 100, 0, 1, 2);
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.ENDER_PEARL), 100, 0, 1, 2);
 
-        // --- Vis baubles (1.12 `baubles` meta 0-6 -> 26.2 separate vis-discount items) ---
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.AMULET_VIS_FOUND), 6, 1, 2);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.AMULET_MUNDANE), 10, 0);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.RING_MUNDANE), 10, 0);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.AMULET_FANCY), 10, 0);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.RING_FANCY), 5, 2);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.CLOUD_RING), 5, 1);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.CURIOSITY_BAND), 5, 1);
-        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.CHARM_UNDYING), 5, 1);
+        // Vis amulet (1.12 amuletVis meta 0 = the "found" variant).
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.AMULET_VIS_FOUND.get()), 6, 1, 2);
 
-        // --- Experience bottles (tier-scaled quantity) ---
-        ThaumcraftApi.addLootBagItem(new ItemStack(Items.EXPERIENCE_BOTTLE, 1), 5, 0);
-        ThaumcraftApi.addLootBagItem(new ItemStack(Items.EXPERIENCE_BOTTLE, 2), 10, 1);
-        ThaumcraftApi.addLootBagItem(new ItemStack(Items.EXPERIENCE_BOTTLE, 4), 20, 2);
+        // Vis discount gear (1.12 ItemsTC.baubles meta 0-6).
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.AMULET_MUNDANE.get()), 10, 0);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.RING_MUNDANE.get()), 10, 0);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.GIRDLE_MUNDANE.get()), 10, 0);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.RING_APPRENTICE.get()), 5, 2);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.AMULET_FANCY.get()), 5, 1);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.RING_FANCY.get()), 5, 1);
+        ThaumcraftApi.addLootBagItem(new ItemStack(ModItems.GIRDLE_FANCY.get()), 5, 1);
 
-        // --- Golden apple (1.12 meta 0 = golden, meta 1 = enchanted) ---
-        ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLDEN_APPLE), 3, 0);
-        ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLDEN_APPLE), 6, 1);
-        ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLDEN_APPLE), 9, 2);
+        // Experience bottles.
+        ThaumcraftApi.addLootBagItem(new ItemStack(Items.EXPERIENCE_BOTTLE), 5, 0);
+        ThaumcraftApi.addLootBagItem(new ItemStack(Items.EXPERIENCE_BOTTLE), 10, 1);
+        ThaumcraftApi.addLootBagItem(new ItemStack(Items.EXPERIENCE_BOTTLE), 20, 2);
+
+        // Golden apples: 1.12 meta 1 = enchanted, meta 0 = normal.
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.ENCHANTED_GOLDEN_APPLE), 1, 0);
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.ENCHANTED_GOLDEN_APPLE), 2, 1);
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.ENCHANTED_GOLDEN_APPLE), 3, 2);
+        ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLDEN_APPLE), 3, 0);
+        ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLDEN_APPLE), 6, 1);
+        ThaumcraftApi.addLootBagItem(new ItemStack(Items.GOLDEN_APPLE), 9, 2);
 
-        // --- Books ---
+        // Books.
         ThaumcraftApi.addLootBagItem(new ItemStack(Items.BOOK), 10, 0, 1, 2);
 
-        // --- Potions (1.21.1: PotionUtils.createPotion; only common potions listed) ---
-        // TODO: 1.12 looped over ALL PotionType.REGISTRY; 26.2 could expand this with
-        //       PotionUtils.createPotion(new ItemStack(Items.POTION), <potion>) per potion.
-        //       Left minimal to avoid coupling to the full 1.21.1 potion registry.
+        // Potions. 1.12 iterated PotionType.REGISTRY; 1.21.1 iterates the potion
+        // registry holders and builds stacks via PotionContents (replaces the
+        // removed PotionUtils.addPotionToItemStack helper).
+        BuiltInRegistries.POTION.listElements().forEach(potion -> {
+            ThaumcraftApi.addLootBagItem(PotionContents.createItemStack(Items.POTION, potion), 2, 0, 1, 2);
+            ThaumcraftApi.addLootBagItem(PotionContents.createItemStack(Items.SPLASH_POTION, potion), 2, 0, 1, 2);
+            ThaumcraftApi.addLootBagItem(PotionContents.createItemStack(Items.LINGERING_POTION, potion), 2, 1, 2);
+        });
 
         Thaumcraft.LOGGER.info("Registered loot-bag items");
     }
