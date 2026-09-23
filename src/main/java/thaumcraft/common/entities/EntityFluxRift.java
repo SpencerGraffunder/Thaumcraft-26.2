@@ -16,6 +16,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -31,6 +32,9 @@ import net.minecraft.world.level.ClipContext;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.api.capabilities.IPlayerWarp;
+import thaumcraft.common.blocks.world.taint.TaintHelper;
+import thaumcraft.common.entities.monster.EntityWisp;
+import thaumcraft.common.entities.monster.tainted.EntityTaintSeedPrime;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModEntities;
 import thaumcraft.init.ModItems;
@@ -337,8 +341,8 @@ public class EntityFluxRift extends Entity {
                 setRiftSize(getRiftSize() + 1);
             }
             
-            // Trigger random events when unstable
-            if (getRiftStability() < 0.0f && random.nextInt(1000) < Math.abs(getRiftStability()) + getRiftSize()) {
+            // Trigger random events when charged (1.12: random.nextInt(2000) < min(20, stability))
+            if (random.nextInt(2000) < Math.min(20, Math.abs(getRiftStability()))) {
                 executeRiftEvent();
             }
         }
@@ -369,34 +373,93 @@ public class EntityFluxRift extends Entity {
         }
     }
     
-    // ==================== Rift Events ====================
-    
+    // ==================== Rift Events (1.12 weighted table) ====================
+
+    /** 1.12 flux event entry: event id, weight, stability cost, whether it's allowed near taint seeds. */
+    private record FluxEventEntry(int event, int weight, int cost, boolean nearTaintAllowed) {}
+
+    // 1.12 event table: (wisp, taint seed, vis exhaustion, flux focus, collapse)
+    private static final List<FluxEventEntry> EVENTS = List.of(
+            new FluxEventEntry(0, 50, 5, true),
+            new FluxEventEntry(1, 10, 0, false),
+            new FluxEventEntry(2, 20, 10, true),
+            new FluxEventEntry(3, 20, 10, true),
+            new FluxEventEntry(4, 1, 0, true));
+
+    private FluxEventEntry chooseOnWeight() {
+        int total = 0;
+        for (FluxEventEntry e : EVENTS) total += e.weight;
+        int roll = random.nextInt(total);
+        for (FluxEventEntry e : EVENTS) {
+            roll -= e.weight;
+            if (roll < 0) return e;
+        }
+        return EVENTS.get(0);
+    }
+
     private void executeRiftEvent() {
-        // Simplified random events
-        int eventType = random.nextInt(100);
-        
-        if (eventType < 50) {
-            // Spawn a wisp (50% chance)
-            // TODO: Spawn EntityWisp when fully integrated
-        } else if (eventType < 70) {
-            // Apply weakness to nearby entities (20% chance)
-            List<LivingEntity> targets = level().getEntitiesOfClass(LivingEntity.class, 
-                    getBoundingBox().inflate(16.0));
-            for (LivingEntity target : targets) {
-                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 600, 0));
+        FluxEventEntry ei = chooseOnWeight();
+        if (ei == null) return;
+        // Taint-seed adjacency check (1.12: skip non-taint-allowed events near taint seeds)
+        if (!ei.nearTaintAllowed && TaintHelper.isNearTaintSeed(level(), blockPosition())) {
+            return;
+        }
+        boolean didIt = false;
+        switch (ei.event) {
+            case 0: {
+                // Wisp (FLUX type 20% chance)
+                EntityWisp wisp = new EntityWisp(level());
+                wisp.setPos(getX() + random.nextGaussian() * 5.0, getY() + random.nextGaussian() * 5.0, getZ() + random.nextGaussian() * 5.0);
+                if (random.nextInt(5) == 0) {
+                    wisp.setWispType("flux");
+                }
+                if (wisp.checkSpawnRules(level(), MobSpawnType.NATURAL) && level().addFreshEntity(wisp)) {
+                    didIt = true;
+                }
+                break;
             }
-            setRiftStability(getRiftStability() + 10);
-        } else if (eventType < 90) {
-            // Apply nausea/confusion (20% chance)
-            List<LivingEntity> targets = level().getEntitiesOfClass(LivingEntity.class, 
-                    getBoundingBox().inflate(16.0));
-            for (LivingEntity target : targets) {
-                target.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0));
+            case 1: {
+                // Taint seed prime (pollute aura + setDead)
+                EntityTaintSeedPrime seed = new EntityTaintSeedPrime(level());
+                seed.setPos(getX() + random.nextGaussian() * 5.0, getY() + random.nextGaussian() * 5.0, getZ() + random.nextGaussian() * 5.0);
+                if (level().addFreshEntity(seed)) {
+                    didIt = true;
+                    AuraHelper.polluteAura(level(), blockPosition(), getRiftSize() / 2f, true);
+                    seed.discard();
+                }
+                break;
             }
-            setRiftStability(getRiftStability() + 5);
-        } else {
-            // Begin collapse (10% chance)
-            setCollapsing(true);
+            case 2: {
+                // Infectious vis exhaustion on nearby entities
+                for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(16.0))) {
+                    didIt = true;
+                    target.addEffect(new MobEffectInstance(ModEffects.INFECTIOUS_VIS_EXHAUST.get(), 600, 0));
+                }
+                break;
+            }
+            case 3: {
+                // Flux focus: warp the closest player (simplified 1.12 focus cast)
+                Player closest = null;
+                double minDist = Double.MAX_VALUE;
+                for (Player p : level().getEntitiesOfClass(Player.class, getBoundingBox().inflate(32.0))) {
+                    double d = p.distanceToSqr(this);
+                    if (d < minDist) { minDist = d; closest = p; }
+                }
+                if (closest != null) {
+                    didIt = true;
+                    ThaumcraftApi.internalMethods.addWarpToPlayer(closest, 5 + getRiftSize() / 2, IPlayerWarp.EnumWarpType.NORMAL);
+                }
+                break;
+            }
+            case 4: {
+                // Begin collapse
+                didIt = true;
+                setCollapsing(true);
+                break;
+            }
+        }
+        if (didIt) {
+            addStability(-ei.cost);
         }
     }
     
