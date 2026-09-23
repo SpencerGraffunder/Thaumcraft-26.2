@@ -14,6 +14,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.api.golems.seals.ISeal;
 import thaumcraft.api.golems.seals.ISealConfigFilter;
 import thaumcraft.api.golems.seals.ISealEntity;
+import thaumcraft.common.menu.SealMenuProvider;
 
 /**
  * SealFiltered - Abstract base class for seals that support item filtering.
@@ -114,8 +115,7 @@ public abstract class SealFiltered implements ISeal, ISealConfigFilter {
     // GUI methods - stubbed for now, will be implemented with GUI system
     @Override
     public Object returnContainer(Level level, Player player, BlockPos pos, Direction side, ISealEntity seal) {
-        // GUI is accessible via ItemGolemBell → SealMenuProvider → SealMenu
-        return null;
+        return new SealMenuProvider(seal);
     }
     
     @OnlyIn(Dist.CLIENT)

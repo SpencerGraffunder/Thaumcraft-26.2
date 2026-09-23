@@ -17,6 +17,7 @@ import thaumcraft.api.golems.seals.ISealEntity;
 import thaumcraft.api.golems.tasks.Task;
 import thaumcraft.common.golems.GolemInteractionHelper;
 import thaumcraft.common.golems.tasks.TaskHandler;
+import thaumcraft.common.menu.SealMenuProvider;
 
 import java.util.Random;
 
@@ -227,7 +228,7 @@ public class SealUse extends SealFiltered implements ISealConfigToggles {
     
     @Override
     public Object returnContainer(Level level, Player player, BlockPos pos, Direction side, ISealEntity seal) {
-        return null; // GUI is accessible via ItemGolemBell → SealMenuProvider → SealMenu
+        return new SealMenuProvider(seal);
     }
     
     @OnlyIn(Dist.CLIENT)
