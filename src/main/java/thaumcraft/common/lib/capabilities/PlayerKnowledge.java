@@ -50,16 +50,14 @@ public class PlayerKnowledge {
             if (!isResearchKnown(res)) {
                 return EnumResearchStatus.UNKNOWN;
             }
-            // TODO: Check against ResearchCategories when implemented
-            // ResearchEntry entry = ResearchCategories.getResearch(res);
-            // if (entry == null || entry.getStages() == null || getResearchStage(res) > entry.getStages().length) {
-            //     return EnumResearchStatus.COMPLETE;
-            // }
-            // return EnumResearchStatus.IN_PROGRESS;
-            
-            // For now, if research is known with a stage > 0, consider it complete
-            int stage = getResearchStage(res);
-            return stage > 0 ? EnumResearchStatus.COMPLETE : EnumResearchStatus.IN_PROGRESS;
+            // Check against ResearchCategories for proper stage-based status
+            thaumcraft.api.research.ResearchEntry entry = thaumcraft.api.research.ResearchCategories.getResearch(res);
+            if (entry != null && entry.getStages() != null && entry.getStages().length > 0) {
+                int currentStage = getResearchStage(res);
+                return currentStage >= entry.getStages().length ? EnumResearchStatus.COMPLETE : EnumResearchStatus.IN_PROGRESS;
+            }
+            // No stages defined — known research is complete
+            return EnumResearchStatus.COMPLETE;
         }
         
         @Override
