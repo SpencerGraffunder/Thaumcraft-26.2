@@ -1,6 +1,7 @@
 package thaumcraft.common.golems;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.NonNullList;
@@ -31,7 +32,11 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.DyeItem;
@@ -294,6 +299,11 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
                 setTarget(null);
             }
             
+            // PVP guard: golems don't target players on PVP-off servers (1.12 behavior)
+            if (getTarget() instanceof Player && level() instanceof ServerLevel sl && !sl.isPvpAllowed()) {
+                setTarget(null);
+            }
+            
             // Ranged target distance check
             if (getTarget() != null && getProperties().hasTrait(EnumGolemTrait.RANGED) && distanceToSqr(getTarget()) > 1024.0) {
                 setTarget(null);
@@ -468,20 +478,33 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
 
     @Override
     public boolean doHurtTarget(ServerLevel level, Entity target) {
-        float damage = (float) getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-        
-        boolean hit = target.hurtServer(level, damageSources().mobAttack(this), damage);
+        DamageSource source = damageSources().mobAttack(this);
+        // Base damage + Sharpness/Smite/Bane bonus from held item (1.12: getModifierForCreature)
+        float damage = EnchantmentHelper.modifyDamage(level, getMainHandItem(), target, source,
+                (float) getAttribute(Attributes.ATTACK_DAMAGE).getValue());
+        // Knockback from held item (1.12: getKnockbackModifier)
+        float knockback = EnchantmentHelper.modifyKnockback(level, getMainHandItem(), target, source, 0f);
+        boolean hit = target.hurtServer(level, source, damage);
         if (hit) {
             if (target instanceof LivingEntity living && getProperties().hasTrait(EnumGolemTrait.DEFT)) {
                 living.setLastHurtByMob(this);
             }
-            
-            // Call arm function
+            // Knockback (1.12: ent.addVelocity with kb)
+            if (knockback > 0 && target instanceof LivingEntity le) {
+                le.knockback(knockback, target.getX() - getX(), target.getZ() - getZ(), source, 0f);
+            }
+            // Fire Aspect (1.12: ent.setFire(j*4))
+            int fire = EnchantmentHelper.getItemEnchantmentLevel(
+                    level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).get(Enchantments.FIRE_ASPECT).orElseThrow(),
+                    getMainHandItem());
+            if (fire > 0) {
+                target.igniteForTicks(fire * 4);
+            }
+            // Call arm function (1.12: getArms().function.onMeleeAttack)
             if (getProperties().getArms().function != null) {
                 getProperties().getArms().function.onMeleeAttack(this, target);
             }
-            
-            // XP for kills
+            // XP for kills (1.12: addRankXp(8))
             if (target instanceof Mob && !target.isAlive()) {
                 addRankXp(8);
             }
@@ -740,10 +763,10 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
                 return InteractionResult.SUCCESS;
             }
             
-            // Dye coloring
+            // Dye coloring (1.12 palette: Black→16 … White→1)
             if (heldItem.getItem() instanceof DyeItem) {
                 DyeColor color = heldItem.get(DataComponents.DYE);
-                setGolemColor((byte) (16 - color.getId()));
+                setGolemColor(dyeToGolemColor(color));
                 heldItem.shrink(1);
                 playSound(ModSounds.ZAP.get(), 1.0f, 1.5f);
                 player.swing(hand);
@@ -751,7 +774,8 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
             }
             
             // Handle golem bell for follow/stay toggle
-            if (heldItem.getItem() == ModItems.GOLEM_BELL.get()) {
+            // Golem bell requires GOLEMDIRECT research (1.12 progression gate)
+            if (heldItem.getItem() == ModItems.GOLEM_BELL.get() && ThaumcraftCapabilities.isResearchKnown(player, "GOLEMDIRECT")) {
                 setFollowingOwner(!isFollowingOwner());
                 playSound(ModSounds.SCAN.get(), 1.0f, 1.0f);
                 player.swing(hand);
@@ -761,6 +785,28 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
             return InteractionResult.SUCCESS;
         }
         return super.mobInteract(player, hand);
+    }
+
+    /** Maps a DyeColor to the 1.12 golem palette (Black=16 … White=1). */
+    private static byte dyeToGolemColor(DyeColor c) {
+        return switch (c) {
+            case BLACK -> 16;
+            case RED -> 15;
+            case GREEN -> 14;
+            case BROWN -> 13;
+            case BLUE -> 12;
+            case PURPLE -> 11;
+            case CYAN -> 10;
+            case GRAY -> 9;
+            case LIGHT_GRAY -> 8;
+            case PINK -> 7;
+            case LIME -> 6;
+            case YELLOW -> 5;
+            case LIGHT_BLUE -> 4;
+            case MAGENTA -> 3;
+            case ORANGE -> 2;
+            case WHITE -> 1;
+        };
     }
 
     private void dropCarried() {
@@ -792,7 +838,14 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
-        float bonus = 0 * 0.15f;
+        // Looting bonus from the killer's weapon (1.12: bonus = looting * 0.15f)
+        int looting = 0;
+        if (source.getEntity() instanceof LivingEntity killer) {
+            looting = EnchantmentHelper.getItemEnchantmentLevel(
+                    level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).get(Enchantments.LOOTING).orElseThrow(),
+                    killer.getMainHandItem());
+        }
+        float bonus = looting * 0.15f;
         
         for (ItemStack stack : getProperties().generateComponents()) {
             ItemStack drop = stack.copy();
