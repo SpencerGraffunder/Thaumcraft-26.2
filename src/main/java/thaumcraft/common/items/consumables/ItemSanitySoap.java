@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.capabilities.IPlayerWarp;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
+import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModSounds;
 
@@ -75,13 +76,15 @@ public class ItemSanitySoap extends Item {
                 if (warp != null) {
                     int amountToRemove = 1;
 
-                    // Check for Warp Ward potion effect - adds +1
+                    // Check for Warp Ward potion effect - adds +1 (1.12 PotionWarpWard)
                     if (player.hasEffect(ModEffects.WARP_WARD)) {
                         amountToRemove++;
-        return false;
                     }
-                    
-                    // TODO: Check if standing in purifying fluid - adds +1
+
+                    // Check if standing in purifying fluid - adds +1 (1.12 BlocksTC.purifyingFluid)
+                    if (level.getBlockState(player.blockPosition()).getBlock() == ModBlocks.PURIFYING_FLUID.get()) {
+                        amountToRemove++;
+                    }
 
                     // Remove normal warp
                     if (warp.get(IPlayerWarp.EnumWarpType.NORMAL) > 0) {

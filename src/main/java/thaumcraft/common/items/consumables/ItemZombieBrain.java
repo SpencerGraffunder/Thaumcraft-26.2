@@ -29,6 +29,12 @@ public class ItemZombieBrain extends Item {
     
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        if (!level.isClientSide()) {
+            // 1.12: 80% chance of Hunger(30,0) — 1.20.1 FoodProperties has no effects field
+            if (level.getRandom().nextFloat() < 0.8f) {
+                entity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 30, 0));
+            }
+        }
         if (!level.isClientSide() && entity instanceof Player player) {
             // Small chance for permanent warp, otherwise temporary
             if (level.getRandom().nextFloat() < 0.1f) {

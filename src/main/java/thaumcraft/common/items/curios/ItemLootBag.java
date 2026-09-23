@@ -12,6 +12,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import thaumcraft.common.lib.utils.Utils;
 import thaumcraft.init.ModSounds;
 
 import javax.annotation.Nullable;
@@ -26,18 +27,27 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class ItemLootBag extends Item {
 
     public enum LootTier {
-        COMMON(Rarity.COMMON),
-        UNCOMMON(Rarity.UNCOMMON),
-        RARE(Rarity.RARE);
+        COMMON(Rarity.COMMON, 0),
+        UNCOMMON(Rarity.UNCOMMON, 1),
+        RARE(Rarity.RARE, 2);
 
         private final Rarity rarity;
+        private final int lootRarity;
 
-        LootTier(Rarity rarity) {
+        LootTier(Rarity rarity, int lootRarity) {
             this.rarity = rarity;
+            this.lootRarity = lootRarity;
         }
 
         public Rarity getRarity() {
             return rarity;
+        }
+
+        /**
+         * Maps to Utils.generateLoot rarity int (0=common, 1=uncommon, 2=rare).
+         */
+        public int getLootRarity() {
+            return lootRarity;
         }
     }
 
@@ -92,13 +102,10 @@ public class ItemLootBag extends Item {
     }
 
     /**
-     * Generate random loot based on tier.
-     * TODO: Implement proper loot tables
+     * Generate random loot based on tier (1.12 ItemLootBag: Utils.generateLoot).
      */
     private ItemStack generateLoot(Level level, LootTier tier) {
-        // Placeholder - should use loot tables or Utils.generateLoot
-        // For now, return empty to prevent crashes
-        return ItemStack.EMPTY;
+        return Utils.generateLoot(tier.getLootRarity(), level.getRandom());
     }
 
     @Override

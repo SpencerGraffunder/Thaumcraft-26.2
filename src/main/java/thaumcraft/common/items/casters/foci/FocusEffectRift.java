@@ -64,7 +64,7 @@ public class FocusEffectRift extends FocusEffect {
         // }
         
         float maxDist = getSettingValue("depth") * finalPower;
-        int duration = 20 * getSettingValue("duration");
+        int duration = getSettingValue("duration"); // seconds; createHole multiplies by 20 to get ticks (1.12: dur = 20 * setting)
         
         Direction hitSide = blockHit.getDirection();
         Direction drillDirection = hitSide.getOpposite();

@@ -16,6 +16,7 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.IArcaneRecipe;
 import thaumcraft.api.crafting.IArcaneWorkbench;
 import thaumcraft.common.lib.crafting.ArcaneWorkbenchCraftingContainer;
+import thaumcraft.common.items.casters.CasterManager;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 import thaumcraft.common.tiles.crafting.TileArcaneWorkbench;
 
@@ -98,8 +99,8 @@ public class ArcaneWorkbenchResultSlot extends Slot {
         if (arcaneRecipe != null) {
             // Consume vis from aura
             int visCost = arcaneRecipe.getVis();
-            // TODO: Apply vis discount from player's gear
-            // visCost = (int)(visCost * (1.0f - CasterManager.getTotalVisDiscount(thePlayer)));
+            // 1.12: apply vis discount from player's gear before spending (SlotCraftingArcaneWorkbench.onTake)
+            visCost = (int)(visCost * (1.0f - CasterManager.getTotalVisDiscount(thePlayer)));
             if (visCost > 0) {
                 tile.updateAura();
                 tile.spendAura(visCost);

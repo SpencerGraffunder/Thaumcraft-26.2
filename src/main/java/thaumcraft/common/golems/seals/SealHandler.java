@@ -70,10 +70,12 @@ public class SealHandler {
         registerSeal(new SealPickup());
         registerSeal(new SealEmpty());
         registerSeal(new SealFill());
+        registerSeal(new SealFillAdvanced());
         registerSeal(new SealProvide());
         
         // Combat seals
         registerSeal(new SealGuard());
+        registerSeal(new SealGuardAdvanced());
         registerSeal(new SealButcher());
         
         // Work seals

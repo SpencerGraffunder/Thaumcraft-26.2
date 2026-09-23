@@ -3,6 +3,7 @@ package thaumcraft.common.lib.research;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -88,6 +89,9 @@ public class ScanSky implements IScanThing {
             // Consume scribing tools and paper
             consumeScribingTools(player);
             
+            // Grant celestial notes reward (1.12 granted celestialNotes on success)
+            grantCelestialNotes(player, isNight ? "moon" : "sun", isNight ? moonPhase : 0);
+            
             ThaumcraftApi.internalMethods.progressResearch(player, key);
             cleanResearch(player, dayPrefix);
             
@@ -100,6 +104,18 @@ public class ScanSky implements IScanThing {
                 player.sendSystemMessage(Component.translatable("tc.celestial.fail.1"));
                 return;
             }
+            
+            // Check for scribing tools and paper (1.12 requires these for stars too)
+            if (!hasScribingTools(player)) {
+                player.sendSystemMessage(Component.translatable("tc.celestial.fail.2"));
+                return;
+            }
+            
+            // Consume scribing tools and paper
+            consumeScribingTools(player);
+            
+            // Grant celestial notes reward (1.12 granted celestialNotes on success)
+            grantCelestialNotes(player, "star", starDirection);
             
             ThaumcraftApi.internalMethods.progressResearch(player, key);
             cleanResearch(player, dayPrefix);
@@ -139,42 +155,61 @@ public class ScanSky implements IScanThing {
     }
     
     /**
-     * Check if the player has scribing tools (quill/brush + paper).
+     * Check if the player has scribing tools (1.12: ItemsTC.scribingTools) + 1 paper.
      */
     private boolean hasScribingTools(Player player) {
-        for (ItemStack stack : player.getInventory()) {
-            if (stack.getItem() instanceof net.minecraft.world.item.BucketItem) {
-                // Quill pen equivalent
-                if (stack.getItem() == net.minecraft.world.item.Items.WRITABLE_BOOK ||
-                    stack.getItem() == net.minecraft.world.item.Items.BOOK) {
-                    // Check for paper
-                    for (ItemStack paper : player.getInventory()) {
-                        if (paper.getItem() == net.minecraft.world.item.Items.PAPER) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        return player.getInventory().contains(new ItemStack(ModItems.SCRIBING_TOOLS.get()))
+            && player.getInventory().contains(new ItemStack(Items.PAPER));
     }
     
     /**
-     * Consume scribing tools and paper from inventory.
+     * Consume scribing tools and 1 paper from inventory (1.12 ScanSky).
      */
     private void consumeScribingTools(Player player) {
         for (ItemStack stack : player.getInventory()) {
-            if ((stack.getItem() == net.minecraft.world.item.Items.WRITABLE_BOOK ||
-                stack.getItem() == net.minecraft.world.item.Items.BOOK) && stack.getCount() > 0) {
+            if (stack.getItem() == ModItems.SCRIBING_TOOLS.get() && stack.getCount() > 0) {
                 stack.shrink(1);
                 break;
             }
         }
         for (ItemStack paper : player.getInventory()) {
-            if (paper.getItem() == net.minecraft.world.item.Items.PAPER && paper.getCount() > 0) {
+            if (paper.getItem() == Items.PAPER && paper.getCount() > 0) {
                 paper.shrink(1);
                 break;
             }
+        }
+    }
+    
+    /**
+     * Grant the celestial notes item on successful scan (1.12 granted celestialNotes).
+     * 26.2 uses separate items: sun, stars_1-4, moon_1-8.
+     */
+    private void grantCelestialNotes(Player player, String type, int index) {
+        Item item;
+        if (type.equals("sun")) {
+            item = ModItems.CELESTIAL_NOTES_SUN.get();
+        } else if (type.equals("star")) {
+            switch (index) {
+                case 0: item = ModItems.CELESTIAL_NOTES_STARS_1.get(); break;
+                case 1: item = ModItems.CELESTIAL_NOTES_STARS_2.get(); break;
+                case 2: item = ModItems.CELESTIAL_NOTES_STARS_3.get(); break;
+                default: item = ModItems.CELESTIAL_NOTES_STARS_4.get(); break;
+            }
+        } else {
+            switch (index) {
+                case 0: item = ModItems.CELESTIAL_NOTES_MOON_1.get(); break;
+                case 1: item = ModItems.CELESTIAL_NOTES_MOON_2.get(); break;
+                case 2: item = ModItems.CELESTIAL_NOTES_MOON_3.get(); break;
+                case 3: item = ModItems.CELESTIAL_NOTES_MOON_4.get(); break;
+                case 4: item = ModItems.CELESTIAL_NOTES_MOON_5.get(); break;
+                case 5: item = ModItems.CELESTIAL_NOTES_MOON_6.get(); break;
+                case 6: item = ModItems.CELESTIAL_NOTES_MOON_7.get(); break;
+                default: item = ModItems.CELESTIAL_NOTES_MOON_8.get(); break;
+            }
+        }
+        ItemStack reward = new ItemStack(item);
+        if (!player.getInventory().add(reward)) {
+            player.drop(reward, false);
         }
     }
     
