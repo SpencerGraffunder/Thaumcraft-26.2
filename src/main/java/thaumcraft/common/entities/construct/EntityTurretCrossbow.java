@@ -46,6 +46,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModItems;
 import thaumcraft.init.ModSounds;
 
@@ -355,12 +356,11 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
         float bonus = 0 * 0.15f;
-        
-        // TODO: Drop Thaumcraft items when implemented
-        // if (random.nextFloat() < 0.2f + bonus) spawnAtLocation((ServerLevel) this.level(), ItemsTC.mind);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), ItemsTC.mechanismSimple);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), BlocksTC.plankGreatwood);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), BlocksTC.plankGreatwood);
+        // 1.12 EntityTurretCrossbow.dropFewItems: mind (20%), mechanismSimple (50%), plankGreatwood x2 (50% each)
+        if (random.nextFloat() < 0.2f + bonus) spawnAtLocation(level, new ItemStack(ModItems.MIND.get()), 0.5f);
+        if (random.nextFloat() < 0.5f + bonus) spawnAtLocation(level, new ItemStack(ModItems.MECHANISM_SIMPLE.get()), 0.5f);
+        if (random.nextFloat() < 0.5f + bonus) spawnAtLocation(level, new ItemStack(ModBlocks.GREATWOOD_PLANKS.get().defaultBlockState().getBlock()), 0.5f);
+        if (random.nextFloat() < 0.5f + bonus) spawnAtLocation(level, new ItemStack(ModBlocks.GREATWOOD_PLANKS.get().defaultBlockState().getBlock()), 0.5f);
     }
     
     // ==================== NBT ====================

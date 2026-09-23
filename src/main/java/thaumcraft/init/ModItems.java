@@ -328,32 +328,47 @@ public class ModItems {
                             .saturationModifier(1.0f)
                             .build()))));
 
+    // 1.12 ItemChunksEdible: nutrition 1, saturation 0.3, 6 meats (beef/chicken/pork/fish/rabbit/mutton)
     public static final DeferredHolder<Item, Item> CHUNKS_BEEF = registerItem("chunks_beef",
             () -> new Item(ItemRegistration.id(new Item.Properties()
                     .food(new net.minecraft.world.food.FoodProperties.Builder()
-                            .nutrition(4)
-                            .saturationModifier(0.5f)
+                            .nutrition(1)
+                            .saturationModifier(0.3f)
                             .build()))));
 
     public static final DeferredHolder<Item, Item> CHUNKS_CHICKEN = registerItem("chunks_chicken",
             () -> new Item(ItemRegistration.id(new Item.Properties()
                     .food(new net.minecraft.world.food.FoodProperties.Builder()
-                            .nutrition(4)
-                            .saturationModifier(0.5f)
+                            .nutrition(1)
+                            .saturationModifier(0.3f)
                             .build()))));
 
     public static final DeferredHolder<Item, Item> CHUNKS_PORK = registerItem("chunks_pork",
             () -> new Item(ItemRegistration.id(new Item.Properties()
                     .food(new net.minecraft.world.food.FoodProperties.Builder()
-                            .nutrition(4)
-                            .saturationModifier(0.5f)
+                            .nutrition(1)
+                            .saturationModifier(0.3f)
                             .build()))));
 
     public static final DeferredHolder<Item, Item> CHUNKS_FISH = registerItem("chunks_fish",
             () -> new Item(ItemRegistration.id(new Item.Properties()
                     .food(new net.minecraft.world.food.FoodProperties.Builder()
-                            .nutrition(4)
-                            .saturationModifier(0.4f)
+                            .nutrition(1)
+                            .saturationModifier(0.3f)
+                            .build()))));
+
+    public static final DeferredHolder<Item, Item> CHUNKS_RABBIT = registerItem("chunks_rabbit",
+            () -> new Item(ItemRegistration.id(new Item.Properties()
+                    .food(new net.minecraft.world.food.FoodProperties.Builder()
+                            .nutrition(1)
+                            .saturationModifier(0.3f)
+                            .build()))));
+
+    public static final DeferredHolder<Item, Item> CHUNKS_MUTTON = registerItem("chunks_mutton",
+            () -> new Item(ItemRegistration.id(new Item.Properties()
+                    .food(new net.minecraft.world.food.FoodProperties.Builder()
+                            .nutrition(1)
+                            .saturationModifier(0.3f)
                             .build()))));
 
     // ==================== Armor - Goggles ====================
