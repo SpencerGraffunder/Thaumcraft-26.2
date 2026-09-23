@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -253,60 +254,136 @@ public class FocusEngine {
     }
 
     /**
-     * Execute a focus package.
+     * Tracks entities recently hit by a focus, keyed by entityUUID+castID.
+     * Prevents the same entity being hit twice by a single cast (ported from 1.12 damageResistList).
+     */
+    private static final java.util.ArrayList<String> damageResistList = new java.util.ArrayList<>();
+
+    /**
+     * Execute a focus package (full node chain).
+     * Ported from 1.12 FocusEngine.castFocusPackage.
+     *
      * @param caster The entity casting the spell
      * @param pack The focus package to execute
-     * @return true if execution started successfully
+     * @return true if execution started
      */
     public static boolean castFocusPackage(LivingEntity caster, FocusPackage pack) {
         if (pack == null || caster == null) return false;
-        
-        // Set context
-        pack.setCaster(caster);
-        pack.world = caster.level();
-        
         if (pack.nodes.isEmpty()) return false;
-        
-        // Find root node
-        IFocusElement root = pack.nodes.get(0);
-        if (root instanceof FocusNode focusNode) {
-            if (focusNode instanceof FocusMedium medium) {
-                // Create initial trajectory from caster look vector
-                Vec3 look = caster.getLookAngle();
-                Vec3 eyePos = caster.getEyePosition();
-                Trajectory trajectory = new Trajectory(eyePos, look);
-                return medium.execute(trajectory);
+
+        // Set context (26.2 API)
+        pack.setCaster(caster);
+        if (pack.world == null) pack.world = caster.level();
+        pack.setUniqueID(System.nanoTime());
+
+        // Call onCast on all effects (1.12 behavior: effects get a chance to set up before the chain runs)
+        for (IFocusElement element : pack.getEffects()) {
+            if (element instanceof FocusEffect effect) {
+                effect.onCast(caster);
             }
         }
-        
-        return false;
+
+        // Run the full node loop (ported from 1.12 runFocusPackage)
+        runFocusPackage(pack, null, null);
+        return true;
     }
 
     /**
-     * Continue execution of a focus package.
-     * @param pack The focus package (remaining part)
-     * @param trajectories Trajectories supplied by previous node
-     * @param targets Targets supplied by previous node
+     * Iterate the node chain, linking parents, multiplying power, and executing each
+     * node (medium / mod / mod-split / effect) in order. Ported from 1.12 runFocusPackage.
+     *
+     * @param focusPackage the package to run
+     * @param trajectories trajectories supplied by the parent (null at the top level)
+     * @param targets targets supplied by the parent (null at the top level)
      */
-    public static void runFocusPackage(FocusPackage pack, Trajectory[] trajectories, HitResult[] targets) {
-        if (pack == null || pack.nodes.isEmpty()) return;
-        
-        IFocusElement element = pack.nodes.get(0);
-        if (element instanceof FocusNode node) {
-            if (node instanceof FocusEffect effect) {
-                // Execute effect on targets
-                if (targets != null) {
-                    for (int i = 0; i < targets.length; i++) {
-                        float power = 1.0f * pack.getPower();
-                        effect.execute(targets[i], (trajectories != null && i < trajectories.length) ? trajectories[i] : null, power, i);
+    public static void runFocusPackage(FocusPackage focusPackage, Trajectory[] trajectories, HitResult[] targets) {
+        if (focusPackage == null || focusPackage.nodes.isEmpty()) return;
+
+        Trajectory[] prevTrajectories = trajectories;
+        HitResult[] prevTargets = targets;
+
+        synchronized (focusPackage.nodes) {
+            for (int idx = 0; idx < focusPackage.nodes.size(); idx++) {
+                focusPackage.index = idx;
+
+                IFocusElement node = focusPackage.nodes.get(idx);
+                if (node == null) continue;
+
+                // Link parent to the previous node (1.12 behavior)
+                if (idx > 0 && node instanceof FocusNode fn && fn.getParent() == null) {
+                    IFocusElement nodePrev = focusPackage.nodes.get(idx - 1);
+                    if (nodePrev instanceof FocusNode) {
+                        fn.setParent((FocusNode) nodePrev);
                     }
                 }
-            } else if (node instanceof FocusMedium medium) {
-                // Execute medium with trajectories
-                if (trajectories != null) {
-                    for (Trajectory traj : trajectories) {
-                        medium.execute(traj);
+
+                // Assign this package to the node (1.12 behavior)
+                if (node instanceof FocusNode fn && fn.getPackage() == null) {
+                    fn.setPackage(focusPackage);
+                }
+
+                // Multiply the package power by the node's multiplier (1.12 behavior)
+                if (node instanceof FocusNode fn) {
+                    focusPackage.multiplyPower(fn.getPowerMultiplier());
+                }
+
+                // Execute the node based on its type (1.12 behavior)
+                if (node instanceof FocusPackage subPackage) {
+                    // Nested package: run it, then stop this chain
+                    runFocusPackage(subPackage, prevTrajectories, prevTargets);
+                    break;
+                } else if (node instanceof FocusMedium medium) {
+                    if (prevTrajectories != null) {
+                        for (Trajectory trajectory : prevTrajectories) {
+                            medium.execute(trajectory);
+                        }
+                    } else {
+                        // Top-level medium: seed a trajectory from the caster's look vector
+                        LivingEntity caster = focusPackage.getCaster();
+                        if (caster != null) {
+                            Vec3 look = caster.getLookAngle();
+                            Vec3 eyePos = caster.getEyePosition();
+                            medium.execute(new Trajectory(eyePos, look));
+                        }
                     }
+                    if (medium.hasIntermediary()) break;
+                } else if (node instanceof FocusMod mod) {
+                    if (mod instanceof FocusModSplit split) {
+                        for (FocusPackage sp : split.getSplitPackages()) {
+                            split.setPackage(sp);
+                            sp.multiplyPower(focusPackage.getPower());
+                            split.execute();
+                            runFocusPackage(sp, split.supplyTrajectories(), split.supplyTargets());
+                        }
+                        break;
+                    } else {
+                        mod.execute();
+                    }
+                } else if (node instanceof FocusEffect effect) {
+                    if (prevTargets != null) {
+                        int num = 0;
+                        for (HitResult target : prevTargets) {
+                            // Avoid double-hitting the same entity within one cast (1.12 damageResistList)
+                            if (target instanceof EntityHitResult ehr && ehr.getEntity() != null) {
+                                String k = ehr.getEntity().getStringUUID() + focusPackage.getUniqueID();
+                                if (!damageResistList.contains(k)) {
+                                    if (damageResistList.size() > 10) damageResistList.remove(0);
+                                    damageResistList.add(k);
+                                }
+                            }
+                            Trajectory tra = (prevTrajectories != null)
+                                    ? ((prevTrajectories.length == prevTargets.length) ? prevTrajectories[num] : prevTrajectories[0])
+                                    : null;
+                            effect.execute(target, tra, focusPackage.getPower(), num);
+                            num++;
+                        }
+                    }
+                }
+
+                // Pull trajectories/targets supplied by this node for the next (1.12 behavior)
+                if (node instanceof FocusNode fn) {
+                    prevTrajectories = fn.supplyTrajectories();
+                    prevTargets = fn.supplyTargets();
                 }
             }
         }
