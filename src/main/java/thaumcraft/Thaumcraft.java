@@ -43,6 +43,7 @@ import thaumcraft.common.config.ConfigResearch;
 import thaumcraft.common.config.ConfigAspects;
 import thaumcraft.common.lib.CommonInternals;
 import thaumcraft.common.config.ConfigMultiblocks;
+import thaumcraft.common.config.ConfigLoot;
 import thaumcraft.common.config.ConfigRecipes;
 import thaumcraft.common.lib.crafting.FakeRecipes;
 import thaumcraft.api.ThaumcraftApi;
@@ -217,6 +218,7 @@ public class Thaumcraft {
             ConfigRecipes.init();
             FakeRecipes.register();
             ConfigResearch.postInit();
+            ConfigLoot.postInitLoot();
 
             bootstrapped = true;
             LOGGER.info("Thaumcraft runtime registration complete");
