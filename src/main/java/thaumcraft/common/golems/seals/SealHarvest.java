@@ -128,7 +128,32 @@ public class SealHarvest implements ISeal, ISealConfigArea, ISealConfigToggles {
             golem.addRankXp(1);
             golem.swingArm();
             
-            // TODO: Handle replanting when seed system is implemented
+            // Handle replanting (1.12 behavior)
+            if (props[0].getValue()) {
+                ItemStack seed = thaumcraft.api.ThaumcraftApi.getSeed(state.getBlock());
+                if (seed != null && !seed.isEmpty()) {
+                    BlockState below = level.getBlockState(task.getPos().below());
+                    Direction replantFace = null;
+                    // If the seed is plantable and the block below can sustain it, replant downward
+                    if (seed.getItem() instanceof net.minecraft.world.item.context.BlockPlaceContext plantable
+                            || net.minecraft.world.level.block.FarmBlock.isFarmland(below)) {
+                        replantFace = Direction.DOWN;
+                    }
+                    // For directional crops (e.g. pumpkins), use the crop's facing
+                    if (replantFace == null && state.getBlock() instanceof net.minecraft.world.level.block.HorizontalDirectionalBlock) {
+                        replantFace = state.getValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING);
+                    }
+                    if (replantFace != null) {
+                        Task replantTask = new Task(task.getSealPos(), task.getPos());
+                        replantTask.setPriority(task.getPriority());
+                        replantTask.setLifespan((short) 300);
+                        replantTasks.put(task.getPos().asLong(), new ReplantInfo(
+                                task.getPos(), replantFace, replantTask.getId(), seed.copy(),
+                                net.minecraft.world.level.block.FarmBlock.isFarmland(below)));
+                        TaskHandler.addTask(level.dimension(), replantTask);
+                    }
+                }
+            }
         }
         
         task.setSuspended(true);

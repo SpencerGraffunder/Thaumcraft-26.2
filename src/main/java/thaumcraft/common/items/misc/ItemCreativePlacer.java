@@ -13,6 +13,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -43,7 +44,7 @@ public class ItemCreativePlacer extends Item {
         super.appendHoverText(stack, context, display, builder, flag);
         builder.accept(Component.literal("Structure placer tool").withStyle(ChatFormatting.GRAY));
         builder.accept(Component.literal("Creative only").withStyle(ChatFormatting.DARK_PURPLE));
-        builder.accept(Component.literal("Not yet implemented").withStyle(ChatFormatting.RED));
+        builder.accept(Component.literal("Erases target block (debug)").withStyle(ChatFormatting.GRAY));
     }
     
     @Override
@@ -83,16 +84,11 @@ public class ItemCreativePlacer extends Item {
             return InteractionResult.FAIL;
         }
         
-        // TODO: Implement structure placement based on item variant
-        // For now this is a placeholder - the original code was also incomplete
-        
-        // Structures that could be placed:
-        // - Eldritch Obelisk (multi-block structure)
-        // - Vis Node (when node system is implemented)
-        // - Caster Pedestal
-        
-        player.sendSystemMessage(Component.literal("Structure placement not yet implemented.")
-                .withStyle(ChatFormatting.YELLOW));
+        // 1.12 behavior: clear the target block (creative debugging tool)
+        // Variants (damage 0=obelisk, 1=node, 2=caster) all perform the same erase
+        level.setBlock(placePos, Blocks.AIR.defaultBlockState(), 3, BlockPos.containing(placePos.getX(), placePos.getY(), placePos.getZ()));
+        player.sendSystemMessage(Component.literal("Cleared block at " + placePos.toShortString())
+                .withStyle(ChatFormatting.GRAY));
         
         return InteractionResult.SUCCESS;
     }

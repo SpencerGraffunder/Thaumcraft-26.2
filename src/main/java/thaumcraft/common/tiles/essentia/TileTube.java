@@ -205,11 +205,7 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
                         && !(te instanceof TileTubeFilter)) {
                     
                     // Trigger venting effect
-                    int colorIndex = -1;
-                    if (suctionType != null) {
-                        // TODO: Get color index from aspect order config
-                        colorIndex = suctionType.getColor();
-                    }
+                    int colorIndex = (suctionType != null) ? suctionType.getColor() : -1;
                     level.blockEvent(worldPosition, getBlockState().getBlock(), 1, colorIndex);
                     venting = 40;
                 }
@@ -355,10 +351,9 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
         if (id == 0) {
             // Creak sound
             if (level != null && level.isClientSide()) {
-                // TODO: Play SoundsTC.creak
                 level.playLocalSound(
                         worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
-                        SoundEvents.WOOD_STEP, SoundSource.BLOCKS,
+                        thaumcraft.init.ModSounds.CREAK.get(), SoundSource.BLOCKS,
                         1.0f, 1.3f + level.getRandom().nextFloat() * 0.2f, false
                 );
             }

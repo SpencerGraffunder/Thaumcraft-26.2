@@ -145,7 +145,22 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
                     }
                 }
             }
-            // TODO: Check for auxiliary vents and process through them too
+            // Check for auxiliary smelter blocks and process essentia through them
+            for (Direction face : Direction.values()) {
+                if (face.isHorizontal() && tile.getFacing() != face) {
+                    BlockState auxState = level.getBlockState(pos.relative(face));
+                    if (auxState.getBlock() == thaumcraft.init.ModBlocks.SMELTER_AUX.get()
+                            && auxState.getValue(thaumcraft.common.blocks.essentia.BlockSmelter.FACING) == face.getOpposite()) {
+                        for (Aspect aspect2 : tile.aspects.getAspects()) {
+                            if (tile.aspects.getAmount(aspect2) > 0
+                                    && TileAlembic.processAlembics(level, pos.relative(face), aspect2)) {
+                                tile.takeFromContainer(aspect2, 1);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Try to start burning if we have fuel and can smelt
@@ -247,10 +262,28 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
             }
         }
 
-        // Generate flux pollution
+        // Generate flux pollution (reduced if smelter vents absorb it)
         if (flux > 0) {
-            // TODO: Check for vents and reduce pollution if present
-            AuraHelper.polluteAura(level, worldPosition, flux, true);
+            int pollution = 0;
+            for (int i = 0; i < flux; i++) {
+                boolean absorbed = false;
+                for (Direction face : Direction.values()) {
+                    if (face.isHorizontal() && tile.getFacing() != face) {
+                        BlockState ventState = level.getBlockState(pos.relative(face));
+                        if (ventState.getBlock() == thaumcraft.init.ModBlocks.SMELTER_VENT.get()
+                                && ventState.getValue(thaumcraft.common.blocks.essentia.BlockSmelter.FACING) == face.getOpposite()
+                                && level.getRandom().nextFloat() < 0.333f) {
+                            level.blockEvent(pos, getBlockState().getBlock(), 1, face.getOpposite().ordinal());
+                            absorbed = true;
+                            break;
+                        }
+                    }
+                }
+                if (!absorbed) pollution++;
+            }
+            if (pollution > 0) {
+                AuraHelper.polluteAura(level, worldPosition, pollution, true);
+            }
         }
 
         vis = aspects.visSize();
