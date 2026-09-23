@@ -33,7 +33,9 @@ import thaumcraft.common.entities.monster.boss.EntityThaumcraftBoss;
 import thaumcraft.common.entities.monster.cult.EntityCultist;
 import thaumcraft.common.entities.monster.tainted.*;
 import thaumcraft.common.lib.research.ResearchManager;
+import thaumcraft.common.lib.research.ScanEnchantment;
 import thaumcraft.common.lib.research.ScanGeneric;
+import thaumcraft.common.lib.research.ScanPotion;
 import thaumcraft.common.lib.research.ScanSky;
 import thaumcraft.common.lib.research.theorycraft.AidBookshelf;
 import thaumcraft.common.lib.research.theorycraft.CardAnalyze;
@@ -172,8 +174,31 @@ public class ConfigResearch {
         // Generic scanner for basic items/blocks
         ScanningManager.addScannableThing(new ScanGeneric());
         
-        // TODO: Port ScanEnchantment and ScanPotion when enchantment/effect registries are stable
-        // For now, skip dynamic enchantment/potion scanning
+        // Enchantment scanners
+        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.ENCHANTMENT.location("sharpness"))));
+        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.ENCHANTMENT.location("protection"))));
+        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.ENCHANTMENT.location("efficiency"))));
+        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.ENCHANTMENT.location("unbreaking"))));
+        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.ENCHANTMENT.location("looting"))));
+        
+        // Potion effect scanners
+        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.MOB_EFFECT.location("speed"))));
+        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.MOB_EFFECT.location("slowness"))));
+        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.MOB_EFFECT.location("strength"))));
+        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.MOB_EFFECT.location("regeneration"))));
+        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.MOB_EFFECT.location("poison"))));
+        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
+            net.minecraft.core.registries.Registries.MOB_EFFECT.location("invisibility"))));
         
         // Thaumcraft entities
         ScanningManager.addScannableThing(new ScanEntity("!Wisp", EntityWisp.class, true));
