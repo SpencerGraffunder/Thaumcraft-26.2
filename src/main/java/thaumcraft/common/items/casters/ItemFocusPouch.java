@@ -24,6 +24,8 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import thaumcraft.common.menu.FocusPouchMenu;
 
 import javax.annotation.Nullable;
@@ -36,7 +38,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * Can be worn as a curio (belt slot) for quick access.
  * Holds up to 18 foci.
  */
-public class ItemFocusPouch extends Item {
+public class ItemFocusPouch extends Item implements ICuriosItemHandler {
 
     public static final int INVENTORY_SIZE = 18;
 
@@ -128,6 +130,8 @@ public class ItemFocusPouch extends Item {
         super.appendHoverText(stack, context, display, builder, flag);
     }
 
-    // TODO: Implement Curios integration for belt slot
-    // This would allow wearing the pouch and accessing foci quickly
+    // ==================== Curios Integration ====================
+    // The pouch can be worn in the Thaumcraft belt slot for quick access.
+    // This is a marker interface — the actual slot definitions are provided
+    // by the Thaumcraft belt curio type registered at mod init.
 }

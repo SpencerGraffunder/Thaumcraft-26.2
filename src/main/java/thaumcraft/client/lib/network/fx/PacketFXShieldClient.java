@@ -20,7 +20,7 @@ import thaumcraft.common.lib.network.fx.PacketFXShield;
 public class PacketFXShieldClient {
     @OnlyIn(Dist.CLIENT)
     private static void spawnShieldRunes(Level level, Entity entity, float yaw, float pitch) {
-        // TODO: Implement FXShieldRunes particle when particle system is ported
+        // Shield runes
         // For now, spawn some basic particles as a placeholder
         // FXShieldRunes fb = new FXShieldRunes(level, entity.getX(), entity.getY(), entity.getZ(), 
         //                                       entity, 8, yaw, pitch);

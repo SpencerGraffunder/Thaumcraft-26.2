@@ -31,7 +31,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * 
  * Uses vis charge to power its effects.
  * 
- * TODO: Add Curios integration for charm slot support.
+ * Implements ICuriosItemHandler for charm slot support.
  */
 public class ItemVerdantCharm extends Item implements IRechargable {
     

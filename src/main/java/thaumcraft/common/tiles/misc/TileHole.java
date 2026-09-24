@@ -79,7 +79,11 @@ public class TileHole extends TileMemory {
      * Client-side tick for particles.
      */
     public static void clientTick(Level level, BlockPos pos, BlockState state, TileHole tile) {
-        // TODO: Add sparkle particles around edges when FXDispatcher is implemented
+        // Sparkle particles
+            if (level != null && level.isClientSide()) {
+                level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT,
+                    pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0.1, 0);
+            }
         tile.spawnParticles(level);
     }
     
@@ -129,7 +133,13 @@ public class TileHole extends TileMemory {
             return false;
         }
         
-        // TODO: Check portable hole blacklist
+        // Check portable hole blacklist
+        if (targetState.is(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(targetState.getBlock()),
+                net.minecraft.tags.TagKey.create(
+                    net.minecraft.core.registries.Registries.BLOCK,
+                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("thaumcraft", "hole_blacklist")))) {
+            return false;
+        }
         
         // Place the hole block
         level.setBlock(pos, ModBlocks.HOLE.get().defaultBlockState(), 3);

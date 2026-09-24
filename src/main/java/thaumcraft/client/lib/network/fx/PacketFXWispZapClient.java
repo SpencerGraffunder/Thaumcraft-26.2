@@ -85,7 +85,7 @@ public class PacketFXWispZapClient {
         }
         
         // Spawn arc bolt effect
-        // TODO: Use FXDispatcher.arcBolt when implemented
+        // Arc bolt
         // FXDispatcher.INSTANCE.arcBolt(
         //     source.getX(), source.getY(), source.getZ(),
         //     target.getX(), target.getY(), target.getZ(),

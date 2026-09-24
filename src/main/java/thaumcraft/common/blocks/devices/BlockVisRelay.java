@@ -68,7 +68,11 @@ public class BlockVisRelay extends Block implements EntityBlock {
 
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof TileVisRelay relay) {
-            // TODO: Open relay GUI or show vis network info
+            // Open relay GUI
+            if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+                sp.openMenu(thaumcraft.init.ModMenuTypes.VIS_RELAY_MENU.get(),
+                    (level, pos, p) -> new thaumcraft.common.menu.VisRelayMenu(p.inventory));
+            }
             // For now, display stored vis in chat
             float vis = relay.getStoredVis();
             int links = relay.getLinkedRelays().size();

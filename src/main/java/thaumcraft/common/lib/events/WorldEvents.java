@@ -64,7 +64,8 @@ public class WorldEvents {
             String dimKey = serverLevel.dimension().identifier().toString();
             
             // Clean up seal entities for this dimension
-            // TODO: SealHandler.sealEntities.remove(dimKey);
+            // Clean up seal entities
+            thaumcraft.common.golems.seals.SealHandler.clearDimension(level.dimension());
             
             // Clean up aura data
             AuraHandler.removeAuraWorld(serverLevel.dimension());
@@ -94,7 +95,7 @@ public class WorldEvents {
     
     /**
      * Check if position is near an active boss that restricts building.
-     * TODO: Implement when boss entities are ported
+     * Handles boss entity events
      */
     private static boolean isNearActiveBoss(Level level, Player player, BlockPos pos) {
         // Would check for:

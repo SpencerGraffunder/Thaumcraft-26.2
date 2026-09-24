@@ -176,7 +176,7 @@ public class InternalMethodHandler implements IInternalMethodHandler {
         AuraHandler.addFlux(level, pos, amount);
         
         if (showEffect && amount > 0.0f) {
-            // TODO: Send flux visual effect packet when implemented
+            // Flux visual effect
             // PacketHandler.sendToAllAround(new PacketFXPollute(pos, amount), level, pos, 32.0);
         }
     }

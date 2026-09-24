@@ -39,7 +39,10 @@ public class EntityAlumentum extends ThrowableProjectile {
         
         // Client-side particle effects
         if (level().isClientSide()) {
-            // TODO: Add particle effects via FXDispatcher when implemented
+            // Particle effects
+            if (level().isClientSide()) {
+                level().addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE, getX(), getY() + 0.5, getZ(), 0, 0.1, 0);
+            }
             // For now, spawn basic flame particles
             for (int i = 0; i < 3; i++) {
                 double coeff = i / 3.0;

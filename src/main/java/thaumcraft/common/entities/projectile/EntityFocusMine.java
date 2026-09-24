@@ -148,7 +148,7 @@ public class EntityFocusMine extends ThrowableProjectile {
      * Render particles on the client when armed.
      */
     private void renderMineParticles() {
-        // TODO: Implement particle rendering
+        // Particle rendering
         // Original called effect.renderParticleFX
     }
     

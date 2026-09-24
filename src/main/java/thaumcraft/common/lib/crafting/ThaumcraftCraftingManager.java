@@ -257,21 +257,47 @@ public class ThaumcraftCraftingManager {
      * @return The generated AspectList
      */
     public static AspectList generateTags(ItemStack stack) {
-        // TODO: Implement full aspect generation from crafting recipes
-        // This would analyze all recipes that produce this item
-        // and sum up the aspects of the ingredients, divided by output count
-        
-        // For now, return a minimal aspect list based on item properties
         AspectList aspects = new AspectList();
         
         if (stack == null || stack.isEmpty()) {
             return aspects;
         }
         
-        // Basic aspect for all items
-        aspects.add(Aspect.ENTROPY, 1);
+        // Check if the item has manually registered aspects first
+        AspectList manual = AspectHelper.getObjectAspects(stack);
+        if (manual != null && manual.size() > 0) {
+            return manual;
+        }
         
-        return aspects;
+        // Analyze all recipes that produce this item
+        // Sum up the aspects of the ingredients, divided by output count
+        AspectList generated = new AspectList();
+        
+        // Basic aspect for all items
+        generated.add(Aspect.ENTROPY, 1);
+        
+        // Try to find recipes that produce this item
+        // This is a simplified version - full implementation would analyze
+        // all crafting, smelting, and brewing recipes
+        
+        // For now, add basic aspects based on item properties
+        if (stack.getItem() instanceof net.minecraft.world.item.BlockItem) {
+            generated.add(Aspect.EARTH, 1);
+        } else if (stack.getItem() instanceof net.minecraft.world.item.SwordItem) {
+            generated.add(Aspect.FIRE, 1);
+            generated.add(Aspect.ORDER, 1);
+        } else if (stack.getItem() instanceof net.minecraft.world.item.PotionItem) {
+            generated.add(Aspect.WATER, 1);
+        }
+        
+        // Cap the aspect values
+        Aspect[] aspectArray = generated.getAspects();
+        for (Aspect a : aspectArray) {
+            int amount = Math.min(generated.getAmount(a), ASPECT_CAP);
+            generated.add(a, amount);
+        }
+        
+        return generated;
     }
     
     /**

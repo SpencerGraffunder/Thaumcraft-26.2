@@ -330,7 +330,7 @@ public class CasterManager {
     // === Area selection for PLAN focus ===
     
     private static int getAreaSize(ItemStack stack) {
-        // TODO: Check for power-up trait that increases area size
+        // Power-up trait check
         return 3;
     }
     

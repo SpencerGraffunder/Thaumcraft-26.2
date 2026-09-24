@@ -75,24 +75,6 @@ public class PacketFocusChangeToServer implements CustomPacketPayload {
      * @param focusKey The focus key to change to, or "REMOVE" to remove the current focus
      */
     private static void changeFocus(ItemStack casterStack, ServerPlayer player, String focusKey) {
-        // TODO: Implement CasterManager.changeFocus when CasterManager is ported
-        // For now this is a stub that will be completed when the caster system is fully implemented
-        
-        if ("REMOVE".equals(focusKey)) {
-            // Remove current focus
-            ICaster caster = (ICaster) casterStack.getItem();
-            ItemStack currentFocus = caster.getFocusStack(casterStack);
-            if (currentFocus != null && !currentFocus.isEmpty()) {
-                // Give the focus back to the player
-                if (!player.getInventory().add(currentFocus)) {
-                    player.drop(currentFocus, false);
-                }
-                caster.setFocus(casterStack, ItemStack.EMPTY);
-            }
-        } else {
-            // Change to a specific focus from inventory
-            // This requires the focus selection system to be implemented
-            // CasterManager.changeFocus(casterStack, player.level(), player, focusKey);
-        }
+        thaumcraft.common.items.casters.CasterManager.changeFocus(casterStack, player.level(), player, focusKey);
     }
 }

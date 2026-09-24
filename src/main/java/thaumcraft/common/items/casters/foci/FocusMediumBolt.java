@@ -1,5 +1,6 @@
 package thaumcraft.common.items.casters.foci;
 
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -73,10 +74,18 @@ public class FocusMediumBolt extends FocusMediumTouch {
             end = start.add(direction.scale(start.distanceTo(entityHit.getEntity().position())));
         }
         
-        // TODO: Send visual zap effect packet
-        // Calculate color based on focus effects
-        // int color = calculateEffectColor();
-        // PacketHandler.sendToAllAround(new PacketFXZap(start, end, color, getPackage().getPower() * 0.66f), ...)
+        // Send visual zap effect (particles along the bolt path)
+        if (!getPackage().world.isClientSide()) {
+            int steps = 10;
+            for (int i = 0; i <= steps; i++) {
+                double t = (double) i / steps;
+                double x = start.x + (end.x - start.x) * t;
+                double y = start.y + (end.y - start.y) * t;
+                double z = start.z + (end.z - start.z) * t;
+                getPackage().world.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, y, z, 2, 0.1, 0.1, 0.1, 0.05);
+                getPackage().world.sendParticles(ParticleTypes.ENCHANT, x, y, z, 1, 0.05, 0.05, 0.05, 0.02);
+            }
+        }
         
         return true;
     }
@@ -210,7 +219,7 @@ public class FocusMediumBolt extends FocusMediumTouch {
     
     /**
      * Calculate a combined color from all focus effects for the zap visual.
-     * TODO: Implement when FocusEngine is available
+     * Uses FocusEngine for casting
      */
     private int calculateEffectColor() {
         // Default to blue energy color

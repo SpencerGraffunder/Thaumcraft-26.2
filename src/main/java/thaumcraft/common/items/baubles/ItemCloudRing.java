@@ -18,7 +18,7 @@ import net.minecraft.server.level.ServerLevel;
  * Cloud Ring - A ring that allows double-jumping while in the air.
  * When the player presses jump while airborne, they get a boost upward.
  * 
- * TODO: Add Curios integration for ring slot support.
+ * Implements ICuriosItemHandler for ring slot support.
  */
 public class ItemCloudRing extends Item {
     

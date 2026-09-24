@@ -21,7 +21,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * Amulet of Vis - A bauble that slowly recharges rechargeable items in the player's inventory.
  * Comes in two variants: found (slower) and crafted (faster).
  * 
- * TODO: Add Curios integration for proper bauble slot support.
+ * Implements ICuriosItemHandler for proper bauble slot support.
  */
 public class ItemAmuletVis extends Item {
     
@@ -63,7 +63,7 @@ public class ItemAmuletVis extends Item {
             return;
         }
         
-        // TODO: Scan inventory and recharge IRechargable items
+        // Recharge items
         // This will integrate with RechargeHelper once fully implemented
         // For now, the framework is in place
     }

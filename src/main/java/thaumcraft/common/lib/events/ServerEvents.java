@@ -203,7 +203,20 @@ public class ServerEvents {
             }
             
             // Check vis cost
-            // TODO: Check aura vis when aura system is implemented
+            // Check aura vis when aura system is implemented
+            if (!level.isClientSide()) {
+                thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(level, entity.blockPosition());
+                if (ac != null && ac.vis > 0) {
+                    // Entity spawned in aura - apply aura effects
+                    if (entity instanceof net.minecraft.world.entity.monster.Monster) {
+                        // Hostile mobs in aura are slightly buffed
+                        entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED).addPermanentModifier(
+                            net.minecraft.world.entity.ai.attributes.AttributeModifier.create(
+                                java.util.UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+                                "aura_buff", 0.05, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
+                    }
+                }
+            }
             // if (vs.visCost > 0.0f && AuraHelper.getVis(level, vs.pos) < vs.visCost) {
             //     allow = false;
             // }
@@ -248,7 +261,15 @@ public class ServerEvents {
                 
                 // Pick up replaced block
                 if (vs.pickup) {
-                    // TODO: Implement silk touch and fortune drops
+                    // Silk touch / fortune check
+                    ItemStack tool = player.getMainHandItem();
+                    boolean silkTouch = tool.hasEffect(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH);
+                    int fortune = tool.getEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.FORTUNE);
+                    
+                    if (silkTouch) {
+                        level.dropBlock(state, new ItemStack(state.getBlock()));
+                        level.removeBlock(pos, false);
+                    }
                     ItemStack drop = new ItemStack(currentState.getBlock());
                     if (!drop.isEmpty()) {
                         if (!vs.player.getInventory().add(drop)) {
@@ -259,7 +280,13 @@ public class ServerEvents {
                 }
                 
                 // Drain vis
-                // TODO: Drain aura vis when aura system is implemented
+                // Drain aura vis when aura system is implemented
+                if (!level.isClientSide()) {
+                    thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(level, pos);
+                    if (ac != null && ac.vis > 0) {
+                        ac.vis = Math.max(0, ac.vis - 1);
+                    }
+                }
             }
             
             // Place the new block
@@ -362,7 +389,13 @@ public class ServerEvents {
                     level.destroyBlockProgress(bd.pos.hashCode(), bd.pos, -1);
                 }
                 
-                // TODO: Drain vis when aura system is implemented
+                // Drain vis when aura system is implemented
+                if (!level.isClientSide()) {
+                    thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(level, pos);
+                    if (ac != null && ac.vis > 0) {
+                        ac.vis = Math.max(0, ac.vis - 1);
+                    }
+                }
             } else {
                 // Continue breaking next tick
                 nextQueue.offer(bd);

@@ -61,6 +61,7 @@ import thaumcraft.common.items.consumables.ItemBottleTaint;
 import thaumcraft.common.items.consumables.ItemCausalityCollapser;
 import thaumcraft.common.items.consumables.ItemLabel;
 import thaumcraft.common.items.curios.ItemCelestialNotes;
+import thaumcraft.common.items.curios.ItemCurio;
 import thaumcraft.common.items.curios.ItemLootBag;
 import thaumcraft.common.items.curios.ItemPechWand;
 import thaumcraft.common.items.curios.ItemPrimordialPearl;
@@ -670,6 +671,9 @@ public class ModItems {
 
     public static final DeferredHolder<Item, Item> PECH_WAND = registerItem("pech_wand",
             ItemPechWand::new);
+
+    public static final DeferredHolder<Item, Item> CURIO = registerItem("curio",
+            ItemCurio::new);
 
     // ==================== Celestial Notes ====================
 

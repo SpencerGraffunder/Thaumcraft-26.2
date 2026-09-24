@@ -132,7 +132,10 @@ public class PlayerEvents {
                     }
                 }
                 
-                // TODO: Periodic research checks (every 200 ticks)
+                // Periodic research checks (every 200 ticks)
+                if (player.tickCount % 200 == 0) {
+                    thaumcraft.common.lib.research.ResearchManager.checkPeriodicResearch(player);
+                }
                 // if (player.tickCount % 200 == 0) {
                 //     ConfigResearch.checkPeriodicStuff(player);
                 // }

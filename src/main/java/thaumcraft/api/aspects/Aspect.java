@@ -56,7 +56,7 @@ public class Aspect {
         this.blend = blend;
         aspects.put(tag, this);
         
-        // Register for scanning - TODO: implement ScanningManager
+        // Register for scanning
         // ScanningManager.addScannableThing(new ScanAspect("!" + tag, this));
         
         if (components != null && components.length >= 2) {

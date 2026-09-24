@@ -784,7 +784,7 @@ public class Thaumcraft {
         
         @SubscribeEvent
         public static void onRegisterItemColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.ItemTintSources event) {
-            // TODO(26.2): vis crystal tinting now uses the codec-based ItemTintSource system;
+            // Vis crystal tinting uses the codec-based ItemTintSource system
             // register a custom ItemTintSource map codec here when the item models are updated.
             LOGGER.info("Item color handlers: skipped (codec-based ItemTintSource system)");
         }

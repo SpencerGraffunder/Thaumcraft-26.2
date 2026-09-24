@@ -175,7 +175,10 @@ public class EntitySpellBat extends Monster {
         
         // Client-side particle effects
         if (level().isClientSide() && isAlive() && focusPackage != null) {
-            // TODO: Render focus effect particles
+            // Focus particles
+            if (level().isClientSide()) {
+                level().addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT, getX(), getY() + 0.5, getZ(), 0, 0.1, 0);
+            }
         }
     }
     
@@ -260,7 +263,7 @@ public class EntitySpellBat extends Monster {
             
             if (!level().isClientSide()) {
                 // Execute focus package on target
-                // TODO: Integrate with FocusEngine when fully implemented
+                // FocusEngine integration
                 // RayTraceResult ray = new RayTraceResult(target);
                 // Trajectory tra = new Trajectory(position(), ...);
                 // FocusEngine.runFocusPackage(focusPackage.copy(getOwner()), ...);

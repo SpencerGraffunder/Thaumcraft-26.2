@@ -59,7 +59,13 @@ public class FocusEffectCurse extends FocusEffect {
         
         Level world = getPackage().world;
         
-        // TODO: Send particle effect packet
+        // Particle effect
+        if (level.isClientSide()) {
+            for (int i = 0; i < 6; i++) {
+                level.addParticle(net.minecraft.core.particles.ParticleTypes.SOUL,
+                    pos.getX() + Math.random() * 2 - 1, pos.getY() + Math.random() * 2 - 1, pos.getZ() + Math.random() * 2 - 1, 0, 0.1, 0);
+            }
+        }
         // PacketHandler.sendToAllAround(new PacketFXBlockBamf(...))
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {
@@ -159,9 +165,9 @@ public class FocusEffectCurse extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // TODO: Implement particle effects
-        // Original used dark red/purple curse particles
-        // For now, this is a placeholder - will need client-side particle system
+        // Cursed particle trail
+        level.addParticle(ParticleTypes.SOUL, posX, posY, posZ, 0, 0.03, 0);
+        level.addParticle(ParticleTypes.WITCH, posX, posY, posZ, 0, -0.02, 0);
     }
 
     @Override

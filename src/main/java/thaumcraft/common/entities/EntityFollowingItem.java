@@ -127,7 +127,19 @@ public class EntityFollowingItem extends EntitySpecialItem {
     }
     
     private void spawnFollowingParticles() {
-        // TODO: Spawn nitor or crucible bubble particles based on type
+        if (!level.isClientSide()) return;
+        
+        double x = this.getX();
+        double y = this.getY() + 0.5;
+        double z = this.getZ();
+        
+        if (type == 0) {
+            // Nitor: flame particles
+            level.addParticle(net.minecraft.core.particles.ParticleTypes.FLAME, x, y, z, 0, 0.05, 0);
+        } else {
+            // Crucible: bubble particles
+            level.addParticle(net.minecraft.core.particles.ParticleTypes.BUBBLE, x, y, z, 0, 0.03, 0);
+        }
         // int type = getFollowType();
         // float h = (float)((getBoundingBox().maxY - getBoundingBox().minY) / 2.0)
         //         + Mth.sin(tickCount / 10.0f + hoverStart) * 0.1f + 0.1f;

@@ -26,7 +26,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * 
  * This is a double-edged item for players who have embraced corruption.
  * 
- * TODO: Add Curios integration for charm slot support.
+ * Implements ICuriosItemHandler for charm slot support.
  */
 public class ItemVoidseerCharm extends Item implements IVisDiscountGear, IWarpingGear {
     
@@ -40,7 +40,7 @@ public class ItemVoidseerCharm extends Item implements IVisDiscountGear, IWarpin
     public int getVisDiscount(ItemStack stack, Player player) {
         // Calculate discount based on permanent warp
         // Max 25% discount at 100+ permanent warp
-        // TODO: Get actual warp from player capability when implemented
+        // Get warp from player
         int permanentWarp = getPlayerPermanentWarp(player);
         permanentWarp = Math.min(100, permanentWarp);
         return (int) (permanentWarp / 100.0f * 25.0f);

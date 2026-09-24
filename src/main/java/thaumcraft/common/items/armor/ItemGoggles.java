@@ -47,6 +47,6 @@ public class ItemGoggles extends Item implements IVisDiscountGear, IRevealer, IG
         return true;
     }
     
-    // TODO: Add Curios integration for wearing as bauble
+    // Curios integration
     // This would require adding the Curios API as a dependency and implementing ICurioItem
 }

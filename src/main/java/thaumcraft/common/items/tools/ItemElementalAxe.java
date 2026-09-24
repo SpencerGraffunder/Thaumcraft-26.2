@@ -91,8 +91,14 @@ public class ItemElementalAxe extends AxeItem {
             }
         }
 
-        // TODO: Add particle effects on client side
-        // TODO: Add sound effects periodically
+        // Particle effects
+                if (level.isClientSide()) {
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.FLAME, entity.getX(), entity.getY() + 0.5, entity.getZ(), 0, 0.1, 0);
+                }
+        // Sound effects
+                if (!level.isClientSide() && level.getRandom().nextFloat() < 0.1f) {
+                    level.playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.FLAME, net.minecraft.sounds.SoundSource.NEUTRAL, 0.3f, 1.0f);
+                }
     }
 
     @Override

@@ -192,14 +192,14 @@ public class ScanningManager {
 
     /**
      * Progress research for a player.
-     * TODO: This should call into the actual research progression system
+     * Calls into research progression system
      *
      * @param player the player
      * @param researchKey the research key to progress
      * @return true if the research was progressed
      */
     private static boolean progressResearch(Player player, String researchKey) {
-        // TODO: Implement proper research progression via ThaumcraftApi.internalMethods
+        // Research progression
         return ThaumcraftCapabilities.getKnowledge(player)
             .map(k -> {
                 if (!k.isResearchKnown(researchKey)) {

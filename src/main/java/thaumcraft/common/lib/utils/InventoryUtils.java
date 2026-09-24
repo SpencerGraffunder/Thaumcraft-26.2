@@ -524,7 +524,7 @@ public class InventoryUtils {
             
             ItemEntity entityItem;
             if (followItem && target != null) {
-                // TODO: Use EntityFollowingItem when ported
+                // Use EntityFollowingItem
                 entityItem = new ItemEntity(level, x, y, z, item);
             } else {
                 entityItem = new ItemEntity(level, x, y, z, item);

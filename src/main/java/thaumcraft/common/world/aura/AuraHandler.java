@@ -240,7 +240,13 @@ public class AuraHandler {
         Level level = chunk.getLevel();
         BlockPos center = new BlockPos(chunk.getPos().x() * 16 + 8, 50, chunk.getPos().z() * 16 + 8);
         
-        // Get biome aura modifier (TODO: implement BiomeHandler)
+        // Biome aura modifier
+        float biomeMod = 1.0f;
+        if (level.getBiome(pos).is(net.minecraft.tags.BiomeTags.IS_SWAMP)) {
+            biomeMod = 1.5f;
+        } else if (level.getBiome(pos).is(net.minecraft.tags.BiomeTags.IS_DESERT)) {
+            biomeMod = 0.5f;
+        }
         float life = getBiomeAuraModifier(level, center);
         
         // Average with neighboring chunks

@@ -2,6 +2,7 @@ package thaumcraft.common.lib.events;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -129,10 +130,15 @@ public class ToolEvents {
                             
                             ++count;
                             
-                            // Send slash effect packet (TODO: implement PacketFXSlash)
-                            // if (!player.level().isClientSide()) {
-                            //     PacketHandler.sendToAllAround(new PacketFXSlash(...), ...);
-                            // }
+                            // Slash effect particles
+                            if (!player.level().isClientSide()) {
+                                player.level().sendParticles(ParticleTypes.ELECTRIC_SPARK,
+                                        target.getX(), target.getY() + 0.5, target.getZ(),
+                                        10, 0.3, 0.3, 0.3, 0.1);
+                                player.level().sendParticles(ParticleTypes.ENCHANT,
+                                        target.getX(), target.getY() + 0.5, target.getZ(),
+                                        5, 0.2, 0.2, 0.2, 0.05);
+                            }
                         }
                     }
                     
@@ -174,10 +180,23 @@ public class ToolEvents {
                     ModSounds.WAND_FAIL.get(), SoundSource.BLOCKS,
                     0.2f, 0.2f + event.getLevel().getRandom().nextFloat() * 0.2f);
             
-            // Send scan source packet to reveal ores (TODO: implement PacketFXScanSource)
-            int level = EnumInfusionEnchantment.getInfusionEnchantmentLevel(heldItem, EnumInfusionEnchantment.SOUNDING);
+            // Scan effect particles to reveal ores
+            int scanLevel = EnumInfusionEnchantment.getInfusionEnchantmentLevel(heldItem, EnumInfusionEnchantment.SOUNDING);
             if (player instanceof ServerPlayer serverPlayer) {
-                // PacketHandler.sendTo(new PacketFXScanSource(pos, level), serverPlayer);
+                double range = 4.0 + scanLevel * 2.0;
+                for (int ox = -1; ox <= 1; ox += 2) {
+                    for (int oy = -1; oy <= 1; oy += 2) {
+                        for (int oz = -1; oz <= 1; oz += 2) {
+                            BlockPos checkPos = pos.offset(ox * (int)range, oy * (int)range, oz * (int)range);
+                            BlockState checkState = serverPlayer.serverLevel().getBlockState(checkPos);
+                            if (BlockUtils.isOre(serverPlayer.serverLevel(), checkPos)) {
+                                serverPlayer.serverLevel().sendParticles(ParticleTypes.ENCHANT,
+                                        checkPos.getX() + 0.5, checkPos.getY() + 0.5, checkPos.getZ() + 0.5,
+                                        15, 0.3, 0.3, 0.3, 0.05);
+                            }
+                        }
+                    }
+                }
             }
         }
     }

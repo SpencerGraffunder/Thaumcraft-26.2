@@ -153,7 +153,10 @@ public class EntityCultistPortalGreater extends Monster {
                 // Stage 0 setup - spawn banners at tick 160
                 if (stageCounter == 160 && stage == 0) {
                     level().broadcastEntityEvent(this, (byte) 16);
-                    // TODO: Place banners around the portal when banner blocks implemented
+                    // Place banners
+                    if (thaumcraft.init.ModBlocks.BLOCK_BANNER != null) {
+                        level().setBlock(pos, net.minecraft.world.level.block.Blocks.OAK_WALL_BANNER.defaultBlockState(), 3);
+                    }
                     // For now just play sound
                     playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0f, 1.0f);
                 }
@@ -166,7 +169,8 @@ public class EntityCultistPortalGreater extends Monster {
                     
                     if (a != (int) getX() && b != (int) getZ() && level().isEmptyBlock(bp)) {
                         level().broadcastEntityEvent(this, (byte) 16);
-                        // TODO: Place loot crates when implemented
+                        // Place loot crates
+                        level().addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(level(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ENDER_CHEST)));
                         // For now, drop a chest as placeholder
                         playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0f, 1.0f);
                     }

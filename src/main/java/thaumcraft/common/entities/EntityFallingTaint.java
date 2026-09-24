@@ -118,7 +118,11 @@ public class EntityFallingTaint extends Entity {
                 
                 // Place block if possible
                 if (canPlace(currentPos)) {
-                    // TODO: Play SoundsTC.gore
+                    // Play gore sound
+                    if (thaumcraft.init.ModSounds.GORE != null) {
+                        level().playSound(null, blockPosition(), thaumcraft.init.ModSounds.GORE.get(),
+                            net.minecraft.sounds.SoundSource.NEUTRAL, 0.8f, 1.0f);
+                    }
                     discard();
                     level().setBlock(currentPos, fallTile, 3);
                 } else {
@@ -131,13 +135,29 @@ public class EntityFallingTaint extends Entity {
         } else {
             // Client-side particles on landing
             if (onGround() || fallTime == 1) {
-                // TODO: FXDispatcher.INSTANCE.taintLandFX
+                // Taint landing FX
+                if (!level().isClientSide()) {
+                    for (int i = 0; i < 8; i++) {
+                        double dx = (Math.random() - 0.5) * 0.5;
+                        double dy = Math.random() * 0.3;
+                        double dz = (Math.random() - 0.5) * 0.5;
+                        level().addParticle(net.minecraft.core.particles.ParticleTypes.DRIPPING_LAVA,
+                            getX() + dx, getY() + dy, getZ() + dz, 0, 0.1, 0);
+                    }
+                }
             }
         }
     }
     
     private boolean isTaintGooBelow(BlockPos pos) {
-        // TODO: Check for BlocksTC.fluxGoo
+        // Check for flux goo
+        if (thaumcraft.init.ModBlocks.BLOCK_FLUX_GOO != null && 
+            block == thaumcraft.init.ModBlocks.BLOCK_FLUX_GOO.get()) {
+            // Flux goo absorbs the falling taint
+            level().removeBlock(blockPos, false);
+            level().setBlock(blockPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+            return;
+        }
         return false;
     }
     
@@ -147,7 +167,17 @@ public class EntityFallingTaint extends Entity {
         if (currentState.isAir() || currentState.canBeReplaced()) {
             return true;
         }
-        // TODO: Check for taint fiber or flux goo
+        // Check for taint fiber or flux goo
+        if (thaumcraft.init.ModBlocks.BLOCK_TAINT_FIBER != null && 
+            block == thaumcraft.init.ModBlocks.BLOCK_TAINT_FIBER.get()) {
+            // Taint fiber slows the fall
+            setDeltaMovement(getDeltaMovement().multiply(0.8, 0.5, 0.8));
+        } else if (thaumcraft.init.ModBlocks.BLOCK_FLUX_GOO != null && 
+                   block == thaumcraft.init.ModBlocks.BLOCK_FLUX_GOO.get()) {
+            // Flux goo absorbs the falling taint
+            level().removeBlock(blockPos, false);
+            level().setBlock(blockPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+        }
         return false;
     }
     

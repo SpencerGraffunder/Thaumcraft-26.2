@@ -1,6 +1,7 @@
 package thaumcraft.common.items.casters.foci;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -64,8 +65,11 @@ public class FocusEffectFrost extends FocusEffect {
         
         Level world = getPackage().world;
         
-        // TODO: Send particle effect packet
-        // PacketHandler.sendToAllAround(new PacketFXFocusPartImpact(...))
+        // Particle effect at impact
+        if (!world.isClientSide() && target.getLocation() != null) {
+            world.sendParticles(ParticleTypes.SNOWFLAKE, target.getLocation().x, target.getLocation().y, target.getLocation().z, 15, 0.4, 0.4, 0.4, 0.05);
+            world.sendParticles(ParticleTypes.SMOKE, target.getLocation().x, target.getLocation().y, target.getLocation().z, 10, 0.3, 0.3, 0.3, 0.03);
+        }
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {
             Entity hitEntity = entityHit.getEntity();
@@ -144,9 +148,9 @@ public class FocusEffectFrost extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // TODO: Implement particle effects
-        // Original used FXGeneric with snow/ice particles
-        // For now, this is a placeholder - will need client-side particle system
+        // Frost particle trail
+        level.addParticle(ParticleTypes.SNOWFLAKE, posX, posY, posZ, 0, 0.03, 0);
+        level.addParticle(ParticleTypes.SMOKE, posX, posY, posZ, 0, -0.02, 0);
     }
 
     @Override

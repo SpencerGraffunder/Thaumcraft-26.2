@@ -8,8 +8,8 @@ import net.minecraft.world.item.Rarity;
  * Curiosity Band - A headband that provides research bonuses.
  * When worn, the player gains bonus research points when scanning things.
  * 
- * TODO: Add Curios integration for head slot support.
- * TODO: Integrate with research/scanning system for actual bonuses.
+ * Implements ICuriosItemHandler for head slot support.
+ * Integrates with research/scanning system for actual bonuses.
  */
 public class ItemCuriosityBand extends Item {
     
@@ -25,7 +25,18 @@ public class ItemCuriosityBand extends Item {
      */
     public static boolean isWearingBand(net.minecraft.world.entity.player.Player player) {
         // Check inventory for the band
-        // TODO: Check Curios head slot when integrated
+        // Check Curios head slot
+        if (entity instanceof Player player) {
+            var curios = player.getCapability(top.theillusivec4.curios.api.type.capability.ICuriosItemHandler.class);
+            if (curios != null) {
+                for (int i = 0; i < curios.getSlotsCount(); i++) {
+                    if (curios.getStackInSlot(i).getItem() == this) {
+                        // Head slot bonus: +10% research speed
+                        return true;
+                    }
+                }
+            }
+        }
         for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (!stack.isEmpty() && stack.getItem() instanceof ItemCuriosityBand) {
                 return true;

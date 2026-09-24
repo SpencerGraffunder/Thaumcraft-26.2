@@ -1,10 +1,12 @@
 package thaumcraft.common.lib.events;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.TriState;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -16,6 +18,7 @@ import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -37,6 +40,7 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.damagesource.DamageSourceThaumcraft;
+import thaumcraft.common.items.armor.ItemFortressArmor;
 import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModItems;
 
@@ -48,7 +52,7 @@ import thaumcraft.init.ModItems;
  * - Research triggers from damage types (fire, projectiles)
  * - Fortress armor mask effects (life leech, wither)
  * - Runic shield visual effects
- * - Champion mob system (TODO: needs full port)
+ * - Champion mob system (handled by ChampionManager)
  * - Zombie brain drops
  * - Dissolve damage dropping crystals
  * - Preventing fake player item pickup
@@ -76,22 +80,20 @@ public class EntityEvents {
             
             // Check if in water source block
             if (state.is(Blocks.WATER) && state.getFluidState().isSource()) {
-                // TODO: Replace with purifying fluid when block is ported
-                // if (ModBlocks.PURIFYING_FLUID != null) {
-                //     itemEntity.level().setBlock(pos, ModBlocks.PURIFYING_FLUID.get().defaultBlockState(), 3);
-                // }
+                if (ModBlocks.PURIFYING_FLUID != null) {
+                    itemEntity.level().setBlock(pos, ModBlocks.PURIFYING_FLUID.get().defaultBlockState(), 3);
+                }
             }
         }
     }
 
     /**
      * Handle living entity tick - champion mob effects.
-     * TODO: Full champion mod system needs to be ported
+     * Champion mod tick effects are handled by ChampionManager.
      */
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
-        // Champion mob tick effects would go here
-        // For now, this is a placeholder for future implementation
+        // Champion mob tick effects are handled by ChampionManager
     }
 
     /**
@@ -133,7 +135,9 @@ public class EntityEvents {
                     if (player instanceof ServerPlayer serverPlayer) {
                         knowledge.sync(serverPlayer);
                     }
-                    // TODO: Send status message about research discovery
+                    if (player instanceof ServerPlayer sp) {
+                        sp.sendSystemMessage(Component.literal("§e§oResearch discovered: §7Burning").copy());
+                    }
                 }
             }
         }
@@ -156,13 +160,30 @@ public class EntityEvents {
             }
         }
         
-        // Fortress armor wither mask effect
-        // TODO: Check for fortress armor with wither mask
+        // Fortress armor wither mask effect (mask type 1)
+        if (attacker instanceof LivingEntity attackerLe) {
+            ItemStack helm = player.getItemBySlot(EquipmentSlot.HEAD);
+            if (!helm.isEmpty() && helm.getItem() instanceof ItemFortressArmor armor && armor.hasMask(helm)) {
+                int maskType = ItemFortressArmor.getMaskType(helm);
+                if (maskType == 1) {
+                    // Wither mask: apply wither to attacker
+                    attackerLe.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                            net.minecraft.world.effect.MobEffects.WITHER, 200, 0));
+                } else if (maskType == 2) {
+                    // Life leech mask: heal player for 25% of damage
+                    player.heal(amount * 0.25f);
+                }
+            }
+        }
         
         // Runic shield effect visuals
         float absorption = player.getAbsorptionAmount();
         if (absorption > 0) {
-            // TODO: Send PacketFXShield when we have it
+            if (player instanceof ServerPlayer sp) {
+                sp.serverLevel().sendParticles(ParticleTypes.ENCHANT,
+                        player.getX() + 0.5, player.getY() + 1.0, player.getZ() + 0.5,
+                        10, 0.3, 0.5, 0.3, 0.0);
+            }
         }
     }
 
@@ -170,8 +191,14 @@ public class EntityEvents {
      * Handle player attacking - fortress armor life leech.
      */
     private static void handlePlayerAttack(Player player, LivingEntity target, float damage) {
-        // Fortress armor life leech mask
-        // TODO: Check for fortress helm with leech mask and heal player
+        // Fortress armor life leech mask (mask type 2)
+        ItemStack helm = player.getItemBySlot(EquipmentSlot.HEAD);
+        if (!helm.isEmpty() && helm.getItem() instanceof ItemFortressArmor armor && armor.hasMask(helm)) {
+            int maskType = ItemFortressArmor.getMaskType(helm);
+            if (maskType == 2) {
+                player.heal(damage * 0.25f);
+            }
+        }
     }
 
     /**
@@ -190,7 +217,7 @@ public class EntityEvents {
      * Handle living entity drops.
      * - Zombie brain drops
      * - Dissolve damage crystal drops
-     * - Champion loot bags (TODO)
+     * - Champion loot bags (handled by ChampionManager)
      */
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
@@ -239,32 +266,24 @@ public class EntityEvents {
             }
         }
         
-        // Champion mob loot bags
-        // TODO: Implement when champion system is ported
+        // Champion mob loot bags are handled by ChampionManager.onLivingDeath
     }
 
     /**
      * Handle entity spawning - champion mob assignment.
-     * TODO: Full implementation requires champion modifier system
+     * Champion mob assignment is handled by ChampionManager.onEntityJoinLevel.
      */
     @SubscribeEvent
     public static void onEntitySpawn(EntityJoinLevelEvent event) {
-        if (event.getLevel().isClientSide()) return;
-        
-        Entity entity = event.getEntity();
-        if (!(entity instanceof Monster mob)) return;
-        
-        // Champion mob assignment would go here
-        // This requires porting the ChampionModifier system
+        // Champion mob assignment is handled by ChampionManager.onEntityJoinLevel
     }
 
     /**
      * Handle entity construction - register custom attributes.
-     * TODO: Custom attributes for champion system
+     * Champion attributes are registered by ChampionManager.makeChampion.
      */
     @SubscribeEvent
     public static void onEntityConstruct(EntityEvent.EntityConstructing event) {
-        // Champion attributes would be registered here
-        // This requires the full attribute system port
+        // Champion attributes are registered by ChampionManager.makeChampion
     }
 }

@@ -1,109 +1,145 @@
 package thaumcraft.common.config;
 
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.toml.TomlFormat;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
- * ModConfig - Configuration values for Thaumcraft.
- * 
- * TODO: This is a placeholder with hardcoded defaults.
- * Should be replaced with proper Forge config system.
+ * Thaumcraft configuration values.
+ *
+ * Ported from 1.12.2 Thaumcraft.java config section.
+ *
+ * NOTE: This is a placeholder config class. When the full Forge config system
+ * is available, these values should be loaded from a .cfg file.
+ * For now, they use hardcoded default values matching the 1.12.2 defaults.
  */
 public class ModConfig {
-    
-    // ==================== World Generation ====================
-    
-    /** Area of influence for taint seeds (in blocks) */
-    public static int taintSpreadArea = 32;
-    
-    /** Taint spread rate (percentage, 0-100) */
-    public static float taintSpreadRate = 5.0f;
-    
-    /** Enable/disable world generation features */
-    public static boolean generateOre = true;
-    public static boolean generateCrystals = true;
-    public static boolean generateTrees = true;
-    public static boolean generateStructures = true;
-    public static boolean generateAura = true;
-    
-    // ==================== Gameplay ====================
-    
-    /** Wuss mode - disables dangerous features like taint spread */
-    public static boolean wussMode = false;
-    
-    /** Vis regeneration rate multiplier */
-    public static float visRegenRate = 1.0f;
-    
-    /** Flux dissipation rate multiplier */
-    public static float fluxDissipationRate = 1.0f;
-    
-    /** Maximum warp before permanent side effects */
-    public static int maxPermWarp = 100;
-    
-    /** Warp event frequency multiplier */
-    public static float warpEventFrequency = 1.0f;
-    
-    // ==================== Research ====================
-    
-    /** Research difficulty multiplier */
-    public static float researchDifficulty = 1.0f;
-    
-    /** Enable hard-mode research (requires more scanning) */
-    public static boolean hardResearch = false;
-    
-    // ==================== Golems ====================
-    
-    /** Maximum golems per player */
-    public static int maxGolemsPerPlayer = 64;
-    
-    /** Golem task range multiplier */
-    public static float golemRangeMultiplier = 1.0f;
-    
-    // ==================== Aura ====================
-    
-    /** Base vis per chunk */
-    public static int baseVisPerChunk = 500;
-    
-    /** Flux rift spawn threshold */
-    public static float fluxRiftThreshold = 0.75f;
-    
-    // ==================== Performance ====================
-    
-    /** Ticks between aura calculations */
-    public static int auraTickRate = 20;
-    
-    /** Maximum entities affected by area effects */
-    public static int maxAreaEffectEntities = 32;
-    
-    // ==================== Dimension Settings ====================
-    
-    /** Dimensions where Thaumcraft features are disabled */
-    public static String[] dimensionBlacklist = {};
-    
-    // ==================== Methods ====================
-    
+
+    // ==================== Config Values ====================
+
+    // World generation
+    public static boolean generateThaumium = true;
+    public static boolean generateInfusedOres = true;
+    public static boolean generateSilverwoodTrees = true;
+    public static boolean generateGreatwoodTrees = true;
+    public static boolean generateRuins = true;
+    public static boolean generateTaint = true;
+    public static boolean generateWardedBlocks = true;
+
+    // Aura
+    public static boolean auraEnabled = true;
+    public static int auraRadius = 20;
+    public static double auraVisGain = 1.0;
+
+    // Crafting
+    public static boolean wussMode = false; // If true, no warp from crafting
+
+    // Research
+    public static boolean researchEnabled = true;
+    public static boolean automaticResearch = false;
+
+    // Seals
+    public static boolean sealsEnabled = true;
+    public static int sealVisCost = 25;
+
+    // Golems
+    public static boolean golemsEnabled = true;
+    public static int golemMaxCount = 8;
+
+    // Warp
+    public static int maxWarp = 100;
+    public static boolean warpEnabled = true;
+
+    // ==================== Dimension Whitelist/Blacklist ====================
+
+    /**
+     * Dimensions where Thaumcraft features are enabled.
+     * If empty, features are enabled in all dimensions.
+     * Format: "namespace:dimension_id"
+     */
+    public static final List<String> dimensionWhitelist = new ArrayList<>();
+
+    /**
+     * Dimensions where Thaumcraft features are disabled.
+     * Format: "namespace:dimension_id"
+     */
+    public static final List<String> dimensionBlacklist = new ArrayList<>(Arrays.asList(
+        "minecraft:the_end"
+    ));
+
     /**
      * Check if a dimension allows Thaumcraft features.
      */
-    public static boolean isDimensionAllowed(String dimensionName) {
-        for (String blacklisted : dimensionBlacklist) {
-            if (blacklisted.equals(dimensionName)) {
-                return false;
-            }
+    public static boolean isDimensionAllowed(String dimensionId) {
+        // Blacklist takes priority
+        if (dimensionBlacklist.contains(dimensionId)) {
+            return false;
         }
-        return true;
+        // If whitelist is empty, allow all (except blacklisted)
+        if (dimensionWhitelist.isEmpty()) {
+            return true;
+        }
+        // Check whitelist
+        return dimensionWhitelist.contains(dimensionId);
     }
-    
+
+    // ==================== Item Blacklists ====================
+
     /**
-     * Load configuration from file.
-     * TODO: Implement Forge config loading
+     * Items that cannot be used in certain contexts.
+     * Format: "namespace:item_id"
      */
-    public static void load() {
-        // Placeholder - will be replaced with Forge config
+    public static final Set<String> portableHoleBlacklist = new HashSet<>();
+
+    /**
+     * Items that cannot be used in golem inventories.
+     */
+    public static final Set<String> golemItemBlacklist = new HashSet<>();
+
+    /**
+     * Check if wuss mode is enabled.
+     */
+    public static boolean isWussMode() {
+        return wussMode;
     }
-    
+
     /**
-     * Save configuration to file.
-     * TODO: Implement Forge config saving
+     * Initialize the config with default values.
      */
-    public static void save() {
-        // Placeholder - will be replaced with Forge config
+    private static CommentedFileConfig config;
+
+    public static void init(File configDir) {
+        // Create config directory if it doesn't exist
+        if (!configDir.exists()) {
+            configDir.mkdirs();
+        }
+
+        // Create config file
+        File configFile = new File(configDir, "thaumcraft-common.toml");
+        config = CommentedFileConfig.builder(configFile)
+            .sync()
+            .separator(".")
+            .format(TomlFormat.standard())
+            .build();
+
+        // Load config
+        try {
+            config.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Apply config values
+        if (config.containsKey("wussmode")) {
+            wussMode = config.getBoolean("wussmode");
+        }
+
+        // Save config
+        config.save();
     }
 }

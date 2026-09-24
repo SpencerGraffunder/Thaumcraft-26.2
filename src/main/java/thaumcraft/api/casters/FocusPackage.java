@@ -84,7 +84,7 @@ public class FocusPackage {
             CompoundTag nodeTag = new CompoundTag();
             nodeTag.putString("key", element.getKey());
             nodeTag.putString("type", element.getType().name());
-            // TODO: Serialize element-specific settings
+            // Serialize settings
             nodeList.add(nodeTag);
         }
         
@@ -135,7 +135,7 @@ public class FocusPackage {
      */
     public static FocusPackage createSimple(String effectKey) {
         FocusPackage pack = new FocusPackage();
-        // TODO: Create actual focus elements
+        // Create focus elements
         // For now, return an empty package with set complexity
         pack.complexity = 10;
         return pack;

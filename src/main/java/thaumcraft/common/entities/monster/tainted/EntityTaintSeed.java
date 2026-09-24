@@ -184,7 +184,10 @@ public class EntityTaintSeed extends Monster implements ITaintedMob {
                 attackAnim = 0.0f;
             }
             
-            // TODO: Spawn taint particles
+            // Taint particles
+            if (level().isClientSide()) {
+                level().addParticle(net.minecraft.core.particles.ParticleTypes.DRIPPING_LAVA, getX(), getY() + 0.5, getZ(), 0, 0.1, 0);
+            }
         }
     }
     

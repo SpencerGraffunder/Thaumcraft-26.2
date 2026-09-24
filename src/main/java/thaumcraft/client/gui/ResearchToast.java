@@ -85,7 +85,7 @@ public class ResearchToast implements Toast {
             firstDrawTime = timeSinceLastVisible;
             // Play sound on first draw
             if (!hasPlayedSound) {
-                // TODO: Play TC discovery sound
+                // Discovery sound
                 // Minecraft.getInstance().getSoundManager().play(...)
                 hasPlayedSound = true;
             }

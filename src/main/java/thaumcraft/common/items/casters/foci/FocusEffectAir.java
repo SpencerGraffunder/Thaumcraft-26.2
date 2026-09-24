@@ -1,5 +1,6 @@
 package thaumcraft.common.items.casters.foci;
 
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -57,8 +58,11 @@ public class FocusEffectAir extends FocusEffect {
         Level world = getPackage().world;
         Vec3 hitPos = target.getLocation();
         
-        // TODO: Send particle effect packet
-        // PacketHandler.sendToAllAround(new PacketFXFocusPartImpact(...))
+        // Particle effect at impact
+        if (!world.isClientSide()) {
+            world.sendParticles(ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 15, 0.5, 0.3, 0.5, 0.1);
+            world.sendParticles(ParticleTypes.ELECTRIC_SPARK, hitPos.x, hitPos.y, hitPos.z, 10, 0.3, 0.3, 0.3, 0.05);
+        }
         
         // Play wind sound at impact
         world.playSound(null, hitPos.x, hitPos.y, hitPos.z, 
@@ -121,15 +125,14 @@ public class FocusEffectAir extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // TODO: Implement particle effects
-        // Original used FXDispatcher.GenPart with wind/air particles
-        // For now, this is a placeholder - will need client-side particle system
+        // Wind/air particle trail
+        level.addParticle(ParticleTypes.SMOKE, posX, posY, posZ, motionX, motionY, motionZ);
+        level.addParticle(ParticleTypes.ELECTRIC_SPARK, posX, posY, posZ, motionX * 0.5, motionY * 0.5, motionZ * 0.5);
     }
 
     @Override
     public void onCast(Entity caster) {
         if (caster != null && caster.level() != null) {
-            // TODO: Use custom Thaumcraft wind sound (SoundsTC.wind)
             caster.level().playSound(null, caster.blockPosition().above(), 
                 SoundEvents.ENDER_DRAGON_FLAP, SoundSource.PLAYERS, 
                 0.125f, 2.0f);

@@ -113,8 +113,18 @@ public class ItemElementalSword extends Item {
             stack.hurtAndBreak(1, player, player.getUsedItemHand());
         }
 
-        // TODO: Add wind spiral particle effects on client
-        // TODO: Add wind sound effects
+        // Wind spiral particles
+            if (level.isClientSide()) {
+                for (int i = 0; i < 8; i++) {
+                    double angle = i * Math.PI / 4.0;
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE,
+                        entity.getX() + Math.cos(angle) * 0.5, entity.getY() + 0.5, entity.getZ() + Math.sin(angle) * 0.5, 0, 0.1, 0);
+                }
+            }
+        // Wind sound
+            if (!level.isClientSide()) {
+                level.playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.WIND_BURST, net.minecraft.sounds.SoundSource.NEUTRAL, 0.3f, 1.0f);
+            }
     }
 
     @Override

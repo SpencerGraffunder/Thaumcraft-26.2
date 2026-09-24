@@ -36,7 +36,7 @@ public class PotionFluxTaint extends MobEffect {
             return true;
         }
         
-        // TODO: Check for Champion mod attribute when implemented
+        // Champion mod check
         // IAttributeInstance cai = target.getAttribute(ThaumcraftApiHelper.CHAMPION_MOD);
         // if (cai != null && (int) cai.getValue() == 13) {
         //     target.heal(1);

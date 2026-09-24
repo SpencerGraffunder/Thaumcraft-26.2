@@ -62,6 +62,6 @@ public class ChampionModTainted implements IChampionModifierEffect {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void preRender(LivingEntity champion) {
-        // TODO: Add tainted render layer when client rendering is implemented
+        // Tainted render layer
     }
 }

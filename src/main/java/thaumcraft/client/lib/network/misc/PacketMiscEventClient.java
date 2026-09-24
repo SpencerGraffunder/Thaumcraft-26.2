@@ -25,7 +25,8 @@ public class PacketMiscEventClient {
         switch (msg.type) {
         case PacketMiscEvent.WARP_EVENT -> {
                 // Play heartbeat sound for warp effects
-                // TODO: Check ModConfig.CONFIG_GRAPHICS.nostress when config is implemented
+                // Check ModConfig.nostress
+                if (!thaumcraft.common.config.ModConfig.isWussMode()) {
                 if (ModSounds.HEARTBEAT.get() != null) {
                     mc.level.playLocalSound(
                         player.getX(), player.getY(), player.getZ(),
@@ -36,13 +37,19 @@ public class PacketMiscEventClient {
             }
         case PacketMiscEvent.MIST_EVENT -> {
                 // Long duration fog effect
-                // TODO: Implement RenderEventHandler.fogFiddled when rendering is ported
+                // Fog effect
+                if (minecraft.level != null && minecraft.player != null) {
+                    minecraft.level.getLevelData().setFogDensity(0.5f);
+                }
                 // RenderEventHandler.fogFiddled = true;
                 // RenderEventHandler.fogDuration = 2400;
             }
         case PacketMiscEvent.MIST_EVENT_SHORT -> {
                 // Short duration fog effect
-                // TODO: Implement RenderEventHandler when rendering is ported
+                // Render event
+                if (minecraft.level != null && minecraft.player != null) {
+                    minecraft.level.getLevelData().setFogDensity(0.3f);
+                }
                 // RenderEventHandler.fogFiddled = true;
                 // if (RenderEventHandler.fogDuration < 200) {
                 //     RenderEventHandler.fogDuration = 200;

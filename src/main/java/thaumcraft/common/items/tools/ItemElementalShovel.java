@@ -137,7 +137,8 @@ public class ItemElementalShovel extends ShovelItem {
                         stack.hurtAndBreak(1, player, context.getHand());
                         placedCount++;
 
-                        // TODO: Add visual effect (bamf)
+                        // Visual effect
+                        level.addParticle(net.minecraft.core.particles.ParticleTypes.POOF, entity.getX(), entity.getY() + 0.5, entity.getZ(), 0, 0.1, 0);
                         
                         if (stack.isEmpty()) {
                             return InteractionResult.SUCCESS;

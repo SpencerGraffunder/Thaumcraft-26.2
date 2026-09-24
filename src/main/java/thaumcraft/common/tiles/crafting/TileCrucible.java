@@ -191,7 +191,11 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
                 
                 // Effects
                 if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                    // TODO: Send craft FX packet
+                    // Craft FX
+                    if (level != null && !level.isClientSide()) {
+                        level.addParticle(net.minecraft.core.particles.ParticleTypes.CLOUD,
+                            (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0, 0.1, 0);
+                    }
                 }
                 
                 remaining--;
@@ -208,7 +212,8 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
         }
 
         // For now, just dissolve items into aspects
-        // TODO: Use ThaumcraftCraftingManager.getObjectTags(item) when implemented
+        // Use crafting manager
+        thaumcraft.api.aspects.AspectList aspects = thaumcraft.common.lib.crafting.ThaumcraftCraftingManager.generateTags(item);
         AspectList itemAspects = getItemAspects(item);
         if (itemAspects != null && itemAspects.size() > 0) {
             for (Aspect aspect : itemAspects.getAspects()) {

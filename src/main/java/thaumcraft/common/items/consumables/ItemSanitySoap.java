@@ -59,7 +59,14 @@ public class ItemSanitySoap extends Item {
                         SoundEvents.CHORUS_FLOWER_DEATH, SoundSource.PLAYERS,
                         0.1f, 1.5f + level.getRandom().nextFloat() * 0.2f, false);
             }
-            // TODO: Add bubble particles (FXDispatcher.crucibleBubble)
+            // Bubble particles
+            if (level.isClientSide()) {
+                for (int i = 0; i < 10; i++) {
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.BUBBLE,
+                        entity.getX() + (Math.random() - 0.5) * 0.5, entity.getY() + 0.5 + (Math.random() - 0.5) * 0.5,
+                        entity.getZ() + (Math.random() - 0.5) * 0.5, 0, 0.05, 0);
+                }
+            }
         }
     }
 
@@ -106,7 +113,14 @@ public class ItemSanitySoap extends Item {
                 level.playLocalSound(entity.getX(), entity.getY(), entity.getZ(),
                         ModSounds.CRAFT_START.get(), SoundSource.PLAYERS,
                         0.25f, 1.0f, false);
-                // TODO: Add more bubble particles
+                // More bubble particles
+                if (level.isClientSide()) {
+                    for (int i = 0; i < 5; i++) {
+                        level.addParticle(net.minecraft.core.particles.ParticleTypes.BUBBLE,
+                            entity.getX() + (Math.random() - 0.5) * 0.3, entity.getY() + 0.5,
+                            entity.getZ() + (Math.random() - 0.5) * 0.3, 0, 0.05, 0);
+                    }
+                }
             }
         }
         return false;

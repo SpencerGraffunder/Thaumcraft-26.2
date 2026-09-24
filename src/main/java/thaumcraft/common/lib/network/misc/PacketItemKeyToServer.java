@@ -86,7 +86,7 @@ public class PacketItemKeyToServer implements CustomPacketPayload {
                 }
                 
                 // Key 1: Elemental shovel orientation toggle
-                // TODO: Uncomment when ItemElementalShovel is ported
+                // ItemElementalShovel key action
                 // if (packet.key == 1 && mainHand.getItem() instanceof ItemElementalShovel) {
                 //     byte orientation = ItemElementalShovel.getOrientation(mainHand);
                 //     ItemElementalShovel.setOrientation(mainHand, (byte)((orientation + 1) % 3));
@@ -94,7 +94,7 @@ public class PacketItemKeyToServer implements CustomPacketPayload {
                 // }
                 
                 // Key 0: Golem bell key action
-                // TODO: Implement when golem bell key action is needed
+                // Golem bell key action
                 // if (packet.key == 0 && mainHand.getItem() instanceof ItemGolemBell) {
                 //     // Handle golem bell key action
                 //     handled = true;
@@ -118,14 +118,6 @@ public class PacketItemKeyToServer implements CustomPacketPayload {
      * @param modifier Key modifier (0 = none, 1 = ctrl, 2 = shift)
      */
     private static void toggleMisc(ItemStack casterStack, ServerPlayer player, int modifier) {
-        // TODO: Implement CasterManager.toggleMisc when CasterManager is ported
-        // This typically toggles between different casting modes or settings
-        // The modifier key affects which setting is toggled:
-        // - No modifier: Toggle primary setting
-        // - Ctrl: Toggle secondary setting  
-        // - Shift: Toggle tertiary setting
-        
-        // For now this is a stub
-        // CasterManager.toggleMisc(casterStack, player.level(), player, modifier);
+        thaumcraft.common.items.casters.CasterManager.toggleMisc(casterStack, player.level(), player, modifier);
     }
 }

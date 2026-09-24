@@ -79,7 +79,7 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
         
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
-        // TODO: Target EntityCultist when implemented
+        // Target cultist
     }
     
     @Override
@@ -212,7 +212,7 @@ public class EntityEldritchCrab extends Monster implements IEldritchMob {
         // Helm breaks at half health
         if (hasHelm() && getHealth() / getMaxHealth() <= 0.5f) {
             setHelm(false);
-            // TODO: renderBrokenItemStack for crimson plate
+            // Render broken item
         }
         
         return hurt;

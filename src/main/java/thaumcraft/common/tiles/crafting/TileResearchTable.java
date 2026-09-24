@@ -279,6 +279,22 @@ public class TileResearchTable extends TileThaumcraftInventory implements MenuPr
         return false;
     }
 
+    // ==================== Placement ====================
+
+    /**
+     * Called when the research table is placed by a player.
+     * @param placerUUID The UUID of the player who placed it, or null
+     */
+    public void setPlaced(@Nullable java.util.UUID placerUUID) {
+        // Initialize the data structure
+        if (data == null) {
+            data = new ResearchTableData(this);
+            setChanged();
+        }
+    }
+    
+    // ==================== Container Validation ====================
+    
     // ==================== Container Validation ====================
 
     @Override

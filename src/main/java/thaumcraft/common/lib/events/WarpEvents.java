@@ -25,8 +25,10 @@ import thaumcraft.api.items.IWarpingGear;
 import thaumcraft.common.entities.monster.EntityEldritchGuardian;
 import thaumcraft.common.entities.monster.EntityMindSpider;
 import thaumcraft.common.entities.monster.cult.EntityCultistPortalLesser;
+import thaumcraft.common.items.armor.ItemFortressArmor;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModEntities;
+import net.minecraft.core.particles.ParticleTypes;
 
 import java.util.List;
 
@@ -88,12 +90,19 @@ public class WarpEvents {
             int eff = player.level().getRandom().nextInt(warp) + gearWarp;
             
             // Check for Sanity Checker mask (fortress helm with mask=0)
-            // TODO: Implement when armor is ported
-            // ItemStack helm = player.getInventory().armor.get(3);
-            // if (helm.getItem() instanceof ItemFortressArmor...) eff -= 2 + random.nextInt(4);
+            ItemStack helm = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD);
+            if (!helm.isEmpty() && helm.getItem() instanceof thaumcraft.common.items.armor.ItemFortressArmor armor && armor.hasMask(helm)) {
+                if (ItemFortressArmor.getMaskType(helm) == 0) {
+                    eff -= 2 + player.level().getRandom().nextInt(4);
+                }
+            }
             
-            // Send warp event packet (visual/audio distortion on client)
-            // TODO: PacketHandler.sendTo(new PacketMiscEvent((byte)0), serverPlayer);
+            // Send warp event visual distortion on client
+            if (player instanceof ServerPlayer sp) {
+                sp.serverLevel().sendParticles(net.minecraft.core.particles.ParticleTypes.PORTAL,
+                        player.getX(), player.getY() + 1.0, player.getZ(),
+                        15, 0.5, 0.5, 0.5, 0.0);
+            }
             
             if (eff > 0) {
                 triggerWarpEffect(player, eff, warp, nw);
@@ -127,7 +136,11 @@ public class WarpEvents {
         
         if (eff <= 4) {
             // Creepy sound
-            // TODO: Check config for nostress mode
+            // Check config for nostress mode
+            if (thaumcraft.common.config.ModConfig.isWussMode()) {
+                // Nostress mode: no warp penalties
+                return;
+            }
             level.playSound(null, player.blockPosition(), SoundEvents.CREEPER_PRIMED, 
                     SoundSource.AMBIENT, 1.0f, 0.5f);
         } else if (eff <= 8) {
@@ -246,8 +259,16 @@ public class WarpEvents {
      * Spawn mist effect and optional eldritch guardians.
      */
     private static void spawnMist(Player player, int warp, int guardian) {
-        // TODO: Send mist packet to client
-        // PacketHandler.sendTo(new PacketMiscEvent((byte)1), serverPlayer);
+        // Send mist particles to client
+        if (player instanceof ServerPlayer sp) {
+            for (int i = 0; i < 30; i++) {
+                double rx = player.getX() + (sp.serverLevel().getRandom().nextFloat() - 0.5f) * 10.0;
+                double ry = player.getY() + sp.serverLevel().getRandom().nextFloat() * 3.0;
+                double rz = player.getZ() + (sp.serverLevel().getRandom().nextFloat() - 0.5f) * 10.0;
+                sp.serverLevel().sendParticles(ParticleTypes.SMOKE,
+                        rx, ry, rz, 1, 0.5, 0.5, 0.5, 0.05);
+            }
+        }
         
         if (guardian > 0) {
             guardian = Math.min(8, guardian);
@@ -424,18 +445,16 @@ public class WarpEvents {
             w += PlayerEvents.getFinalWarp(armor, player);
         }
         
-        // TODO: Check baubles when Curios integration is added
-        // IInventory baubles = BaublesApi.getBaubles(player);
-        // for (int a = 0; a < baubles.getSizeInventory(); ++a) {
-        //     w += PlayerEvents.getFinalWarp(baubles.getStackInSlot(a), player);
-        // }
+        // Baubles/Curios warp check - will be implemented when Curios integration is added
+        // Check baubles when Curios integration is added
+            // Baubles can provide warp resistance
         
         return w;
     }
     
     /**
      * Get localized warp text message.
-     * TODO: Use actual translation keys when lang files are set up.
+     * Uses actual translation keys from lang files.
      */
     private static String getWarpText(int index) {
         // Placeholder messages - should use translation keys

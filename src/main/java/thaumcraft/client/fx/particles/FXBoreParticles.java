@@ -147,7 +147,7 @@ public class FXBoreParticles extends ThaumcraftParticle {
                 }
             } catch (Exception ignored) {}
         } else if (this.itemStack != null) {
-            // TODO(26.2): item particle tint moved to ItemStackRenderState.LayerRenderState.tintLayers()
+            // Item particle tint
             // (private, no public accessor); item particles are left untinted like vanilla BreakingItemParticle.
         }
         return this;

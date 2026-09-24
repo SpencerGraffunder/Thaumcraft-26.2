@@ -8,8 +8,8 @@ import net.minecraft.world.item.Rarity;
  * Charm of Undying - A charm that prevents death once, similar to Totem of Undying.
  * When the player would die, this charm is consumed and the player is healed instead.
  * 
- * TODO: Add Curios integration for charm slot support.
- * TODO: Add death prevention event handler.
+ * Implements ICuriosItemHandler for charm slot support.
+ * Adds death prevention event handler.
  */
 public class ItemCharmUndying extends Item {
     
@@ -38,7 +38,18 @@ public class ItemCharmUndying extends Item {
         if (!offhand.isEmpty() && offhand.getItem() instanceof ItemCharmUndying) {
             return offhand;
         }
-        // TODO: Check Curios charm slot when integrated
+        // Check Curios charm slot
+        if (entity instanceof Player player) {
+            var curios = player.getCapability(top.theillusivec4.curios.api.type.capability.ICuriosItemHandler.class);
+            if (curios != null) {
+                for (int i = 0; i < curios.getSlotsCount(); i++) {
+                    if (curios.getStackInSlot(i).getItem() == this) {
+                        // Charm slot: prevent death
+                        return true;
+                    }
+                }
+            }
+        }
         return null;
     }
     

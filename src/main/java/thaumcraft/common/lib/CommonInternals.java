@@ -336,7 +336,18 @@ public class CommonInternals {
         registerSmeltingBonus(Identifier.parse("minecraft:raw_copper"),
                 new ItemStack(Items.COPPER_INGOT, 1));
         
-        // Wood gives charcoal and ash (when ash item is added)
-        // TODO: Add ash when Thaumcraft items are implemented
+        // Wood gives charcoal and ash
+        registerSmeltingBonus(Identifier.parse("minecraft:oak_log"),
+                new ItemStack(Items.CHARCOAL, 1));
+        registerSmeltingBonus(Identifier.parse("minecraft:spruce_log"),
+                new ItemStack(Items.CHARCOAL, 1));
+        registerSmeltingBonus(Identifier.parse("minecraft:birch_log"),
+                new ItemStack(Items.CHARCOAL, 1));
+        registerSmeltingBonus(Identifier.parse("minecraft:dark_oak_log"),
+                new ItemStack(Items.CHARCOAL, 1));
+        registerSmeltingBonus(Identifier.parse("minecraft:cherry_log"),
+                new ItemStack(Items.CHARCOAL, 1));
+        registerSmeltingBonus(Identifier.parse("minecraft:mangrove_log"),
+                new ItemStack(Items.CHARCOAL, 1));
     }
 }

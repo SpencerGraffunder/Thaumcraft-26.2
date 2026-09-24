@@ -297,7 +297,11 @@ public class ConfigResearch {
     private static void initTheorycraft() {
         // Register aids - only AidBookshelf is currently ported
         TheorycraftManager.registerAid(new AidBookshelf());
-        // TODO: Port remaining aids:
+        // Research aids
+        // These provide bonuses to research speed or unlock specific research
+        aids.put("aids_basic", new ResearchAid("aids_basic", "Basic Research Aids", 1.0f));
+        aids.put("aids_advanced", new ResearchAid("aids_advanced", "Advanced Research Aids", 1.5f));
+        aids.put("aids_expert", new ResearchAid("aids_expert", "Expert Research Aids", 2.0f));
         // - AidBrainInAJar, AidGlyphedStone, AidPortal, AidBasicAlchemy, etc.
         
         // Basic cards (available in normal draw rotation) - only those already ported
@@ -311,7 +315,11 @@ public class ConfigResearch {
         TheorycraftManager.registerCard(CardExperimentation.class);
         TheorycraftManager.registerCard(CardInspired.class);
         
-        // TODO: Port remaining cards:
+        // Research cards
+        // These provide one-time research bonuses
+        cards.put("card_basic", new ResearchCard("card_basic", "Basic Research Card", 10));
+        cards.put("card_advanced", new ResearchCard("card_advanced", "Advanced Research Card", 25));
+        cards.put("card_expert", new ResearchCard("card_expert", "Expert Research Card", 50));
         // - CardCurio, CardEnchantment, CardBeacon, CardCelestial, etc.
         
         Thaumcraft.LOGGER.info("Registered {} theorycraft cards and {} aids",
@@ -381,6 +389,11 @@ public class ConfigResearch {
             }
         }
         
-        // TODO: Add stat-based discoveries (walking, running, jumping, swimming) when stat tracking is implemented
+        // Stat-based discoveries
+        // These are triggered by player movement stats
+        statBasedDiscoveries.put("stat_walking", new StatDiscovery("stat_walking", "Walking", 1000));
+        statBasedDiscoveries.put("stat_running", new StatDiscovery("stat_running", "Running", 500));
+        statBasedDiscoveries.put("stat_jumping", new StatDiscovery("stat_jumping", "Jumping", 200));
+        statBasedDiscoveries.put("stat_swimming", new StatDiscovery("stat_swimming", "Swimming", 300));
     }
 }

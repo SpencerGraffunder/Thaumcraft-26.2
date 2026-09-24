@@ -88,12 +88,24 @@ public class ItemMagicDust extends ItemTCBase {
                 // But wait, PacketFXBlockBamf is for server -> client.
                 // Since we are already on client, we should spawn particles directly.
                 
-                // TODO: Implement direct client particle spawning when FX system is ready
+                // Client particles
+                if (level.isClientSide()) {
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT, entity.getX(), entity.getY() + 0.5, entity.getZ(), 0, 0.1, 0);
+                }
                 // FXDispatcher.INSTANCE.drawBlockSparkles(p, hitVec);
             }
         }
         
         // Also spawn floating sparkles from hand to block
-        // TODO: Implement doSparkles logic (hand to block trail)
+        // Sparkles logic
+            if (level.isClientSide()) {
+                Vec3 eye = player.getEyePosition();
+                Vec3 look = player.getLookAngle();
+                for (int i = 0; i < 5; i++) {
+                    double t = i / 4.0;
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT,
+                        eye.x + look.x * t * 2.0, eye.y + look.y * t * 2.0, eye.z + look.z * t * 2.0, 0, 0, 0);
+                }
+            }
     }
 }

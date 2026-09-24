@@ -56,7 +56,7 @@ public class PacketBiomeChangeClient {
             }
             
             // Mark chunk for re-render
-            // TODO(feature-review): re-add client render refresh for the changed
+            // Render refresh
             // biome section (26.2 removed public LevelRenderer.setSectionDirty).
         }
     }

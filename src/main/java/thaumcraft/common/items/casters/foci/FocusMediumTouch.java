@@ -1,5 +1,6 @@
 package thaumcraft.common.items.casters.foci;
 
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -174,7 +175,10 @@ public class FocusMediumTouch extends FocusMediumRoot {
     @Override
     public boolean execute(Trajectory trajectory) {
         // Touch medium doesn't need additional execution - targets are supplied directly
-        // TODO: Send particle effect packets
+        if (getPackage() != null && getPackage().world != null && !getPackage().world.isClientSide()) {
+            Vec3 hitPos = trajectory.target;
+            getPackage().world.sendParticles(ParticleTypes.ENCHANT, hitPos.x, hitPos.y, hitPos.z, 5, 0.2, 0.2, 0.2, 0.03);
+        }
         return true;
     }
 }

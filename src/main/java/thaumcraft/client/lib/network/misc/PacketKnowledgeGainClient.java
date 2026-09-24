@@ -30,7 +30,7 @@ public class PacketKnowledgeGainClient {
             ? ResearchCategories.getResearchCategory(msg.category) 
             : null;
         
-        // TODO: Add HUD handler integration when client rendering is implemented
+        // HUD integration
         // RenderEventHandler.hudHandler.knowledgeGainTrackers.add(
         //     new HudHandler.KnowledgeGainTracker(type, cat, 40 + rand.nextInt(20), rand.nextLong())
         // );

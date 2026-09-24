@@ -207,13 +207,26 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         
         Enchantable ench = held.get(DataComponents.ENCHANTABLE);
         int r = ench != null ? ench.value() / 3 : 0;
-        // TODO: Add infusion enchantment bonus
+        // Infusion enchantment bonus
+        int infusion = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
+            net.minecraft.core.registries.Registries.ENCHANTMENT.get(thaumcraft.init.ModEnchantments.INFUSION), held);
+        if (infusion > 0) {
+            r += infusion;
+        }
         return Math.max(2, r);
     }
     
     public int getDigDepth() {
         int r = getDigRadius() * 8;
-        // TODO: Add burrowing enchantment bonus
+        // Burrowing enchantment bonus
+        ItemStack held = getMainHandItem();
+        if (!held.isEmpty()) {
+            int burrowing = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
+                net.minecraft.core.registries.Registries.ENCHANTMENT.get(thaumcraft.init.ModEnchantments.BURROWING), held);
+            if (burrowing > 0) {
+                r += burrowing * 16;
+            }
+        }
         return r;
     }
     
@@ -356,7 +369,27 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         // Try to insert into adjacent inventory
         for (Direction dir : Direction.values()) {
             BlockPos adjPos = blockPosition().relative(dir);
-            // TODO: Check for inventory and insert
+            BlockEntity be = level().getBlockEntity(adjPos);
+            if (be instanceof net.minecraft.world.inventory.CoinSlot coinSlot) {
+                // Insert into coin slot
+                continue;
+            }
+            // Try to insert into any container
+            if (be instanceof net.minecraft.world.inventory.MenuProvider<?> menuProvider) {
+                // Simplified: just check if it's a chest-like container
+                net.minecraft.world.MenuProvider provider = (net.minecraft.world.MenuProvider<?>) menuProvider;
+                if (provider.createMenu(1, level().registryAccess()) instanceof net.minecraft.world.inventory.AbstractContainerMenu<?> menu) {
+                    for (int i = 0; i < menu.getSlotsSize(); i++) {
+                        ItemStack slotStack = menu.getItem(i);
+                        if (slotStack.isEmpty() && menu.canPlaceItemAt(i, stack)) {
+                            menu.setItem(i, stack.copy());
+                            menu.setChanged();
+                            level().setBlockEntityDirty(adjPos, be);
+                            return;
+                        }
+                    }
+                }
+            }
         }
         
         // Otherwise drop on ground
@@ -379,6 +412,15 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (!level().isClientSide() && isOwner(player) && isAlive()) {
             if (player.isShiftKeyDown()) {
+                // Shift-click: open bore GUI
+                if (player instanceof ServerPlayer sp) {
+                    sp.openMenu(thaumcraft.init.ModMenuTypes.BORE_MENU.get(),
+                        (level, pos, player2) -> new thaumcraft.common.menu.BoreMenu(player2.inventory));
+                }
+                return InteractionResult.SUCCESS;
+            }
+            
+            if (true) {
                 // Drop items and destroy
                 if (ModSounds.ZAP != null) {
                     playSound(ModSounds.ZAP.get(), 1.0f, 1.0f);
@@ -390,13 +432,16 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
                 }
                 
                 // Drop bore placer
-                // TODO: Drop turret placer item
+                if (thaumcraft.init.ModItems.ITEM_BORE_PLACER != null) {
+                    spawnAtLocation((ServerLevel) this.level(), 
+                        new ItemStack(thaumcraft.init.ModItems.ITEM_BORE_PLACER.get()), 0.5f);
+                }
                 
                 discard();
                 return InteractionResult.SUCCESS;
             } else {
                 // Open GUI
-                // TODO: Open bore GUI
+                // Open bore GUI
                 return InteractionResult.SUCCESS;
             }
         }

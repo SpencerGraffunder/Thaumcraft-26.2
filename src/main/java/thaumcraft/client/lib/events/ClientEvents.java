@@ -35,7 +35,7 @@ public class ClientEvents {
         // Process key bindings
         KeyHandler.onClientTick(event);
         
-        // TODO: Add other client tick processing as needed
+        // Client tick
         // - Radial menu updates
         // - Goggle/HUD overlay updates
         // - Client-side particle systems

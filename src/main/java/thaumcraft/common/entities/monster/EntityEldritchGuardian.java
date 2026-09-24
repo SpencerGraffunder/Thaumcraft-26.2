@@ -129,7 +129,10 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
                 armLiftR -= 0.05f;
             }
             
-            // TODO: FXDispatcher.INSTANCE.wispFXEG particles
+            // Wisp particles
+            if (!level().isClientSide()) {
+                level().addParticle(net.minecraft.core.particles.ParticleTypes.SOUL, getX(), getY() + 0.5, getZ(), 0, 0.1, 0);
+            }
         }
     }
     
@@ -170,7 +173,8 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
             level().addFreshEntity(orb);
         } else if (hasLineOfSight(target)) {
             // Sonic scream attack - applies wither effect
-            // TODO: Send PacketFXSonic for visual effect
+            // Sonic effect
+            level().playSound(null, blockPosition(), net.minecraft.sounds.SoundEvents.BEACRON_ACTIVATE, net.minecraft.sounds.SoundSource.NEUTRAL, 1.0f, 0.5f);
             try {
                 target.addEffect(new MobEffectInstance(MobEffects.WITHER, 400, 0));
             } catch (Exception ignored) {}
@@ -253,7 +257,13 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
         
         spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData);
         
-        // TODO: In eldritch dimension, add absorption hearts
+        // In eldritch dimension, add absorption hearts
+            if (level().dimension().location().getNamespace().equals("thaumcraft") && level().dimension().location().getPath().equals("eldritch")) {
+                this.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).addTransientModifier(
+                    net.minecraft.world.entity.ai.attributes.AttributeModifier.create(
+                        java.util.UUID.randomUUID(), "absorption", 10.0f,
+                        net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
+            }
         // if (level.dimensionType() == ModDimensions.ELDRITCH) {
         //     int bonus = (int) getMaxHealth() / 2;
         //     setAbsorptionAmount(getAbsorptionAmount() + bonus);

@@ -33,7 +33,7 @@ import java.text.DecimalFormat;
  * 
  * Ported to the 26.2 NeoForge GuiLayer system (RegisterGuiLayersEvent).
  * NOTE: texture-based rendering was stubbed to plain colored bars for the 26.2
- * GUI render-state rewrite; see TODO below.
+ * GUI render-state rewrite.
  */
 @EventBusSubscriber(modid = Thaumcraft.MODID, value = net.neoforged.api.distmarker.Dist.CLIENT)
 public class HudHandler {
@@ -109,7 +109,12 @@ public class HudHandler {
         int gaugeHeight = 64;
         int gaugeWidth = 8;
         
-        // TODO(26.2): restore textured HUD frame rendering via RenderPipelines.GUI_TEXTURED blit
+        // Textured HUD frame rendering
+        if (thaumcraft.client.ThaumcraftClient.HUD_TEXTURE != null) {
+            int x = guiGraphics.guiLeft();
+            int y = guiGraphics.guiTop();
+            guiGraphics.blit(thaumcraft.client.ThaumcraftClient.HUD_TEXTURE, x, y, 0, 0, 0, 128, 16, 256, 256);
+        }
         
         // Draw vis bar (purple)
         if (visNorm > 0) {
@@ -156,7 +161,12 @@ public class HudHandler {
         float maxVis = currentAura != null ? currentAura.getBase() : 100;
         float currentVis = currentAura != null ? currentAura.getVis() : 50;
         
-        // TODO(26.2): restore dial/focus rendering via the new GUI render-state API
+        // Dial/focus rendering
+        if (thaumcraft.client.ThaumcraftClient.DIAL_TEXTURE != null) {
+            int x = guiGraphics.guiLeft() + 10;
+            int y = guiGraphics.guiTop() + 10;
+            guiGraphics.blit(thaumcraft.client.ThaumcraftClient.DIAL_TEXTURE, x, y, 0, 0, 0, 64, 64, 256, 256);
+        }
         
         // Draw vis gauge
         int gaugeHeight = 30;

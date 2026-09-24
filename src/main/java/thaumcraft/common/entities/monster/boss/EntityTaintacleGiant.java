@@ -170,7 +170,8 @@ public class EntityTaintacleGiant extends EntityTaintacle implements ITaintedMob
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
             EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnData) {
         
-        // TODO: EntityUtils.makeChampion when implemented
+        // Apply champion modifiers
+        thaumcraft.common.entities.monster.mods.ChampionManager.applyModifiers(this, level(), "TAINTACLE_GIANT");
         this.bossEvent.setName(getDisplayName());
         return spawnData;
     }

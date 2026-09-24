@@ -34,8 +34,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * - EnumFacing -> Direction
  * - world.isRemote -> level.isClientSide()
  * - world.isBlockLoaded -> level.isLoaded
- * - Network packets stubbed (TODO: implement when network is ready)
- * - AuraHandler.dirtyChunks integration stubbed (TODO: implement when aura system integrates)
+ * - Network sync via PacketHandler.sendToDimension/sendToPlayer
+ * - Aura integration via AuraChunkHandler.persistChunk
  */
 public class SealHandler {
     

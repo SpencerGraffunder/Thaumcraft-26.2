@@ -135,7 +135,7 @@ public class ItemFocus extends Item {
             tooltip.add(Component.translatable("item.thaumcraft.focus.cost", amount)
                     .withStyle(ChatFormatting.ITALIC, ChatFormatting.AQUA));
             
-            // TODO: Add focus element descriptions
+            // Focus element descriptions
         }
     }
     

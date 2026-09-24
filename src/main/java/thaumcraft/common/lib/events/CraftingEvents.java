@@ -46,11 +46,15 @@ public class CraftingEvents {
         ItemStack crafted = event.getCrafting();
         if (crafted.isEmpty()) return;
         
-        // Apply warp for warped items
-        // TODO: Add config option for wuss mode
+        // Apply warp for warped items (unless wuss mode is enabled)
         int warp = ThaumcraftApi.getWarp(crafted);
         if (warp > 0 && !player.level().isClientSide()) {
-            ThaumcraftApi.internalMethods.addWarpToPlayer(player, warp, IPlayerWarp.EnumWarpType.NORMAL);
+            if (thaumcraft.common.config.ModConfig.isWussMode()) {
+                warp = 0; // Wuss mode: no warp from crafting
+            }
+            if (warp > 0) {
+                ThaumcraftApi.internalMethods.addWarpToPlayer(player, warp, IPlayerWarp.EnumWarpType.NORMAL);
+            }
         }
         
         // Special handling for labels crafted from phials

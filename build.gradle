@@ -90,6 +90,34 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.addAll(['-Xmaxerrs', '10000', '-Xmaxwarns', '10000'])
 }
 
+// Fix decompiler artifacts after patch step: remove @Override on methods that don't override base class.
+project.afterEvaluate {
+    def patchTask = tasks.findByName('neoFormPatch')
+    def recompileTask = tasks.findByName('neoFormRecompile')
+    if (patchTask != null && recompileTask != null) {
+        def fixTask = tasks.register('fixNeoFormArtifacts') {
+            mustRunAfter(tasks.named('neoFormTransformSource'))
+            doLast {
+                def base = new File(project.layout.buildDirectory.get().asFile, 'neoForm/neoFormJoined26.2-2/steps/transformSource/transformed')
+                if (!base.exists()) {
+                    logger.warn("fixNeoFormArtifacts: dir not found")
+                    return
+                }
+                // Run Python script to fix artifacts
+                def script = project.file('scripts/fix_neoform_artifacts.py')
+                if (script.exists()) {
+                    logger.info("fixNeoFormArtifacts: running ${script.absolutePath}")
+                    def proc = ["python3", script.absolutePath, base.absolutePath].execute()
+                    proc.waitFor()
+                    def exitCode = proc.exitValue()
+                    logger.info("fixNeoFormArtifacts: exit=${exitCode}")
+                }
+            }
+        }
+        recompileTask.dependsOn(fixTask)
+    }
+}
+
 idea {
     module {
         downloadSources = true

@@ -1,6 +1,7 @@
 package thaumcraft.common.items.casters.foci;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -76,24 +77,32 @@ public class FocusEffectExchange extends FocusEffect {
             return false;
         }
         
-        // TODO: Get picked block from caster gauntlet
-        // ItemStack casterStack = player.getMainHandItem();
-        // if (casterStack.getItem() instanceof ItemCaster caster) {
-        //     ItemStack pickedBlock = caster.getPickedBlock(casterStack);
-        //     ...
-        // }
+        // Get picked block from caster gauntlet
+        ItemStack pickedBlock = ItemStack.EMPTY;
+        ItemStack casterStack = player.getMainHandItem();
+        if (casterStack.getItem() instanceof thaumcraft.common.items.casters.ItemCaster caster) {
+            pickedBlock = caster.getPickedBlock(casterStack);
+        }
         
-        // For now, just break the block with enchants as placeholder
-        // Full implementation needs ItemCaster.getPickedBlock() and block swapper system
         boolean silk = getSettingValue("silk") > 0;
         int fortune = getSettingValue("fortune");
         
         // Drop the original block with enchantments
         dropBlockWithEnchants(player, (ServerLevel) world, pos, oldState, silk, fortune);
         
-        // TODO: Place the picked block
-        // For now, just leave it empty (placeholder)
-        world.removeBlock(pos, false);
+        // Place the picked block if we have one
+        if (!pickedBlock.isEmpty()) {
+            if (pickedBlock.getItem() instanceof net.minecraft.world.item.BlockItem blockItem) {
+                world.setBlock(pos, blockItem.getBlock().defaultBlockState(), 3);
+                player.getCooldowns().addCooldown(pickedBlock.getItem(), 20);
+            } else {
+                // Not a block item, just drop it
+                world.drop(player, pos, pickedBlock);
+            }
+            pickedBlock.shrink(1);
+        } else {
+            world.removeBlock(pos, false);
+        }
         
         return true;
     }
@@ -160,9 +169,9 @@ public class FocusEffectExchange extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // TODO: Implement particle effects
-        // Original used exchange/swap particles
-        // For now, this is a placeholder - will need client-side particle system
+        // Exchange/swap particle trail
+        level.addParticle(ParticleTypes.ENCHANT, posX, posY, posZ, 0, 0.05, 0);
+        level.addParticle(ParticleTypes.WITCH, posX, posY, posZ, 0, -0.03, 0);
     }
 
     @Override

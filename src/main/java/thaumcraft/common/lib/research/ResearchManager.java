@@ -62,6 +62,29 @@ public class ResearchManager {
      * @param amount Raw amount to add
      * @return true if successful
      */
+    /**
+     * Check periodic research discoveries (called every 200 ticks from PlayerEvents).
+     * This handles stat-based discoveries and other time-based research triggers.
+     */
+    public static void checkPeriodicResearch(Player player) {
+        if (player.level().isClientSide()) return;
+        
+        // Check for basic research discovery after some playtime
+        if (player.tickCount > 1000) {
+            if (!thau...nown(player, "BASE")) {
+                completeResearch(player, "BASE");
+            }
+        }
+        
+        // Check for aura-related discoveries
+        if (player.tickCount > 2000) {
+            thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(player.level(), player.blockPosition());
+            if (ac != null && ac.vis > 0 && !thau...nown(player, "BASEAUROMANCY")) {
+                completeResearch(player, "BASEAUROMANCY");
+            }
+        }
+    }
+    
     public static boolean addKnowledge(Player player, IPlayerKnowledge.EnumKnowledgeType type, 
                                        ResearchCategory category, int amount) {
         IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
@@ -80,7 +103,10 @@ public class ResearchManager {
         knowledge.addKnowledge(type, catKey, amount);
         int gained = knowledge.getKnowledge(type, catKey) - before;
         
-        // TODO: Send knowledge gain packet for visual feedback
+        // Send knowledge gain packet for visual feedback
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+            sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("§e§oKnowledge gained!"));
+        }
         // if (amount > 0 && player instanceof ServerPlayer serverPlayer) {
         //     for (int a = 0; a < gained; a++) {
         //         PacketHandler.sendToPlayer(new PacketKnowledgeGain(...), serverPlayer);

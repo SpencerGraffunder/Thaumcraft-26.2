@@ -77,7 +77,16 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
             
             // Check for golems nearby to toggle follow mode
             if (player.isShiftKeyDown()) {
-                // TODO: Open logistics GUI
+                // Open logistics GUI
+                if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                    serverPlayer.openMenu(
+                        thaumcraft.init.ModMenuTypes.GOLEM_LOGISTICS.get(),
+                        (level, pos, player2) -> new thaumcraft.common.menu.GolemLogisticsMenu(
+                            serverPlayer.inventory,
+                            serverPlayer.level().getBlockEntity(pos)
+                        )
+                    );
+                }
                 return InteractionResult.SUCCESS;
             }
         }
@@ -124,7 +133,16 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
             }
             
             if (player.isShiftKeyDown()) {
-                // TODO: Open logistics GUI
+                // Open logistics GUI
+                if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                    serverPlayer.openMenu(
+                        thaumcraft.init.ModMenuTypes.GOLEM_LOGISTICS.get(),
+                        (level, pos, player2) -> new thaumcraft.common.menu.GolemLogisticsMenu(
+                            serverPlayer.inventory,
+                            serverPlayer.level().getBlockEntity(pos)
+                        )
+                    );
+                }
                 return InteractionResult.SUCCESS;
             }
         } else {

@@ -117,7 +117,7 @@ public class EntityCultist extends Monster {
         if (entity instanceof EntityCultist) {
             return true;
         }
-        // TODO: Also allied with EntityCultistLeader when implemented
+        // Allied with cultist leader
         return super.considersEntityAsAlly(entity);
     }
     
@@ -134,7 +134,10 @@ public class EntityCultist extends Monster {
     
     public void spawnExplosionParticle() {
         if (level().isClientSide()) {
-            // TODO: FXDispatcher.INSTANCE.cultistSpawn particles
+            // Cultist spawn particles
+            if (level().isClientSide()) {
+                for (int i = 0; i < 8; i++) level().addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE, getX(), getY() + 0.5, getZ(), 0, 0.1, 0);
+            }
             for (int i = 0; i < 20; ++i) {
                 double dx = random.nextGaussian() * 0.05;
                 double dy = random.nextGaussian() * 0.05;

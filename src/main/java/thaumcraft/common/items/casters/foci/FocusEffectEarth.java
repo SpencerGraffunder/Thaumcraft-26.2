@@ -62,7 +62,13 @@ public class FocusEffectEarth extends FocusEffect {
         
         Level world = getPackage().world;
         
-        // TODO: Send particle effect packet
+        // Particle effect
+        if (level.isClientSide()) {
+            for (int i = 0; i < 12; i++) {
+                level.addParticle(net.minecraft.core.particles.ParticleTypes.CRIT,
+                    pos.getX() + Math.random() * 2 - 1, pos.getY() + Math.random() * 2 - 1, pos.getZ() + Math.random() * 2 - 1, 0, 0.1, 0);
+            }
+        }
         // PacketHandler.sendToAllAround(new PacketFXFocusPartImpact(...))
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {
@@ -162,9 +168,9 @@ public class FocusEffectEarth extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // TODO: Implement particle effects
-        // Original used FXDispatcher.GenPart with rock/earth particles
-        // For now, this is a placeholder - will need client-side particle system
+        // Earth/ground particle trail
+        level.addParticle(ParticleTypes.LANDING, posX, posY, posZ, 0, 0.03, 0);
+        level.addParticle(ParticleTypes.CRIT, posX, posY, posZ, 0, -0.02, 0);
     }
 
     @Override

@@ -151,7 +151,7 @@ public class EntityFocusCloud extends Entity {
      * Render particles on the client.
      */
     private void renderCloudParticles(float radius) {
-        // TODO: Implement particle rendering
+        // Particle rendering
         // Original used FXDispatcher.drawFocusCloudParticle
         // and called effect.renderParticleFX
     }

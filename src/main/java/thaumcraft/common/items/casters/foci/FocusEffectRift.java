@@ -2,6 +2,7 @@ package thaumcraft.common.items.casters.foci;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -57,11 +58,12 @@ public class FocusEffectRift extends FocusEffect {
         
         Level world = getPackage().world;
         
-        // TODO: Check if in Outer Lands dimension and fail if so
-        // if (world.dimension() == ModDimensions.OUTER_LANDS) {
-        //     world.playSound(null, blockHit.getBlockPos(), SoundsTC.wandfail, SoundSource.PLAYERS, 1.0f, 1.0f);
-        //     return false;
-        // }
+        // Check if in Outer Lands dimension and fail if so
+        if (world.dimension().location().equals(
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("thaumcraft", "outer_lands"))) {
+            world.playSound(null, blockHit.getBlockPos(), SoundEvents.END_PORTAL_FRAME_PLACE, SoundSource.PLAYERS, 1.0f, 0.5f);
+            return false;
+        }
         
         float maxDist = getSettingValue("depth") * finalPower;
         int duration = getSettingValue("duration"); // seconds; createHole multiplies by 20 to get ticks (1.12: dur = 20 * setting)
@@ -133,15 +135,23 @@ public class FocusEffectRift extends FocusEffect {
     
     /**
      * Check if a block is blacklisted from portable hole effects.
+     * Uses the "thaumcraft:hole_blacklist" tag plus hardcoded critical blocks.
      */
     private boolean isPortableHoleBlacklisted(BlockState state) {
-        // TODO: Implement proper blacklist check from config/tags
-        // For now, just check for obsidian and end portal frame
-        return state.is(Blocks.OBSIDIAN) || 
-               state.is(Blocks.END_PORTAL_FRAME) ||
-               state.is(Blocks.END_PORTAL) ||
-               state.is(Blocks.NETHER_PORTAL);
-    }
+        // Hardcoded critical blocks that should never be affected
+        if (state.is(Blocks.OBSIDIAN) || 
+            state.is(Blocks.END_PORTAL_FRAME) ||
+            state.is(Blocks.END_PORTAL) ||
+            state.is(Blocks.NETHER_PORTAL) ||
+            state.is(Blocks.BEDROCK)) {
+            return true;
+        }
+        // Check the tag for additional blacklisted blocks
+        return state.is(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()),
+                net.minecraft.tags.TagKey.create(
+                    net.minecraft.core.registries.Registries.BLOCK,
+                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("thaumcraft", "hole_blacklist")));    }
+
 
     @Override
     public NodeSetting[] createSettings() {
@@ -159,9 +169,9 @@ public class FocusEffectRift extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // TODO: Implement particle effects
-        // Original used blue/purple void particles
-        // For now, this is a placeholder - will need client-side particle system
+        // Rift/void particle trail
+        level.addParticle(ParticleTypes.PORTAL, posX, posY, posZ, 0, 0.05, 0);
+        level.addParticle(ParticleTypes.SOUL, posX, posY, posZ, 0, 0.03, 0);
     }
 
     @Override

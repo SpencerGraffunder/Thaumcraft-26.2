@@ -91,7 +91,14 @@ public class BlockResearchTable extends Block implements EntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        // TODO: Initialize research table data
+        // Initialize research table data
+        if (!level.isClientSide()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof TileResearchTable tile) {
+                tile.setPlaced(placer != null ? placer.getUUID() : null);
+                level.setBlockEntityDirty(pos, blockEntity);
+            }
+        }
     }
 
     @Override

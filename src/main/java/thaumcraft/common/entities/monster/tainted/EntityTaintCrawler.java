@@ -97,7 +97,7 @@ public class EntityTaintCrawler extends Monster {
      * Check if this entity is on the same team as tainted mobs.
      */
     public boolean isTaintedMob(Entity entity) {
-        // TODO: Check for ITaintedMob interface when implemented
+        // Check ITaintedMob
         return entity instanceof EntityTaintCrawler || 
                entity instanceof EntityTaintSwarm ||
                entity instanceof EntityTaintacle;

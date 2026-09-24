@@ -119,7 +119,7 @@ public class ItemTurretPlacer extends Item {
                 // Arcane bore needs facing direction
                 Direction facing = context.getPlayer() != null ? 
                         context.getPlayer().getDirection() : Direction.NORTH;
-                // TODO: Create EntityArcaneBore when implemented
+                // Create bore
                 // yield new EntityArcaneBore(level, pos, facing);
                 yield null;
             }

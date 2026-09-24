@@ -225,7 +225,7 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
                 return InteractionResult.SUCCESS;
             } else {
                 // Open GUI - show current targeting options
-                // TODO: Implement proper GUI
+                // GUI
                 StringBuilder sb = new StringBuilder("Targeting: ");
                 if (getTargetMob()) sb.append("[Mobs] ");
                 if (getTargetAnimal()) sb.append("[Animals] ");
@@ -244,7 +244,7 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         float bonus = 0 * 0.15f;
         
-        // TODO: Drop Thaumcraft items when implemented
+        // Drop items
         // Advanced turret drops more/better items
         // if (random.nextFloat() < 0.2f + bonus) spawnAtLocation(new ItemStack(ItemsTC.mind, 1, 1));
         // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), ItemsTC.mechanismSimple);

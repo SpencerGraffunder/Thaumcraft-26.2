@@ -130,9 +130,11 @@ public class EntityPech extends Monster implements RangedAttackMob {
         aiMeleeAttack = new MeleeAttackGoal(this, 0.6, false);
         
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        // AI goal 1 is trading (TODO: implement trading AI)
+        // AI goal 1 is trading
+        this.goalSelector.addGoal(1, new thaumcraft.common.entities.monster.pech.PechTradingGoal(this));
         // AI goal 2 is combat (set by setCombatTask)
-        // AI goal 3 is item pickup (TODO: implement item pickup AI)
+        // AI goal 3 is item pickup
+        this.goalSelector.addGoal(3, new thaumcraft.common.entities.monster.pech.PechItemPickupGoal(this));
         this.goalSelector.addGoal(5, new OpenDoorGoal(this, true));
         this.goalSelector.addGoal(6, new MoveTowardsRestrictionGoal(this, 0.5));
         this.goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 0.6));
@@ -287,7 +289,8 @@ public class EntityPech extends Monster implements RangedAttackMob {
             level().addFreshEntity(arrow);
         } else if (getPechType() == TYPE_MAGE) {
             // Magic attack
-            // TODO: Implement FocusEngine.castFocusPackage when focus system is complete
+            // Cast focus package
+            thaumcraft.api.casters.FocusEngine.castFocusPackage(this, focusStack, level());
             // For now, fire a simple projectile
             swing(getUsedItemHand());
             // Placeholder: just do direct damage for now
@@ -582,8 +585,15 @@ public class EntityPech extends Monster implements RangedAttackMob {
         }
         
         // Check if it has high DESIRE aspect
-        // TODO: Use ThaumcraftCraftingManager.getObjectTags when aspect system is complete
-        // For now, accept most non-common items
+        thaumcraft.api.aspects.AspectList aspects = thaumcraft.api.aspects.AspectHelper.getObjectAspects(item);
+        if (aspects != null && aspects.size() > 0) {
+            int desire = aspects.getAmount(thaumcraft.api.aspects.Aspect.DESIRE);
+            if (desire >= 2) {
+                return true;
+            }
+        }
+        
+        // Accept most non-common items
         return !item.getItem().builtInRegistryHolder().is(net.minecraft.tags.ItemTags.DIRT) &&
                item.getRarity() != net.minecraft.world.item.Rarity.COMMON;
     }
@@ -619,11 +629,28 @@ public class EntityPech extends Monster implements RangedAttackMob {
     
     static {
         // Initialize valued items
-        // TODO: Populate with proper valued items list
         valuedItems.put(net.minecraft.world.item.Items.GOLD_INGOT, 4);
         valuedItems.put(net.minecraft.world.item.Items.DIAMOND, 8);
         valuedItems.put(net.minecraft.world.item.Items.EMERALD, 6);
         valuedItems.put(net.minecraft.world.item.Items.LAPIS_LAZULI, 2);
         valuedItems.put(net.minecraft.world.item.Items.AMETHYST_SHARD, 3);
+        valuedItems.put(net.minecraft.world.item.Items.EMERALD, 6);
+        valuedItems.put(net.minecraft.world.item.Items.NETHERITE_INGOT, 16);
+        valuedItems.put(net.minecraft.world.item.Items.NETHER_STAR, 24);
+        valuedItems.put(net.minecraft.world.item.Items.ENDER_PEARL, 5);
+        valuedItems.put(net.minecraft.world.item.Items.EYE_OF_ENDER, 10);
+        valuedItems.put(net.minecraft.world.item.Items.BEACRON, 20);
+        valuedItems.put(net.minecraft.world.item.Items.NAUTILUS_SHELL, 6);
+        valuedItems.put(net.minecraft.world.item.Items.HEART_OF_THE_SEA, 12);
+        valuedItems.put(net.minecraft.world.item.Items.SHULKER_SHELL, 10);
+        valuedItems.put(net.minecraft.world.item.Items.TOTEM_OF_UNDYING, 24);
+        valuedItems.put(net.minecraft.world.item.Items.ENCHANTED_GOLDEN_APPLE, 16);
+        // Thaumcraft items
+        if (thaumcraft.init.ModItems.THAUMIUM_INGOT != null) {
+            valuedItems.put(thaumcraft.init.ModItems.THAUMIUM_INGOT.get(), 8);
+        }
+        if (thaumcraft.init.ModItems.THAUMIUM_DUST != null) {
+            valuedItems.put(thaumcraft.init.ModItems.THAUMIUM_DUST.get(), 4);
+        }
     }
 }

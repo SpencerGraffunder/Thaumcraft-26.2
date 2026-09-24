@@ -3,6 +3,7 @@ package thaumcraft.common.items.casters.foci;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -143,11 +144,22 @@ public class FocusMediumPlan extends FocusMedium {
         List<BlockPos> result = new ArrayList<>();
         checked.clear();
         
-        // TODO: Get area size from caster item (CasterManager.getAreaX/Y/Z)
-        // For now, use default 1x1x1 area
-        int sizeX = 1;
-        int sizeY = 1;
-        int sizeZ = 1;
+        // Get area size from caster item
+        ItemStack casterStack = ItemStack.EMPTY;
+        Player player2 = getCasterPlayer();
+        if (player2 != null) {
+            casterStack = player2.getMainHandItem();
+        }
+        
+        int sizeX = 1, sizeY = 1, sizeZ = 1;
+        if (!casterStack.isEmpty() && casterStack.getItem() instanceof thaumcraft.common.items.casters.ItemCaster) {
+            sizeX = thaumcraft.common.items.casters.CasterManager.getAreaX(casterStack);
+            sizeY = thaumcraft.common.items.casters.CasterManager.getAreaY(casterStack);
+            sizeZ = thaumcraft.common.items.casters.CasterManager.getAreaZ(casterStack);
+            if (sizeX < 0) sizeX = 1;
+            if (sizeY < 0) sizeY = 1;
+            if (sizeZ < 0) sizeZ = 1;
+        }
         
         if (getSettingValue("method") == METHOD_FULL) {
             checkNeighboursFull(world, hitPos, hitPos, side, sizeX, sizeY, sizeZ, result);

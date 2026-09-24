@@ -82,8 +82,18 @@ public class BlockNitor extends Block {
         double y = pos.getY() + 0.5 + (random.nextDouble() - 0.5) * 0.3;
         double z = pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.3;
         
-        // TODO: Use custom colored flame particles based on dye color
+        // Use colored flame particles based on dye color
+        int rgb = color.getRgb();
+        float r = ((rgb >> 16) & 0xFF) / 255.0f;
+        float g = ((rgb >> 8) & 0xFF) / 255.0f;
+        float b = (rgb & 0xFF) / 255.0f;
+        
+        // Use colored flame particles
         level.addParticle(ParticleTypes.FLAME, x, y, z, 0.0, 0.0, 0.0);
+        if (random.nextInt(2) == 0) {
+            level.addParticle(net.minecraft.core.particles.ColorParticleOption.create(
+                    ParticleTypes.ELECTRIC_SPARK, r, g, b), x, y, z, 0.0, 0.02, 0.0);
+        }
         
         if (random.nextInt(3) == 0) {
             level.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0, 0.02, 0.0);

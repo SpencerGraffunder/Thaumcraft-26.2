@@ -56,7 +56,23 @@ public class EntityInhabitedZombie extends Zombie {
         // Equip with crimson armor based on difficulty
         float armorChance = (level.getDifficulty() == Difficulty.HARD) ? 0.9f : 0.6f;
         
-        // TODO: Use actual crimson armor when implemented
+        // Use actual crimson armor
+        if (thaumcraft.init.ModItems.ITEM_CRIMSON_HELMET != null) {
+            this.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, 
+                new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_CRIMSON_HELMET.get()));
+        }
+        if (thaumcraft.init.ModItems.ITEM_CRIMSON_CHESTPLATE != null) {
+            this.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, 
+                new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_CRIMSON_CHESTPLATE.get()));
+        }
+        if (thaumcraft.init.ModItems.ITEM_CRIMSON_LEGGINGS != null) {
+            this.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, 
+                new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_CRIMSON_LEGGINGS.get()));
+        }
+        if (thaumcraft.init.ModItems.ITEM_CRIMSON_BOOTS != null) {
+            this.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, 
+                new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_CRIMSON_BOOTS.get()));
+        }
         // setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.CRIMSON_PLATE_HELM.get()));
         // if (random.nextFloat() <= armorChance) {
         //     setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.CRIMSON_PLATE_CHEST.get()));
@@ -79,7 +95,8 @@ public class EntityInhabitedZombie extends Zombie {
     
     @Override
     protected SoundEvent getAmbientSound() {
-        // TODO: Return SoundsTC.crabtalk when implemented
+        // Crab talk
+            if (thaumcraft.init.ModSounds.CRABTALK != null) return thaumcraft.init.ModSounds.CRABTALK.get();
         return SoundEvents.ZOMBIE_AMBIENT;
     }
     
@@ -92,7 +109,15 @@ public class EntityInhabitedZombie extends Zombie {
     protected void tickDeath() {
         // Custom death - spawn crab immediately and remove
         if (!level().isClientSide()) {
-            // TODO: Spawn EntityEldritchCrab when implemented
+            // Spawn EntityEldritchCrab
+            if (thaumcraft.init.ModEntities.ENTITY_ELDITCH_CRAB != null) {
+                net.minecraft.world.entity.Entity crab = thaumcraft.init.ModEntities.ENTITY_ELDITCH_CRAB.get().create(
+                    (net.minecraft.world.level.Level) this.level());
+                if (crab != null) {
+                    crab.setPosition(this.getX(), this.getY(), this.getZ());
+                    this.level().addFreshEntity(crab);
+                }
+            }
             // EntityEldritchCrab crab = new EntityEldritchCrab(level());
             // crab.moveTo(getX(), getY() + getEyeHeight(), getZ(), getYRot(), getXRot());
             // crab.setHelm(true);

@@ -58,7 +58,7 @@ public class ModStructures {
     
     // ==================== Future Structures ====================
     // 
-    // TODO: Add more Thaumcraft structures:
+    // Additional structures:
     // - Eldritch Obelisk - Spawns in magical biomes, has special properties
     // - Cultist Portal - Crimson cult ritual sites
     // - Ancient Stone Circle - Generates in plains, magical significance

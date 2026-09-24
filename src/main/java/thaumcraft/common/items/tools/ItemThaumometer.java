@@ -14,11 +14,15 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.particles.ParticleTypes;
+import thaumcraft.api.aura.AuraChunk;
+import thaumcraft.api.aura.AuraHandler;
 import thaumcraft.api.research.ScanningManager;
 import thaumcraft.common.items.ItemTC;
 import thaumcraft.init.ModSounds;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
  * Thaumometer - the basic scanning tool of Thaumcraft.
@@ -44,8 +48,17 @@ public class ItemThaumometer extends ItemTC {
                 ModSounds.SCAN.get(), SoundSource.PLAYERS, 0.5f, 1.0f);
 
         if (level.isClientSide()) {
-            // Client-side: spawn particles
-            // TODO: FXDispatcher effects - scanning beam, highlight effects
+            // Client-side: spawn scanning beam particles
+            Vec3 eyePos = player.getEyePosition();
+            Vec3 lookVec = player.getLookAngle();
+            for (int i = 0; i < 5; i++) {
+                double t = i / 4.0;
+                level.addParticle(ParticleTypes.ENCHANT, 
+                    eyePos.x + lookVec.x * t * SCAN_RANGE,
+                    eyePos.y + lookVec.y * t * SCAN_RANGE,
+                    eyePos.z + lookVec.z * t * SCAN_RANGE,
+                    0, 0, 0);
+            }
             return InteractionResult.SUCCESS;
         }
 
@@ -99,22 +112,41 @@ public class ItemThaumometer extends ItemTC {
      * Update aura information for the player.
      */
     private void updateAuraInfo(Level level, Player player) {
-        // TODO: Send aura chunk data to player
-        // AuraChunk ac = AuraHandler.getAuraChunk(level, player.blockPosition());
-        // if (ac != null) {
-        //     PacketHandler.sendTo(new PacketAuraToClient(ac), player);
-        // }
+        // Send aura chunk data to player via chat message (simplified)
+        if (player instanceof ServerPlayer serverPlayer) {
+            AuraChunk ac = AuraHandler.getAuraChunk(level, player.blockPosition());
+            if (ac != null) {
+                int vis = (int) ac.vis;
+                float radius = ac.getRadius();
+                if (vis > 0 || radius > 0) {
+                    serverPlayer.sendSystemMessage(
+                        net.minecraft.network.chat.Component.literal(
+                            String.format("§5§oAura: §7%d vis, §7r=%.1f", vis, radius)));
+                }
+            }
+        }
     }
 
     /**
      * Highlight scannable things on the client.
      */
     private void highlightScannables(Level level, Player player) {
-        // TODO: Use FXDispatcher to highlight targets
-        // Entity target = getTargetEntity(level, player, 16.0);
-        // if (target != null && ScanningManager.isThingStillScannable(player, target)) {
-        //     FXDispatcher.INSTANCE.scanHighlight(target);
-        // }
+        // Highlight scannable targets with particles
+        Entity target = getTargetEntity(level, player, 16.0);
+        if (target != null && ScanningManager.isThingStillScannable(player, target)) {
+            level.addParticle(ParticleTypes.ENCHANT, 
+                target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(),
+                0, 0.1, 0);
+        }
+        
+        // Also highlight blocks
+        BlockHitResult blockHit = getTargetBlock(level, player, 16.0);
+        if (blockHit.getType() == HitResult.Type.BLOCK) {
+            BlockPos pos = blockHit.getBlockPos();
+            level.addParticle(ParticleTypes.ENCHANT, 
+                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                0, 0.1, 0);
+        }
     }
 
     /**

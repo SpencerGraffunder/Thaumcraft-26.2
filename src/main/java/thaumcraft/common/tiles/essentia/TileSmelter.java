@@ -175,7 +175,9 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
                 tile.speedBoost = false;
                 
                 // Check for alumentum (speed boost fuel)
-                // TODO: Check against ItemsTC.alumentum when items are implemented
+                if (fuel.getItem() == thaumcraft.init.ModItems.ALUMENTUM.get()) {
+                    tile.speedBoost = true;
+                }
                 
                 // Consume fuel
                 if (!fuel.isEmpty()) {

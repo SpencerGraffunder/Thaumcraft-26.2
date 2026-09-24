@@ -97,7 +97,7 @@ public class EssentiaHandler {
             IAspectSource as = (IAspectSource) sourceTile;
             if (as.isBlocked()) continue;
             
-            // TODO: Add mirror check when TileMirrorEssentia is ported
+            // Mirror check
             // if (ignoreMirror && sourceTile instanceof TileMirrorEssentia) continue;
             
             if (as.takeFromContainer(aspect, 1)) {

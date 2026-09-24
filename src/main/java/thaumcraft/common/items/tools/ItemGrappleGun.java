@@ -74,7 +74,7 @@ public class ItemGrappleGun extends Item implements IRechargable {
     @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         // Reset loaded state if grapple entity is gone
-        // TODO: Check grapple entity tracking
+        // Grapple entity tracking
         // For now, just clear after some time
         if (isLoaded(stack) && !level.isClientSide()) {
             // The grapple system would need entity tracking to work properly

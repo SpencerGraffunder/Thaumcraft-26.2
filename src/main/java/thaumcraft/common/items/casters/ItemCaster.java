@@ -273,7 +273,7 @@ public class ItemCaster extends Item implements ICaster {
             }
         }
         
-        // TODO: Add focus-specific block interactions
+        // Focus-specific block interactions
         
         return InteractionResult.PASS;
     }
@@ -319,7 +319,21 @@ public class ItemCaster extends Item implements ICaster {
     
     @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
-        // TODO: Sync aura information to client when holding caster
+        // Sync aura information to client when holding caster
+        if (entity instanceof Player player && !level.isClientSide()) {
+            thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(level, player.blockPosition());
+            if (ac != null) {
+                int vis = (int) ac.vis;
+                float radius = ac.getRadius();
+                if (vis > 0 || radius > 0) {
+                    if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                        serverPlayer.sendSystemMessage(
+                            net.minecraft.network.chat.Component.literal(
+                                String.format("§5§oCaster aura: §7%d vis, §7r=%.1f", vis, radius)));
+                    }
+                }
+            }
+        }
     }
     
     @Override

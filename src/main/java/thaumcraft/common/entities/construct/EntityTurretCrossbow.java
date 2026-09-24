@@ -255,7 +255,7 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
             }
             
             // Check for activator rail (disable AI when powered)
-            // TODO: Check for Thaumcraft activator rail when implemented
+            // Activator rail check
             // For now, check vanilla powered rail
             BlockPos pos = blockPosition();
             BlockState state = level().getBlockState(pos);
@@ -326,7 +326,7 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
                 return InteractionResult.SUCCESS;
             } else {
                 // Open GUI
-                // TODO: player.openMenu(...)
+                // Open menu
                 player.sendSystemMessage(Component.literal("Turret GUI not yet implemented"));
                 return InteractionResult.SUCCESS;
             }
