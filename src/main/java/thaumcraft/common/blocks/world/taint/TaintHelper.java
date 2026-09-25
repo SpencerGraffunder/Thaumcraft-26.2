@@ -32,6 +32,10 @@ public class TaintHelper {
     
     // Track taint seeds per dimension
     private static final ConcurrentHashMap<ResourceKey<Level>, ArrayList<BlockPos>> taintSeeds = new ConcurrentHashMap<>();
+
+    // Taint spread tuning (1.12 world-config defaults: rate 100, area 32)
+    public static float taintSpreadRate = 100.0f;
+    public static int taintSpreadArea = 32;
     
     /**
      * Register a taint seed location.
@@ -59,7 +63,7 @@ public class TaintHelper {
      * Check if a position is within range of a taint seed.
      */
     public static boolean isNearTaintSeed(Level level, BlockPos pos) {
-        double area = ModConfig.taintSpreadArea * ModConfig.taintSpreadArea;
+        double area = taintSpreadArea * taintSpreadArea;
         ResourceKey<Level> dim = level.dimension();
         ArrayList<BlockPos> locs = taintSeeds.get(dim);
         
@@ -84,8 +88,8 @@ public class TaintHelper {
      * Check if a position is at the edge of a taint seed's influence.
      */
     public static boolean isAtTaintSeedEdge(Level level, BlockPos pos) {
-        double area = ModConfig.taintSpreadArea * ModConfig.taintSpreadArea;
-        double fringe = ModConfig.taintSpreadArea * 0.8 * (ModConfig.taintSpreadArea * 0.8);
+        double area = taintSpreadArea * taintSpreadArea;
+        double fringe = taintSpreadArea * 0.8 * (taintSpreadArea * 0.8);
         ResourceKey<Level> dim = level.dimension();
         ArrayList<BlockPos> locs = taintSeeds.get(dim);
         
@@ -121,7 +125,7 @@ public class TaintHelper {
         
         // Rate limiting based on flux saturation
         float mod = 0.001f + AuraHandler.getFluxSaturation(level, pos) * 2.0f;
-        if (!ignore && level.getRandom().nextFloat() > ModConfig.taintSpreadRate / 100.0f * mod) {
+        if (!ignore && level.getRandom().nextFloat() > taintSpreadRate / 100.0f * mod) {
             return;
         }
         
@@ -148,7 +152,7 @@ public class TaintHelper {
             return;
         }
         
-        MapColor material = bs.getMapColor(level, target);
+        MapColor material = bs.getMapColor(bs, level, target, MapColor.NONE);
         
         // Check if block can be converted to taint fibre
         if (!block.defaultBlockState().canOcclude() && 
@@ -245,7 +249,7 @@ public class TaintHelper {
              level.getBlockState(target).getBlock() == ModBlocks.TAINT_ROCK.get()) && 
             level.isEmptyBlock(target.above()) && 
             AuraHelper.getFlux(level, target) >= 5.0f && 
-            level.getRandom().nextFloat() < ModConfig.taintSpreadRate / 100.0f * 0.33f && 
+            level.getRandom().nextFloat() < taintSpreadRate / 100.0f * 0.33f && 
             isAtTaintSeedEdge(level, target)) {
             EntityTaintSeed seed = new EntityTaintSeed(level);
             seed.setPos(target.getX() + 0.5, target.above().getY(), target.getZ() + 0.5);
