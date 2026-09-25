@@ -68,18 +68,22 @@ public class ResearchManager {
      */
     public static void checkPeriodicResearch(Player player) {
         if (player.level().isClientSide()) return;
-        
+
+        IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
+        if (knowledge == null) return;
+
         // Check for basic research discovery after some playtime
         if (player.tickCount > 1000) {
-            if (!thau...nown(player, "BASE")) {
+            if (!knowledge.isResearchKnown("BASE")) {
                 completeResearch(player, "BASE");
             }
         }
-        
+
         // Check for aura-related discoveries
         if (player.tickCount > 2000) {
-            thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(player.level(), player.blockPosition());
-            if (ac != null && ac.vis > 0 && !thau...nown(player, "BASEAUROMANCY")) {
+            thaumcraft.common.world.aura.AuraChunk ac = thaumcraft.common.world.aura.AuraHandler.getAuraChunk(
+                    player.level().dimension(), player.blockPosition().getX(), player.blockPosition().getZ());
+            if (ac != null && ac.getVis() > 0 && !knowledge.isResearchKnown("BASEAUROMANCY")) {
                 completeResearch(player, "BASEAUROMANCY");
             }
         }

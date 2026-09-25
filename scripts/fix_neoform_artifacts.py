@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Fix NeoForm decompiler artifacts in the transformed source.
-Uses exact string replacements for reliability.
+Runs on every build after neoFormTransformSource regenerates the sources.
+Uses exact string replacements (and a few regexes) for reliability.
 """
-import os, sys
+import os, re, sys
 
 base = sys.argv[1] if len(sys.argv) > 1 else "."
 fixed_files = 0
@@ -24,25 +25,23 @@ def fix_file(path, filename):
             '    };'
         )
 
-    # --- 2. BlockBehaviour: getMapColor signature ---
+    # --- 2. BlockBehaviour: getMapColor / getPistonPushReaction ---
+    # In 26.2 these are state fields; Block has no such methods.
     if 'BlockBehaviour' in filename:
-        # The decompiler produced getMapColor(BlockGetter, BlockPos) but the method
-        # in the interface takes (BlockState, LevelReader, BlockPos, MapColor)
         content = content.replace(
             'public MapColor getMapColor(BlockGetter level, BlockPos pos) {\n            return getBlock().getMapColor(this.asState(), level, pos, this.mapColor);\n        }',
-            'public MapColor getMapColor(BlockState state, LevelReader level, BlockPos pos, MapColor color) {\n            return getBlock().getMapColor(state, level, pos, color);\n        }'
+            'public MapColor getMapColor(BlockState state, LevelReader level, BlockPos pos, MapColor color) {\n            return this.mapColor;\n        }'
         )
-        # getPistonPushReaction(asState()) - the method takes BlockState
         content = content.replace(
-            'PushReaction reaction = getBlock().getPistonPushReaction(asState());',
-            'PushReaction reaction = getBlock().getPistonPushReaction(this.asState());'
+            'public PushReaction getPistonPushReaction() {\n            PushReaction reaction = getBlock().getPistonPushReaction(asState());\n            if (reaction != null) return reaction;\n            return this.pushReaction;\n        }',
+            'public PushReaction getPistonPushReaction() {\n            return this.pushReaction;\n        }'
         )
 
-    # --- 3. Block.java: setValue type mismatch ---
+    # --- 3. Block.java: setValue type mismatch in setValueHelper ---
     if 'Block.java' in filename and 'setValueHelper' in content:
         content = content.replace(
-            'return state.setValue(property, (Comparable)value);',
-            'return (S) state.setValue(property, (java.lang.Comparable) value);'
+            'private static <S extends StateHolder<?, S>, T extends Comparable<T>> S setValueHelper(S state, Property<T> property, Object value) {\n        return state.setValue(property, (Comparable)value);\n    }',
+            '@SuppressWarnings("unchecked")\n    private static <S extends StateHolder<?, S>, T extends Comparable<T>> S setValueHelper(S state, Property<T> property, Object value) {\n        return (S) state.setValue(property, (T) value);\n    }'
         )
 
     # --- 4. Registry.java: type inference ---
@@ -54,55 +53,49 @@ def fix_file(path, filename):
 
     # --- 5. ServerEntity.java: cannot find symbol ---
     if 'ServerEntity' in filename:
-        # sendPairingData might not exist - comment it out
         content = content.replace(
             'this.entity.sendPairingData(player, payload -> broadcast.accept(payload.toVanillaClientbound()));',
             '// this.entity.sendPairingData(player, payload -> broadcast.accept(payload.toVanillaClientbound()));'
         )
 
-    # --- 6. AttributeModifier: wrong number of type args ---
+    # --- 6. AttributeModifier: unchecked cast on OverrideModifier.INSTANCE ---
     if 'AttributeModifier' in filename:
         content = content.replace(
-            'return (AttributeModifier<Value>) AttributeModifier.OverrideModifier.INSTANCE;',
-            'return (AttributeModifier<Value, Value>) AttributeModifier.OverrideModifier.INSTANCE;'
+            'static <Value> AttributeModifier<Value, Value> override() {\n        return AttributeModifier.OverrideModifier.INSTANCE;\n    }',
+            '@SuppressWarnings("unchecked")\n    static <Value> AttributeModifier<Value, Value> override() {\n        return (AttributeModifier<Value, Value>) AttributeModifier.OverrideModifier.INSTANCE;\n    }'
         )
 
-    # --- 7. ServerboundCustomPayloadPacket: codec method ---
-    if 'ServerboundCustomPayloadPacket' in filename:
-        # The codec() static method doesn't exist with this signature
-        # Replace with a direct StreamCodec
-        content = content.replace(
-            'CustomPacketPayload.codec(\n            id -> DiscardedPayload.codec(id, 32767),\n            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {}),\n            net.minecraft.network.ConnectionProtocol.PLAY,\n            net.minecraft.network.protocol.PacketFlow.SERVERBOUND\n        )',
-            'CustomPacketPayload.createPayloadCodec(\n            id -> DiscardedPayload.codec(id, 32767),\n            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {}),\n            net.minecraft.network.ConnectionProtocol.PLAY,\n            net.minecraft.network.protocol.PacketFlow.SERVERBOUND\n        )'
-        )
-        content = content.replace(
-            'CustomPacketPayload.codec(\n            p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),\n            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {}),\n            net.minecraft.network.ConnectionProtocol.CONFIGURATION,\n            net.minecraft.network.protocol.PacketFlow.SERVERBOUND\n        )',
-            'CustomPacketPayload.createPayloadCodec(\n            p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),\n            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {}),\n            net.minecraft.network.ConnectionProtocol.CONFIGURATION,\n            net.minecraft.network.protocol.PacketFlow.SERVERBOUND\n        )'
+    # --- 7. CustomPayload packets: codec() takes only (fallback, types) ---
+    # Drop the trailing ConnectionProtocol/PacketFlow args.
+    if filename in ('ClientboundCustomPayloadPacket.java', 'ServerboundCustomPayloadPacket.java'):
+        content = re.sub(
+            r',\s*net\.minecraft\.network\.ConnectionProtocol\.\w+,\s*net\.minecraft\.network\.protocol\.PacketFlow\.\w+',
+            '', content
         )
 
-    # --- 8. CustomPacketPayload: StreamCodec type ---
+    # --- 8. CustomPacketPayload: findCodec returns wildcard codec ---
     if 'CustomPacketPayload' in filename and 'writeCap' in content:
         content = content.replace(
-            '@SuppressWarnings("unchecked")\n        StreamCodec<B, T> codec = this.findCodec(type.id);;',
-            'StreamCodec<? super B, ? extends CustomPacketPayload> rawCodec = this.findCodec(type.id);\n'
-            '@SuppressWarnings("unchecked")\n'
-            'StreamCodec<B, T> codec = (StreamCodec<B, T>) rawCodec;'
+            'StreamCodec<B, T> codec = this.findCodec(type.id);',
+            '@SuppressWarnings("unchecked")\n                StreamCodec<B, T> codec = (StreamCodec<B, T>) this.findCodec(type.id);'
         )
 
-    # --- 9. ClientboundCustomPayloadPacket: codec method ---
-    if 'ClientboundCustomPayloadPacket' in filename:
-        content = content.replace(
-            'CustomPacketPayload.codec(\n            id -> DiscardedPayload.codec(id, 32767),\n            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {}),\n            net.minecraft.network.ConnectionProtocol.PLAY,\n            net.minecraft.network.protocol.PacketFlow.CLIENTBOUND\n        )',
-            'CustomPacketPayload.createPayloadCodec(\n            id -> DiscardedPayload.codec(id, 32767),\n            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {}),\n            net.minecraft.network.ConnectionProtocol.PLAY,\n            net.minecraft.network.protocol.PacketFlow.CLIENTBOUND\n        )'
-        )
-        content = content.replace(
-            'CustomPacketPayload.codec(\n            p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),\n            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {}),\n            net.minecraft.network.ConnectionProtocol.CONFIGURATION,\n            net.minecraft.network.protocol.PacketFlow.CLIENTBOUND\n        )',
-            'CustomPacketPayload.createPayloadCodec(\n            p_319841_ -> DiscardedPayload.codec(p_319841_, 32767),\n            Util.make(Lists.newArrayList(new CustomPacketPayload.TypeAndCodec<>(BrandPayload.TYPE, BrandPayload.STREAM_CODEC)), types -> {}),\n            net.minecraft.network.ConnectionProtocol.CONFIGURATION,\n            net.minecraft.network.protocol.PacketFlow.CLIENTBOUND\n        )'
-        )
+    # --- 9. IntegerModifier: not a functional interface (3 abstract methods) ---
+    if 'IntegerModifier' in filename and 'ADD' in content:
+        for name, orig, expr in [
+            ('ADD', 'Integer::sum', 'a + b'),
+            ('SUBTRACT', '(a, b) -> a - b', 'a - b'),
+            ('MULTIPLY', '(a, b) -> a * b', 'a * b'),
+            ('MINIMUM', 'Math::min', 'Math.min(a, b)'),
+            ('MAXIMUM', 'Math::max', 'Math.max(a, b)'),
+        ]:
+            content = content.replace(
+                'IntegerModifier<Integer> %s = %s;' % (name, orig),
+                'IntegerModifier<Integer> %s = new IntegerModifier.Simple() { @Override public Integer apply(Integer a, Integer b) { return %s; } };' % (name, expr)
+            )
 
     # --- 10. MappedRegistry: @Override on non-overriding methods ---
     if 'MappedRegistry' in filename:
-        # Remove @Override from lookup() and contents() in the inner class
         content = content.replace(
             '@Override\n            public HolderLookup.RegistryLookup<T> lookup() {',
             'public HolderLookup.RegistryLookup<T> lookup() {'
@@ -111,7 +104,6 @@ def fix_file(path, filename):
             '@Override\n            public Map<TagKey<T>, List<Holder<T>>> contents() {',
             'public Map<TagKey<T>, List<Holder<T>>> contents() {'
         )
-        # Remove @Override from getId(ResourceKey) and containsValue
         content = content.replace(
             '@Override\n    public int getId(ResourceKey<T> key) {',
             'public int getId(ResourceKey<T> key) {'
@@ -130,66 +122,145 @@ def fix_file(path, filename):
 
     # --- 12. EntityFlagsPredicate: match binding redefinition ---
     if 'EntityFlagsPredicate' in filename:
-        # The decompiler used 'living' as a pattern variable twice in the same expression
         content = content.replace(
             'return this.isFallFlying.isPresent() && entity instanceof LivingEntity living && living.isFallFlying() != this.isFallFlying.get()\n                ? false\n                : !(this.isBaby.isPresent() && entity instanceof LivingEntity living) || living.isBaby() == this.isBaby.get();',
             'if (this.isFallFlying.isPresent() && entity instanceof LivingEntity fallLiving && fallLiving.isFallFlying() != this.isFallFlying.get()) {\n            return false;\n        }\n        if (this.isBaby.isPresent() && entity instanceof LivingEntity babyLiving && babyLiving.isBaby() == this.isBaby.get()) {\n            return false;\n        }\n        return true;'
         )
 
-    # --- 13. IntegerModifier: not a functional interface ---
-    if 'IntegerModifier' in filename and 'ADD' in content:
-        # The interface has multiple abstract methods, so lambdas won't work
-        # Replace with anonymous classes
+    # --- 13. getMapColor(BlockState, LevelReader, BlockPos, MapColor) callers ---
+    # Decompiler produced 2-arg calls; the method needs (state, level, pos, default).
+    if 'FallingDustParticle' in filename:
         content = content.replace(
-            'IntegerModifier<Integer> ADD = (a, b) -> a + b;',
-            'IntegerModifier<Integer> ADD = new IntegerModifier<>() {\n        public Integer apply(Integer a, Integer b) { return a + b; }\n        public Codec<Integer> argumentCodec(EnvironmentAttribute<Integer> type) { return Codec.INT; }\n    };'
+            'tintColor = blockState.getMapColor(level, pos).col;',
+            'tintColor = blockState.getMapColor(blockState, level, pos, MapColor.NONE).col;'
+        )
+        if 'import net.minecraft.world.level.material.MapColor;' not in content:
+            content = content.replace(
+                'import net.minecraft.world.level.block.state.BlockState;',
+                'import net.minecraft.world.level.block.state.BlockState;\nimport net.minecraft.world.level.material.MapColor;'
+            )
+    if 'MapItem' in filename:
+        content = content.replace(
+            'Blocks.DIRT.defaultBlockState().getMapColor(level, BlockPos.ZERO)',
+            'Blocks.DIRT.defaultBlockState().getMapColor(Blocks.DIRT.defaultBlockState(), level, BlockPos.ZERO, MapColor.NONE)'
         )
         content = content.replace(
-            'IntegerModifier<Integer> SUBTRACT = (a, b) -> a - b;',
-            'IntegerModifier<Integer> SUBTRACT = new IntegerModifier<>() {\n        public Integer apply(Integer a, Integer b) { return a - b; }\n        public Codec<Integer> argumentCodec(EnvironmentAttribute<Integer> type) { return Codec.INT; }\n    };'
+            'Blocks.STONE.defaultBlockState().getMapColor(level, BlockPos.ZERO)',
+            'Blocks.STONE.defaultBlockState().getMapColor(Blocks.STONE.defaultBlockState(), level, BlockPos.ZERO, MapColor.NONE)'
         )
         content = content.replace(
-            'IntegerModifier<Integer> MULTIPLY = (a, b) -> a * b;',
-            'IntegerModifier<Integer> MULTIPLY = new IntegerModifier<>() {\n        public Integer apply(Integer a, Integer b) { return a * b; }\n        public Codec<Integer> argumentCodec(EnvironmentAttribute<Integer> type) { return Codec.INT; }\n    };'
+            'state.getMapColor(level, blockPos) == MapColor.NONE',
+            'state.getMapColor(state, level, blockPos, MapColor.NONE) == MapColor.NONE'
         )
         content = content.replace(
-            'IntegerModifier<Integer> MINIMUM = (a, b) -> Math.min(a, b);',
-            'IntegerModifier<Integer> MINIMUM = new IntegerModifier<>() {\n        public Integer apply(Integer a, Integer b) { return Math.min(a, b); }\n        public Codec<Integer> argumentCodec(EnvironmentAttribute<Integer> type) { return Codec.INT; }\n    };'
+            'colorCount.add(state.getMapColor(level, blockPos));',
+            'colorCount.add(state.getMapColor(state, level, blockPos, MapColor.NONE));'
         )
+    if 'AnvilBlock' in filename or 'ConcretePowderBlock' in filename:
         content = content.replace(
-            'IntegerModifier<Integer> MAXIMUM = (a, b) -> Math.max(a, b);',
-            'IntegerModifier<Integer> MAXIMUM = new IntegerModifier<>() {\n        public Integer apply(Integer a, Integer b) { return Math.max(a, b); }\n        public Codec<Integer> argumentCodec(EnvironmentAttribute<Integer> type) { return Codec.INT; }\n    };'
+            'return blockState.getMapColor(level, pos).col;',
+            'return blockState.getMapColor(blockState, (LevelReader) level, pos, MapColor.NONE).col;'
+        )
+        # idempotency: also fix a previously-applied uncast version
+        content = content.replace(
+            'return blockState.getMapColor(blockState, level, pos, MapColor.NONE).col;',
+            'return blockState.getMapColor(blockState, (LevelReader) level, pos, MapColor.NONE).col;'
+        )
+        if 'import net.minecraft.world.level.material.MapColor;' not in content:
+            content = content.replace(
+                'import net.minecraft.world.level.block.state.BlockState;',
+                'import net.minecraft.world.level.block.state.BlockState;\nimport net.minecraft.world.level.material.MapColor;'
+            )
+        if 'import net.minecraft.world.level.LevelReader;' not in content:
+            content = content.replace(
+                'import net.minecraft.world.level.block.state.BlockState;',
+                'import net.minecraft.world.level.block.state.BlockState;\nimport net.minecraft.world.level.LevelReader;'
+            )
+
+    # --- 14. shouldRenderFace: 3-arg static (state, neighborState, direction) ---
+    if 'ModelBlockRenderer' in filename:
+        content = content.replace(
+            'Block.shouldRenderFace(level, pos, state, neighborState, direction)',
+            'Block.shouldRenderFace(state, neighborState, direction)'
+        )
+    if 'TheEndGatewayBlockEntity' in filename:
+        content = content.replace(
+            'Block.shouldRenderFace(this.level, this.worldPosition, this.getBlockState(), this.level.getBlockState(this.getBlockPos().relative(direction)), direction)',
+            'Block.shouldRenderFace(this.getBlockState(), this.level.getBlockState(this.getBlockPos().relative(direction)), direction)'
         )
 
-    # --- 14. Block classes: @Override on getRelocability ---
-    # These are NeoForge extension methods, not overrides
+    # --- 15. Block classes: @Override on non-overriding (NeoForge patch-in) methods ---
+    if 'ComparatorBlock' in filename:
+        content = content.replace(
+            '@Override\n    public boolean getWeakChanges(',
+            'public boolean getWeakChanges('
+        )
+        content = content.replace(
+            '@Override\n    public void onNeighborChange(',
+            'public void onNeighborChange('
+        )
+    if 'DropExperienceBlock' in filename or 'RedStoneOreBlock' in filename or 'SculkCatalystBlock' in filename \
+            or 'SculkSensorBlock' in filename or 'SculkShriekerBlock' in filename or 'SpawnerBlock' in filename:
+        content = content.replace(
+            '@Override\n    public int getExpDrop(',
+            'public int getExpDrop('
+        )
+    if 'TntBlock' in filename:
+        content = content.replace(
+            '@Override\n    public boolean onCaughtFire(',
+            'public boolean onCaughtFire('
+        )
+    if 'TrapDoorBlock' in filename:
+        content = content.replace(
+            '@Override\n    public boolean isLadder(',
+            'public boolean isLadder('
+        )
+        content = content.replace(
+            'return down.getBlock().makesOpenTrapdoorAboveClimbable(down, world, downPos, state);',
+            'return down.getBlock() instanceof LadderBlock;'
+        )
+    # NeoForge extension methods that are not overrides
     for block_class in ['DoorBlock', 'DoublePlantBlock', 'BedBlock', 'PistonBaseBlock', 'PistonHeadBlock']:
         if block_class in filename:
             content = content.replace(
                 '@Override\n    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(',
                 'public net.neoforged.neoforge.common.util.BlockRelocability getRelocability('
             )
-            # Also handle the fully-qualified version
             content = content.replace(
                 '@Override\n    public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state) {',
                 'public net.neoforged.neoforge.common.util.BlockRelocability getRelocability(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state) {'
             )
+    if 'PistonBaseBlock' in filename:
+        content = content.replace(
+            'super.rotate(state, world, pos, direction)',
+            'super.rotate(state, direction)'
+        )
 
-    # --- 15. LevelEventHandler: variable redefinition ---
+    # --- 16. LevelEventHandler: variable redefinition in case 2003 ---
     if 'LevelEventHandler' in filename:
-        # The decompiler used 'breakParticle' in two different case branches
-        # Rename the second occurrence
         content = content.replace(
             'case 2003:\n                double x = pos.getX() + 0.5;\n                double y = pos.getY();\n                double z = pos.getZ() + 0.5;\n                ItemParticleOption breakParticle = new ItemParticleOption(ParticleTypes.ITEM, Items.ENDER_EYE);',
             'case 2003:\n                double x2003 = pos.getX() + 0.5;\n                double y2003 = pos.getY();\n                double z2003 = pos.getZ() + 0.5;\n                ItemParticleOption breakParticle2003 = new ItemParticleOption(ParticleTypes.ITEM, Items.ENDER_EYE);'
         )
-        # Update references in the 2003 block
         content = content.replace(
             'this.level.addParticle(breakParticle, x, y, z, random.nextGaussian() * 0.15, random.nextDouble() * 0.2, random.nextGaussian() * 0.15);',
             'this.level.addParticle(breakParticle2003, x2003, y2003, z2003, random.nextGaussian() * 0.15, random.nextDouble() * 0.2, random.nextGaussian() * 0.15);'
         )
+        # Portal particle loop still references the renamed locals
+        content = content.replace(
+            'x + Math.cos(angle) * 5.0',
+            'x2003 + Math.cos(angle) * 5.0'
+        )
+        content = content.replace(
+            'y - 0.4',
+            'y2003 - 0.4'
+        )
+        content = content.replace(
+            'z + Math.sin(angle) * 5.0',
+            'z2003 + Math.sin(angle) * 5.0'
+        )
 
-    # --- 16. SpawnPlacements: generic type mismatch ---
+    # --- 17. SpawnPlacements: generic type mismatch ---
     if 'SpawnPlacements' in filename:
         content = content.replace(
             'return data == null || data.predicate.test(type, level, spawnReason, pos, random);',
