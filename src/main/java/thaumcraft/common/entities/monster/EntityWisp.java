@@ -286,7 +286,7 @@ public class EntityWisp extends PathfinderMob implements Enemy {
                     playSound(ModSounds.ZAP.get(), 1.0f, 1.1f);
                     
                     // Zap visual effect
-                    level().playSound(null, blockPosition(), net.minecraft.sounds.SoundEntities.EVOKER_CAST_SPELL, net.minecraft.sounds.SoundSource.NEUTRAL, 0.5f, 1.0f);
+                    level().playSound(null, blockPosition(), net.minecraft.sounds.SoundEvents.EVOKER_CAST_SPELL, net.minecraft.sounds.SoundSource.NEUTRAL, 0.5f, 1.0f);
                     
                     // Damage calculation - moving targets are harder to hit
                     float damage = (float)getAttributeValue(Attributes.ATTACK_DAMAGE);
