@@ -5,6 +5,28 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
+## 26.2 Port — Compile Re-Green (2026-09-25, shipped 63a9215)
+
+A corrupted session left the working tree mid-port with ~441 compile errors
+(HEAD `c21694e` itself was not green). Recovered by grouping errors into 10
+file-batches, fixing in parallel (worker subagents + orchestrator), and
+iterating `compileJava` checkpoints until clean.
+
+Notable 26.2 API migrations in this final batch:
+- `ValueIOSerializable` (NeoForge) requires `serialize(ValueOutput)` /
+  `deserialize(ValueInput)`; `ValueInput.read(name, codec)` / `ValueOutput.store(name, codec, value)`
+- `CompoundTag.getList(String)` returns `Optional<ListTag>` — use `getListOrEmpty`
+- `ResourceKey.getLocation()` → `identifier()`
+- `NonNullList` moved `net.minecraft.util` → `net.minecraft.core`; `withSize(int, E)`
+  takes a fill value, not a supplier
+- `Collections.unmodifiableSet` requires a `Set` (`Map.values()` is a `Collection`)
+- `DeferredRegister.create(Registries.X, modid)` infers T; `DeferredHolder<R, T>`
+- `Holder.unwrapKey()` → `Optional<ResourceKey<T>>`
+- `DamageSource.MAGIC` static removed → `level.damageSources().magic()`
+- `Level.setBlockEntityDirty(pos, be)` → `level.blockEntityChanged(pos)`
+
+`./gradlew build`: **BUILD SUCCESSFUL**, 0 TODOs in src/.
+
 ## 1.12 Book Parity — Star Markers (2026-09-12, shipped 3c157f6)
 
 User asked for the 1.12 "new" star markers (gold star on a research icon /
