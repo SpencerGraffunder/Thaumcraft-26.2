@@ -99,9 +99,11 @@ public class WarpEvents {
             
             // Send warp event visual distortion on client
             if (player instanceof ServerPlayer sp) {
-                sp.serverLevel().sendParticles(net.minecraft.core.particles.ParticleTypes.PORTAL,
-                        player.getX(), player.getY() + 1.0, player.getZ(),
-                        15, 0.5, 0.5, 0.5, 0.0);
+                for (int i = 0; i < 15; i++) {
+                    sp.level().addParticle(net.minecraft.core.particles.ParticleTypes.PORTAL,
+                            player.getX(), player.getY() + 1.0, player.getZ(),
+                            0.0, 0.0, 0.0);
+                }
             }
             
             if (eff > 0) {
@@ -262,11 +264,11 @@ public class WarpEvents {
         // Send mist particles to client
         if (player instanceof ServerPlayer sp) {
             for (int i = 0; i < 30; i++) {
-                double rx = player.getX() + (sp.serverLevel().getRandom().nextFloat() - 0.5f) * 10.0;
-                double ry = player.getY() + sp.serverLevel().getRandom().nextFloat() * 3.0;
-                double rz = player.getZ() + (sp.serverLevel().getRandom().nextFloat() - 0.5f) * 10.0;
-                sp.serverLevel().sendParticles(ParticleTypes.SMOKE,
-                        rx, ry, rz, 1, 0.5, 0.5, 0.5, 0.05);
+                double rx = player.getX() + (sp.level().getRandom().nextFloat() - 0.5f) * 10.0;
+                double ry = player.getY() + sp.level().getRandom().nextFloat() * 3.0;
+                double rz = player.getZ() + (sp.level().getRandom().nextFloat() - 0.5f) * 10.0;
+                sp.level().addParticle(ParticleTypes.SMOKE,
+                        rx, ry, rz, 0.025, 0.025, 0.025);
             }
         }
         

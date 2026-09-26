@@ -69,9 +69,9 @@ public class PacketMiscEventClient {
 
         float radius = 1.2f;
         for (int i = 0; i < 3; i++) {
-            double x = player.getX() + (level.random.nextDouble() - 0.5) * radius;
-            double y = player.getY() + level.random.nextDouble() * 1.6;
-            double z = player.getZ() + (level.random.nextDouble() - 0.5) * radius;
+            double x = player.getX() + (level.getRandom().nextDouble() - 0.5) * radius;
+            double y = player.getY() + level.getRandom().nextDouble() * 1.6;
+            double z = player.getZ() + (level.getRandom().nextDouble() - 0.5) * radius;
             level.addParticle(ParticleTypes.CLOUD, x, y, z, 0, 0, 0);
         }
     }

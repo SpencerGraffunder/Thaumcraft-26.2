@@ -109,12 +109,9 @@ public class HudHandler {
         int gaugeHeight = 64;
         int gaugeWidth = 8;
         
-        // Textured HUD frame rendering
-        if (thaumcraft.client.ThaumcraftClient.HUD_TEXTURE != null) {
-            int x = guiGraphics.guiLeft();
-            int y = guiGraphics.guiTop();
-            guiGraphics.blit(thaumcraft.client.ThaumcraftClient.HUD_TEXTURE, x, y, 0, 0, 0, 128, 16, 256, 256);
-        }
+        // Textured HUD frame rendering — 26.2 render-state rewrite: the old
+        // blit(Identifier, ...) overload is gone (needs a RenderPipeline + screen-space
+        // UVs). Skipped until the texture pipeline is wired (see ThaumcraftClient).
         
         // Draw vis bar (purple)
         if (visNorm > 0) {
@@ -161,12 +158,8 @@ public class HudHandler {
         float maxVis = currentAura != null ? currentAura.getBase() : 100;
         float currentVis = currentAura != null ? currentAura.getVis() : 50;
         
-        // Dial/focus rendering
-        if (thaumcraft.client.ThaumcraftClient.DIAL_TEXTURE != null) {
-            int x = guiGraphics.guiLeft() + 10;
-            int y = guiGraphics.guiTop() + 10;
-            guiGraphics.blit(thaumcraft.client.ThaumcraftClient.DIAL_TEXTURE, x, y, 0, 0, 0, 64, 64, 256, 256);
-        }
+        // Dial/focus rendering — see HUD note above: textured dial blit is skipped
+        // pending the 26.2 RenderPipeline texture wiring.
         
         // Draw vis gauge
         int gaugeHeight = 30;

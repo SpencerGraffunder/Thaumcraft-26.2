@@ -82,8 +82,10 @@ public class FocusMediumBolt extends FocusMediumTouch {
                 double x = start.x + (end.x - start.x) * t;
                 double y = start.y + (end.y - start.y) * t;
                 double z = start.z + (end.z - start.z) * t;
-                getPackage().world.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, y, z, 2, 0.1, 0.1, 0.1, 0.05);
-                getPackage().world.sendParticles(ParticleTypes.ENCHANT, x, y, z, 1, 0.05, 0.05, 0.05, 0.02);
+                for (int i2 = 0; i2 < 2; i2++) {
+                    getPackage().world.addParticle(ParticleTypes.ELECTRIC_SPARK, x, y, z, 0.1, 0.1, 0.1);
+                }
+                getPackage().world.addParticle(ParticleTypes.ENCHANT, x, y, z, 0.05, 0.05, 0.05);
             }
         }
         

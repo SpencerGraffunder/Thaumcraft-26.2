@@ -194,7 +194,7 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
                     // Craft FX
                     if (level != null && !level.isClientSide()) {
                         level.addParticle(net.minecraft.core.particles.ParticleTypes.CLOUD,
-                            (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0, 0.1, 0);
+                            (double)getBlockPos().getX() + 0.5, (double)getBlockPos().getY() + 0.5, (double)getBlockPos().getZ() + 0.5, 0, 0.1, 0);
                     }
                 }
                 

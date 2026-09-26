@@ -90,7 +90,7 @@ public class ItemMagicDust extends ItemTCBase {
                 
                 // Client particles
                 if (level.isClientSide()) {
-                    level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT, entity.getX(), entity.getY() + 0.5, entity.getZ(), 0, 0.1, 0);
+                    level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT, p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, 0, 0.1, 0);
                 }
                 // FXDispatcher.INSTANCE.drawBlockSparkles(p, hitVec);
             }

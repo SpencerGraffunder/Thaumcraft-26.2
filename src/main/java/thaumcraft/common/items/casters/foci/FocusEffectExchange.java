@@ -80,8 +80,8 @@ public class FocusEffectExchange extends FocusEffect {
         // Get picked block from caster gauntlet
         ItemStack pickedBlock = ItemStack.EMPTY;
         ItemStack casterStack = player.getMainHandItem();
-        if (casterStack.getItem() instanceof thaumcraft.common.items.casters.ItemCaster caster) {
-            pickedBlock = caster.getPickedBlock(casterStack);
+        if (casterStack.getItem() instanceof thaumcraft.common.items.casters.ItemCaster itemCaster) {
+            pickedBlock = itemCaster.getPickedBlock(casterStack);
         }
         
         boolean silk = getSettingValue("silk") > 0;
@@ -94,10 +94,11 @@ public class FocusEffectExchange extends FocusEffect {
         if (!pickedBlock.isEmpty()) {
             if (pickedBlock.getItem() instanceof net.minecraft.world.item.BlockItem blockItem) {
                 world.setBlock(pos, blockItem.getBlock().defaultBlockState(), 3);
-                player.getCooldowns().addCooldown(pickedBlock.getItem(), 20);
+                player.getCooldowns().addCooldown(pickedBlock, 20);
             } else {
                 // Not a block item, just drop it
-                world.drop(player, pos, pickedBlock);
+                world.addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(
+                        (ServerLevel) world, pos.getX(), pos.getY(), pos.getZ(), pickedBlock));
             }
             pickedBlock.shrink(1);
         } else {

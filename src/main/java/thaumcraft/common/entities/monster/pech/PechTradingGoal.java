@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import thaumcraft.common.entities.monster.EntityPech;
 
-import java.util.List;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,7 +22,7 @@ public class PechTradingGoal extends Goal {
 
     public PechTradingGoal(EntityPech pech) {
         this.pech = pech;
-        this.setFlags(EnumFlag.CONTROL_MOVEMENT, EnumFlag.CONTROL_JUMP);
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP));
     }
 
     @Override
@@ -33,40 +33,40 @@ public class PechTradingGoal extends Goal {
         }
 
         // Check if pech has any valued items in inventory
-        boolean hasValued = pech.getInventory().getItems().stream()
-                .anyMatch(stack -> !stack.isEmpty() && pech.isValuedItem(stack));
+        boolean hasValued = pech.loot.stream()
+                .anyMatch(stack -> !stack.isEmpty() && pech.getValue(stack) > 0);
 
         if (!hasValued) {
             return false;
         }
 
         // Find nearest player in range
-        target = pech.level().getNearestPlayer(pech, 8.0, 3.0, 8.0);
+        target = pech.level().getNearestPlayer(pech, 8.0);
         return target != null && !pech.isAggressive();
     }
 
     @Override
-    public void startServerTick() {
+    public void start() {
         cooldown = 200;
     }
 
     @Override
-    public void serverTick() {
-        if (target == null || target.isDeadOrDropped()) {
+    public void tick() {
+        if (target == null || target.isRemoved()) {
             target = null;
             return;
         }
 
         // Move towards player
-        this.moveTo(target, 0.5);
+        pech.getNavigation().moveTo(target, 0.5);
 
         // If close enough, attempt trade
         if (pech.distanceToSqr(target) < 4.0) {
             // Offer a trade: give the player a valued item
             ItemStack best = ItemStack.EMPTY;
             int bestValue = 0;
-            for (ItemStack stack : pech.getInventory().getItems()) {
-                if (!stack.isEmpty() && pech.isValuedItem(stack)) {
+            for (ItemStack stack : pech.loot) {
+                if (!stack.isEmpty() && pech.getValue(stack) > 0) {
                     int value = pech.getValue(stack);
                     if (value > bestValue) {
                         bestValue = value;
@@ -93,9 +93,9 @@ public class PechTradingGoal extends Goal {
     }
 
     @Override
-    public boolean canStop() {
-        return target == null || target.isDeadOrDropped() ||
-                pech.distanceToSqr(target) > 64.0;
+    public boolean canContinueToUse() {
+        return target != null && !target.isRemoved() &&
+                pech.distanceToSqr(target) <= 64.0;
     }
 
     @Override

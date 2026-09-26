@@ -114,7 +114,7 @@ public class ItemCurio extends Item {
 
         // Play sound
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.ENTITY_ALLAY_USE_ITEM, SoundSource.NEUTRAL,
+                SoundEvents.ALLAY_ITEM_GIVEN, SoundSource.NEUTRAL,
                 0.5f, 0.4f / (level.getRandom().nextFloat() * 0.4f + 0.8f));
 
         if (!level.isClientSide()) {

@@ -1,5 +1,6 @@
 package thaumcraft.common.items.casters.foci;
 
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -60,10 +61,11 @@ public class FocusEffectCurse extends FocusEffect {
         Level world = getPackage().world;
         
         // Particle effect
-        if (level.isClientSide()) {
+        if (world.isClientSide()) {
+            net.minecraft.world.phys.Vec3 hitPos = target.getLocation();
             for (int i = 0; i < 6; i++) {
-                level.addParticle(net.minecraft.core.particles.ParticleTypes.SOUL,
-                    pos.getX() + Math.random() * 2 - 1, pos.getY() + Math.random() * 2 - 1, pos.getZ() + Math.random() * 2 - 1, 0, 0.1, 0);
+                world.addParticle(ParticleTypes.SOUL,
+                    hitPos.x + Math.random() * 2 - 1, hitPos.y + Math.random() * 2 - 1, hitPos.z + Math.random() * 2 - 1, 0, 0.1, 0);
             }
         }
         // PacketHandler.sendToAllAround(new PacketFXBlockBamf(...))

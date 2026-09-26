@@ -15,8 +15,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.particles.ParticleTypes;
-import thaumcraft.api.aura.AuraChunk;
-import thaumcraft.api.aura.AuraHandler;
+import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.api.research.ScanningManager;
 import thaumcraft.common.items.ItemTC;
 import thaumcraft.init.ModSounds;
@@ -114,15 +113,12 @@ public class ItemThaumometer extends ItemTC {
     private void updateAuraInfo(Level level, Player player) {
         // Send aura chunk data to player via chat message (simplified)
         if (player instanceof ServerPlayer serverPlayer) {
-            AuraChunk ac = AuraHandler.getAuraChunk(level, player.blockPosition());
-            if (ac != null) {
-                int vis = (int) ac.vis;
-                float radius = ac.getRadius();
-                if (vis > 0 || radius > 0) {
-                    serverPlayer.sendSystemMessage(
-                        net.minecraft.network.chat.Component.literal(
-                            String.format("§5§oAura: §7%d vis, §7r=%.1f", vis, radius)));
-                }
+            int vis = (int) AuraHelper.getVis(level, player.blockPosition());
+            float radius = AuraHelper.getAuraBase(level, player.blockPosition());
+            if (vis > 0 || radius > 0) {
+                serverPlayer.sendSystemMessage(
+                    net.minecraft.network.chat.Component.literal(
+                        String.format("§5§oAura: §7%d vis, §7r=%.1f", vis, radius)));
             }
         }
     }

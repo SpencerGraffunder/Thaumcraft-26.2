@@ -131,7 +131,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
     public void generateName() {
         // Champion modifier
         this.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).addTransientModifier(
-            net.minecraft.world.entity.ai.attributes.AttributeModifier.create(java.util.UUID.randomUUID(), "eldritch_warden", 10.0f, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
+            new net.minecraft.world.entity.ai.attributes.AttributeModifier(net.minecraft.resources.Identifier.fromNamespaceAndPath("thaumcraft", "eldritch_warden"), 10.0, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
         setCustomName(Component.literal(getTitle() + " the Eldritch Warden"));
     }
     
@@ -409,7 +409,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
         } else if (hasLineOfSight(target)) {
             // Sonic blast attack
             // Sonic effect
-            level().playSound(null, blockPosition(), net.minecraft.sounds.SoundEntities.EVOKER_CAST_SPELL, net.minecraft.sounds.SoundSource.NEUTRAL, 1.0f, 0.5f);
+            level().playSound(null, blockPosition(), net.minecraft.sounds.SoundEvents.EVOKER_CAST_SPELL, net.minecraft.sounds.SoundSource.NEUTRAL, 1.0f, 0.5f);
             
             // Knockback
             float knockX = -Mth.sin(getYRot() * Mth.DEG_TO_RAD) * 1.5f;

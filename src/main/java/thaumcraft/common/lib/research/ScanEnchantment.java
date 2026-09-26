@@ -33,7 +33,7 @@ public class ScanEnchantment implements IScanThing {
     
     @Override
     public String getResearchKey(Player player, Object object) {
-        var id = BuiltInRegistries.ENCHANTMENT.getKey(enchantment.value());
-        return id != null ? "!" + id.getPath() : "!" + enchantment.value().toString();
+        // 26.2: Holder.unwrapKey() -> Optional<ResourceKey<Enchantment>>; ResourceKey.getLocation() renamed to identifier()
+        return enchantment.unwrapKey().map(k -> "!" + k.identifier().getPath()).orElse("?");
     }
 }

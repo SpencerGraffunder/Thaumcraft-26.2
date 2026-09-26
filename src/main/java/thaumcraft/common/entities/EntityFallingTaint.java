@@ -150,13 +150,10 @@ public class EntityFallingTaint extends Entity {
     }
     
     private boolean isTaintGooBelow(BlockPos pos) {
-        // Check for flux goo
-        if (thaumcraft.init.ModBlocks.BLOCK_FLUX_GOO != null && 
-            block == thaumcraft.init.ModBlocks.BLOCK_FLUX_GOO.get()) {
-            // Flux goo absorbs the falling taint
-            level().removeBlock(blockPos, false);
-            level().setBlock(blockPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
-            return;
+        // Check for flux goo below
+        if (thaumcraft.init.ModBlocks.FLUX_GOO != null && 
+            level().getBlockState(pos.below()).is(thaumcraft.init.ModBlocks.FLUX_GOO.get())) {
+            return true;
         }
         return false;
     }
@@ -168,15 +165,15 @@ public class EntityFallingTaint extends Entity {
             return true;
         }
         // Check for taint fiber or flux goo
-        if (thaumcraft.init.ModBlocks.BLOCK_TAINT_FIBER != null && 
-            block == thaumcraft.init.ModBlocks.BLOCK_TAINT_FIBER.get()) {
+        if (thaumcraft.init.ModBlocks.TAINT_FIBRE != null && 
+            currentState.is(thaumcraft.init.ModBlocks.TAINT_FIBRE.get())) {
             // Taint fiber slows the fall
             setDeltaMovement(getDeltaMovement().multiply(0.8, 0.5, 0.8));
-        } else if (thaumcraft.init.ModBlocks.BLOCK_FLUX_GOO != null && 
-                   block == thaumcraft.init.ModBlocks.BLOCK_FLUX_GOO.get()) {
+        } else if (thaumcraft.init.ModBlocks.FLUX_GOO != null && 
+                   currentState.is(thaumcraft.init.ModBlocks.FLUX_GOO.get())) {
             // Flux goo absorbs the falling taint
-            level().removeBlock(blockPos, false);
-            level().setBlock(blockPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+            level().removeBlock(pos, false);
+            level().setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
         }
         return false;
     }
@@ -189,7 +186,7 @@ public class EntityFallingTaint extends Entity {
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
         if (fallTile != null) {
-            output.store(NbtUtils.writeBlockState(fallTile));
+            output.store("BlockState", net.minecraft.world.level.block.state.BlockState.CODEC, fallTile);
         }
         output.putInt("Time", fallTime);
         output.putFloat("FallHurtAmount", fallHurtAmount);
@@ -201,19 +198,11 @@ public class EntityFallingTaint extends Entity {
     
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
-        if (input.keySet().contains("BlockState")) {
-            fallTile = input.read("BlockState", net.minecraft.world.level.block.state.BlockState.CODEC).orElse(Blocks.SAND.defaultBlockState());
-        } else {
-            fallTile = Blocks.SAND.defaultBlockState();
-        }
+        fallTile = input.read("BlockState", net.minecraft.world.level.block.state.BlockState.CODEC).orElse(Blocks.SAND.defaultBlockState());
         fallTime = input.getIntOr("Time", 0);
-        if (input.keySet().contains("FallHurtAmount")) {
-            fallHurtAmount = input.getFloatOr("FallHurtAmount", 0.0F);
-            fallHurtMax = input.getIntOr("FallHurtMax", 0);
-        }
-        if (input.keySet().contains("Old")) {
-            oldPos = BlockPos.of(input.getLongOr("Old", 0L));
-        }
+        fallHurtAmount = input.getFloatOr("FallHurtAmount", 0.0F);
+        fallHurtMax = input.getIntOr("FallHurtMax", 0);
+        input.getLong("Old").ifPresent(v -> oldPos = BlockPos.of(v));
     }
     
     @Override

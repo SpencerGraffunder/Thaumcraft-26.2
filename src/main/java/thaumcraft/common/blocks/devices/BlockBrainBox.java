@@ -126,11 +126,6 @@ public class BlockBrainBox extends Block {
         return state.is(ModBlocks.THAUMATORIUM.get()) || state.is(ModBlocks.THAUMATORIUM_TOP.get());
     }
     
-    @Override
-    public boolean canHarvestBlock(BlockState state, BlockGetter level, BlockPos pos, Player player) {
-        return true;
-    }
-    
     // Factory method
     public static BlockBrainBox create() {
         return new BlockBrainBox();

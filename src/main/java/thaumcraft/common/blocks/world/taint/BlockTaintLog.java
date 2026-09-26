@@ -48,16 +48,6 @@ public class BlockTaintLog extends RotatedPillarBlock implements ITaintBlock {
     }
 
     @Override
-    public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return 4;
-    }
-
-    @Override
-    public int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return 4;
-    }
-
-    @Override
     public void die(Level level, BlockPos pos, BlockState state) {
         if (ModBlocks.FLUX_GOO != null) {
             level.setBlockAndUpdate(pos, ModBlocks.FLUX_GOO.get().defaultBlockState());

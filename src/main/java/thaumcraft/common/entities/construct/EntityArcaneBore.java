@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -28,6 +29,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -209,7 +211,8 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         int r = ench != null ? ench.value() / 3 : 0;
         // Infusion enchantment bonus
         int infusion = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
-            net.minecraft.core.registries.Registries.ENCHANTMENT.get(thaumcraft.init.ModEnchantments.INFUSION), held);
+            level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+                .get(thaumcraft.init.ModEnchantments.INFUSION.getId()).orElseThrow(), held);
         if (infusion > 0) {
             r += infusion;
         }
@@ -222,7 +225,8 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         ItemStack held = getMainHandItem();
         if (!held.isEmpty()) {
             int burrowing = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
-                net.minecraft.core.registries.Registries.ENCHANTMENT.get(thaumcraft.init.ModEnchantments.BURROWING), held);
+                level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+                    .get(thaumcraft.init.ModEnchantments.BURROWING.getId()).orElseThrow(), held);
             if (burrowing > 0) {
                 r += burrowing * 16;
             }
@@ -370,23 +374,15 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         for (Direction dir : Direction.values()) {
             BlockPos adjPos = blockPosition().relative(dir);
             BlockEntity be = level().getBlockEntity(adjPos);
-            if (be instanceof net.minecraft.world.inventory.CoinSlot coinSlot) {
-                // Insert into coin slot
-                continue;
-            }
             // Try to insert into any container
-            if (be instanceof net.minecraft.world.inventory.MenuProvider<?> menuProvider) {
-                // Simplified: just check if it's a chest-like container
-                net.minecraft.world.MenuProvider provider = (net.minecraft.world.MenuProvider<?>) menuProvider;
-                if (provider.createMenu(1, level().registryAccess()) instanceof net.minecraft.world.inventory.AbstractContainerMenu<?> menu) {
-                    for (int i = 0; i < menu.getSlotsSize(); i++) {
-                        ItemStack slotStack = menu.getItem(i);
-                        if (slotStack.isEmpty() && menu.canPlaceItemAt(i, stack)) {
-                            menu.setItem(i, stack.copy());
-                            menu.setChanged();
-                            level().setBlockEntityDirty(adjPos, be);
-                            return;
-                        }
+            if (be instanceof net.minecraft.world.Container container) {
+                for (int i = 0; i < container.getContainerSize(); i++) {
+                    ItemStack slotStack = container.getItem(i);
+                    if (slotStack.isEmpty()) {
+                        container.setItem(i, stack.copy());
+                        container.setChanged();
+                        level().blockEntityChanged(adjPos); // 26.2: setBlockEntityDirty removed; blockEntityChanged marks dirty + notifies
+                        return;
                     }
                 }
             }
@@ -414,8 +410,17 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
             if (player.isShiftKeyDown()) {
                 // Shift-click: open bore GUI
                 if (player instanceof ServerPlayer sp) {
-                    sp.openMenu(thaumcraft.init.ModMenuTypes.BORE_MENU.get(),
-                        (level, pos, player2) -> new thaumcraft.common.menu.BoreMenu(player2.inventory));
+                    sp.openMenu(new net.minecraft.world.MenuProvider() {
+                        @Override
+                        public net.minecraft.network.chat.Component getDisplayName() {
+                            return net.minecraft.network.chat.Component.literal("Arcane Bore");
+                        }
+
+                        @Override
+                        public net.minecraft.world.inventory.AbstractContainerMenu createMenu(int containerId, net.minecraft.world.entity.player.Inventory inventory, Player player2) {
+                            return new thaumcraft.common.menu.ArcaneBoreMenu(containerId, inventory, EntityArcaneBore.this);
+                        }
+                    });
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -432,9 +437,9 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
                 }
                 
                 // Drop bore placer
-                if (thaumcraft.init.ModItems.ITEM_BORE_PLACER != null) {
-                    spawnAtLocation((ServerLevel) this.level(), 
-                        new ItemStack(thaumcraft.init.ModItems.ITEM_BORE_PLACER.get()), 0.5f);
+                if (thaumcraft.init.ModItems.TURRET_PLACER_BORE != null) {
+                    spawnAtLocation((ServerLevel) this.level(),
+                        new ItemStack(thaumcraft.init.ModItems.TURRET_PLACER_BORE.get()), 0.5f);
                 }
                 
                 discard();

@@ -271,13 +271,10 @@ public abstract class EntityThaumcraftBoss extends Monster {
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        if (input.keySet().contains("HomeD")) {
-            setHomePos(new BlockPos(
-                    input.getIntOr("HomeX", 0),
-                    input.getIntOr("HomeY", 0),
-                    input.getIntOr("HomeZ", 0)),
-                    input.getIntOr("HomeD", 0));
-        }
+        input.getInt("HomeD").ifPresent(d -> setHomePos(new BlockPos(
+                input.getIntOr("HomeX", 0),
+                input.getIntOr("HomeY", 0),
+                input.getIntOr("HomeZ", 0)), d));
         
         if (hasCustomName()) {
             this.bossEvent.setName(getDisplayName());

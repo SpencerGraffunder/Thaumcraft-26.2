@@ -134,10 +134,10 @@ public class TileHole extends TileMemory {
         }
         
         // Check portable hole blacklist
-        if (targetState.is(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(targetState.getBlock()),
+        if (targetState.is(
                 net.minecraft.tags.TagKey.create(
                     net.minecraft.core.registries.Registries.BLOCK,
-                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("thaumcraft", "hole_blacklist")))) {
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath("thaumcraft", "hole_blacklist")))) {
             return false;
         }
         

@@ -79,13 +79,16 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
             if (player.isShiftKeyDown()) {
                 // Open logistics GUI
                 if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-                    serverPlayer.openMenu(
-                        thaumcraft.init.ModMenuTypes.GOLEM_LOGISTICS.get(),
-                        (level, pos, player2) -> new thaumcraft.common.menu.GolemLogisticsMenu(
-                            serverPlayer.inventory,
-                            serverPlayer.level().getBlockEntity(pos)
-                        )
-                    );
+                    serverPlayer.openMenu(new net.minecraft.world.MenuProvider() {
+                        @Override
+                        public net.minecraft.network.chat.Component getDisplayName() {
+                            return net.minecraft.network.chat.Component.literal("Logistics");
+                        }
+                        @Override
+                        public net.minecraft.world.inventory.AbstractContainerMenu createMenu(int containerId, net.minecraft.world.entity.player.Inventory inventory, Player player2) {
+                            return new thaumcraft.common.menu.LogisticsMenu(containerId, player2.getInventory(), pos, side);
+                        }
+                    });
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -135,13 +138,17 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
             if (player.isShiftKeyDown()) {
                 // Open logistics GUI
                 if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-                    serverPlayer.openMenu(
-                        thaumcraft.init.ModMenuTypes.GOLEM_LOGISTICS.get(),
-                        (level, pos, player2) -> new thaumcraft.common.menu.GolemLogisticsMenu(
-                            serverPlayer.inventory,
-                            serverPlayer.level().getBlockEntity(pos)
-                        )
-                    );
+                    BlockPos logisticsPos = golems.isEmpty() ? player.blockPosition() : golems.get(0).blockPosition();
+                    serverPlayer.openMenu(new net.minecraft.world.MenuProvider() {
+                        @Override
+                        public net.minecraft.network.chat.Component getDisplayName() {
+                            return net.minecraft.network.chat.Component.literal("Logistics");
+                        }
+                        @Override
+                        public net.minecraft.world.inventory.AbstractContainerMenu createMenu(int containerId, net.minecraft.world.entity.player.Inventory inventory, Player player2) {
+                            return new thaumcraft.common.menu.LogisticsMenu(containerId, player2.getInventory(), logisticsPos, Direction.UP);
+                        }
+                    });
                 }
                 return InteractionResult.SUCCESS;
             }

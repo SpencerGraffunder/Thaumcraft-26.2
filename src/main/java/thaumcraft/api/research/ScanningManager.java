@@ -158,7 +158,7 @@ public class ScanningManager {
             BlockState state = level.getBlockState(pos);
             
             // Try to get the item form of the block
-            result = state.getBlock().getCloneItemStack(level, pos, state, true, player);
+            result = state.getCloneItemStack(level, pos, true);
             
             // Handle water and lava (can't be registered as regular item stacks)
             if (result.isEmpty()) {

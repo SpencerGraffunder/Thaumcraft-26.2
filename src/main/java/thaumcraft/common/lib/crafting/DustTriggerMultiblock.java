@@ -146,7 +146,7 @@ public class DustTriggerMultiblock implements IDustTrigger {
         
         if (source instanceof MapColor mapColor) {
             // In 1.20.1, we check the map color of the block
-            return worldState.getMapColor(null, null) == mapColor;
+            return worldState.getBlock().defaultMapColor() == mapColor;
         }
         
         if (source instanceof ItemStack stack) {

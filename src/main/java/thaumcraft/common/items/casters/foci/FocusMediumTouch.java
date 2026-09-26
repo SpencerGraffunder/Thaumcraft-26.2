@@ -176,8 +176,10 @@ public class FocusMediumTouch extends FocusMediumRoot {
     public boolean execute(Trajectory trajectory) {
         // Touch medium doesn't need additional execution - targets are supplied directly
         if (getPackage() != null && getPackage().world != null && !getPackage().world.isClientSide()) {
-            Vec3 hitPos = trajectory.target;
-            getPackage().world.sendParticles(ParticleTypes.ENCHANT, hitPos.x, hitPos.y, hitPos.z, 5, 0.2, 0.2, 0.2, 0.03);
+            Vec3 hitPos = trajectory.source;
+            for (int i = 0; i < 5; i++) {
+                getPackage().world.addParticle(ParticleTypes.ENCHANT, hitPos.x, hitPos.y, hitPos.z, 0.02, 0.02, 0.02);
+            }
         }
         return true;
     }

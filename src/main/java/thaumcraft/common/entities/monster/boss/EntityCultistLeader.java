@@ -108,7 +108,10 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
     public void generateName() {
         // Champion modifier
         this.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).addTransientModifier(
-            net.minecraft.world.entity.ai.attributes.AttributeModifier.create(java.util.UUID.randomUUID(), "cultist_leader", 5.0f, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
+            new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(thaumcraft.Thaumcraft.MODID, "cultist_leader"),
+                5.0,
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
         setCustomName(net.minecraft.network.chat.Component.literal(getTitle() + " the Crimson Praetor"));
     }
     

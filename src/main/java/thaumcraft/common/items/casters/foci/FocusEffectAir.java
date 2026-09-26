@@ -60,8 +60,12 @@ public class FocusEffectAir extends FocusEffect {
         
         // Particle effect at impact
         if (!world.isClientSide()) {
-            world.sendParticles(ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 15, 0.5, 0.3, 0.5, 0.1);
-            world.sendParticles(ParticleTypes.ELECTRIC_SPARK, hitPos.x, hitPos.y, hitPos.z, 10, 0.3, 0.3, 0.3, 0.05);
+            for (int p = 0; p < 15; p++) {
+                world.addParticle(ParticleTypes.SMOKE, hitPos.x + (world.getRandom().nextFloat() - 0.5f) * 0.5, hitPos.y + world.getRandom().nextFloat() * 0.3, hitPos.z + (world.getRandom().nextFloat() - 0.5f) * 0.5, 0.5, 0.3, 0.5);
+            }
+            for (int p = 0; p < 10; p++) {
+                world.addParticle(ParticleTypes.ELECTRIC_SPARK, hitPos.x + (world.getRandom().nextFloat() - 0.5f) * 0.3, hitPos.y + world.getRandom().nextFloat() * 0.3, hitPos.z + (world.getRandom().nextFloat() - 0.5f) * 0.3, 0.3, 0.3, 0.3);
+            }
         }
         
         // Play wind sound at impact

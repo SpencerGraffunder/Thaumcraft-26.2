@@ -86,7 +86,7 @@ public class ItemCreativePlacer extends Item {
         
         // 1.12 behavior: clear the target block (creative debugging tool)
         // Variants (damage 0=obelisk, 1=node, 2=caster) all perform the same erase
-        level.setBlock(placePos, Blocks.AIR.defaultBlockState(), 3, BlockPos.containing(placePos.getX(), placePos.getY(), placePos.getZ()));
+        level.setBlock(placePos, Blocks.AIR.defaultBlockState(), 3);
         player.sendSystemMessage(Component.literal("Cleared block at " + placePos.toShortString())
                 .withStyle(ChatFormatting.GRAY));
         

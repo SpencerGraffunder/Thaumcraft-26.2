@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.common.util.FakePlayer;
+import thaumcraft.common.items.armor.ItemFortressArmor;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.item.ItemExpireEvent;
@@ -161,7 +162,7 @@ public class EntityEvents {
         }
         
         // Fortress armor wither mask effect (mask type 1)
-        if (attacker instanceof LivingEntity attackerLe) {
+        if (directSource instanceof LivingEntity attackerLe) {
             ItemStack helm = player.getItemBySlot(EquipmentSlot.HEAD);
             if (!helm.isEmpty() && helm.getItem() instanceof ItemFortressArmor armor && armor.hasMask(helm)) {
                 int maskType = ItemFortressArmor.getMaskType(helm);
@@ -180,9 +181,11 @@ public class EntityEvents {
         float absorption = player.getAbsorptionAmount();
         if (absorption > 0) {
             if (player instanceof ServerPlayer sp) {
-                sp.serverLevel().sendParticles(ParticleTypes.ENCHANT,
-                        player.getX() + 0.5, player.getY() + 1.0, player.getZ() + 0.5,
-                        10, 0.3, 0.5, 0.3, 0.0);
+                for (int i = 0; i < 10; i++) {
+                    sp.level().addParticle(ParticleTypes.ENCHANT,
+                            player.getX() + 0.5, player.getY() + 1.0, player.getZ() + 0.5,
+                            0.3, 0.5, 0.3);
+                }
             }
         }
     }

@@ -138,7 +138,7 @@ public class ItemElementalShovel extends ShovelItem {
                         placedCount++;
 
                         // Visual effect
-                        level.addParticle(net.minecraft.core.particles.ParticleTypes.POOF, entity.getX(), entity.getY() + 0.5, entity.getZ(), 0, 0.1, 0);
+                        level.addParticle(net.minecraft.core.particles.ParticleTypes.POOF, player.getX(), player.getY() + 0.5, player.getZ(), 0, 0.1, 0);
                         
                         if (stack.isEmpty()) {
                             return InteractionResult.SUCCESS;
@@ -146,7 +146,7 @@ public class ItemElementalShovel extends ShovelItem {
                     } else if (clickedBlock == Blocks.GRASS_BLOCK) {
                         // Special case: grass can be placed as dirt
                         if (player.isCreative() || consumeBlock(player, Blocks.DIRT, Blocks.DIRT.defaultBlockState())) {
-                            SoundType soundType = Blocks.DIRT.defaultBlockState().getSoundType(level, targetPos, player);
+                            SoundType soundType = Blocks.DIRT.defaultBlockState().getSoundType();
                             level.playSound(player, targetPos, soundType.getPlaceSound(), SoundSource.BLOCKS,
                                     0.6f, 0.9f + level.getRandom().nextFloat() * 0.2f);
                             level.setBlock(targetPos, Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);

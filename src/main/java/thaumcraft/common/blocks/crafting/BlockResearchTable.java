@@ -96,7 +96,7 @@ public class BlockResearchTable extends Block implements EntityBlock {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof TileResearchTable tile) {
                 tile.setPlaced(placer != null ? placer.getUUID() : null);
-                level.setBlockEntityDirty(pos, blockEntity);
+                level.setBlockEntity(blockEntity);
             }
         }
     }

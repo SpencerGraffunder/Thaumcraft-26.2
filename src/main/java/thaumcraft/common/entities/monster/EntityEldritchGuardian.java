@@ -174,7 +174,7 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
         } else if (hasLineOfSight(target)) {
             // Sonic scream attack - applies wither effect
             // Sonic effect
-            level().playSound(null, blockPosition(), net.minecraft.sounds.SoundEvents.BEACRON_ACTIVATE, net.minecraft.sounds.SoundSource.NEUTRAL, 1.0f, 0.5f);
+            level().playSound(null, blockPosition(), net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE, net.minecraft.sounds.SoundSource.NEUTRAL, 1.0f, 0.5f);
             try {
                 target.addEffect(new MobEffectInstance(MobEffects.WITHER, 400, 0));
             } catch (Exception ignored) {}
@@ -258,11 +258,9 @@ public class EntityEldritchGuardian extends Monster implements RangedAttackMob, 
         spawnData = super.finalizeSpawn(level, difficulty, spawnType, spawnData);
         
         // In eldritch dimension, add absorption hearts
-            if (level().dimension().location().getNamespace().equals("thaumcraft") && level().dimension().location().getPath().equals("eldritch")) {
-                this.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).addTransientModifier(
-                    net.minecraft.world.entity.ai.attributes.AttributeModifier.create(
-                        java.util.UUID.randomUUID(), "absorption", 10.0f,
-                        net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
+            if (level().dimension().identifier().getNamespace().equals("thaumcraft") && level().dimension().identifier().getPath().equals("eldritch")) {
+                int bonus = (int) getMaxHealth() / 2;
+                setAbsorptionAmount(getAbsorptionAmount() + bonus);
             }
         // if (level.dimensionType() == ModDimensions.ELDRITCH) {
         //     int bonus = (int) getMaxHealth() / 2;

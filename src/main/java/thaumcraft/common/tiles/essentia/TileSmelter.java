@@ -147,7 +147,7 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
             }
             // Check for auxiliary smelter blocks and process essentia through them
             for (Direction face : Direction.values()) {
-                if (face.isHorizontal() && tile.getFacing() != face) {
+                if (face.getAxis().isHorizontal() && tile.getFacing() != face) {
                     BlockState auxState = level.getBlockState(pos.relative(face));
                     if (auxState.getBlock() == thaumcraft.init.ModBlocks.SMELTER_AUX.get()
                             && auxState.getValue(thaumcraft.common.blocks.essentia.BlockSmelter.FACING) == face.getOpposite()) {
@@ -270,12 +270,12 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
             for (int i = 0; i < flux; i++) {
                 boolean absorbed = false;
                 for (Direction face : Direction.values()) {
-                    if (face.isHorizontal() && tile.getFacing() != face) {
-                        BlockState ventState = level.getBlockState(pos.relative(face));
+                    if (face.getAxis().isHorizontal() && getFacing() != face) {
+                        BlockState ventState = level.getBlockState(worldPosition.relative(face));
                         if (ventState.getBlock() == thaumcraft.init.ModBlocks.SMELTER_VENT.get()
                                 && ventState.getValue(thaumcraft.common.blocks.essentia.BlockSmelter.FACING) == face.getOpposite()
                                 && level.getRandom().nextFloat() < 0.333f) {
-                            level.blockEvent(pos, getBlockState().getBlock(), 1, face.getOpposite().ordinal());
+                            level.blockEvent(worldPosition, getBlockState().getBlock(), 1, face.getOpposite().ordinal());
                             absorbed = true;
                             break;
                         }

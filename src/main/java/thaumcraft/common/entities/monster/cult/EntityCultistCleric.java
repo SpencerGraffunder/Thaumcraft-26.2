@@ -105,8 +105,8 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
     @Override
     protected void setLoot(DifficultyInstance difficulty) {
         // Crimson robe
-        if (thaumcraft.init.ModItems.ITEM_CRIMSON_CHESTPLATE != null) {
-            this.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_CRIMSON_CHESTPLATE.get()));
+        if (thaumcraft.init.ModItems.CRIMSON_ROBE_CHEST != null) {
+            this.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.CRIMSON_ROBE_CHEST.get()));
         }
         // setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.CRIMSON_ROBE_HELM.get()));
         // setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.CRIMSON_ROBE_CHEST.get()));

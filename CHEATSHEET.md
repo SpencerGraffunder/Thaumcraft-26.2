@@ -56,3 +56,19 @@ grep -rn "methodName" $T/net/minecraft/...   # find exact signatures
 1. `grep -c "cannot find symbol" your file's errors` from /tmp/tc_errors_full.txt (orchestrator maintains it).
 2. Grep decompiled source for each missing symbol before writing the fix.
 3. Java syntax check only: `javac -proc:only -d /tmp/synchk -nowarn $(file) 2>&1 | head` is NOT reliable without classpath — skip it. Trust careful reading; the orchestrator runs the real compile after your batch.
+
+## Java tools (javap) — NO java on bare PATH, always prefix JAVA_HOME
+```bash
+JH=/opt/homebrew/opt/openjdk@25/libexec/openjdk.jdk/Contents/Home
+$JH/bin/javap -p -classpath /Users/spencer/.gradle/caches/modules-2/files-2.1/net.neoforged/neoforge/26.2.0.75/8ff31c6897e97318f6b74ca0180cd26e98d67445/neoforge-26.2.0.75-universal.jar <fq.class>
+$JH/bin/javap -p -classpath '/Users/spencer/.gradle/caches/modules-2/files-2.1/top.theillusivec4.curios/curios-neoforge/16.0.0+26.2/f95cab4798e990f132a644df57e33a565eb6a385/curios-neoforge-16.0.0+26.2-api.jar' <fqcn>
+```
+
+## Known 26.2 facts (verified 2026-09-25)
+- `FlameOdor` is GONE in 26.2 — no `getFlameOdor()` on Block. Light: `BlockBehaviour.getLightEmission()` (deprecated but present).
+- `BlockItem` is `net.minecraft.world.item.BlockItem`, ctor `BlockItem(Block, Item.Properties)`.
+- Tag checks on stacks: `stack.is(TagKey<Item>)` (ItemStack L360 `is(Predicate<Holder<Item>>)`).
+- `ResourceKey.create(ResourceKey<? extends Registry<T>> registryName, Identifier location)`.
+- `StairBlock(BlockState, Properties)` ctor is PROTECTED in 26.2 — use the public `StairBlock(Block, Properties)` (verify in vanilla tree before editing).
+- `MenuScreens.ScreenConstructor` has PRIVATE access — don't name the type explicitly; use the lambda directly in `MenuScreens.register(...)` (check 26.2 signature in vanilla tree).
+- Vanilla `LevelAccessor` is `net/minecraft/LevelAccessor.java` (NOT `net/minecraft/world/LevelAccessor.java`).

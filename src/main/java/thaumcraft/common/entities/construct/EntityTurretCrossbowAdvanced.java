@@ -266,9 +266,7 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        if (input.keySet().contains("targets")) {
-            setFlags(input.getByteOr("targets", (byte)0));
-        }
+        input.getInt("targets").ifPresent(v -> setFlags((byte) (int) v));
     }
     
     // ==================== AI Goals ====================

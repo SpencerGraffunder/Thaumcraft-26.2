@@ -58,8 +58,13 @@ public class FocusEffectHeal extends FocusEffect {
         
         // Particle effect at impact
         if (!world.isClientSide() && target.getLocation() != null) {
-            world.sendParticles(ParticleTypes.HEART, target.getLocation().x, target.getLocation().y, target.getLocation().z, 8, 0.3, 0.3, 0.3, 0.05);
-            world.sendParticles(ParticleTypes.ENCHANT, target.getLocation().x, target.getLocation().y, target.getLocation().z, 12, 0.3, 0.3, 0.3, 0.02);
+            net.minecraft.world.phys.Vec3 loc = target.getLocation();
+            for (int i = 0; i < 8; i++) {
+                world.addParticle(ParticleTypes.HEART, loc.x + Math.random() * 0.3, loc.y + Math.random() * 0.3, loc.z + Math.random() * 0.3, 0.0, 0.05, 0.0);
+            }
+            for (int i = 0; i < 12; i++) {
+                world.addParticle(ParticleTypes.ENCHANT, loc.x + Math.random() * 0.3, loc.y + Math.random() * 0.3, loc.z + Math.random() * 0.3, 0.0, 0.02, 0.0);
+            }
         }
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {

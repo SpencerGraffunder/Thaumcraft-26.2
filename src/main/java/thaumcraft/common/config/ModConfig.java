@@ -123,8 +123,6 @@ public class ModConfig {
         File configFile = new File(configDir, "thaumcraft-common.toml");
         config = CommentedFileConfig.builder(configFile)
             .sync()
-            .separator(".")
-            .format(TomlFormat.standard())
             .build();
 
         // Load config
@@ -135,8 +133,9 @@ public class ModConfig {
         }
 
         // Apply config values
-        if (config.containsKey("wussmode")) {
-            wussMode = config.getBoolean("wussmode");
+        java.util.Optional<Boolean> wussModeOpt = config.getOptional("wussmode");
+        if (wussModeOpt.isPresent()) {
+            wussMode = wussModeOpt.get();
         }
 
         // Save config

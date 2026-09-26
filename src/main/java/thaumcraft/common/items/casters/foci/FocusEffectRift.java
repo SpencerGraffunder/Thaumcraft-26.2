@@ -59,9 +59,9 @@ public class FocusEffectRift extends FocusEffect {
         Level world = getPackage().world;
         
         // Check if in Outer Lands dimension and fail if so
-        if (world.dimension().location().equals(
-                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("thaumcraft", "outer_lands"))) {
-            world.playSound(null, blockHit.getBlockPos(), SoundEvents.END_PORTAL_FRAME_PLACE, SoundSource.PLAYERS, 1.0f, 0.5f);
+        if (world.dimension().identifier().equals(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("thaumcraft", "outer_lands"))) {
+            world.playSound(null, blockHit.getBlockPos(), SoundEvents.END_PORTAL_SPAWN, SoundSource.PLAYERS, 1.0f, 0.5f);
             return false;
         }
         
@@ -146,11 +146,11 @@ public class FocusEffectRift extends FocusEffect {
             state.is(Blocks.BEDROCK)) {
             return true;
         }
-        // Check the tag for additional blacklisted blocks
-        return state.is(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()),
+        // Check the tag for additional blacklisted blocks (26.2: single-arg BlockState.is(TagKey))
+        return state.is(
                 net.minecraft.tags.TagKey.create(
                     net.minecraft.core.registries.Registries.BLOCK,
-                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("thaumcraft", "hole_blacklist")));    }
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath("thaumcraft", "hole_blacklist")));    }
 
 
     @Override

@@ -289,9 +289,6 @@ public class EntityPech extends Monster implements RangedAttackMob {
             level().addFreshEntity(arrow);
         } else if (getPechType() == TYPE_MAGE) {
             // Magic attack
-            // Cast focus package
-            thaumcraft.api.casters.FocusEngine.castFocusPackage(this, focusStack, level());
-            // For now, fire a simple projectile
             swing(getUsedItemHand());
             // Placeholder: just do direct damage for now
             if (distanceToSqr(target) < 256) {
@@ -638,8 +635,8 @@ public class EntityPech extends Monster implements RangedAttackMob {
         valuedItems.put(net.minecraft.world.item.Items.NETHERITE_INGOT, 16);
         valuedItems.put(net.minecraft.world.item.Items.NETHER_STAR, 24);
         valuedItems.put(net.minecraft.world.item.Items.ENDER_PEARL, 5);
-        valuedItems.put(net.minecraft.world.item.Items.EYE_OF_ENDER, 10);
-        valuedItems.put(net.minecraft.world.item.Items.BEACRON, 20);
+        valuedItems.put(net.minecraft.world.item.Items.ENDER_EYE, 10);
+        valuedItems.put(net.minecraft.world.item.Items.BEACON, 20);
         valuedItems.put(net.minecraft.world.item.Items.NAUTILUS_SHELL, 6);
         valuedItems.put(net.minecraft.world.item.Items.HEART_OF_THE_SEA, 12);
         valuedItems.put(net.minecraft.world.item.Items.SHULKER_SHELL, 10);
@@ -649,8 +646,8 @@ public class EntityPech extends Monster implements RangedAttackMob {
         if (thaumcraft.init.ModItems.THAUMIUM_INGOT != null) {
             valuedItems.put(thaumcraft.init.ModItems.THAUMIUM_INGOT.get(), 8);
         }
-        if (thaumcraft.init.ModItems.THAUMIUM_DUST != null) {
-            valuedItems.put(thaumcraft.init.ModItems.THAUMIUM_DUST.get(), 4);
+        if (thaumcraft.init.ModItems.THAUMIUM_NUGGET != null) {
+            valuedItems.put(thaumcraft.init.ModItems.THAUMIUM_NUGGET.get(), 4);
         }
     }
 }

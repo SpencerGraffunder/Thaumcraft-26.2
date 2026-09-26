@@ -203,20 +203,6 @@ public class ServerEvents {
             }
             
             // Check vis cost
-            // Check aura vis when aura system is implemented
-            if (!level.isClientSide()) {
-                thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(level, entity.blockPosition());
-                if (ac != null && ac.vis > 0) {
-                    // Entity spawned in aura - apply aura effects
-                    if (entity instanceof net.minecraft.world.entity.monster.Monster) {
-                        // Hostile mobs in aura are slightly buffed
-                        entity.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED).addPermanentModifier(
-                            net.minecraft.world.entity.ai.attributes.AttributeModifier.create(
-                                java.util.UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
-                                "aura_buff", 0.05, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
-                    }
-                }
-            }
             // if (vs.visCost > 0.0f && AuraHelper.getVis(level, vs.pos) < vs.visCost) {
             //     allow = false;
             // }
@@ -262,13 +248,13 @@ public class ServerEvents {
                 // Pick up replaced block
                 if (vs.pickup) {
                     // Silk touch / fortune check
-                    ItemStack tool = player.getMainHandItem();
-                    boolean silkTouch = tool.hasEffect(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH);
-                    int fortune = tool.getEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.FORTUNE);
+                    ItemStack tool = vs.player.getMainHandItem();
+                    boolean silkTouch = tool.getEnchantments().getLevel(level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH)) > 0;
+                    int fortune = tool.getEnchantments().getLevel(level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.FORTUNE));
                     
                     if (silkTouch) {
-                        level.dropBlock(state, new ItemStack(state.getBlock()));
-                        level.removeBlock(pos, false);
+                        Block.dropResources(currentState, level, vs.pos, (net.minecraft.world.level.block.entity.BlockEntity) null, (net.minecraft.world.entity.Entity) null, tool);
+                        level.removeBlock(vs.pos, false);
                     }
                     ItemStack drop = new ItemStack(currentState.getBlock());
                     if (!drop.isEmpty()) {
@@ -282,9 +268,9 @@ public class ServerEvents {
                 // Drain vis
                 // Drain aura vis when aura system is implemented
                 if (!level.isClientSide()) {
-                    thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(level, pos);
-                    if (ac != null && ac.vis > 0) {
-                        ac.vis = Math.max(0, ac.vis - 1);
+                    thaumcraft.common.world.aura.AuraChunk ac = AuraHandler.getAuraChunk(level.dimension(), vs.pos.getX() >> 4, vs.pos.getZ() >> 4);
+                    if (ac != null && ac.getVis() > 0) {
+                        ac.setVis(Math.max(0, ac.getVis() - 1));
                     }
                 }
             }
@@ -391,9 +377,9 @@ public class ServerEvents {
                 
                 // Drain vis when aura system is implemented
                 if (!level.isClientSide()) {
-                    thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(level, pos);
-                    if (ac != null && ac.vis > 0) {
-                        ac.vis = Math.max(0, ac.vis - 1);
+                    thaumcraft.common.world.aura.AuraChunk ac = AuraHandler.getAuraChunk(level.dimension(), bd.pos.getX() >> 4, bd.pos.getZ() >> 4);
+                    if (ac != null && ac.getVis() > 0) {
+                        ac.setVis(Math.max(0, ac.getVis() - 1));
                     }
                 }
             } else {

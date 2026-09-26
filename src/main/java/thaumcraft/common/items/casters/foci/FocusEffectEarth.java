@@ -1,6 +1,7 @@
 package thaumcraft.common.items.casters.foci;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -63,10 +64,11 @@ public class FocusEffectEarth extends FocusEffect {
         Level world = getPackage().world;
         
         // Particle effect
-        if (level.isClientSide()) {
+        if (world.isClientSide()) {
+            net.minecraft.world.phys.Vec3 impactPos = target.getLocation();
             for (int i = 0; i < 12; i++) {
-                level.addParticle(net.minecraft.core.particles.ParticleTypes.CRIT,
-                    pos.getX() + Math.random() * 2 - 1, pos.getY() + Math.random() * 2 - 1, pos.getZ() + Math.random() * 2 - 1, 0, 0.1, 0);
+                world.addParticle(net.minecraft.core.particles.ParticleTypes.CRIT,
+                    impactPos.x + Math.random() * 2 - 1, impactPos.y + Math.random() * 2 - 1, impactPos.z + Math.random() * 2 - 1, 0, 0.1, 0);
             }
         }
         // PacketHandler.sendToAllAround(new PacketFXFocusPartImpact(...))
@@ -169,7 +171,7 @@ public class FocusEffectEarth extends FocusEffect {
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
         // Earth/ground particle trail
-        level.addParticle(ParticleTypes.LANDING, posX, posY, posZ, 0, 0.03, 0);
+        level.addParticle(ParticleTypes.LANDING_OBSIDIAN_TEAR, posX, posY, posZ, 0, 0.03, 0);
         level.addParticle(ParticleTypes.CRIT, posX, posY, posZ, 0, -0.02, 0);
     }
 

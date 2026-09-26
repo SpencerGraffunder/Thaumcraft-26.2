@@ -132,12 +132,16 @@ public class ToolEvents {
                             
                             // Slash effect particles
                             if (!player.level().isClientSide()) {
-                                player.level().sendParticles(ParticleTypes.ELECTRIC_SPARK,
-                                        target.getX(), target.getY() + 0.5, target.getZ(),
-                                        10, 0.3, 0.3, 0.3, 0.1);
-                                player.level().sendParticles(ParticleTypes.ENCHANT,
-                                        target.getX(), target.getY() + 0.5, target.getZ(),
-                                        5, 0.2, 0.2, 0.2, 0.05);
+                                for (int i = 0; i < 10; i++) {
+                                    player.level().addParticle(ParticleTypes.ELECTRIC_SPARK,
+                                            target.getX(), target.getY() + 0.5, target.getZ(),
+                                            0.3, 0.3, 0.3);
+                                }
+                                for (int i = 0; i < 5; i++) {
+                                    player.level().addParticle(ParticleTypes.ENCHANT,
+                                            target.getX(), target.getY() + 0.5, target.getZ(),
+                                            0.2, 0.2, 0.2);
+                                }
                             }
                         }
                     }
@@ -188,11 +192,13 @@ public class ToolEvents {
                     for (int oy = -1; oy <= 1; oy += 2) {
                         for (int oz = -1; oz <= 1; oz += 2) {
                             BlockPos checkPos = pos.offset(ox * (int)range, oy * (int)range, oz * (int)range);
-                            BlockState checkState = serverPlayer.serverLevel().getBlockState(checkPos);
-                            if (BlockUtils.isOre(serverPlayer.serverLevel(), checkPos)) {
-                                serverPlayer.serverLevel().sendParticles(ParticleTypes.ENCHANT,
-                                        checkPos.getX() + 0.5, checkPos.getY() + 0.5, checkPos.getZ() + 0.5,
-                                        15, 0.3, 0.3, 0.3, 0.05);
+                            BlockState checkState = serverPlayer.level().getBlockState(checkPos);
+                            if (BlockUtils.isOre(serverPlayer.level(), checkPos)) {
+                                for (int i = 0; i < 15; i++) {
+                                    serverPlayer.level().addParticle(ParticleTypes.ENCHANT,
+                                            checkPos.getX() + 0.5, checkPos.getY() + 0.5, checkPos.getZ() + 0.5,
+                                            0.3, 0.3, 0.3);
+                                }
                             }
                         }
                     }

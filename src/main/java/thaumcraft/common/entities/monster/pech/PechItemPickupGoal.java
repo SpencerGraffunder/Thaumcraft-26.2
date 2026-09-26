@@ -6,6 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import thaumcraft.common.entities.monster.EntityPech;
 
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -19,12 +20,12 @@ public class PechItemPickupGoal extends Goal {
 
     public PechItemPickupGoal(EntityPech pech) {
         this.pech = pech;
-        this.setFlags(EnumFlag.CONTROL_MOVEMENT);
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
     public boolean canUse() {
-        if (pech.getInventory().hasItem()) {
+        if (pech.loot.stream().anyMatch(s -> !s.isEmpty())) {
             return false; // Already have items
         }
 
@@ -32,7 +33,7 @@ public class PechItemPickupGoal extends Goal {
         List<ItemEntity> items = pech.level().getEntitiesOfClass(ItemEntity.class,
                 pech.getBoundingBox().inflate(6.0, 4.0, 6.0),
                 item -> item.getItem().getCount() > 0 &&
-                        pech.isValuedItem(item.getItem()));
+                        pech.isValued(item.getItem()));
 
         if (items.isEmpty()) {
             return false;
@@ -46,14 +47,14 @@ public class PechItemPickupGoal extends Goal {
     }
 
     @Override
-    public void serverTick() {
+    public void tick() {
         if (target == null || target.isRemoved()) {
             target = null;
             return;
         }
 
         // Move towards the item
-        this.moveTo(target, 0.6);
+        pech.getNavigation().moveTo(target.getX(), target.getY(), target.getZ(), 0.6);
 
         // Pick up the item if close enough
         if (pech.distanceToSqr(target) < 2.0) {
@@ -61,22 +62,20 @@ public class PechItemPickupGoal extends Goal {
             stack.shrink(1);
             target.getItem().shrink(1);
 
-            if (pech.isValuedItem(stack)) {
-                pech.getInventory().add(stack);
+            if (pech.isValued(stack)) {
+                for (int i = 0; i < pech.loot.size(); i++) {
+                    if (pech.loot.get(i).isEmpty()) {
+                        pech.loot.set(i, stack);
+                        break;
+                    }
+                }
             } else {
                 // Not a valued item, drop it
-                pech.drop(stack);
+                pech.drop(stack, false, false);
             }
         }
     }
 
-    @Override
-    public boolean canStop() {
-        return target == null || target.isRemoved();
-    }
-
-    @Override
-    public boolean requiresUpdateEveryTick() {
-        return true;
-    }
+    // 26.2: Goal.canStop() was removed from the base class; the goal lifecycle is
+    // driven by canUse()/canContinueToUse() only.
 }

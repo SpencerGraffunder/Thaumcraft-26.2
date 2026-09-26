@@ -135,8 +135,8 @@ public class SealHarvest implements ISeal, ISealConfigArea, ISealConfigToggles {
                     BlockState below = level.getBlockState(task.getPos().below());
                     Direction replantFace = null;
                     // If the seed is plantable and the block below can sustain it, replant downward
-                    if (seed.getItem() instanceof net.minecraft.world.item.context.BlockPlaceContext plantable
-                            || net.minecraft.world.level.block.FarmBlock.isFarmland(below)) {
+                    if (seed.getItem() instanceof net.minecraft.world.item.BlockItem
+                            || below.is(net.minecraft.world.level.block.Blocks.FARMLAND)) {
                         replantFace = Direction.DOWN;
                     }
                     // For directional crops (e.g. pumpkins), use the crop's facing
@@ -149,7 +149,7 @@ public class SealHarvest implements ISeal, ISealConfigArea, ISealConfigToggles {
                         replantTask.setLifespan((short) 300);
                         replantTasks.put(task.getPos().asLong(), new ReplantInfo(
                                 task.getPos(), replantFace, replantTask.getId(), seed.copy(),
-                                net.minecraft.world.level.block.FarmBlock.isFarmland(below)));
+                                below.is(net.minecraft.world.level.block.Blocks.FARMLAND)));
                         TaskHandler.addTask(level.dimension(), replantTask);
                     }
                 }

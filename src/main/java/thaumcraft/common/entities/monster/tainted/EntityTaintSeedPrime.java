@@ -42,8 +42,8 @@ public class EntityTaintSeedPrime extends EntityTaintSeed {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean wasRecentlyHit) {
         // Drop flux crystals
-        if (thaumcraft.init.ModItems.ITEM_FLUX_CRYSTAL != null) {
-            this.spawnAtLocation((net.minecraft.server.level.ServerLevel) this.level(), new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_FLUX_CRYSTAL.get()), 0.5f);
+        if (thaumcraft.init.ModItems.FLUX_CRYSTAL != null) {
+            this.spawnAtLocation((net.minecraft.server.level.ServerLevel) this.level(), new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.FLUX_CRYSTAL.get()), 0.5f);
         }
         spawnAtLocation((ServerLevel) this.level(), new ItemStack(Items.SLIME_BALL));
         if (random.nextBoolean()) {

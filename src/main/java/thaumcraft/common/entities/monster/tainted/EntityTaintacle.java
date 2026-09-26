@@ -105,12 +105,12 @@ public class EntityTaintacle extends Monster {
         if (!level().isClientSide() && tickCount % 20 == 0) {
             // Check if on taint material
             boolean onTaint = false;
-            if (thaumcraft.init.ModBlocks.BLOCK_TAINT_FIBER != null && 
-                level().getBlockState(blockPosition().below()).getBlock() == thaumcraft.init.ModBlocks.BLOCK_TAINT_FIBER.get()) {
+            if (thaumcraft.init.ModBlocks.TAINT_FIBRE != null && 
+                level().getBlockState(blockPosition().below()).getBlock() == thaumcraft.init.ModBlocks.TAINT_FIBRE.get()) {
                 onTaint = true;
             }
-            if (thaumcraft.init.ModBlocks.BLOCK_TAINT_MUSHROOM != null && 
-                level().getBlockState(blockPosition().below()).getBlock() == thaumcraft.init.ModBlocks.BLOCK_TAINT_MUSHROOM.get()) {
+            if (thaumcraft.init.ModBlocks.TAINT_SOIL != null && 
+                level().getBlockState(blockPosition().below()).getBlock() == thaumcraft.init.ModBlocks.TAINT_SOIL.get()) {
                 onTaint = true;
             }
             if (onTaint) {
@@ -119,9 +119,6 @@ public class EntityTaintacle extends Monster {
                     this.setHealth(Math.min(this.getMaxHealth(), this.getHealth() + 0.5f));
                 }
             }
-            // For now, tentacles don't take damage from ground
-            boolean onTaint = true; // Placeholder
-            
             if (!onTaint) {
                 hurtServer((ServerLevel) level(), damageSources().starve(), 1.0f);
             }
@@ -164,18 +161,18 @@ public class EntityTaintacle extends Monster {
     protected void spawnSmallTentacle(Entity target) {
         // Check for taint biome/material
         boolean inTaint = false;
-        if (level().getBiome(blockPosition()).is(net.minecraft.tags.BiomeTags.HAS_STRUCTURES_TEMPLE)) {
+        if (level().getBiome(blockPosition()).is(net.minecraft.tags.BiomeTags.HAS_JUNGLE_TEMPLE)) {
             inTaint = true;
         }
-        if (thaumcraft.init.ModBlocks.BLOCK_TAINT_FIBER != null && 
-            level().getBlockState(blockPosition().below()).getBlock() == thaumcraft.init.ModBlocks.BLOCK_TAINT_FIBER.get()) {
+        if (thaumcraft.init.ModBlocks.TAINT_FIBRE != null && 
+            level().getBlockState(blockPosition().below()).getBlock() == thaumcraft.init.ModBlocks.TAINT_FIBRE.get()) {
             inTaint = true;
         }
         if (inTaint) {
             // Taintacle is buffed in taint areas
             this.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED)
-                .addTransientModifier(net.minecraft.world.entity.ai.attributes.AttributeModifier.create(
-                    java.util.UUID.randomUUID(), "taint_buff", 0.2f, 
+                .addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                    net.minecraft.resources.Identifier.parse("thaumcraft:taint_buff"), 0.2, 
                     net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
         }
         
@@ -266,9 +263,9 @@ public class EntityTaintacle extends Monster {
         
         // Drop flux crystal
         // Drop flux crystal
-        if (thaumcraft.init.ModItems.ITEM_FLUX_CRYSTAL != null) {
+        if (thaumcraft.init.ModItems.FLUX_CRYSTAL != null) {
             this.spawnAtLocation((net.minecraft.server.level.ServerLevel) this.level(), 
-                new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_FLUX_CRYSTAL.get()), 0.5f);
+                new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.FLUX_CRYSTAL.get()), 0.5f);
         }
     }
 }

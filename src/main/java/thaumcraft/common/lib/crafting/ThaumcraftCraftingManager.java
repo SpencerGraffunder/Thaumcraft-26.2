@@ -283,7 +283,7 @@ public class ThaumcraftCraftingManager {
         // For now, add basic aspects based on item properties
         if (stack.getItem() instanceof net.minecraft.world.item.BlockItem) {
             generated.add(Aspect.EARTH, 1);
-        } else if (stack.getItem() instanceof net.minecraft.world.item.SwordItem) {
+        } else if (stack.is(net.minecraft.tags.ItemTags.SWORDS)) { // 26.2: ItemStack.is(TagKey<Item>)
             generated.add(Aspect.FIRE, 1);
             generated.add(Aspect.ORDER, 1);
         } else if (stack.getItem() instanceof net.minecraft.world.item.PotionItem) {

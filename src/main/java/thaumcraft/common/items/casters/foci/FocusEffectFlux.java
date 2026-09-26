@@ -1,5 +1,6 @@
 package thaumcraft.common.items.casters.foci;
 
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -55,10 +56,11 @@ public class FocusEffectFlux extends FocusEffect {
         Level world = getPackage().world;
         
         // Particle effect
-        if (level.isClientSide()) {
+        if (world.isClientSide()) {
+            net.minecraft.world.phys.Vec3 hitPos = target.getLocation();
             for (int i = 0; i < 8; i++) {
-                level.addParticle(net.minecraft.core.particles.ParticleTypes.PORTAL,
-                    pos.getX() + Math.random() * 3 - 1.5, pos.getY() + Math.random() * 3 - 1.5, pos.getZ() + Math.random() * 3 - 1.5, 0, 0.1, 0);
+                world.addParticle(ParticleTypes.PORTAL,
+                    hitPos.x + Math.random() * 3 - 1.5, hitPos.y + Math.random() * 3 - 1.5, hitPos.z + Math.random() * 3 - 1.5, 0, 0.1, 0);
             }
         }
         // PacketHandler.sendToAllAround(new PacketFXFocusPartImpact(...))
@@ -84,10 +86,10 @@ public class FocusEffectFlux extends FocusEffect {
             hitEntity.hurt(damageSource, damage);
             
             // Apply flux/taint effects
-            if (entity instanceof net.minecraft.world.entity.LivingEntity living) {
-                living.hurt(net.minecraft.world.damagesource.DamageSource.MAGIC, 2.0f);
-                if (living.hasEffect(thaumcraft.init.ModPotionEffects.FLUX_TINT.get())) {
-                    living.removeEffect(thaumcraft.init.ModPotionEffects.FLUX_TINT.get());
+            if (hitEntity instanceof net.minecraft.world.entity.LivingEntity living) {
+                living.hurt(living.level().damageSources().magic(), 2.0f); // 26.2: DamageSource.MAGIC static removed
+                if (living.hasEffect(thaumcraft.init.ModEffects.FLUX_TAINT)) {
+                    living.removeEffect(thaumcraft.init.ModEffects.FLUX_TAINT);
                 }
             }
             // - Add flux to target if it's a player

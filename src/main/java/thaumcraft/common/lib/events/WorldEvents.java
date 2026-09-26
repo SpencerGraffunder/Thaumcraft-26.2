@@ -65,7 +65,7 @@ public class WorldEvents {
             
             // Clean up seal entities for this dimension
             // Clean up seal entities
-            thaumcraft.common.golems.seals.SealHandler.clearDimension(level.dimension());
+            thaumcraft.common.golems.seals.SealHandler.clearDimension(serverLevel.dimension());
             
             // Clean up aura data
             AuraHandler.removeAuraWorld(serverLevel.dimension());

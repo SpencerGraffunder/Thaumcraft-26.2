@@ -38,16 +38,13 @@ public class ItemCharmUndying extends Item {
         if (!offhand.isEmpty() && offhand.getItem() instanceof ItemCharmUndying) {
             return offhand;
         }
-        // Check Curios charm slot
-        if (entity instanceof Player player) {
-            var curios = player.getCapability(top.theillusivec4.curios.api.type.capability.ICuriosItemHandler.class);
-            if (curios != null) {
-                for (int i = 0; i < curios.getSlotsCount(); i++) {
-                    if (curios.getStackInSlot(i).getItem() == this) {
-                        // Charm slot: prevent death
-                        return true;
-                    }
-                }
+        // Check Curios charm slot (26.2 Curios API: use findCurios predicate search)
+        var curios = top.theillusivec4.curios.api.CuriosApi.getCuriosInventoryOrNull(player);
+        if (curios != null) {
+            var results = curios.findCurios(s -> s.getItem() instanceof ItemCharmUndying);
+            if (!results.isEmpty()) {
+                // Charm slot: prevent death
+                return results.get(0).stack();
             }
         }
         return null;

@@ -12,7 +12,7 @@ import thaumcraft.client.lib.network.misc.PacketMiscEventClient;
  *
  * Drives the mist particle effect from {@link PacketMiscEventClient}.
  */
-@EventBusSubscriber(modid = Thaumcraft.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Thaumcraft.MODID, value = Dist.CLIENT)
 public class ClientTickHandler {
 
     @SubscribeEvent

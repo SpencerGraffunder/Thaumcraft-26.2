@@ -240,12 +240,14 @@ public class AuraHandler {
         Level level = chunk.getLevel();
         BlockPos center = new BlockPos(chunk.getPos().x() * 16 + 8, 50, chunk.getPos().z() * 16 + 8);
         
-        // Biome aura modifier
+        // Biome aura modifier (26.2 removed is_swamp/is_desert biome tags; use climate settings)
         float biomeMod = 1.0f;
-        if (level.getBiome(pos).is(net.minecraft.tags.BiomeTags.IS_SWAMP)) {
-            biomeMod = 1.5f;
-        } else if (level.getBiome(pos).is(net.minecraft.tags.BiomeTags.IS_DESERT)) {
-            biomeMod = 0.5f;
+        net.minecraft.world.level.biome.Biome biome = level.getBiome(center).value();
+        var climate = biome.getModifiedClimateSettings();
+        if (climate.temperature() >= 0.75f && climate.downfall() >= 0.8f) {
+            biomeMod = 1.5f; // swamp-like
+        } else if (climate.temperature() >= 1.5f && climate.downfall() <= 0.05f) {
+            biomeMod = 0.5f; // desert-like
         }
         float life = getBiomeAuraModifier(level, center);
         

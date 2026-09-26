@@ -118,12 +118,13 @@ public class ItemElementalSword extends Item {
                 for (int i = 0; i < 8; i++) {
                     double angle = i * Math.PI / 4.0;
                     level.addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE,
-                        entity.getX() + Math.cos(angle) * 0.5, entity.getY() + 0.5, entity.getZ() + Math.sin(angle) * 0.5, 0, 0.1, 0);
+                        player.getX() + Math.cos(angle) * 0.5, player.getY() + 0.5, player.getZ() + Math.sin(angle) * 0.5, 0, 0.1, 0);
                 }
             }
         // Wind sound
             if (!level.isClientSide()) {
-                level.playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.WIND_BURST, net.minecraft.sounds.SoundSource.NEUTRAL, 0.3f, 1.0f);
+                // 26.2: WIND_BURST removed; WIND_CHARGE_BURST is a Holder.Reference, unwrap with .value()
+                level.playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.WIND_CHARGE_BURST.value(), net.minecraft.sounds.SoundSource.NEUTRAL, 0.3f, 1.0f);
             }
     }
 

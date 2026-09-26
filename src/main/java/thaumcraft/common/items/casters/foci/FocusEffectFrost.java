@@ -67,8 +67,12 @@ public class FocusEffectFrost extends FocusEffect {
         
         // Particle effect at impact
         if (!world.isClientSide() && target.getLocation() != null) {
-            world.sendParticles(ParticleTypes.SNOWFLAKE, target.getLocation().x, target.getLocation().y, target.getLocation().z, 15, 0.4, 0.4, 0.4, 0.05);
-            world.sendParticles(ParticleTypes.SMOKE, target.getLocation().x, target.getLocation().y, target.getLocation().z, 10, 0.3, 0.3, 0.3, 0.03);
+            for (int i = 0; i < 15; i++) {
+                world.addParticle(ParticleTypes.SNOWFLAKE, target.getLocation().x, target.getLocation().y, target.getLocation().z, 0.02, 0.02, 0.02);
+            }
+            for (int i = 0; i < 10; i++) {
+                world.addParticle(ParticleTypes.SMOKE, target.getLocation().x, target.getLocation().y, target.getLocation().z, 0.009, 0.009, 0.009);
+            }
         }
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {

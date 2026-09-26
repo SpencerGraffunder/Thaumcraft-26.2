@@ -326,10 +326,10 @@ public class EntityFocusProjectile extends ThrowableProjectile {
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         setSpecial(input.getIntOr("special", 0));
-        if (input.keySet().contains("pack")) {
+        input.read("pack", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(tag -> {
             focusPackage = new FocusPackage();
-            input.read("pack", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(focusPackage::deserialize);
-        }
+            focusPackage.deserialize(tag);
+        });
         if (getOwner() != null) {
             setOwnerId(getOwner().getId());
         }

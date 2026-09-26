@@ -65,9 +65,9 @@ public class EntityCultistKnight extends EntityCultist {
     @Override
     protected void setLoot(DifficultyInstance difficulty) {
         // Use actual crimson plate armor
-        if (thaumcraft.init.ModItems.ITEM_CRIMSON_CHESTPLATE != null) {
+        if (thaumcraft.init.ModItems.CRIMSON_PLATE_CHEST != null) {
             this.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
-                new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_CRIMSON_CHESTPLATE.get()));
+                new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.CRIMSON_PLATE_CHEST.get()));
         }
         // setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.CRIMSON_PLATE_HELM.get()));
         // setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.CRIMSON_PLATE_CHEST.get()));
@@ -86,17 +86,17 @@ public class EntityCultistKnight extends EntityCultist {
             int roll = random.nextInt(5);
             if (roll == 0) {
                 // Use void sword
-            if (thaumcraft.init.ModItems.ITEM_VOID_SWORD != null) {
+            if (thaumcraft.init.ModItems.VOID_SWORD != null) {
                 this.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND,
-                    new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_VOID_SWORD.get()));
+                    new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.VOID_SWORD.get()));
             }
                 // setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.VOID_SWORD.get()));
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
             } else {
                 // Use thaumium sword
-            if (thaumcraft.init.ModItems.ITEM_THAUMIUM_SWORD != null) {
+            if (thaumcraft.init.ModItems.THAUMIUM_SWORD != null) {
                 this.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND,
-                    new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.ITEM_THAUMIUM_SWORD.get()));
+                    new net.minecraft.world.item.ItemStack(thaumcraft.init.ModItems.THAUMIUM_SWORD.get()));
             }
                 // setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.THAUMIUM_SWORD.get()));
                 setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));

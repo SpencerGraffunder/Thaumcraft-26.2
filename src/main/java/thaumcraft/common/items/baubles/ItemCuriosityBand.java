@@ -24,13 +24,14 @@ public class ItemCuriosityBand extends Item {
      * Used by the scanning system to apply research bonuses.
      */
     public static boolean isWearingBand(net.minecraft.world.entity.player.Player player) {
-        // Check inventory for the band
         // Check Curios head slot
-        if (entity instanceof Player player) {
-            var curios = player.getCapability(top.theillusivec4.curios.api.type.capability.ICuriosItemHandler.class);
-            if (curios != null) {
-                for (int i = 0; i < curios.getSlotsCount(); i++) {
-                    if (curios.getStackInSlot(i).getItem() == this) {
+        var curios = top.theillusivec4.curios.api.CuriosApi.getCuriosInventoryOrNull(player);
+        if (curios != null) {
+            var head = curios.getStacksHandler("head");
+            if (head.isPresent()) {
+                var stacks = head.get().getStacks();
+                for (int i = 0; i < stacks.getSlots(); i++) {
+                    if (stacks.getStackInSlot(i).getItem() instanceof ItemCuriosityBand) {
                         // Head slot bonus: +10% research speed
                         return true;
                     }

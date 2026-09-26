@@ -215,14 +215,7 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
                 
                 if (vanillaRecipe.isPresent()) {
                     var holder = vanillaRecipe.get();
-                    // Check if the recipe is known (in the player's recipe book)
-                    boolean recipeKnown = player.containerMenu != null || 
-                        player.getRecipeBook().getUnlockedRecipes().stream()
-                            .anyMatch(r -> r == holder);
-                    if (recipeKnown || player.getRecipeBook().getUnlockedRecipes().isEmpty()) {
-                        craftResult.setRecipeUsed(holder);
-                        result = holder.value().assemble(craftMatrix.asCraftInput());
-                    }
+                    result = holder.value().assemble(craftMatrix.asCraftInput());
                 }
             }
         }

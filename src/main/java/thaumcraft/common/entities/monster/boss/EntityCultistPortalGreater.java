@@ -154,8 +154,8 @@ public class EntityCultistPortalGreater extends Monster {
                 if (stageCounter == 160 && stage == 0) {
                     level().broadcastEntityEvent(this, (byte) 16);
                     // Place banners
-                    if (thaumcraft.init.ModBlocks.BLOCK_BANNER != null) {
-                        level().setBlock(pos, net.minecraft.world.level.block.Blocks.OAK_WALL_BANNER.defaultBlockState(), 3);
+                    if (thaumcraft.init.ModBlocks.BANNER_CRIMSON_CULT != null) {
+                        level().setBlock(blockPosition(), thaumcraft.init.ModBlocks.BANNER_CRIMSON_CULT.get().defaultBlockState(), 3);
                     }
                     // For now just play sound
                     playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0f, 1.0f);
@@ -170,7 +170,7 @@ public class EntityCultistPortalGreater extends Monster {
                     if (a != (int) getX() && b != (int) getZ() && level().isEmptyBlock(bp)) {
                         level().broadcastEntityEvent(this, (byte) 16);
                         // Place loot crates
-                        level().addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(level(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ENDER_CHEST)));
+                        level().addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(level(), blockPosition().getX() + 0.5, blockPosition().getY() + 0.5, blockPosition().getZ() + 0.5, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ENDER_CHEST)));
                         // For now, drop a chest as placeholder
                         playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0f, 1.0f);
                     }

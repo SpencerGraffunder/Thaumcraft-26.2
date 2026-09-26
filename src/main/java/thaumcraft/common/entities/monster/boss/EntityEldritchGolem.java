@@ -314,7 +314,11 @@ public class EntityEldritchGolem extends EntityThaumcraftBoss implements IEldrit
         } else if (id == 19) {
             // Charging beam visual effect
             // Lightning arc
-            level().lightningBoltStrike(net.minecraft.world.phys.Vec3.atCenterOf(blockPosition()));
+            net.minecraft.world.entity.LightningBolt bolt = net.minecraft.world.entity.EntityTypes.LIGHTNING_BOLT.create(level(), net.minecraft.world.entity.EntitySpawnReason.EVENT);
+            if (bolt != null) {
+                bolt.snapTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(blockPosition()));
+                level().addFreshEntity(bolt);
+            }
         } else {
             super.handleEntityEvent(id);
         }

@@ -1,8 +1,11 @@
 package thaumcraft.common.config;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.monster.Blaze;
@@ -37,6 +40,9 @@ import thaumcraft.common.lib.research.ScanEnchantment;
 import thaumcraft.common.lib.research.ScanGeneric;
 import thaumcraft.common.lib.research.ScanPotion;
 import thaumcraft.common.lib.research.ScanSky;
+import thaumcraft.common.lib.research.StatDiscovery;
+import thaumcraft.common.lib.research.theorycraft.ResearchAid;
+import thaumcraft.common.lib.research.theorycraft.ResearchCard;
 import thaumcraft.common.lib.research.theorycraft.AidBookshelf;
 import thaumcraft.common.lib.research.theorycraft.CardAnalyze;
 import thaumcraft.common.lib.research.theorycraft.CardBalance;
@@ -50,6 +56,9 @@ import thaumcraft.common.lib.research.theorycraft.CardStudy;
 import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModItems;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * ConfigResearch - Initializes research categories, scannables, and theorycraft.
  * Ported from 1.12.2 to 1.20.1
@@ -61,6 +70,30 @@ public class ConfigResearch {
     };
     
     private static final Identifier BACK_OVER = Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/gui_research_back_over.png");
+
+    /** Research aid entries, keyed by aid key. */
+    public static final Map<String, ResearchAid> aids = new HashMap<>();
+    /** Research card entries, keyed by card key. */
+    public static final Map<String, ResearchCard> cards = new HashMap<>();
+    /** Stat-threshold based discoveries, keyed by research key. */
+    public static final Map<String, StatDiscovery> statBasedDiscoveries = new HashMap<>();
+
+    /** Enchantment scanners need the data-driven enchantment registry, which is only
+     *  resolvable with a live RegistryAccess - registered lazily on first player use. */
+    private static boolean enchantmentScannersRegistered = false;
+
+    private static void registerEnchantmentScanners(RegistryAccess access) {
+        if (enchantmentScannersRegistered) {
+            return;
+        }
+        var ench = access.lookupOrThrow(Registries.ENCHANTMENT);
+        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.SHARPNESS)));
+        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.PROTECTION)));
+        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.EFFICIENCY)));
+        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.UNBREAKING)));
+        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.LOOTING)));
+        enchantmentScannersRegistered = true;
+    }
     
     /**
      * Initialize all research-related systems.
@@ -174,31 +207,16 @@ public class ConfigResearch {
         // Generic scanner for basic items/blocks
         ScanningManager.addScannableThing(new ScanGeneric());
         
-        // Enchantment scanners
-        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.ENCHANTMENT.location("sharpness"))));
-        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.ENCHANTMENT.location("protection"))));
-        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.ENCHANTMENT.location("efficiency"))));
-        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.ENCHANTMENT.location("unbreaking"))));
-        ScanningManager.addScannableThing(new ScanEnchantment(BuiltInRegistries.ENCHANTMENT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.ENCHANTMENT.location("looting"))));
+        // Enchantment scanners: registered lazily via registerEnchantmentScanners()
+        // because the enchantment registry is data-driven and needs a live RegistryAccess.
         
-        // Potion effect scanners
-        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.MOB_EFFECT.location("speed"))));
-        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.MOB_EFFECT.location("slowness"))));
-        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.MOB_EFFECT.location("strength"))));
-        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.MOB_EFFECT.location("regeneration"))));
-        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.MOB_EFFECT.location("poison"))));
-        ScanningManager.addScannableThing(new ScanPotion(BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(
-            net.minecraft.core.registries.Registries.MOB_EFFECT.location("invisibility"))));
+        // Potion effect scanners (static mob effect holders)
+        ScanningManager.addScannableThing(new ScanPotion(MobEffects.SPEED));
+        ScanningManager.addScannableThing(new ScanPotion(MobEffects.SLOWNESS));
+        ScanningManager.addScannableThing(new ScanPotion(MobEffects.STRENGTH));
+        ScanningManager.addScannableThing(new ScanPotion(MobEffects.REGENERATION));
+        ScanningManager.addScannableThing(new ScanPotion(MobEffects.POISON));
+        ScanningManager.addScannableThing(new ScanPotion(MobEffects.INVISIBILITY));
         
         // Thaumcraft entities
         ScanningManager.addScannableThing(new ScanEntity("!Wisp", EntityWisp.class, true));
@@ -342,6 +360,9 @@ public class ConfigResearch {
         if (player.level().isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
+        
+        // Enchantment scanners need a live registry access - register once here.
+        registerEnchantmentScanners(player.level().registryAccess());
         
         IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
         if (knowledge == null) return;

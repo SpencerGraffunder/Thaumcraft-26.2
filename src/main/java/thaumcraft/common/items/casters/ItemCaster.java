@@ -321,16 +321,13 @@ public class ItemCaster extends Item implements ICaster {
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
         // Sync aura information to client when holding caster
         if (entity instanceof Player player && !level.isClientSide()) {
-            thaumcraft.api.aura.AuraChunk ac = thaumcraft.api.aura.AuraHandler.getAuraChunk(level, player.blockPosition());
-            if (ac != null) {
-                int vis = (int) ac.vis;
-                float radius = ac.getRadius();
-                if (vis > 0 || radius > 0) {
-                    if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-                        serverPlayer.sendSystemMessage(
-                            net.minecraft.network.chat.Component.literal(
-                                String.format("§5§oCaster aura: §7%d vis, §7r=%.1f", vis, radius)));
-                    }
+            int vis = (int) thaumcraft.api.aura.AuraHelper.getVis(level, player.blockPosition());
+            float radius = thaumcraft.api.aura.AuraHelper.getAuraBase(level, player.blockPosition());
+            if (vis > 0 || radius > 0) {
+                if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                    serverPlayer.sendSystemMessage(
+                        net.minecraft.network.chat.Component.literal(
+                            String.format("§5§oCaster aura: §7%d vis, §7r=%.1f", vis, radius)));
                 }
             }
         }

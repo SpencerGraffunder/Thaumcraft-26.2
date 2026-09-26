@@ -124,7 +124,7 @@ public class AuraChunkHandler {
         }
         
         // No saved aura: generate for this new chunk and persist it
-        if (!ModConfig.generateAura) {
+        if (!ModConfig.auraEnabled) {
             return;
         }
         

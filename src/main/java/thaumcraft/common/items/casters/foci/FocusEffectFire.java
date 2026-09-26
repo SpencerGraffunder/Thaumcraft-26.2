@@ -61,8 +61,20 @@ public class FocusEffectFire extends FocusEffect {
         
         // Particle effect at impact
         if (!world.isClientSide() && target.getLocation() != null) {
-            world.sendParticles(ParticleTypes.FLAME, target.getLocation().x, target.getLocation().y, target.getLocation().z, 15, 0.4, 0.4, 0.4, 0.1);
-            world.sendParticles(ParticleTypes.SMOKE, target.getLocation().x, target.getLocation().y, target.getLocation().z, 10, 0.3, 0.3, 0.3, 0.05);
+            for (int i = 0; i < 15; i++) {
+                world.addParticle(ParticleTypes.FLAME,
+                        target.getLocation().x + (world.getRandom().nextDouble() - 0.5) * 0.8,
+                        target.getLocation().y + (world.getRandom().nextDouble() - 0.5) * 0.8,
+                        target.getLocation().z + (world.getRandom().nextDouble() - 0.5) * 0.8,
+                        0, 0, 0);
+            }
+            for (int i = 0; i < 10; i++) {
+                world.addParticle(ParticleTypes.SMOKE,
+                        target.getLocation().x + (world.getRandom().nextDouble() - 0.5) * 0.6,
+                        target.getLocation().y + (world.getRandom().nextDouble() - 0.5) * 0.6,
+                        target.getLocation().z + (world.getRandom().nextDouble() - 0.5) * 0.6,
+                        0, 0, 0);
+            }
         }
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {

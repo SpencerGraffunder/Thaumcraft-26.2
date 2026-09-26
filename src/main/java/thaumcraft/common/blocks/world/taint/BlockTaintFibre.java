@@ -76,6 +76,7 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
                 .pushReaction(PushReaction.DESTROY)
                 .randomTicks()
                 .ignitedByLava()
+                .lightLevel(state -> state.getValue(HAS_CRYSTAL) ? 12 : 0)
                 .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK)));
         
         registerDefaultState(stateDefinition.any()
@@ -261,20 +262,8 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
         return true;
     }
     
-    @Override
-    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.getValue(HAS_CRYSTAL) ? 12 : 0;
-    }
-    
-    @Override
-    public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return 3;
-    }
-    
-    @Override
-    public int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return 3;
-    }
+    // 26.2: light emission set via Properties.lightLevel(...) in the constructor;
+    // flammability/spread are data-driven in the 26.2 fire system (no block overrides).
     
     @Override
     public boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
