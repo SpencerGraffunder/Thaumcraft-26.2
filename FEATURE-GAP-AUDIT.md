@@ -2,6 +2,36 @@
 
 Audit of Thaumcraft 26.2 vs 1.12 reference. Prioritized by impact.
 
+## RE-AUDIT STATUS (2026-09-27)
+
+Re-verified against the current (post compile re-green) source. **`grep -rn TODO src/ --include=*.java` = 0.**
+
+| # | Finding | Status (2026-09-27) |
+|---|---------|---------------------|
+| 1 | TileThaumatorium recipe queue | ✅ RESOLVED — `recipeHash`/`maxRecipes`/`RecipeHash[i]` NBT in `TileThaumatorium` |
+| 2 | Seal GUI (guard/filtered/use) | ✅ RESOLVED — no stub TODOs remain in `SealGuard`/`SealFiltered`/`SealUse` |
+| 3 | ItemCausalityCollapser projectile | ✅ RESOLVED — spawns `EntityCausalityCollapser` (ItemCausalityCollapser:47) |
+| 4 | ItemBottleTaint projectile | ✅ RESOLVED — spawns `EntityBottleTaint` (ItemBottleTaint:35) |
+| 5 | Essentia reservoir phial I/O | ✅ RESOLVED — fill/drain phial logic (BlockEssentiaReservoir:63,87) |
+| 6 | SealHarvest replanting | ✅ RESOLVED — `replantTasks`/`ReplantInfo` (SealHarvest:46) |
+| 7 | SealStock tag matching | ✅ RESOLVED — `matchesItem` toggle-based filter (SealStock:130) |
+| 8 | AuraHandler biome modifiers | ✅ RESOLVED — `BiomeHandler` + biome aura modifier (AuraHandler:244) |
+| 9 | ResearchManager events | ✅ RESOLVED — ResearchEvent fired (ResearchManager) |
+| 10 | PlayerKnowledge auto-unlock | ✅ RESOLVED — auto-unlock present (PlayerKnowledge) |
+| 11 | ConfigResearch stat discoveries | ✅ RESOLVED — stat-based discoveries present |
+| 12 | TileSmelter auxiliary vents | ✅ RESOLVED — vents reduce pollution (TileSmelter:267) |
+| 13 | FX/particle effects | ⚠️ PARTIAL — cosmetic; verify in-game (no gameplay impact) |
+| 14 | ItemCreativePlacer structures | ⚠️ PLACEHOLDER — creative-only; block erase works, full structure placement deferred (intentional) |
+| 15 | Seal network sync | ✅ RESOLVED — `PacketSealToClient`/`syncToClient` (SealEntity:217, SealHandler:197) |
+| 16 | TileCrucible nitor check | ✅ RESOLVED — `BlockNitor` heat-source check (TileCrucible:125) |
+| 17 | ScanSky scribing check | ✅ RESOLVED — `hasScribingTools(player)` (ScanSky:84) |
+
+**Net: 15/17 resolved, 2 intentionally deferred (both LOW/cosmetic or creative-only, no gameplay blocker).**
+
+---
+
+## Original findings (2026-09-14)
+
 ## HIGH Priority (core gameplay broken/missing)
 
 ### 1. TileThaumatorium recipe queue system
