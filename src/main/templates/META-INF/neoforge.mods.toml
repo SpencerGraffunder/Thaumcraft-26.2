@@ -53,10 +53,11 @@ description='''${mod_description}'''
     ordering="NONE"
     side="BOTH"
 
-# Curios API dependency (replaces Baubles) - optional, mod works without it
+# Curios API dependency (replaces Baubles) - REQUIRED: focus pouch + bauble items
+# implement ICuriosItemHandler, so the mod cannot load without it.
 [[dependencies.${mod_id}]]
     modId="curios"
-    type="OPTIONAL"
+    type="REQUIRED"
     versionRange="[16.0.0,)"
     ordering="AFTER"
     side="BOTH"

@@ -46,9 +46,61 @@ sourceSets.main.resources { srcDir 'src/generated/resources'; srcDir 'src/main/t
 dependencies {
     testImplementation "junit:junit:4.13.2"
     implementation "net.neoforged:neoforge:${neo_version}"
-    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+    // HARD runtime dependency: 8 item classes implement ICuriosItemHandler
+    // (focus pouch + baubles); compileOnly caused NoClassDefFoundError at mod construction.
+    implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+}
+
+// ---------------------------------------------------------------------------
+// Use the PATCHED (NeoForge interface-injected) Minecraft jar for compilation.
+//
+// userdev's `selectRawArtifact` task publishes the *raw* (vanilla, un-patched)
+// MC jar into the local `ng_dummy_ng` ivy repository, and that raw jar ends up
+// first on the compile classpath as the `net.neoforged:neoforge` artifact.
+// The raw jar lacks every NeoForge-injected hook the mod relies on
+// (ServerPlayer.openMenu(MenuProvider, Consumer), public Player.closeContainer,
+//  Item implements IItemExtension, ItemStack implements IItemStackExtension,
+//  Level implements ILevelExtension, ValueInput extends ValueInputExtension,
+//  RecipeManager.recipeMap(), BoneMealItem.applyBonemeal, ...), so compiling
+// against it produces ~140 spurious "cannot find symbol" errors even though the
+// code is correct for the real runtime (minecraft-client-patched).
+//
+// The correct patched jar is produced by the local neoForm pipeline at
+//   build/neoForm/neoFormJoined26.2-2/steps/recompile/outputs.jar
+// (identical API surface to the runtime minecraft-client-patched jar).
+//
+// This task re-applies that patched jar over the raw artifact after userdev
+// selects it, so compilation sees the full API. It does NOT declare the target
+// as an output (that is owned by selectRawArtifact); it is forced to always run.
+// ---------------------------------------------------------------------------
+def patchedMcJar = project.file("build/neoForm/neoFormJoined26.2-2/steps/recompile/outputs.jar")
+def ngDummyJar = project.file(".gradle/repositories/ng_dummy_ng/net/neoforged/neoforge/${neo_version}/neoforge-${neo_version}.jar")
+
+// Swap the raw (vanilla) MC jar for the patched one immediately before javac runs.
+// doFirst runs after all upstream tasks (incl. selectRawArtifact, which would
+// otherwise leave the vanilla jar in place) and before the compiler reads the
+// classpath files, so javac sees the full NeoForge-injected API surface.
+//
+// Note: `neoFormRecompile` (which regenerates the patched jar) depends on
+// `neoFormPatchUserDev`, which currently has failing patch hunks on 26.2 — so it
+// can't be wired into the build graph. The patched jar is a stable build artifact
+// (build/neoForm/.../recompile/outputs.jar) produced by the neoForm pipeline; it
+// is committed to the machine and must be present for compilation. If it is ever
+// missing (e.g. after `clean` on a fresh clone), regenerate it via the neoForm
+// pipeline before building.
+tasks.named('compileJava').configure {
+    doFirst {
+        if (!patchedMcJar.exists()) {
+            throw new GradleException("patched MC jar missing at ${patchedMcJar} — run the neoForm pipeline (neoFormRecompile) first")
+        }
+        if (!ngDummyJar.exists() || ngDummyJar.bytes != patchedMcJar.readBytes()) {
+            ngDummyJar.parentFile.mkdirs()
+            ngDummyJar.bytes = patchedMcJar.readBytes()
+            logger.lifecycle("swapped raw ng_dummy MC artifact -> patched MC jar for compilation")
+        }
+    }
 }
 
 tasks.withType(ProcessResources).configureEach {
