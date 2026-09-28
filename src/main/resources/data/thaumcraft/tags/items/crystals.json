@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "thaumcraft:vis_crystal_air",
+    "thaumcraft:vis_crystal_fire",
+    "thaumcraft:vis_crystal_water",
+    "thaumcraft:vis_crystal_earth",
+    "thaumcraft:vis_crystal_order",
+    "thaumcraft:vis_crystal_entropy",
+    "thaumcraft:flux_crystal"
+  ]
+}

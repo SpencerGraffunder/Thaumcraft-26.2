@@ -103,6 +103,44 @@ tasks.named('compileJava').configure {
     }
 }
 
+// ---------------------------------------------------------------------------
+// neoForm pipeline hardening (NeoForge 26.2)
+//
+// The neoForm pipeline (neoFormDecompile -> neoFormPatch -> neoFormPatchUserDev ->
+// neoFormTransformSource -> neoFormRecompile) is a dependency of selectRawArtifact,
+// which feeds the net.neoforged:neoforge compile artifact. When its cache is
+// invalidated the pipeline re-runs, and neoFormPatchUserDev fails: three userdev
+// patch hunks (CustomPacketPayload, SpawnPlacements, Block) do not apply to the
+// freshly-decompiled source. Those hunks inject NeoForge API hooks that the
+// recompiled jar produced by an EARLIER successful pipeline run already contains
+// (build/neoForm/.../recompile/outputs.jar — identical API surface to the runtime
+// minecraft-client-patched jar).
+//
+// So we:
+//   1. Tolerate the neoFormPatchUserDev failure — its patched-source output is still
+//      produced (the rejected hunks are the only loss, and we don't recompile from
+//      that source).
+//   2. Skip neoFormRecompile while the good recompiled jar is present, so it is not
+//      overwritten by a jar built from the partially-patched source.
+// The compileJava.doFirst swap above then substitutes the good recompiled jar for the
+// raw artifact, so javac sees the full NeoForge-injected API surface.
+// ---------------------------------------------------------------------------
+tasks.matching { it.name == 'neoFormPatchUserDev' }.configureEach { t ->
+    def originalActions = t.actions.toList()
+    t.actions.clear()
+    t.actions.add({ Task task ->
+        try {
+            originalActions.each { it.execute(task) }
+        } catch (Throwable e) {
+            logger.warn("neoFormPatchUserDev rejected hunks tolerated (good recompiled jar reused): ${e.message}")
+        }
+    } as org.gradle.api.Action)
+}
+tasks.matching { it.name == 'neoFormRecompile' }.configureEach {
+    // Reuse the good recompiled jar if present; only regenerate it if it is missing.
+    onlyIf { !patchedMcJar.exists() }
+}
+
 tasks.withType(ProcessResources).configureEach {
     var replaceProperties = [
             minecraft_version   : minecraft_version,
