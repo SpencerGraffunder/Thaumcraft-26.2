@@ -5,6 +5,35 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
+## In-Game Bug Fixes — 3 follow-up issues (2026-09-28, shipped 4e63df2)
+
+User follow-ups to the 6-bug batch; supersedes the crystal-texture and
+Salis-Mundus items below.
+
+- **Salis Mundus recipe**: restored the authentic 1.12 **shapeless
+crafting-table** recipe (3 crystals + flint + bowl + redstone) using a new
+`thaumcraft:crystals` item tag. Removed the crucible recipe — it created a
+circular dependency (a crucible itself requires Salis Mundus). Reverted the
+Strange Dreams book text to describe the crafting recipe (bowl/flint/crystals/
+redstone), matching 1.12.
+- **Crystal textures**: the generated gem sprites did not match 1.12. Regenerated
+the 6 `vis_crystal_*` item sprites from the authentic 16×16 1.12
+`crystal_essence.png` gem art (faceted silhouette + specular highlights), tinted
+per-aspect with the exact 1.12 Forge multiplicative formula
+(`final = pixel * tint / 255`).
+- **Aspect tooltip icons**: essentia items now render an aspect **icon row**
+(symbols + amounts), port of the 1.12 `RenderTooltipEvent.PostBackground` aspect
+row — alongside the existing text lines. New files:
+`common/tooltip/AspectTooltipComponent` (server marker),
+`client/tooltip/AspectClientTooltipComponent` (renderer),
+`client/tooltip/AspectTooltipEvents` (factory registration + gather hook).
+- **Build hardening**: `build.gradle` now tolerates the 3 rejected neoForm
+  userdev patch hunks and reuses the good recompiled jar, so the build no longer
+  breaks when the decompile cache is invalidated.
+
+Verified: `./gradlew build` green, **86/86 tests**, 0 TODOs in src/. Jar
+reinstalled into the `NeoForge 26.2` Modrinth profile (MD5 matches built jar).
+
 ## In-Game Bug Fixes — 6 reported issues (2026-09-27, shipped d6d8158)
 
 User-reported in-game defects, all fixed + audited for similar cases:
