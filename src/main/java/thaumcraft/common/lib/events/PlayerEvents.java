@@ -8,7 +8,10 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.WrittenBookContent;
+import net.minecraft.server.network.Filterable;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
@@ -32,6 +35,7 @@ import thaumcraft.init.ModItems;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -184,7 +188,35 @@ public class PlayerEvents {
             player.sendSystemMessage(
                 Component.translatable("tc.dream.2"));
             
+            // Give the "Strange Dreams" journal explaining how to craft the Thaumonomicon
+            giveDreamJournal(player);
+            
             Thaumcraft.LOGGER.info("Player {} received the Thaumcraft dream", player.getName().getString());
+        }
+    }
+    
+    /**
+     * Give the player the "Strange Dreams" journal (1.12: dream journal book).
+     * Explains the Thaumonomicon recipe: grind 3 different crystals + redstone into
+     * a glowing dust, then sprinkle the dust on a bookcase to reveal the Thaumonomicon.
+     */
+    private static void giveDreamJournal(Player player) {
+        ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
+        List<Filterable<Component>> pages = List.of(
+            Filterable.passThrough(Component.translatable("book.start.1")),
+            Filterable.passThrough(Component.translatable("book.start.2")),
+            Filterable.passThrough(Component.translatable("book.start.3"))
+        );
+        WrittenBookContent content = new WrittenBookContent(
+            Filterable.passThrough("Strange Dreams"),
+            player.getName().getString(),
+            3,
+            pages,
+            true
+        );
+        book.set(DataComponents.WRITTEN_BOOK_CONTENT, content);
+        if (!player.getInventory().add(book)) {
+            player.drop(book, false);
         }
     }
     
