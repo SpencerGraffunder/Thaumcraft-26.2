@@ -440,7 +440,7 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 
 ### LOW Priority (cosmetic/minor)
 - **FX/particle effects** (LOW): RESOLVED — Particle effects implemented for all 8 files: TileHole, TileTube, TileCondenser, TileFocalManipulator, TileInfernalFurnace, TileWaterJug, BlockVisGenerator, BlockEffect.
-- **ItemCreativePlacer structure placement** (LOW): Partial — places blocks but TODO for full structure placement.
+- **ItemCreativePlacer** (LOW): RESOLVED — 1.12 source confirms the item is a block **eraser** (not a structure placer); 26.2 port matches exactly (solid-block/face-offset/replaceable checks + `setBlock(AIR)`).
 - **SealEntity/SealHandler network sync** (LOW): RESOLVED — Sync implemented via PacketSealToClient.
 - **TileCrucible nitor check** (LOW): RESOLVED — Nitor block tag created (`c:nitor`) and check added to `isFireSource()`.
 - **ScanSky scribing tool check** (LOW): RESOLVED — Scribing tool (book + paper) check and consumption implemented.
@@ -453,9 +453,9 @@ All changes build green (`BUILD SUCCESSFUL`). In-game verification pending.
 - ✅ Golem SMART/SCOUT heads — traits wired (XP system, range bonus)
 - ✅ NeoForge transfer API — already using IFluidHandler/IItemHandler
 
-### Still open (not addressed)
-- **Golem components use placeholder vanilla items** (MEDIUM): WOOD→oak_planks, BRASS→gold_ingot, THAUMIUM→diamond, VOID→obsidian, mechanism→clock.
-- **ItemFocusPouch Curios integration** (LOW): Deferred — requires implementing `ICuriosItem` interface and slot definitions. Current implementation works as a held item; Curios support would allow wearing it for quick focus access.
+### Resolved / 1.12-faithful (re-verified 2026-09-28)
+- **Golem components use vanilla items** (MEDIUM): NOT a gap — 1.12 golems are assembled from vanilla items too (e.g. BREAKERS arms = 2× diamond + 2× piston, `GolemProperties.java:214`). 26.2 mapping (WOOD→oak_planks, BRASS→gold_ingot, THAUMIUM→diamond, VOID→obsidian, mechanism→clock) is 1.12-consistent.
+- **ItemFocusPouch Curios integration** (LOW): RESOLVED — `ItemFocusPouch implements ICuriosItemHandler` (line 56) backed by `PouchCurios` (18-slot `ICurioStacksHandler`/`IDynamicStackHandler` pair). Matches 1.12's `ItemFocusPouch implements IBauble` (Baubles being Curios' predecessor).
 
 ## P1: Functional gaps — RESOLVED (2026-09-04)
 

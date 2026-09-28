@@ -20,13 +20,13 @@ Re-verified against the current (post compile re-green) source. **`grep -rn TODO
 | 10 | PlayerKnowledge auto-unlock | ✅ RESOLVED — auto-unlock present (PlayerKnowledge) |
 | 11 | ConfigResearch stat discoveries | ✅ RESOLVED — stat-based discoveries present |
 | 12 | TileSmelter auxiliary vents | ✅ RESOLVED — vents reduce pollution (TileSmelter:267) |
-| 13 | FX/particle effects | ⚠️ PARTIAL — cosmetic; verify in-game (no gameplay impact) |
-| 14 | ItemCreativePlacer structures | ⚠️ PLACEHOLDER — creative-only; block erase works, full structure placement deferred (intentional) |
+| 13 | FX/particle effects | ✅ RESOLVED — all 8 sites spawn particles (TileHole, TileTube, TileCondenser, TileFocalManipulator, TileInfernalFurnace, TileWaterJug, BlockVisGenerator, BlockEffect) |
+| 14 | ItemCreativePlacer structures | ✅ RESOLVED — 1.12 source shows the item only **erases** a block (`setBlockToAir`); 26.2 port matches exactly (solid-block check, face-offset, replaceable check, `setBlock(AIR)`) |
 | 15 | Seal network sync | ✅ RESOLVED — `PacketSealToClient`/`syncToClient` (SealEntity:217, SealHandler:197) |
 | 16 | TileCrucible nitor check | ✅ RESOLVED — `BlockNitor` heat-source check (TileCrucible:125) |
 | 17 | ScanSky scribing check | ✅ RESOLVED — `hasScribingTools(player)` (ScanSky:84) |
 
-**Net: 15/17 resolved, 2 intentionally deferred (both LOW/cosmetic or creative-only, no gameplay blocker).**
+**Net: 17/17 resolved.** (Re-verified 2026-09-28: #13 all particle sites implemented since commit 83023ba; #14 the 1.12 reference source `reference/java_old-1.12/common/items/misc/ItemCreativePlacer.java` confirms the item is a block eraser, not a structure placer — 26.2 port is 1.12-faithful.)
 
 ---
 
@@ -113,22 +113,23 @@ Re-verified against the current (post compile re-green) source. **`grep -rn TODO
 
 ## LOW Priority (cosmetic/minor)
 
-### 13. FX/particle effects (multiple files)
-- `TileHole.java:82,165` - sparkle particles
-- `TileTube.java:144,353` - vent particles, creak sound
-- `TileCondenser.java:117` - spark particles
-- `TileFocalManipulator.java:186,445` - crafting particles
-- `TileInfernalFurnace.java:351` - fire particles
-- `TileWaterJug.java:176` - water trail FX
-- `BlockVisGenerator.java:96` - spark particles
-- `BlockEffect.java:114` - effect particles
-- **Impact**: Purely visual, no gameplay impact
+### 13. FX/particle effects (multiple files) — ✅ RESOLVED (verified 2026-09-28)
+All sites spawn particles (implemented in commit `83023ba`):
+- `tiles/misc/TileHole.java:84,207` - ENCHANT sparkle particles (hole edges)
+- `tiles/essentia/TileTube.java:145` - PORTAL vent particles + creak/extinguish sound (line 368)
+- `tiles/devices/TileCondenser.java:123` - ELECTRIC_SPARK
+- `tiles/crafting/TileFocalManipulator.java:190,454` - ENCHANT crafting particles
+- `tiles/devices/TileInfernalFurnace.java:356` - LAVA fire particles
+- `tiles/devices/TileWaterJug.java:181` - DRIPPING_WATER trail
+- `blocks/devices/BlockVisGenerator.java:97` - ELECTRIC_SPARK
+- `blocks/misc/BlockEffect.java:120,127` - ENCHANT + ELECTRIC_SPARK effect particles
+- **Impact**: Purely visual, no gameplay impact (now fully present)
 
-### 14. ItemCreativePlacer structure placement
+### 14. ItemCreativePlacer — ✅ RESOLVED / 1.12-faithful (verified 2026-09-28)
 - **File**: `src/main/java/thaumcraft/common/items/misc/ItemCreativePlacer.java`
-- **1.12**: Can place obelisks, nodes, casters
-- **26.2**: Partial - places blocks but TODO for full structure placement
-- **Impact**: Creative-only item, minor
+- **1.12 (actual)**: `reference/java_old-1.12/.../ItemCreativePlacer.java` shows the item only **erases** the target block (`world.setBlockToAir(pos)`) after a solid-block / face-offset / replaceable check. The earlier "places obelisks, nodes, casters" note was incorrect — the 1.12 item never placed structures.
+- **26.2**: Matches exactly — `isSolidRender` check, face-offset `placePos`, `mayUseItemAt`, `canBeReplaced`, then `setBlock(AIR)`.
+- **Impact**: Creative-only debug eraser; now fully 1.12-faithful.
 
 ### 15. SealEntity/SealHandler network sync
 - **Files**: `SealEntity.java:26`, `SealHandler.java:37-38`
