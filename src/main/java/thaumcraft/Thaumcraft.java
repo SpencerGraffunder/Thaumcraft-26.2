@@ -340,6 +340,52 @@ public class Thaumcraft {
     @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
     public static class ClientModEvents {
 
+        /**
+         * Adds Thaumcraft status lines (runic charge, warp, vis discount, vis charge,
+         * and essentia aspects) to item tooltips. Ported from the 1.12 PlayerEvents.tooltipEvent.
+         */
+        @SubscribeEvent
+        public static void onItemTooltip(net.neoforged.neoforge.event.entity.player.ItemTooltipEvent event) {
+            net.minecraft.world.item.ItemStack stack = event.getItemStack();
+            if (stack == null || stack.isEmpty()) return;
+            java.util.List<net.minecraft.network.chat.Component> tooltip = event.getToolTip();
+            net.minecraft.world.entity.player.Player player = event.getEntity();
+
+            int charge = thaumcraft.common.lib.events.PlayerEvents.getRunicCharge(stack);
+            if (charge > 0) {
+                tooltip.add(net.minecraft.network.chat.Component.translatable("item.runic.charge")
+                        .withStyle(net.minecraft.ChatFormatting.GOLD).append(" +" + charge));
+            }
+            int warp = thaumcraft.common.lib.events.PlayerEvents.getFinalWarp(stack, player);
+            if (warp > 0) {
+                tooltip.add(net.minecraft.network.chat.Component.translatable("item.warping")
+                        .withStyle(net.minecraft.ChatFormatting.DARK_PURPLE).append(" " + warp));
+            }
+            int discount = thaumcraft.common.lib.events.PlayerEvents.getFinalDiscount(stack, player);
+            if (discount > 0) {
+                tooltip.add(net.minecraft.network.chat.Component.translatable("tc.visdiscount")
+                        .withStyle(net.minecraft.ChatFormatting.DARK_PURPLE).append(": " + discount + "%"));
+            }
+            if (stack.getItem() instanceof thaumcraft.api.items.IRechargable) {
+                try {
+                    int c = Math.round((float) thaumcraft.api.items.RechargeHelper.getCharge(stack));
+                    if (c >= 0) {
+                        tooltip.add(net.minecraft.network.chat.Component.translatable("tc.charge")
+                                .withStyle(net.minecraft.ChatFormatting.YELLOW).append(" " + c));
+                    }
+                } catch (Exception ignored) {}
+            }
+            if (stack.getItem() instanceof thaumcraft.api.aspects.IEssentiaContainerItem ess) {
+                thaumcraft.api.aspects.AspectList aspects = ess.getAspects(stack);
+                if (aspects != null && aspects.size() > 0) {
+                    for (thaumcraft.api.aspects.Aspect tag : aspects.getAspectsSortedByName()) {
+                        tooltip.add(net.minecraft.network.chat.Component.literal(
+                                tag.getName() + " x" + aspects.getAmount(tag)).withStyle(net.minecraft.ChatFormatting.GRAY));
+                    }
+                }
+            }
+        }
+
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             thaumcraft.client.lib.network.PacketClientWiring.init();

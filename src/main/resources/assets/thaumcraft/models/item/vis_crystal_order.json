@@ -1,3 +1,6 @@
 {
-  "parent": "thaumcraft:item/vis_crystal_base"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "thaumcraft:item/vis_crystal_order"
+  }
 }
