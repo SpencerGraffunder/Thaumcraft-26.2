@@ -5,6 +5,33 @@
 > research-data load — and historical one-off tickets are recorded in git
 > history. Only outstanding work appears below.
 
+## In-Game Bug Fixes — 6 reported issues (2026-09-27, shipped d6d8158)
+
+User-reported in-game defects, all fixed + audited for similar cases:
+
+- **Keybind names**: `key.thaumcraft.focus` / `key.thaumcraft.misc` lang keys were
+  missing → controls menu showed raw keys. Added with the 1.12 names ("Change
+  Caster Focus" / "Misc Caster Toggle").
+- **Pillar transparency**: all 3 pillar block textures (ancient/normal/eldritch)
+  were 64×64 with only ~41% opaque (designed for a 1.12 3D OBJ model, now on a
+  flat `cube_column`) → visible see-through holes. Filled the transparent grooves
+  to 100% opacity (darkened stone shade) so the pillars render solid.
+- **Crystal items looked like candles**: the 6 `vis_crystal_*` items used a thin
+  3D tapered column (`vis_crystal_base`) with a sparse texture. Replaced with
+  per-aspect 2D gem sprites colored via `Aspect.getColor()`.
+- **Essentia/aspect symbols not shown**: the 1.12 `ItemTooltipEvent` handler was
+  never ported. Re-added in `ClientModEvents.onItemTooltip` — runic charge, warp,
+  vis discount, charge, and `aspect x amount` on `IEssentiaContainerItem`.
+- **Strange Dreams book showed literal `\n`**: the lang values used `\\n` (escaped
+  backslash-n). Fixed to real newlines.
+- **Salis Mundus hint mismatched the recipe**: the book described the 1.12
+  bowl+flint crafting recipe, but 26.2 uses a crucible recipe (redstone catalyst
+  + 6 primal aspects + praecantatio). Rewrote the dream text to match the actual
+  crucible recipe.
+
+Verified: `./gradlew build` green, 0 TODOs in src/, **86/86 tests**. Jar
+reinstalled into the `NeoForge 26.2` Modrinth profile.
+
 ## 26.2 Port — Compile Re-Green (2026-09-25, shipped 63a9215)
 
 A corrupted session left the working tree mid-port with ~441 compile errors
