@@ -1,12 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    { "tag": "thaumcraft:crystals" },
-    { "tag": "thaumcraft:crystals" },
-    { "tag": "thaumcraft:crystals" },
-    { "item": "minecraft:flint" },
-    { "item": "minecraft:bowl" },
-    { "item": "minecraft:redstone" }
+    "#thaumcraft:crystals",
+    "#thaumcraft:crystals",
+    "#thaumcraft:crystals",
+    "minecraft:flint",
+    "minecraft:bowl",
+    "minecraft:redstone"
   ],
   "result": {
     "id": "thaumcraft:salis_mundus",
