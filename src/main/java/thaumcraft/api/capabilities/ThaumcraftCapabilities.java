@@ -94,8 +94,10 @@ public class ThaumcraftCapabilities {
      * @return The knowledge data, or null if not registered yet
      */
     @Nullable
-    public static IPlayerKnowledge getKnowledge(@Nonnull Player player) {
-        return KNOWLEDGE != null ? player.getData(KNOWLEDGE) : null;
+    public static IPlayerKnowledge getKnowledge(@Nullable Player player) {
+        // player can be null on client tooltip paths (e.g. creative search trees);
+        // treat as 'no knowledge' rather than NPE.
+        return (KNOWLEDGE != null && player != null) ? player.getData(KNOWLEDGE) : null;
     }
 
     /**
@@ -190,7 +192,9 @@ public class ThaumcraftCapabilities {
      * @return The warp data, or null if not registered yet
      */
     @Nullable
-    public static IPlayerWarp getWarp(@Nonnull Player player) {
-        return WARP != null ? player.getData(WARP) : null;
+    public static IPlayerWarp getWarp(@Nullable Player player) {
+        // player can be null on client tooltip paths (e.g. creative search trees);
+        // treat as 'no warp data' rather than NPE.
+        return (WARP != null && player != null) ? player.getData(WARP) : null;
     }
 }

@@ -192,6 +192,9 @@ public class ServerEvents {
             VirtualSwapper vs = queue.poll();
             if (vs == null) continue;
             
+            // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
+            Thaumcraft.LOGGER.info("[SALIS-DBG] swapper dequeued at {} (source={}, target={})", vs.pos, vs.source, vs.target);
+            
             BlockState currentState = level.getBlockState(vs.pos);
             
             // Check if swap is allowed
@@ -202,6 +205,11 @@ public class ServerEvents {
                 allow = false;
             }
             
+            // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
+            if (!allow) {
+                Thaumcraft.LOGGER.info("[SALIS-DBG] swapper REJECTED (allow=false) at {} (current={})", vs.pos, currentState);
+            }
+            
             // Check vis cost
             // if (vs.visCost > 0.0f && AuraHelper.getVis(level, vs.pos) < vs.visCost) {
             //     allow = false;
@@ -209,11 +217,17 @@ public class ServerEvents {
             
             // Check if player can mine here
             if (vs.player != null && !level.mayInteract(vs.player, vs.pos)) {
+                // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
+                Thaumcraft.LOGGER.info("[SALIS-DBG] swapper REJECTED (player may not interact) at {}", vs.pos);
                 continue;
             }
             
             // Check predicate
             if (!allow || !vs.allowSwap.test(new SwapperPredicate(level, vs.player, vs.pos))) {
+                // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
+                if (allow) {
+                    Thaumcraft.LOGGER.info("[SALIS-DBG] swapper REJECTED (predicate failed) at {}", vs.pos);
+                }
                 continue;
             }
             
@@ -236,8 +250,13 @@ public class ServerEvents {
                 }
             }
             
-            if (slot < 0) continue;
+            if (slot < 0) {
+                // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
+                Thaumcraft.LOGGER.info("[SALIS-DBG] swapper REJECTED (no item slot) at {} target={}", vs.pos, vs.target);
+                continue;
+            }
             
+            Thaumcraft.LOGGER.info("[SALIS-DBG] swapper EXECUTING at {} -> {}", vs.pos, vs.target);
             // Perform the swap
             if (vs.player != null && !vs.player.isCreative()) {
                 // Consume target item

@@ -56,6 +56,9 @@ public class ItemVoidseerCharm extends Item implements IVisDiscountGear, IWarpin
      * Get the player's permanent warp level.
      */
     private int getPlayerPermanentWarp(Player player) {
+        if (player == null) {
+            return 0;
+        }
         IPlayerWarp warp = ThaumcraftCapabilities.getWarp(player);
         if (warp != null) {
             return warp.get(IPlayerWarp.EnumWarpType.PERMANENT);

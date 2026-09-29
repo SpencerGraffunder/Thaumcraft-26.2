@@ -350,18 +350,21 @@ public class Thaumcraft {
             if (stack == null || stack.isEmpty()) return;
             java.util.List<net.minecraft.network.chat.Component> tooltip = event.getToolTip();
             net.minecraft.world.entity.player.Player player = event.getEntity();
+            // player is null when tooltips are generated for search trees (creative
+            // inventory search) - skip the player-dependent lookups there.
+            boolean hasPlayer = player != null;
 
             int charge = thaumcraft.common.lib.events.PlayerEvents.getRunicCharge(stack);
             if (charge > 0) {
                 tooltip.add(net.minecraft.network.chat.Component.translatable("item.runic.charge")
                         .withStyle(net.minecraft.ChatFormatting.GOLD).append(" +" + charge));
             }
-            int warp = thaumcraft.common.lib.events.PlayerEvents.getFinalWarp(stack, player);
+            int warp = hasPlayer ? thaumcraft.common.lib.events.PlayerEvents.getFinalWarp(stack, player) : 0;
             if (warp > 0) {
                 tooltip.add(net.minecraft.network.chat.Component.translatable("item.warping")
                         .withStyle(net.minecraft.ChatFormatting.DARK_PURPLE).append(" " + warp));
             }
-            int discount = thaumcraft.common.lib.events.PlayerEvents.getFinalDiscount(stack, player);
+            int discount = hasPlayer ? thaumcraft.common.lib.events.PlayerEvents.getFinalDiscount(stack, player) : 0;
             if (discount > 0) {
                 tooltip.add(net.minecraft.network.chat.Component.translatable("tc.visdiscount")
                         .withStyle(net.minecraft.ChatFormatting.DARK_PURPLE).append(": " + discount + "%"));

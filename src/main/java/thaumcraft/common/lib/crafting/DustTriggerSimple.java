@@ -52,6 +52,9 @@ public class DustTriggerSimple implements IDustTrigger {
         
         // Check research requirement
         if (research != null && !ThaumcraftCapabilities.knowsResearch(player, research)) {
+            // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
+            thaumcraft.Thaumcraft.LOGGER.info("[SALIS-DBG] block matches but research '{}' NOT known (side={})",
+                research, level.isClientSide() ? "CLIENT" : "SERVER");
             return null;
         }
         
@@ -63,6 +66,9 @@ public class DustTriggerSimple implements IDustTrigger {
         if (level.isClientSide()) {
             return;
         }
+        
+        // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
+        thaumcraft.Thaumcraft.LOGGER.info("[SALIS-DBG] DustTriggerSimple executing on {} -> {} (scheduling swapper)", pos, result);
         
         // Fire crafting event for advancements
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(player, result.copy(), null));
