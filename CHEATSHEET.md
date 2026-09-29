@@ -1,4 +1,9 @@
-# Thaumcraft 26.2 — Compile-Fix API Cheat-Sheet
+# Thaumcraft — Compile-Fix API Cheat-Sheet
+
+> **26.3 note (2026-09-28):** the port now targets Minecraft 26.3 / NeoForge
+> 26.3.0.33-beta. The facts below were verified on 26.2 and have held on 26.3
+> so far — but always re-verify signatures against the 26.3 decompiled tree
+> (path below) before relying on them.
 
 **Goal**: fix ALL compile errors in `src/main/java/thaumcraft/**`. Vanilla recompile is GREEN.
 **RULES**:
@@ -9,7 +14,7 @@
 
 ## Decompiled vanilla source (THE API REFERENCE)
 ```
-T=/Users/spencer/Documents/Thaumcraft-26.2/build/neoForm/neoFormJoined26.2-2/steps/transformSource/transformed
+T=/Users/spencer/Documents/Thaumcraft-26.2/build/neoForm/neoFormJoined26.3-1/steps/transformSource/transformed
 grep -rn "methodName" $T/net/minecraft/...   # find exact signatures
 ```
 

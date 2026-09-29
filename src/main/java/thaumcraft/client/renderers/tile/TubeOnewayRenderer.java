@@ -75,7 +75,7 @@ public class TubeOnewayRenderer implements BlockEntityRenderer<TileTubeOneway, T
         poseStack.translate(0, -0.32 / 0.0625 / 2, 0);  // Adjust position
 
         submitNodeCollector.submitModelPart(this.model.getRod(), poseStack, this.model.renderType(TEXTURE),
-                state.lightCoords, OverlayTexture.NO_OVERLAY, null, tintedColor, state.breakProgress);
+                state.lightCoords, OverlayTexture.NO_OVERLAY, null, tintedColor);
 
         poseStack.popPose();
     }
@@ -85,14 +85,14 @@ public class TubeOnewayRenderer implements BlockEntityRenderer<TileTubeOneway, T
      */
     private void applyFacingRotation(PoseStack poseStack, Direction facing) {
         if (facing.getAxis() != Direction.Axis.Y) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            poseStack.rotate(Axis.YP.rotationDegrees(90));
         } else {
-            poseStack.mulPose(Axis.XN.rotationDegrees(90));
-            poseStack.mulPose(Axis.YP.rotationDegrees(90.0f * facing.getStepY()));
+            poseStack.rotate(Axis.XN.rotationDegrees(90));
+            poseStack.rotate(Axis.YP.rotationDegrees(90.0f * facing.getStepY()));
         }
         
-        poseStack.mulPose(Axis.XP.rotationDegrees(90.0f * facing.getStepX()));
-        poseStack.mulPose(Axis.YP.rotationDegrees(90.0f * facing.getStepY()));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f * facing.getStepZ()));
+        poseStack.rotate(Axis.XP.rotationDegrees(90.0f * facing.getStepX()));
+        poseStack.rotate(Axis.YP.rotationDegrees(90.0f * facing.getStepY()));
+        poseStack.rotate(Axis.ZP.rotationDegrees(90.0f * facing.getStepZ()));
     }
 }

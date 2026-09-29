@@ -16,7 +16,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import thaumcraft.api.ItemHandlers;
 import thaumcraft.api.golems.GolemHelper;
 import thaumcraft.api.golems.seals.ISealEntity;
 import thaumcraft.api.golems.seals.SealPos;
@@ -125,11 +127,11 @@ public class LogisticsMenu extends AbstractContainerMenu {
                 if (seal.getSeal() instanceof SealProvide sealProvide && 
                     seal.getOwner().equals(player.getUUID().toString())) {
                     
-                    IItemHandler handler = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
+                    ResourceHandler<ItemResource> handler = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
                     if (handler == null) continue;
                     
-                    for (int slot = 0; slot < handler.getSlots(); slot++) {
-                        ItemStack stack = handler.getStackInSlot(slot).copy();
+                    for (int slot = 0; slot < ItemHandlers.getSlots(handler); slot++) {
+                        ItemStack stack = ItemHandlers.getStackInSlot(handler, slot).copy();
                         if (stack.isEmpty()) continue;
                         
                         // Check if matches seal filter
@@ -186,12 +188,12 @@ public class LogisticsMenu extends AbstractContainerMenu {
         }
     }
     
-    private IItemHandler getItemHandler(Level level, BlockPos pos, Direction face) {
+    private ResourceHandler<ItemResource> getItemHandler(Level level, BlockPos pos, Direction face) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
             var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, face);
             if (handler != null) {
-                return IItemHandler.of(handler);
+                return handler;
             }
         }
         return null;
@@ -284,11 +286,11 @@ public class LogisticsMenu extends AbstractContainerMenu {
             if (seal.getSeal() instanceof SealProvide sealProvide && 
                 seal.getOwner().equals(player.getUUID().toString())) {
                 
-                IItemHandler handler = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
+                ResourceHandler<ItemResource> handler = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
                 if (handler == null) continue;
                 
-                for (int slot = 0; slot < handler.getSlots(); slot++) {
-                    ItemStack slotStack = handler.getStackInSlot(slot);
+                for (int slot = 0; slot < ItemHandlers.getSlots(handler); slot++) {
+                    ItemStack slotStack = ItemHandlers.getStackInSlot(handler, slot);
                     if (ItemStack.isSameItemSameComponents(slotStack, stack)) {
                         // Create provision request to deliver to player
                         GolemHelper.requestProvisioning(

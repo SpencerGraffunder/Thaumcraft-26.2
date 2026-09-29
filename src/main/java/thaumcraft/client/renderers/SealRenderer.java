@@ -122,12 +122,12 @@ public class SealRenderer {
      */
     private static void applyFaceRotation(PoseStack poseStack, Direction face) {
         switch (face) {
-            case UP -> poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-90));
-            case DOWN -> poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(90));
+            case UP -> poseStack.rotate(com.mojang.math.Axis.XP.rotationDegrees(-90));
+            case DOWN -> poseStack.rotate(com.mojang.math.Axis.XP.rotationDegrees(90));
             case NORTH -> { } // Default facing
-            case SOUTH -> poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(180));
-            case WEST -> poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-90));
-            case EAST -> poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(90));
+            case SOUTH -> poseStack.rotate(com.mojang.math.Axis.YP.rotationDegrees(180));
+            case WEST -> poseStack.rotate(com.mojang.math.Axis.YP.rotationDegrees(-90));
+            case EAST -> poseStack.rotate(com.mojang.math.Axis.YP.rotationDegrees(90));
         }
     }
     

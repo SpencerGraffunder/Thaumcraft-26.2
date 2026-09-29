@@ -65,13 +65,38 @@ def fix_file(path, filename):
             '@SuppressWarnings("unchecked")\n    static <Value> AttributeModifier<Value, Value> override() {\n        return (AttributeModifier<Value, Value>) AttributeModifier.OverrideModifier.INSTANCE;\n    }'
         )
 
-    # --- 7. CustomPayload packets: codec() takes only (fallback, types) ---
-    # Drop the trailing ConnectionProtocol/PacketFlow args.
+    # --- 7. CustomPayload packets: codec() arity mismatch (decompiler/patch variance) ---
+    # 26.2 shape: the decompiled CALL SITES pass 4 args (fallback, types, protocol,
+    #   packetFlow) but the decompiled interface only has codec(fallback, types)
+    #   (the userdev hunk that adds protocol/packetFlow was rejected) -> drop the extra args.
+    # 26.3 shape: the interface HAS codec(fallback, types, protocol, packetFlow) but the
+    #   decompiled call sites pass only 2 args (the userdev artifact predates the
+    #   call-site patches) -> add the missing args (PLAY for the stream/gameplay codec,
+    #   CONFIGURATION for the config codec; SERVERBOUND/CLIENTBOUND per class).
     if filename in ('ClientboundCustomPayloadPacket.java', 'ServerboundCustomPayloadPacket.java'):
-        content = re.sub(
-            r',\s*net\.minecraft\.network\.ConnectionProtocol\.\w+,\s*net\.minecraft\.network\.protocol\.PacketFlow\.\w+',
-            '', content
-        )
+        cpath = os.path.join(base, 'net/minecraft/network/protocol/common/custom/CustomPacketPayload.java')
+        four_arg_iface = False
+        if os.path.exists(cpath):
+            with open(cpath, 'r') as fh:
+                four_arg_iface = 'packetFlow' in fh.read()
+        flow = 'SERVERBOUND' if filename.startswith('Serverbound') else 'CLIENTBOUND'
+        if four_arg_iface and 'ConnectionProtocol' not in content:
+            # Gameplay/stream codec first (appears first in both files), then config codec.
+            content = re.sub(
+                r'(CustomPacketPayload\.<[^>]+>codec\(\s*\n\s+\w+ -> DiscardedPayload\.codec\(\w+, \d+\),\s*\n\s+Util\.make\(Lists\.newArrayList\(new CustomPacketPayload\.TypeAndCodec<>\(BrandPayload\.TYPE, BrandPayload\.STREAM_CODEC\)\), types -> \{\}\))\n(\s*\))',
+                r'\1,\n            net.minecraft.network.ConnectionProtocol.PLAY,\n            net.minecraft.network.protocol.PacketFlow.%s\n\2' % flow,
+                content, count=1
+            )
+            content = re.sub(
+                r'(CustomPacketPayload\.<[^>]+>codec\(\s*\n\s+\w+ -> DiscardedPayload\.codec\(\w+, \d+\),\s*(?:\n\s+)?(?:Util\.make\(Lists\.newArrayList\(new CustomPacketPayload\.TypeAndCodec<>\(BrandPayload\.TYPE, BrandPayload\.STREAM_CODEC\)\), types -> \{\}\)|List\.of\(new CustomPacketPayload\.TypeAndCodec<>\(BrandPayload\.TYPE, BrandPayload\.STREAM_CODEC\)\)))\n(\s*\))',
+                r'\1,\n            net.minecraft.network.ConnectionProtocol.CONFIGURATION,\n            net.minecraft.network.protocol.PacketFlow.%s\n\2' % flow,
+                content, count=1
+            )
+        elif not four_arg_iface and 'ConnectionProtocol' in content:
+            content = re.sub(
+                r',\s*net\.minecraft\.network\.ConnectionProtocol\.\w+,\s*net\.minecraft\.network\.protocol\.PacketFlow\.\w+',
+                '', content
+            )
 
     # --- 8. CustomPacketPayload: findCodec returns wildcard codec ---
     if 'CustomPacketPayload' in filename and 'writeCap' in content:
@@ -236,29 +261,17 @@ def fix_file(path, filename):
             'super.rotate(state, direction)'
         )
 
-    # --- 16. LevelEventHandler: variable redefinition in case 2003 ---
+    # --- 16. LevelEventHandler: case 2003 local-variable name mismatch ---
+    # 26.3 decompiler: `case 2003: {` declares clean names (x, y, z, breakParticle)
+    # but the particle loop body references them with a "2003" suffix (x2003, ...).
+    # Normalize the usages to the declared names. Idempotent: once the suffixed
+    # names are gone, the condition no longer holds.
     if 'LevelEventHandler' in filename:
-        content = content.replace(
-            'case 2003:\n                double x = pos.getX() + 0.5;\n                double y = pos.getY();\n                double z = pos.getZ() + 0.5;\n                ItemParticleOption breakParticle = new ItemParticleOption(ParticleTypes.ITEM, Items.ENDER_EYE);',
-            'case 2003:\n                double x2003 = pos.getX() + 0.5;\n                double y2003 = pos.getY();\n                double z2003 = pos.getZ() + 0.5;\n                ItemParticleOption breakParticle2003 = new ItemParticleOption(ParticleTypes.ITEM, Items.ENDER_EYE);'
-        )
-        content = content.replace(
-            'this.level.addParticle(breakParticle, x, y, z, random.nextGaussian() * 0.15, random.nextDouble() * 0.2, random.nextGaussian() * 0.15);',
-            'this.level.addParticle(breakParticle2003, x2003, y2003, z2003, random.nextGaussian() * 0.15, random.nextDouble() * 0.2, random.nextGaussian() * 0.15);'
-        )
-        # Portal particle loop still references the renamed locals
-        content = content.replace(
-            'x + Math.cos(angle) * 5.0',
-            'x2003 + Math.cos(angle) * 5.0'
-        )
-        content = content.replace(
-            'y - 0.4',
-            'y2003 - 0.4'
-        )
-        content = content.replace(
-            'z + Math.sin(angle) * 5.0',
-            'z2003 + Math.sin(angle) * 5.0'
-        )
+        if 'double x = pos.getX() + 0.5;' in content and 'x2003' in content:
+            content = content.replace('breakParticle2003', 'breakParticle')
+            content = content.replace('x2003', 'x')
+            content = content.replace('y2003', 'y')
+            content = content.replace('z2003', 'z')
 
     # --- 17. SpawnPlacements: generic type mismatch ---
     if 'SpawnPlacements' in filename:

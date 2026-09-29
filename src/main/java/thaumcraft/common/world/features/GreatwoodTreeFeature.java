@@ -1,18 +1,18 @@
 package thaumcraft.common.world.features;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -30,7 +30,7 @@ import thaumcraft.init.ModBlocks;
  * - Dense leaf canopy
  * - Optional spider nest variant with spawner and loot
  */
-public class GreatwoodTreeFeature extends Feature<NoneFeatureConfiguration> {
+public class GreatwoodTreeFeature implements Feature {
 
     private static final byte[] OTHER_COORD_PAIRS = {2, 0, 0, 1, 2, 1};
     
@@ -49,15 +49,19 @@ public class GreatwoodTreeFeature extends Feature<NoneFeatureConfiguration> {
     private int[][] leafNodes;
     private int[] basePos = new int[3];
     
-    public GreatwoodTreeFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+    public static final MapCodec<GreatwoodTreeFeature> CODEC = MapCodec.unit(GreatwoodTreeFeature::new);
+    
+    @Override
+    public MapCodec<? extends Feature> codec() {
+        return CODEC;
+    }
+    
+    public GreatwoodTreeFeature() {
     }
     
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        BlockPos pos = context.origin();
-        RandomSource random = context.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
+        BlockPos pos = origin;
         
         // 1 in 8 chance for spider variant
         boolean spiders = random.nextInt(8) == 0;

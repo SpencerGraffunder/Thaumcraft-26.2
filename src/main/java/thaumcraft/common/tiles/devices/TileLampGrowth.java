@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -148,10 +149,10 @@ public class TileLampGrowth extends TileThaumcraft implements IEssentiaTransport
 
             // Check if it's a growable plant
             if (block instanceof BonemealableBlock growable) {
-                // 26.2 API: isValidBonemealTarget(LevelReader, BlockPos, BlockState)
-                if (growable.isValidBonemealTarget(level, checkPos, blockState)) {
-                    if (growable.isBonemealSuccess(level, level.getRandom(), checkPos, blockState)) {
-                        growable.performBonemeal(serverLevel, level.getRandom(), checkPos, blockState);
+                // 26.3 API: all bonemeal methods take a BonemealSource
+                if (growable.isValidBonemealTarget(level, checkPos, blockState, BonemealSource.MOB)) {
+                    if (growable.isBonemealSuccess(level, level.getRandom(), checkPos, blockState, BonemealSource.MOB)) {
+                        growable.performBonemeal(serverLevel, level.getRandom(), checkPos, blockState, BonemealSource.MOB);
                         charges--;
                         lastX = x;
                         lastY = y;

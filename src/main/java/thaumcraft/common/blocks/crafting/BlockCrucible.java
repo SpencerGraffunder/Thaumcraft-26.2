@@ -18,7 +18,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -32,6 +31,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.api.FluidTanks;
 import thaumcraft.common.blocks.BlockTCDevice;
 import thaumcraft.common.tiles.crafting.TileCrucible;
 import thaumcraft.init.ModBlockEntities;
@@ -103,7 +103,7 @@ public class BlockCrucible extends BlockTCDevice {
                     if (collisionDelay >= 10) {
                         collisionDelay = 0;
                         // Damage living entities in heated crucible
-                        if (crucible.isHeated() && crucible.getTank().getFluidAmount() > 0) {
+                        if (crucible.isHeated() && FluidTanks.getAmount(crucible.getTank()) > 0) {
                             living.hurt(level.damageSources().inFire(), 1.0f);
                             level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 
                                     0.4f, 2.0f + level.getRandom().nextFloat() * 0.4f);
@@ -128,7 +128,7 @@ public class BlockCrucible extends BlockTCDevice {
 
         // Shift + empty hand = dump contents
         if (player.isShiftKeyDown()) {
-            if (crucible.aspects.visSize() > 0 || crucible.getTank().getFluidAmount() > 0) {
+            if (crucible.aspects.visSize() > 0 || FluidTanks.getAmount(crucible.getTank()) > 0) {
                 crucible.spillAll();
                 level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
                 return InteractionResult.SUCCESS;
@@ -161,14 +161,13 @@ public class BlockCrucible extends BlockTCDevice {
                 heldItem.getCapability(net.neoforged.neoforge.capabilities.Capabilities.Fluid.ITEM,
                         net.neoforged.neoforge.transfer.access.ItemAccess.forStack(heldItem));
         if (fluidHandler != null) {
-            IFluidHandler itemHandler = IFluidHandler.of(fluidHandler);
-            FluidStack contained = itemHandler.getFluidInTank(0);
+            FluidStack contained = FluidTanks.getStack(fluidHandler);
             if (contained.getFluid() == Fluids.WATER && contained.getAmount() > 0) {
                 // Fill crucible with water
-                int filled = crucible.getTank().fill(contained, IFluidHandler.FluidAction.SIMULATE);
+                int filled = FluidTanks.fill(crucible.getTank(), contained, true);
                 if (filled > 0) {
-                    FluidStack drained = itemHandler.drain(filled, IFluidHandler.FluidAction.EXECUTE);
-                    crucible.getTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
+                    FluidStack drained = FluidTanks.drain(fluidHandler, filled, false);
+                    FluidTanks.fill(crucible.getTank(), drained, false);
                     
                     // Handle bucket specifically
                     if (heldItem.is(Items.WATER_BUCKET)) {
@@ -183,13 +182,13 @@ public class BlockCrucible extends BlockTCDevice {
                     crucible.markDirtyAndSync();
                     return InteractionResult.SUCCESS;
                 }
-            } else if (contained.isEmpty() && crucible.getTank().getFluidAmount() > 0) {
+            } else if (contained.isEmpty() && FluidTanks.getAmount(crucible.getTank()) > 0) {
                 // Take water from crucible
-                FluidStack inCrucible = crucible.getTank().getFluid();
-                int filled = itemHandler.fill(inCrucible, IFluidHandler.FluidAction.SIMULATE);
+                FluidStack inCrucible = FluidTanks.getStack(crucible.getTank());
+                int filled = FluidTanks.fill(fluidHandler, inCrucible, true);
                 if (filled > 0) {
-                    FluidStack drained = crucible.getTank().drain(filled, IFluidHandler.FluidAction.EXECUTE);
-                    itemHandler.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+                    FluidStack drained = FluidTanks.drain(crucible.getTank(), filled, false);
+                    FluidTanks.fill(fluidHandler, drained, false);
                     
                     // Handle bucket specifically
                     if (heldItem.is(Items.BUCKET)) {
@@ -208,7 +207,7 @@ public class BlockCrucible extends BlockTCDevice {
         }
         
         // If crucible is heated and has water, try to smelt the held item
-        if (crucible.isHeated() && crucible.getTank().getFluidAmount() > 0) {
+        if (crucible.isHeated() && FluidTanks.getAmount(crucible.getTank()) > 0) {
             ItemStack result = crucible.attemptSmelt(heldItem.copy(), player.getName().getString());
             if (result == null || result.getCount() < heldItem.getCount()) {
                 // Something was smelted
@@ -257,7 +256,7 @@ public class BlockCrucible extends BlockTCDevice {
         if (random.nextInt(10) == 0) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof TileCrucible crucible) {
-                if (crucible.isHeated() && crucible.getTank().getFluidAmount() > 0) {
+                if (crucible.isHeated() && FluidTanks.getAmount(crucible.getTank()) > 0) {
                     level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(),
                             SoundEvents.LAVA_POP, SoundSource.BLOCKS,
                             0.1f + random.nextFloat() * 0.1f, 1.2f + random.nextFloat() * 0.2f, false);

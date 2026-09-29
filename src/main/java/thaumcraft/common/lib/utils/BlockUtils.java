@@ -150,7 +150,9 @@ public class BlockUtils {
                 }
                 
                 // Drop resources
-                block.playerDestroy(level, player, pos, state, blockEntity, effectiveTool);
+                if (level instanceof ServerLevel destroyLevel) {
+                    block.playerDestroy(destroyLevel, serverPlayer, pos, state, blockEntity, effectiveTool);
+                }
             }
         }
 

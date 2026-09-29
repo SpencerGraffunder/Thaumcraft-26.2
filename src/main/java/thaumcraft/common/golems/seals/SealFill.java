@@ -8,8 +8,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import thaumcraft.api.ItemHandlers;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.IGolemAPI;
@@ -72,7 +73,7 @@ public class SealFill extends SealFiltered implements ISealConfigToggles {
         }
         
         // Check if inventory can accept items
-        IItemHandler handler = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
+        ResourceHandler<ItemResource> handler = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
         if (handler != null && hasSpace(handler)) {
             Task task = new Task(seal.getSealPos(), seal.getSealPos().pos);
             task.setPriority(seal.getPriority());
@@ -84,9 +85,9 @@ public class SealFill extends SealFiltered implements ISealConfigToggles {
     /**
      * Check if handler has any empty space
      */
-    private boolean hasSpace(IItemHandler handler) {
-        for (int slot = 0; slot < handler.getSlots(); slot++) {
-            ItemStack stack = handler.getStackInSlot(slot);
+    private boolean hasSpace(ResourceHandler<ItemResource> handler) {
+        for (int slot = 0; slot < ItemHandlers.getSlots(handler); slot++) {
+            ItemStack stack = ItemHandlers.getStackInSlot(handler, slot);
             if (stack.isEmpty() || stack.getCount() < stack.getMaxStackSize()) {
                 return true;
             }
@@ -97,12 +98,12 @@ public class SealFill extends SealFiltered implements ISealConfigToggles {
     /**
      * Get item handler at position
      */
-    private IItemHandler getItemHandler(Level level, BlockPos pos, Direction face) {
+    private ResourceHandler<ItemResource> getItemHandler(Level level, BlockPos pos, Direction face) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
             var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, face);
             if (handler != null) {
-                return IItemHandler.of(handler);
+                return handler;
             }
         }
         return null;
@@ -147,7 +148,7 @@ public class SealFill extends SealFiltered implements ISealConfigToggles {
     
     @Override
     public boolean onTaskCompletion(Level level, IGolemAPI golem, Task task) {
-        IItemHandler handler = getItemHandler(level, task.getSealPos().pos, task.getSealPos().face);
+        ResourceHandler<ItemResource> handler = getItemHandler(level, task.getSealPos().pos, task.getSealPos().face);
         
         if (handler != null) {
             // Try to deposit all matching items the golem is carrying
@@ -155,7 +156,7 @@ public class SealFill extends SealFiltered implements ISealConfigToggles {
                 if (!carried.isEmpty() && matchesFilter(carried)) {
                     ItemStack toInsert = golem.dropItem(carried);
                     if (!toInsert.isEmpty()) {
-                        ItemStack remaining = ItemHandlerHelper.insertItemStacked(handler, toInsert, false);
+                        ItemStack remaining = ItemHandlers.insertItemStacked(handler, toInsert, false);
                         
                         if (!remaining.isEmpty()) {
                             // Put back what couldn't be inserted

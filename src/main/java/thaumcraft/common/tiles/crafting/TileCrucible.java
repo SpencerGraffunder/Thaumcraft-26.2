@@ -13,12 +13,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
+import thaumcraft.api.FluidTanks;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
@@ -46,10 +44,10 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
     public short heat = 0;
     public AspectList aspects = new AspectList();
     
-    private final FluidTank tank = new FluidTank(TANK_CAPACITY) {
+    private final FluidStacksResourceHandler tank = new FluidStacksResourceHandler(1, TANK_CAPACITY) {
         @Override
-        public boolean isFluidValid(FluidStack stack) {
-            return stack.getFluid() == Fluids.WATER;
+        public boolean isValid(int slot, FluidResource resource) {
+            return resource.getFluid() == Fluids.WATER;
         }
     };
 
@@ -85,7 +83,7 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
         int prevHeat = tile.heat;
 
         // Check for heat source below
-        if (tile.tank.getFluidAmount() > 0) {
+        if (FluidTanks.getAmount(tile.tank) > 0) {
             BlockState below = level.getBlockState(pos.below());
             if (tile.isHeatSource(below)) {
                 if (tile.heat < 200) {
@@ -132,7 +130,7 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
      */
     public void attemptSmelt(ItemEntity itemEntity) {
         if (level == null || level.isClientSide()) return;
-        if (heat < 151 || tank.getFluidAmount() <= 0) return;
+        if (heat < 151 || FluidTanks.getAmount(tank) <= 0) return;
 
         ItemStack stack = itemEntity.getItem();
         // In 1.20.1, thrower info is stored differently
@@ -272,8 +270,8 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
         if (level == null) return;
         
         int total = aspects.visSize();
-        if (tank.getFluidAmount() > 0 || total > 0) {
-            tank.drain(TANK_CAPACITY, IFluidHandler.FluidAction.EXECUTE);
+        if (FluidTanks.getAmount(tank) > 0 || total > 0) {
+            FluidTanks.drain(tank, TANK_CAPACITY, false);
             AuraHelper.polluteAura(level, worldPosition, total * 0.25f, true);
 
             int flux = aspects.getAmount(Aspect.FLUX);
@@ -344,50 +342,15 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
      * ResourceHandler view of the internal water tank (used by the registered fluid capability).
      */
     public ResourceHandler<FluidResource> getTankHandler() {
-        return new ResourceHandler<>() {
-            @Override
-            public int size() {
-                return 1;
-            }
-
-            @Override
-            public FluidResource getResource(int slot) {
-                return FluidResource.of(tank.getFluid());
-            }
-
-            @Override
-            public long getAmountAsLong(int slot) {
-                return tank.getFluidAmount();
-            }
-
-            @Override
-            public long getCapacityAsLong(int slot, FluidResource resource) {
-                return TANK_CAPACITY;
-            }
-
-            @Override
-            public boolean isValid(int slot, FluidResource resource) {
-                return tank.isFluidValid(resource.toStack(1));
-            }
-
-            @Override
-            public int insert(int slot, FluidResource resource, int amount, TransactionContext transaction) {
-                return tank.fill(resource.toStack(amount), IFluidHandler.FluidAction.EXECUTE);
-            }
-
-            @Override
-            public int extract(int slot, FluidResource resource, int amount, TransactionContext transaction) {
-                return tank.drain(resource.toStack(amount), IFluidHandler.FluidAction.EXECUTE).getAmount();
-            }
-        };
+        return tank;
     }
 
-    public FluidTank getTank() {
+    public ResourceHandler<FluidResource> getTank() {
         return tank;
     }
 
     public float getFluidHeight() {
-        float base = 0.3f + 0.5f * (tank.getFluidAmount() / (float) TANK_CAPACITY);
+        float base = 0.3f + 0.5f * (FluidTanks.getAmount(tank) / (float) TANK_CAPACITY);
         float extra = aspects.visSize() / (float) MAX_ASPECTS * (1.0f - base);
         float total = base + extra;
         return Math.min(total, 0.9999f);

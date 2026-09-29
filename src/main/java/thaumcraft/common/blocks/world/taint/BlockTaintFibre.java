@@ -73,7 +73,7 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(1.0f)
                 .noOcclusion()
-                .pushReaction(PushReaction.DESTROY)
+                .pushReaction(PushReaction.POPPED)
                 .randomTicks()
                 .ignitedByLava()
                 .lightLevel(state -> state.getValue(HAS_CRYSTAL) ? 12 : 0)

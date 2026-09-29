@@ -59,7 +59,7 @@ public class TubeValveRenderer implements BlockEntityRenderer<TileTubeValve, Tub
 
         // Animate valve rotation when opening/closing
         float rotation = state.rotation;
-        poseStack.mulPose(Axis.YP.rotationDegrees(-rotation * 1.5f));
+        poseStack.rotate(Axis.YP.rotationDegrees(-rotation * 1.5f));
 
         // Move valve position based on rotation state (down when closed)
         float offset = -0.03f - (rotation / 360.0f) * 0.09f;
@@ -72,12 +72,12 @@ public class TubeValveRenderer implements BlockEntityRenderer<TileTubeValve, Tub
 
         // Render ring
         submitNodeCollector.submitModelPart(this.model.getRing(), poseStack, renderType,
-                state.lightCoords, OverlayTexture.NO_OVERLAY, null, -1, state.breakProgress);
+                state.lightCoords, OverlayTexture.NO_OVERLAY, null, -1);
 
         // Scale down rod slightly
         poseStack.scale(0.75f, 1.0f, 0.75f);
         submitNodeCollector.submitModelPart(this.model.getRod(), poseStack, renderType,
-                state.lightCoords, OverlayTexture.NO_OVERLAY, null, -1, state.breakProgress);
+                state.lightCoords, OverlayTexture.NO_OVERLAY, null, -1);
 
         poseStack.popPose();
     }
@@ -87,14 +87,14 @@ public class TubeValveRenderer implements BlockEntityRenderer<TileTubeValve, Tub
      */
     private void applyFacingRotation(PoseStack poseStack, Direction facing) {
         if (facing.getAxis() != Direction.Axis.Y) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            poseStack.rotate(Axis.YP.rotationDegrees(90));
         } else {
-            poseStack.mulPose(Axis.XN.rotationDegrees(90));
-            poseStack.mulPose(Axis.YP.rotationDegrees(90.0f * facing.getStepY()));
+            poseStack.rotate(Axis.XN.rotationDegrees(90));
+            poseStack.rotate(Axis.YP.rotationDegrees(90.0f * facing.getStepY()));
         }
         
-        poseStack.mulPose(Axis.XP.rotationDegrees(90.0f * facing.getStepX()));
-        poseStack.mulPose(Axis.YP.rotationDegrees(90.0f * facing.getStepY()));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f * facing.getStepZ()));
+        poseStack.rotate(Axis.XP.rotationDegrees(90.0f * facing.getStepX()));
+        poseStack.rotate(Axis.YP.rotationDegrees(90.0f * facing.getStepY()));
+        poseStack.rotate(Axis.ZP.rotationDegrees(90.0f * facing.getStepZ()));
     }
 }

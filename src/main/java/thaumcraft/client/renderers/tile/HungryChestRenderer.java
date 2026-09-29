@@ -78,7 +78,7 @@ public class HungryChestRenderer implements BlockEntityRenderer<TileHungryChest,
             case EAST -> -90.0f;
             default -> 0.0f;
         };
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        poseStack.rotate(Axis.YP.rotationDegrees(rotation));
 
         // Translate for chest model positioning
         poseStack.translate(-0.5f, -0.5f, -0.5f);
@@ -89,7 +89,7 @@ public class HungryChestRenderer implements BlockEntityRenderer<TileHungryChest,
 
         // Submit the chest model; lid rotation is applied from state.lidOpen in ChestModel.setupAnim
         submitNodeCollector.submitModel(this.model, state.lidOpen, poseStack, this.model.renderType(TEXTURE),
-                state.lightCoords, OverlayTexture.NO_OVERLAY, 0, state.breakProgress);
+                state.lightCoords, OverlayTexture.NO_OVERLAY, 0, null, 0);
 
         poseStack.popPose();
     }

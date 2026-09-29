@@ -1,17 +1,17 @@
 package thaumcraft.common.world.structures;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import thaumcraft.init.ModBlocks;
 
 /**
@@ -26,17 +26,20 @@ import thaumcraft.init.ModBlocks;
  * - Large circle: 8-12 pillars with central altar
  * - Single obelisk: Tall pillar with glyphed stone
  */
-public class AncientStoneCircleFeature extends Feature<NoneFeatureConfiguration> {
+public class AncientStoneCircleFeature implements Feature {
     
-    public AncientStoneCircleFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+    public static final MapCodec<AncientStoneCircleFeature> CODEC = MapCodec.unit(AncientStoneCircleFeature::new);
+    
+    @Override
+    public MapCodec<? extends Feature> codec() {
+        return CODEC;
+    }
+    
+    public AncientStoneCircleFeature() {
     }
     
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        BlockPos origin = context.origin();
-        RandomSource random = context.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         
         // Find valid ground position
         BlockPos groundPos = findGroundPosition(level, origin);

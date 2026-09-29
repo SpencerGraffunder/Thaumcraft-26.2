@@ -9,8 +9,9 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import thaumcraft.api.ItemHandlers;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.GolemHelper;
@@ -68,7 +69,7 @@ public class SealStock extends SealFiltered implements ISealConfigToggles {
             return;
         }
         
-        IItemHandler inv = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
+        ResourceHandler<ItemResource> inv = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
         if (inv == null) return;
         
         // Check each filter slot
@@ -90,7 +91,7 @@ public class SealStock extends SealFiltered implements ISealConfigToggles {
                 
                 // Check if there's room for this item
                 ItemStack testInsert = requested.copy();
-                ItemStack leftover = ItemHandlerHelper.insertItem(inv, testInsert, true);
+                ItemStack leftover = ItemHandlers.insertItemStacked(inv, testInsert, true);
                 
                 if (leftover.getCount() < requested.getCount()) {
                     // There's room for at least some items
@@ -101,12 +102,12 @@ public class SealStock extends SealFiltered implements ISealConfigToggles {
         }
     }
     
-    private IItemHandler getItemHandler(Level level, BlockPos pos, Direction face) {
+    private ResourceHandler<ItemResource> getItemHandler(Level level, BlockPos pos, Direction face) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
             var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, face);
             if (handler != null) {
-                return IItemHandler.of(handler);
+                return handler;
             }
         }
         return null;
@@ -115,10 +116,10 @@ public class SealStock extends SealFiltered implements ISealConfigToggles {
     /**
      * Count items in inventory matching the filter stack.
      */
-    private int countItemsMatching(IItemHandler inv, ItemStack filterStack) {
+    private int countItemsMatching(ResourceHandler<ItemResource> inv, ItemStack filterStack) {
         int count = 0;
-        for (int i = 0; i < inv.getSlots(); i++) {
-            ItemStack slotStack = inv.getStackInSlot(i);
+        for (int i = 0; i < ItemHandlers.getSlots(inv); i++) {
+            ItemStack slotStack = ItemHandlers.getStackInSlot(inv, i);
             if (matchesItem(slotStack, filterStack)) {
                 count += slotStack.getCount();
             }

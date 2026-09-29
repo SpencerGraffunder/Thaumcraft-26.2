@@ -85,7 +85,7 @@ public class ResearchTableRenderer implements BlockEntityRenderer<TileResearchTa
 
         // Position scroll on table
         poseStack.translate(0, 0.02, 0);
-        poseStack.mulPose(Axis.XP.rotationDegrees(90)); // Lay flat
+        poseStack.rotate(Axis.XP.rotationDegrees(90)); // Lay flat
         poseStack.scale(0.5f, 0.5f, 0.5f);
 
         submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(SCROLL_TEXTURE), (pose, buffer) -> {
@@ -143,9 +143,9 @@ public class ResearchTableRenderer implements BlockEntityRenderer<TileResearchTa
 
     private void applyRotation(PoseStack poseStack, Direction facing) {
         switch (facing) {
-            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
-            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(270));
-            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            case EAST -> poseStack.rotate(Axis.YP.rotationDegrees(90));
+            case WEST -> poseStack.rotate(Axis.YP.rotationDegrees(270));
+            case SOUTH -> poseStack.rotate(Axis.YP.rotationDegrees(180));
             default -> { } // NORTH is default
         }
     }

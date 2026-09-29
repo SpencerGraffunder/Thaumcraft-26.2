@@ -1,6 +1,5 @@
 package thaumcraft.common.blocks.world.taint;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -64,10 +63,6 @@ public class BlockTaintFeature extends DirectionalBlock implements ITaintBlock {
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.UP));
     }
 
-    @Override
-    protected MapCodec<? extends DirectionalBlock> codec() {
-        return simpleCodec(p -> new BlockTaintFeature());
-    }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

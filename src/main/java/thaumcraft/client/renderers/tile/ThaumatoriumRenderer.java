@@ -85,7 +85,7 @@ public class ThaumatoriumRenderer implements BlockEntityRenderer<TileThaumatoriu
             case SOUTH -> 0.0f;
             default -> 0.0f;
         };
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        poseStack.rotate(Axis.YP.rotationDegrees(rotation));
 
         // Scale down item
         poseStack.scale(0.75f, 0.75f, 0.75f);

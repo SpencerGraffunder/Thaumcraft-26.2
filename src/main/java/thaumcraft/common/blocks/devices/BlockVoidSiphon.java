@@ -91,7 +91,7 @@ public class BlockVoidSiphon extends Block implements EntityBlock {
             ItemStack seeds = siphon.getItem(0);
             if (!seeds.isEmpty() && player.getMainHandItem().isEmpty()) {
                 if (!player.getInventory().add(seeds)) {
-                    player.drop(seeds, false);
+                    player.drop(seeds, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
                 siphon.setItem(0, ItemStack.EMPTY);
                 return InteractionResult.SUCCESS;

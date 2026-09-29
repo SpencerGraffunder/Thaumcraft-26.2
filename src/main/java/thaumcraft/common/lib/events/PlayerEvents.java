@@ -216,7 +216,7 @@ public class PlayerEvents {
         );
         book.set(DataComponents.WRITTEN_BOOK_CONTENT, content);
         if (!player.getInventory().add(book)) {
-            player.drop(book, false);
+            player.drop(book, false, net.minecraft.util.Prediction.SERVER_ONLY);
         }
     }
     

@@ -11,7 +11,9 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import thaumcraft.api.ItemHandlers;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.GolemHelper;
@@ -92,7 +94,7 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
             return;
         }
         
-        IItemHandler inv = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
+        ResourceHandler<ItemResource> inv = getItemHandler(level, seal.getSealPos().pos, seal.getSealPos().face);
         if (inv == null) return;
         
         if (!GolemHelper.provisionRequests.containsKey(dimKey)) return;
@@ -131,21 +133,21 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
         }
     }
     
-    private IItemHandler getItemHandler(Level level, BlockPos pos, Direction face) {
+    private ResourceHandler<ItemResource> getItemHandler(Level level, BlockPos pos, Direction face) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
             var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, face);
             if (handler != null) {
-                return IItemHandler.of(handler);
+                return handler;
             }
         }
         return null;
     }
     
-    private int countItems(IItemHandler handler, ItemStack stack) {
+    private int countItems(ResourceHandler<ItemResource> handler, ItemStack stack) {
         int count = 0;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack slotStack = handler.getStackInSlot(i);
+        for (int i = 0; i < ItemHandlers.getSlots(handler); i++) {
+            ItemStack slotStack = ItemHandlers.getStackInSlot(handler, i);
             if (ItemStack.isSameItemSameComponents(slotStack, stack)) {
                 count += slotStack.getCount();
             }
@@ -194,7 +196,7 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
         if (pr != null) {
             if (task.getData() == 0) {
                 // Phase 1: Pick up items from inventory
-                IItemHandler inv = getItemHandler(level, task.getSealPos().pos, task.getSealPos().face);
+                ResourceHandler<ItemResource> inv = getItemHandler(level, task.getSealPos().pos, task.getSealPos().face);
                 if (inv != null) {
                     ItemStack stack = pr.getStack().copy();
                     
@@ -254,7 +256,7 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
                     spawnItemEntity(level, pr.getEntity().blockPosition(), dropped);
                 } else if (task.getData() == 2 && pr.getPos() != null) {
                     // Insert into inventory
-                    IItemHandler destInv = getItemHandler(level, pr.getPos(), pr.getSide());
+                    ResourceHandler<ItemResource> destInv = getItemHandler(level, pr.getPos(), pr.getSide());
                     if (destInv != null) {
                         ItemStack remaining = insertIntoInventory(destInv, dropped);
                         if (!remaining.isEmpty()) {
@@ -276,14 +278,14 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
         return true;
     }
     
-    private ItemStack extractFromInventory(IItemHandler handler, ItemStack match, int amount) {
+    private ItemStack extractFromInventory(ResourceHandler<ItemResource> handler, ItemStack match, int amount) {
         ItemStack result = ItemStack.EMPTY;
         int remaining = amount;
         
-        for (int slot = 0; slot < handler.getSlots() && remaining > 0; slot++) {
-            ItemStack slotStack = handler.getStackInSlot(slot);
+        for (int slot = 0; slot < ItemHandlers.getSlots(handler) && remaining > 0; slot++) {
+            ItemStack slotStack = ItemHandlers.getStackInSlot(handler, slot);
             if (ItemStack.isSameItemSameComponents(slotStack, match)) {
-                ItemStack extracted = handler.extractItem(slot, remaining, false);
+                ItemStack extracted = ItemHandlers.extractItem(handler, slot, remaining, false);
                 if (!extracted.isEmpty()) {
                     if (result.isEmpty()) {
                         result = extracted;
@@ -298,10 +300,10 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
         return result;
     }
     
-    private ItemStack insertIntoInventory(IItemHandler handler, ItemStack stack) {
+    private ItemStack insertIntoInventory(ResourceHandler<ItemResource> handler, ItemStack stack) {
         ItemStack remaining = stack.copy();
-        for (int slot = 0; slot < handler.getSlots() && !remaining.isEmpty(); slot++) {
-            remaining = handler.insertItem(slot, remaining, false);
+        for (int slot = 0; slot < ItemHandlers.getSlots(handler) && !remaining.isEmpty(); slot++) {
+            remaining = ItemHandlers.insertItemSlot(handler, slot, remaining, false);
         }
         return remaining;
     }

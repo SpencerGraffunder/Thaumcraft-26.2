@@ -49,8 +49,8 @@ public class RiftBlastRenderer extends EntityRenderer<EntityRiftBlast, RiftBlast
         poseStack.pushPose();
         
         // Billboard rotation
-        poseStack.mulPose(camera.orientation);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.rotate(camera.orientation);
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
         
         // Pulsing scale
         float pulse = 1.0F + Mth.sin(state.time * 0.5F) * 0.1F;

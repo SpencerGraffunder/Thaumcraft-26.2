@@ -174,10 +174,10 @@ public class JarRenderer implements BlockEntityRenderer<TileJar, JarRenderState>
         // Rotate based on facing direction
         int facing = state.facing;
         switch (facing) {
-            case 2 -> poseStack.mulPose(Axis.YP.rotationDegrees(0));    // North
-            case 3 -> poseStack.mulPose(Axis.YP.rotationDegrees(180));  // South
-            case 4 -> poseStack.mulPose(Axis.YP.rotationDegrees(90));   // West
-            case 5 -> poseStack.mulPose(Axis.YP.rotationDegrees(270));  // East
+            case 2 -> poseStack.rotate(Axis.YP.rotationDegrees(0));    // North
+            case 3 -> poseStack.rotate(Axis.YP.rotationDegrees(180));  // South
+            case 4 -> poseStack.rotate(Axis.YP.rotationDegrees(90));   // West
+            case 5 -> poseStack.rotate(Axis.YP.rotationDegrees(270));  // East
         }
 
         // Move to front of jar

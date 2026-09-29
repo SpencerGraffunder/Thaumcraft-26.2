@@ -12,10 +12,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
+import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 
 import javax.annotation.Nullable;
 
@@ -61,15 +61,17 @@ public class ThaumcraftInvHelper {
     }
     
     /**
-     * Get an IItemHandler at a position from a specific side.
+     * Get an item handler at a position from a specific side.
+     * 26.3: NeoForge's IItemHandler was replaced by the transaction-based
+     * ResourceHandler framework; the capability now yields ResourceHandler&lt;ItemResource&gt;.
      */
     @Nullable
-    public static IItemHandler getItemHandlerAt(Level level, BlockPos pos, Direction side) {
+    public static ResourceHandler<ItemResource> getItemHandlerAt(Level level, BlockPos pos, Direction side) {
         // Try capability first
         BlockState state = level.getBlockState(pos);
-        var handler = level.getCapability(Capabilities.Item.BLOCK, pos, state, null, side);
+        ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, pos, state, null, side);
         if (handler != null) {
-            return IItemHandler.of(handler);
+            return handler;
         }
 
         // Fall back to Container wrapping
@@ -81,13 +83,13 @@ public class ThaumcraftInvHelper {
     }
     
     /**
-     * Wrap a Container as an IItemHandler.
+     * Wrap a Container as a ResourceHandler&lt;ItemResource&gt;.
      */
-    public static IItemHandler wrapInventory(Container inventory, Direction side) {
+    public static ResourceHandler<ItemResource> wrapInventory(Container inventory, Direction side) {
         if (inventory instanceof WorldlyContainer worldly) {
-            return new SidedInvWrapper(worldly, side);
+            return new WorldlyContainerWrapper(worldly, side);
         }
-        return new InvWrapper(inventory);
+        return VanillaContainerWrapper.of(inventory);
     }
     
     /**
@@ -188,9 +190,9 @@ public class ThaumcraftInvHelper {
      * Insert a stack into an inventory at a position.
      */
     public static ItemStack insertStackAt(Level level, BlockPos pos, Direction side, ItemStack stack, boolean simulate) {
-        IItemHandler inventory = getItemHandlerAt(level, pos, side);
+        ResourceHandler<ItemResource> inventory = getItemHandlerAt(level, pos, side);
         if (inventory != null) {
-            return ItemHandlerHelper.insertItemStacked(inventory, stack, simulate);
+            return ItemHandlers.insertItemStacked(inventory, stack, simulate);
         }
         return stack;
     }
@@ -226,11 +228,11 @@ public class ThaumcraftInvHelper {
     /**
      * Count total matching items in an inventory.
      */
-    public static int countTotalItemsIn(IItemHandler inventory, ItemStack stack, InvFilter filter) {
+    public static int countTotalItemsIn(ResourceHandler<ItemResource> inventory, ItemStack stack, InvFilter filter) {
         int count = 0;
         if (inventory != null) {
-            for (int slot = 0; slot < inventory.getSlots(); slot++) {
-                ItemStack slotStack = inventory.getStackInSlot(slot);
+            for (int slot = 0; slot < ItemHandlers.getSlots(inventory); slot++) {
+                ItemStack slotStack = ItemHandlers.getStackInSlot(inventory, slot);
                 if (areItemStacksEqualWithFilter(stack, slotStack, filter)) {
                     count += slotStack.getCount();
                 }

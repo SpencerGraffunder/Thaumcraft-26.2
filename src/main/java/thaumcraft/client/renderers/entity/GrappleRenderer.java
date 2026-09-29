@@ -90,8 +90,8 @@ public class GrappleRenderer extends EntityRenderer<EntityGrapple, GrappleRender
         poseStack.pushPose();
         
         // Render the grapple hook model
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot));
+        poseStack.rotate(Axis.YP.rotationDegrees(state.yRot - 90.0F));
+        poseStack.rotate(Axis.ZP.rotationDegrees(state.xRot));
         
         submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(TEXTURE), (pose, buffer) -> {
             PoseStack ps = new PoseStack();

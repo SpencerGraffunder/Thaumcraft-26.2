@@ -1,6 +1,5 @@
 package thaumcraft.common.blocks.world.plants;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
@@ -49,10 +48,6 @@ public class BlockCinderpearl extends BushBlock {
         return SHAPE;
     }
 
-    @Override
-    public MapCodec<BushBlock> codec() {
-        return simpleCodec(p -> new BlockCinderpearl());
-    }
 
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {

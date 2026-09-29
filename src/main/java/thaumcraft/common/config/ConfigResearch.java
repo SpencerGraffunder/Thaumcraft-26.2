@@ -9,7 +9,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.monster.Blaze;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.player.Player;
@@ -249,7 +249,7 @@ public class ConfigResearch {
         ScanningManager.addScannableThing(new ScanEntity("f_FLY", Blaze.class, true));
         ScanningManager.addScannableThing(new ScanEntity("!ORMOB", IEldritchMob.class, true));
         ScanningManager.addScannableThing(new ScanEntity("!ORBOSS", EntityThaumcraftBoss.class, true));
-        ScanningManager.addScannableThing(new ScanEntity("f_TELEPORT", EnderMan.class, true));
+        ScanningManager.addScannableThing(new ScanEntity("f_TELEPORT", Enderman.class, true));
         ScanningManager.addScannableThing(new ScanEntity("f_BRAIN", EntityBrainyZombie.class, true));
         
         // Thaumcraft blocks - use block registry objects

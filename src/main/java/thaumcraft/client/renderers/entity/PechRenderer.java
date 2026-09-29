@@ -67,7 +67,7 @@ public class PechRenderer extends MobRenderer<EntityPech, PechRenderState, PechM
         state.mumble = entity.getMumble();
         state.sneaking = entity.isShiftKeyDown();
         state.riding = entity.isPassenger();
-        state.attackTime = entity.getAttackAnim(partialTick);
+        state.attackTime = entity.getSwingAnimation(partialTick);
     }
     
     @Override

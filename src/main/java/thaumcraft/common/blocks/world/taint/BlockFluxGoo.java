@@ -65,7 +65,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(0.5f)
                 .noOcclusion()
-                .pushReaction(PushReaction.DESTROY)
+                .pushReaction(PushReaction.POPPED)
                 .randomTicks()
                 .noCollision()
                 .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK)));

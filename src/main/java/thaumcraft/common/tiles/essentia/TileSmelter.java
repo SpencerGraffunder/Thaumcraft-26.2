@@ -1,8 +1,16 @@
 package thaumcraft.common.tiles.essentia;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+
+import java.util.Optional;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -108,7 +116,7 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
         // Recalculate current burn time
         ItemStack fuel = getItem(SLOT_FUEL);
         if (!fuel.isEmpty()) {
-            currentItemBurnTime = (level != null ? fuel.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING, level.fuelValues()) : 0);
+            currentItemBurnTime = getFuelBurnTime(fuel, level);
         }
     }
 
@@ -166,7 +174,7 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
         // Try to start burning if we have fuel and can smelt
         if (tile.furnaceBurnTime == 0 && tile.canSmelt()) {
             ItemStack fuel = tile.getItem(SLOT_FUEL);
-            int burnTime = (level != null ? fuel.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING, level.fuelValues()) : 0);
+            int burnTime = getFuelBurnTime(fuel, level);
             
             if (burnTime > 0) {
                 tile.furnaceBurnTime = burnTime;
@@ -394,9 +402,27 @@ public class TileSmelter extends TileThaumcraftInventory implements Container, M
     public static boolean isItemFuel(ItemStack stack) {
         MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server != null) {
-            return stack.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING, server.overworld().fuelValues()) > 0;
+            return getFuelBurnTime(stack, server.overworld()) > 0;
         }
         return false;
+    }
+
+    /**
+     * 26.3: fuel burn times are data-driven via the COOKING_FUEL data component
+     * (the old ItemExtension.getBurnTime / Level.fuelValues API is gone).
+     */
+    private static int getFuelBurnTime(ItemStack fuel, Level level) {
+        if (fuel.isEmpty() || !(level instanceof ServerLevel server)) {
+            return 0;
+        }
+        CookingFuel cookingFuel = fuel.get(DataComponents.COOKING_FUEL);
+        if (cookingFuel == null) {
+            return 0;
+        }
+        LootContext context = new LootContext.Builder(
+                new LootParams.Builder(server).create(LootContextParamSets.EMPTY)
+        ).create(Optional.empty());
+        return cookingFuel.burnTime().get(context, 0);
     }
 
     @Override

@@ -75,6 +75,10 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
     public float loadProgressForRender = 0.0f;
     protected boolean attackedLastTick = false;
     protected int attackCount = 0;
+    private boolean swinging;
+    private int swingTime;
+    private float attackAnim;
+    private float oAttackAnim;
     
     public EntityTurretCrossbow(EntityType<? extends EntityTurretCrossbow> type, Level level) {
         super(type, level);
@@ -192,6 +196,10 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
             swingTime = 0;
         }
         
+        // Reproduce the 26.2 vanilla attackAnim interpolation from the custom 6-tick swing
+        oAttackAnim = attackAnim;
+        attackAnim = swinging ? swingTime / 6.0f : 0.0f;
+        
         if (isLoadInProgress) {
             loadProgressInt++;
             if (loadProgressInt >= 10) {
@@ -202,6 +210,14 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
             loadProgressInt = 0;
         }
         loadProgress = loadProgressInt / 10.0f;
+    }
+    
+    public float getSwingProgress(float partialTicks) {
+        float diff = attackAnim - oAttackAnim;
+        if (diff < 0.0f) {
+            diff += 1.0f;
+        }
+        return oAttackAnim + diff * partialTicks;
     }
     
     // ==================== Update ====================
@@ -322,7 +338,7 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
                 // Drop turret placer item
                 spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.TURRET_PLACER_BASIC.get()), 0.5f);
                 discard();
-                player.swing(hand);
+                player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                 return InteractionResult.SUCCESS;
             } else {
                 // Open GUI

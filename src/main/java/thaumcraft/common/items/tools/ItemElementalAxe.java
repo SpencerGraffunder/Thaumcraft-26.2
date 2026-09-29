@@ -7,7 +7,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -31,11 +30,10 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * When held and used, draws nearby items towards the player.
  * Has built-in Burrowing and Collector infusion enchantments.
  */
-public class ItemElementalAxe extends AxeItem {
+public class ItemElementalAxe extends Item {
 
     public ItemElementalAxe() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 8.0f, -3.0f, thaumcraft.init.ItemRegistration.id(new Item.Properties()
-                        .rarity(Rarity.RARE)));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE).axe(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 8.0f, -3.0f)));
     }
 
     @Override

@@ -87,7 +87,7 @@ public class MirrorRenderer implements BlockEntityRenderer<TileMirror, MirrorRen
 
             // Each layer has different rotation
             float rotation = time * (20 + layer * 10);
-            poseStack.mulPose(Axis.ZP.rotationDegrees(rotation));
+            poseStack.rotate(Axis.ZP.rotationDegrees(rotation));
 
             float alpha = 1.0f - (layer * 0.2f);
             float size = 0.3f + layer * 0.02f;
@@ -153,12 +153,12 @@ public class MirrorRenderer implements BlockEntityRenderer<TileMirror, MirrorRen
 
     private void applyRotation(PoseStack poseStack, Direction facing) {
         switch (facing) {
-            case DOWN -> poseStack.mulPose(Axis.XP.rotationDegrees(-90));
-            case UP -> poseStack.mulPose(Axis.XP.rotationDegrees(90));
+            case DOWN -> poseStack.rotate(Axis.XP.rotationDegrees(-90));
+            case UP -> poseStack.rotate(Axis.XP.rotationDegrees(90));
             case NORTH -> { } // Default facing
-            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
-            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
-            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(-90));
+            case SOUTH -> poseStack.rotate(Axis.YP.rotationDegrees(180));
+            case WEST -> poseStack.rotate(Axis.YP.rotationDegrees(90));
+            case EAST -> poseStack.rotate(Axis.YP.rotationDegrees(-90));
         }
     }
 

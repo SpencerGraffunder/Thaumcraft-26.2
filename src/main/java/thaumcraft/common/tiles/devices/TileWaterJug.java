@@ -14,12 +14,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import thaumcraft.api.FluidTanks;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
@@ -46,10 +46,10 @@ public class TileWaterJug extends TileThaumcraft {
     private static final int SCAN_RANGE = 2; // 5x3x5 area (x-2 to x+2, y-1 to y+1, z-2 to z+2)
     
     // Internal fluid storage
-    public final FluidTank tank = new FluidTank(TANK_CAPACITY) {
+    public final FluidStacksResourceHandler tank = new FluidStacksResourceHandler(1, TANK_CAPACITY) {
         @Override
-        public boolean isFluidValid(FluidStack stack) {
-            return stack.getFluid() == Fluids.WATER;
+        public boolean isValid(int slot, FluidResource resource) {
+            return resource.getFluid() == Fluids.WATER;
         }
     };
 
@@ -124,7 +124,7 @@ public class TileWaterJug extends TileThaumcraft {
         
         // Try to fill registered handlers
         int handlerIndex = 0;
-        while (handlerIndex < tile.handlers.size() && tile.tank.getFluidAmount() >= 25) {
+        while (handlerIndex < tile.handlers.size() && FluidTanks.getAmount(tile.tank) >= 25) {
             int handlerZone = tile.handlers.get(handlerIndex);
             int hx = (handlerZone / 5) % 5;
             int hy = (handlerZone / 5 / 5) % 3;
@@ -142,8 +142,8 @@ public class TileWaterJug extends TileThaumcraft {
         }
         
         // Refill tank from aura vis
-        if (tile.tank.getFluidAmount() < TANK_CAPACITY) {
-            float visNeeded = (TANK_CAPACITY - tile.tank.getFluidAmount()) / 1000.0f;
+        if (FluidTanks.getAmount(tile.tank) < TANK_CAPACITY) {
+            float visNeeded = (TANK_CAPACITY - FluidTanks.getAmount(tile.tank)) / 1000.0f;
             if (visNeeded > 0.1f) {
                 visNeeded = 0.1f;
             }
@@ -152,11 +152,11 @@ public class TileWaterJug extends TileThaumcraft {
             int waterGenerated = (int)(1000.0f * visDrained);
             
             if (waterGenerated > 0) {
-                tile.tank.fill(new FluidStack(Fluids.WATER, waterGenerated), IFluidHandler.FluidAction.EXECUTE);
+                FluidTanks.fill(tile.tank, new FluidStack(Fluids.WATER, waterGenerated), false);
                 tile.setChanged();
                 
                 // Sync when tank becomes full
-                if (tile.tank.getFluidAmount() >= TANK_CAPACITY) {
+                if (FluidTanks.getAmount(tile.tank) >= TANK_CAPACITY) {
                     tile.syncTile(false);
                 }
             }
@@ -210,10 +210,10 @@ public class TileWaterJug extends TileThaumcraft {
         
         // Handle cauldron
         if (targetState.is(Blocks.CAULDRON)) {
-            if (tank.getFluidAmount() >= 333) {
+            if (FluidTanks.getAmount(tank) >= 333) {
                 level.setBlock(targetPos, Blocks.WATER_CAULDRON.defaultBlockState()
                         .setValue(LayeredCauldronBlock.LEVEL, 1), 2);
-                tank.drain(333, IFluidHandler.FluidAction.EXECUTE);
+                FluidTanks.drain(tank, 333, false);
                 level.blockEvent(worldPosition, getBlockState().getBlock(), 1, zoneId);
                 setChanged();
                 syncTile(false);
@@ -223,9 +223,9 @@ public class TileWaterJug extends TileThaumcraft {
         
         if (targetState.is(Blocks.WATER_CAULDRON)) {
             int currentLevel = targetState.getValue(LayeredCauldronBlock.LEVEL);
-            if (currentLevel < 3 && tank.getFluidAmount() >= 333) {
+            if (currentLevel < 3 && FluidTanks.getAmount(tank) >= 333) {
                 level.setBlock(targetPos, targetState.setValue(LayeredCauldronBlock.LEVEL, currentLevel + 1), 2);
-                tank.drain(333, IFluidHandler.FluidAction.EXECUTE);
+                FluidTanks.drain(tank, 333, false);
                 level.blockEvent(worldPosition, getBlockState().getBlock(), 1, zoneId);
                 setChanged();
                 syncTile(false);
@@ -239,7 +239,7 @@ public class TileWaterJug extends TileThaumcraft {
             int filled = ResourceHandlerUtil.insertStacking(handler,
                     FluidResource.of(new FluidStack(Fluids.WATER, 25)), 25, null);
             if (filled > 0) {
-                tank.drain(filled, IFluidHandler.FluidAction.EXECUTE);
+                FluidTanks.drain(tank, filled, false);
                 level.blockEvent(worldPosition, getBlockState().getBlock(), 1, zoneId);
                 setChanged();
                 syncTile(false);
@@ -278,12 +278,12 @@ public class TileWaterJug extends TileThaumcraft {
             
             @Override
             public FluidResource getResource(int slot) {
-                return FluidResource.of(tank.getFluid());
+                return FluidTanks.getAmount(tank) <= 0 ? FluidResource.EMPTY : FluidResource.of(FluidTanks.getFluid(tank));
             }
             
             @Override
             public long getAmountAsLong(int slot) {
-                return tank.getFluidAmount();
+                return FluidTanks.getAmount(tank);
             }
             
             @Override
@@ -303,15 +303,15 @@ public class TileWaterJug extends TileThaumcraft {
             
             @Override
             public int extract(int slot, FluidResource resource, int amount, TransactionContext transaction) {
-                if (!resource.toStack(1).getFluid().isSame(Fluids.WATER)) {
+                if (!resource.getFluid().isSame(Fluids.WATER)) {
                     return 0;
                 }
-                boolean wasFull = tank.getFluidAmount() >= TANK_CAPACITY;
-                FluidStack drained = tank.drain(resource.toStack(amount), IFluidHandler.FluidAction.EXECUTE);
+                boolean wasFull = FluidTanks.getAmount(tank) >= TANK_CAPACITY;
+                FluidStack drained = FluidTanks.drain(tank, resource.toStack(amount), false);
                 
                 if (!drained.isEmpty()) {
                     setChanged();
-                    if (wasFull && tank.getFluidAmount() < TANK_CAPACITY) {
+                    if (wasFull && FluidTanks.getAmount(tank) < TANK_CAPACITY) {
                         syncTile(false);
                     }
                 }
@@ -323,10 +323,10 @@ public class TileWaterJug extends TileThaumcraft {
     // ==================== Accessors ====================
     
     public int getWaterLevel() {
-        return tank.getFluidAmount();
+        return FluidTanks.getAmount(tank);
     }
     
     public boolean isFull() {
-        return tank.getFluidAmount() >= TANK_CAPACITY;
+        return FluidTanks.getAmount(tank) >= TANK_CAPACITY;
     }
 }

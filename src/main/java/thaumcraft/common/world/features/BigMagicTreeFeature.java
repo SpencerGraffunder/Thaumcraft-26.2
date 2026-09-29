@@ -2,19 +2,19 @@ package thaumcraft.common.world.features;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import thaumcraft.init.ModBlocks;
 
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.List;
  * This is the "fancy" tree variant for magical biomes, similar to vanilla's
  * big oak trees but with magical wood types.
  */
-public class BigMagicTreeFeature extends Feature<NoneFeatureConfiguration> {
+public class BigMagicTreeFeature implements Feature {
 
     // Coordinate index mapping for axis calculations
     private static final byte[] OTHER_COORD_PAIRS = {2, 0, 0, 1, 2, 1};
@@ -60,23 +60,29 @@ public class BigMagicTreeFeature extends Feature<NoneFeatureConfiguration> {
     
     private TreeType treeType = TreeType.GREATWOOD;
     
-    public BigMagicTreeFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+    public static MapCodec<BigMagicTreeFeature> codecFor(TreeType type) {
+        return MapCodec.unit(() -> new BigMagicTreeFeature(type));
+    }
+    
+    @Override
+    public MapCodec<? extends Feature> codec() {
+        return codecFor(this.treeType);
+    }
+    
+    public BigMagicTreeFeature() {
+        this(TreeType.GREATWOOD);
     }
     
     /**
      * Create a BigMagicTreeFeature with a specific tree type.
      */
-    public BigMagicTreeFeature(Codec<NoneFeatureConfiguration> codec, TreeType type) {
-        super(codec);
+    public BigMagicTreeFeature(TreeType type) {
         this.treeType = type;
     }
     
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        BlockPos pos = context.origin();
-        RandomSource random = context.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
+        BlockPos pos = origin;
         
         return generate(level, random, pos);
     }

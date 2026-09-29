@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.level.storage.ValueInput;
@@ -215,16 +214,6 @@ public class ItemFocusPouch extends Item implements ICuriosItemHandler {
     @Override
     public void loadDatapacks() {
         curios.loadDatapacks();
-    }
-
-    @Override
-    public Tag writeTag() {
-        return curios.writeTag();
-    }
-
-    @Override
-    public void readTag(Tag tag) {
-        curios.readTag(tag);
     }
 
     @Override

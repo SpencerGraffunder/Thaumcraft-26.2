@@ -1,17 +1,17 @@
 package thaumcraft.common.world.features;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import thaumcraft.init.ModBlocks;
 
 /**
@@ -24,20 +24,24 @@ import thaumcraft.init.ModBlocks;
  * - Pale silver-white coloring
  * - Shimmerleaf flowers spawn around them during worldgen
  */
-public class SilverwoodTreeFeature extends Feature<NoneFeatureConfiguration> {
+public class SilverwoodTreeFeature implements Feature {
 
     private static final int MIN_HEIGHT = 7;
     private static final int RANDOM_HEIGHT = 4;
     
-    public SilverwoodTreeFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+    public static final MapCodec<SilverwoodTreeFeature> CODEC = MapCodec.unit(SilverwoodTreeFeature::new);
+    
+    @Override
+    public MapCodec<? extends Feature> codec() {
+        return CODEC;
+    }
+    
+    public SilverwoodTreeFeature() {
     }
     
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        BlockPos pos = context.origin();
-        RandomSource random = context.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
+        BlockPos pos = origin;
         
         return generateTree(level, random, pos, true);
     }

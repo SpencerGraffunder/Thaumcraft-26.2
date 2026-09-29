@@ -69,11 +69,11 @@ public class PatternCrafterRenderer implements BlockEntityRenderer<TilePatternCr
             case SOUTH -> 0.0f;
             default -> 0.0f;
         };
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        poseStack.rotate(Axis.YP.rotationDegrees(rotation));
 
         // Render mode display
         poseStack.pushPose();
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90));
+        poseStack.rotate(Axis.ZP.rotationDegrees(90));
         poseStack.translate(0, 0, -0.5);
 
         renderModeDisplay(state, poseStack, submitNodeCollector);
@@ -84,7 +84,7 @@ public class PatternCrafterRenderer implements BlockEntityRenderer<TilePatternCr
         poseStack.pushPose();
         poseStack.translate(-0.2, -0.40625, 0.05);
         float gearRot = -state.rot % 360.0f;
-        poseStack.mulPose(Axis.ZP.rotationDegrees(gearRot));
+        poseStack.rotate(Axis.ZP.rotationDegrees(gearRot));
         poseStack.scale(0.5f, 0.5f, 1.0f);
         poseStack.translate(-0.5, -0.5, 0);
 
@@ -96,7 +96,7 @@ public class PatternCrafterRenderer implements BlockEntityRenderer<TilePatternCr
         poseStack.pushPose();
         poseStack.translate(0.2, -0.40625, 0.05);
         gearRot = state.rot % 360.0f;
-        poseStack.mulPose(Axis.ZP.rotationDegrees(gearRot));
+        poseStack.rotate(Axis.ZP.rotationDegrees(gearRot));
         poseStack.scale(0.5f, 0.5f, 1.0f);
         poseStack.translate(-0.5, -0.5, 0);
 

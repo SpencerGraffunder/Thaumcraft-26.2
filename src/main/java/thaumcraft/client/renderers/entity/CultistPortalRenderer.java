@@ -90,8 +90,8 @@ public class CultistPortalRenderer extends EntityRenderer<EntityCultistPortalLes
         poseStack.translate(0.0, state.height / 2.0F, 0.0);
         
         // Billboard - face the camera
-        poseStack.mulPose(camera.orientation);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.rotate(camera.orientation);
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
         
         // Get texture frame (16 frame animation)
         int frame = 15 - (int)(time % 16);

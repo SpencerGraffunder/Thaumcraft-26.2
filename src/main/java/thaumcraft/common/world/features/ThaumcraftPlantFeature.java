@@ -1,16 +1,16 @@
 package thaumcraft.common.world.features;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import thaumcraft.init.ModBlocks;
 
 import java.util.function.Supplier;
@@ -23,7 +23,7 @@ import java.util.function.Supplier;
  * - Shimmerleaf (near silverwood)
  * - Vishroom (cave mushroom)
  */
-public class ThaumcraftPlantFeature extends Feature<NoneFeatureConfiguration> {
+public class ThaumcraftPlantFeature implements Feature {
     
     public enum PlantType {
         CINDERPEARL(() -> ModBlocks.CINDERPEARL.get(), true, false),
@@ -55,16 +55,21 @@ public class ThaumcraftPlantFeature extends Feature<NoneFeatureConfiguration> {
     
     private final PlantType plantType;
     
-    public ThaumcraftPlantFeature(Codec<NoneFeatureConfiguration> codec, PlantType plantType) {
-        super(codec);
+    public static MapCodec<ThaumcraftPlantFeature> codecFor(PlantType type) {
+        return MapCodec.unit(() -> new ThaumcraftPlantFeature(type));
+    }
+    
+    @Override
+    public MapCodec<? extends Feature> codec() {
+        return codecFor(this.plantType);
+    }
+    
+    public ThaumcraftPlantFeature(PlantType plantType) {
         this.plantType = plantType;
     }
     
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        BlockPos origin = context.origin();
-        RandomSource random = context.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         
         return generatePlantCluster(level, random, origin, plantType);
     }

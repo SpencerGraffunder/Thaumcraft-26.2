@@ -110,15 +110,15 @@ public class ArcaneBoreRenderer extends MobRenderer<EntityArcaneBore, ArcaneBore
         poseStack.pushPose();
         
         // Rotate to face correct direction
-        poseStack.mulPose(Axis.XN.rotationDegrees(90.0F));
-        poseStack.mulPose(Axis.ZN.rotationDegrees(180.0F + state.yaw));
-        poseStack.mulPose(Axis.XN.rotationDegrees(state.pitch));
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        poseStack.rotate(Axis.XN.rotationDegrees(90.0F));
+        poseStack.rotate(Axis.ZN.rotationDegrees(180.0F + state.yaw));
+        poseStack.rotate(Axis.XN.rotationDegrees(state.pitch));
+        poseStack.rotate(Axis.YP.rotationDegrees(rotation));
         
         // Draw 3 beam quads rotated 60 degrees apart
         for (int i = 0; i < 3; i++) {
             poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(60.0F * (i + 1)));
+            poseStack.rotate(Axis.YP.rotationDegrees(60.0F * (i + 1)));
             
             final int quad = i;
             

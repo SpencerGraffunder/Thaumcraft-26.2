@@ -8,7 +8,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.ThaumcraftMaterials;
 import thaumcraft.api.items.IWarpingGear;
@@ -19,10 +18,10 @@ import net.minecraft.server.level.ServerLevel;
 /**
  * Void Metal Shovel - Powerful but warping shovel that applies weakness and self-repairs.
  */
-public class ItemVoidShovel extends ShovelItem implements IWarpingGear {
+public class ItemVoidShovel extends Item implements IWarpingGear {
     
     public ItemVoidShovel() {
-        super(ThaumcraftMaterials.TOOLMAT_VOID, 1.5F, -3.0F, thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE)));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE).shovel(ThaumcraftMaterials.TOOLMAT_VOID, 1.5F, -3.0F)));
     }
     
     @Override

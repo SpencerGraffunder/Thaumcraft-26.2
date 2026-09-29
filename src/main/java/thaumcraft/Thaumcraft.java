@@ -97,7 +97,7 @@ public class Thaumcraft {
         ModMenuTypes.MENU_TYPES.register(modEventBus);
         ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
         ModRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
-        ModFeatures.FEATURES.register(modEventBus);
+        ModFeatures.FEATURE_TYPES.register(modEventBus);
         ModStructures.STRUCTURE_TYPES.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in

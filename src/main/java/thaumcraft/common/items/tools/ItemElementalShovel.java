@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
@@ -36,11 +35,10 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * Places blocks in a 3x3 pattern from player's inventory.
  * Has built-in Destructive infusion enchantment.
  */
-public class ItemElementalShovel extends ShovelItem {
+public class ItemElementalShovel extends Item {
 
     public ItemElementalShovel() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 1.5f, -3.0f, thaumcraft.init.ItemRegistration.id(new Item.Properties()
-                        .rarity(Rarity.RARE)));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE).shovel(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, 1.5f, -3.0f)));
     }
 
     @Override
@@ -159,7 +157,7 @@ public class ItemElementalShovel extends ShovelItem {
         }
 
         if (placedCount > 0) {
-            player.swing(context.getHand());
+            player.swingAndResetAttackStrength(context.getHand(), net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
             return InteractionResult.SUCCESS;
         }
 

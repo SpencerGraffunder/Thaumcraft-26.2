@@ -46,7 +46,7 @@ public class BlockEffect extends Block {
                 .air()
                 .lightLevel(state -> type == EffectType.GLIMMER ? 15 : 7)
                 .randomTicks()
-                .pushReaction(PushReaction.DESTROY)));
+                .pushReaction(PushReaction.POPPED)));
         this.effectType = type;
     }
     

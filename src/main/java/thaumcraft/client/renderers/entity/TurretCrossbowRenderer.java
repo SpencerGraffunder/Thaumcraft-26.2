@@ -53,7 +53,7 @@ public class TurretCrossbowRenderer extends MobRenderer<EntityTurretCrossbow, Tu
         super.extractRenderState(entity, state, partialTick);
         
         state.loadProgress = entity.getLoadProgress(partialTick);
-        state.attackAnim = entity.getAttackAnim(partialTick);
+        state.attackAnim = entity.getSwingProgress(partialTick);
         state.passenger = entity.isPassenger();
     }
     

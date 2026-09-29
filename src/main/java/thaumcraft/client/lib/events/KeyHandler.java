@@ -1,7 +1,6 @@
 package thaumcraft.client.lib.events;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -12,7 +11,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.client.KeyMapping;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.casters.ICaster;
 import thaumcraft.common.golems.ItemGolemBell;
@@ -59,17 +58,18 @@ public class KeyHandler {
         // Create key mappings with GLFW key codes
         // F key = GLFW_KEY_F = 70 (was Keyboard.KEY_F = 33 in LWJGL2)
         // G key = GLFW_KEY_G = 71 (was Keyboard.KEY_G = 34 in LWJGL2)
+        // (raw int literals: org.lwjgl.glfw is not on the compile classpath in 26.3)
         keyF = new KeyMapping(
                 "key.thaumcraft.focus",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_F,
+                InputConstants.Type.KEYBOARD,
+                70,
                 KEY_CATEGORY
         );
         
         keyG = new KeyMapping(
                 "key.thaumcraft.misc",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_G,
+                InputConstants.Type.KEYBOARD,
+                71,
                 KEY_CATEGORY
         );
     }
@@ -177,12 +177,12 @@ public class KeyHandler {
                 
                 // Check modifier keys
                 // In 1.20.1, we use Screen.hasControlDown() and Screen.hasShiftDown()
-                // but those require a screen context. Use GLFW directly instead.
-                com.mojang.blaze3d.platform.Window windowHandle = Minecraft.getInstance().getWindow();
-                boolean ctrlDown = InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL) ||
-                                   InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL);
-                boolean shiftDown = InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_SHIFT) ||
-                                    InputConstants.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_SHIFT);
+                // but those require a screen context. Use InputConstants directly instead.
+                // GLFW key codes: LEFT_CONTROL=342, RIGHT_CONTROL=345, LEFT_SHIFT=340, RIGHT_SHIFT=344
+                boolean ctrlDown = InputConstants.isKeyDown(342) ||
+                                   InputConstants.isKeyDown(345);
+                boolean shiftDown = InputConstants.isKeyDown(340) ||
+                                    InputConstants.isKeyDown(344);
                 
                 int modifier = ctrlDown ? 1 : (shiftDown ? 2 : 0);
                 PacketHandler.sendToServer(new PacketItemKeyToServer(1, modifier));

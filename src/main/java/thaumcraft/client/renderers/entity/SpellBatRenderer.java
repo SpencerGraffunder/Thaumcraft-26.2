@@ -59,8 +59,8 @@ public class SpellBatRenderer extends EntityRenderer<EntitySpellBat, SpellBatRen
         poseStack.scale(0.35F, 0.35F, 0.35F);
         
         // Billboard - face the camera
-        poseStack.mulPose(camera.orientation);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.rotate(camera.orientation);
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
         
         float size = 1.0F;
         int light = state.lightCoords;

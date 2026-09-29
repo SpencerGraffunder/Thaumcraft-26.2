@@ -136,7 +136,7 @@ public class ArcaneWorkbenchResultSlot extends Slot {
                         remaining.grow(slotStack.getCount());
                         craftMatrix.setItem(i, remaining);
                     } else if (!player.getInventory().add(remaining)) {
-                        player.drop(remaining, false);
+                        player.drop(remaining, false, net.minecraft.util.Prediction.SERVER_ONLY);
                     }
                 }
             }

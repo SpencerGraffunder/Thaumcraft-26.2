@@ -87,7 +87,7 @@ public class BlockPedestal extends BlockTC implements EntityBlock {
                 ItemStack taken = pedestal.tryTakeItem(player);
                 if (!taken.isEmpty()) {
                     if (!player.getInventory().add(taken)) {
-                        player.drop(taken, false);
+                        player.drop(taken, false, net.minecraft.util.Prediction.SERVER_ONLY);
                     }
                 }
             }
@@ -113,7 +113,7 @@ public class BlockPedestal extends BlockTC implements EntityBlock {
                 ItemStack taken = pedestal.tryTakeItem(player);
                 if (!taken.isEmpty()) {
                     if (!player.getInventory().add(taken)) {
-                        player.drop(taken, false);
+                        player.drop(taken, false, net.minecraft.util.Prediction.SERVER_ONLY);
                     }
                 }
             }

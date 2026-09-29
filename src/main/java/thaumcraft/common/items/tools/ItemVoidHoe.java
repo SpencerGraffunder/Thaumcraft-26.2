@@ -3,7 +3,6 @@ package thaumcraft.common.items.tools;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -17,10 +16,10 @@ import net.minecraft.server.level.ServerLevel;
 /**
  * Void Metal Hoe - Powerful but warping hoe that self-repairs.
  */
-public class ItemVoidHoe extends HoeItem implements IWarpingGear {
+public class ItemVoidHoe extends Item implements IWarpingGear {
     
     public ItemVoidHoe() {
-        super(ThaumcraftMaterials.TOOLMAT_VOID, -3, -0.5F, thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE)));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE).hoe(ThaumcraftMaterials.TOOLMAT_VOID, -3, -0.5F)));
     }
     
     @Override

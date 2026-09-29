@@ -235,7 +235,7 @@ public class PechMenu extends AbstractContainerMenu implements ContainerListener
             for (int i = 0; i < 5; i++) {
                 ItemStack stack = tradeInventory.removeItemNoUpdate(i);
                 if (!stack.isEmpty()) {
-                    player.drop(stack, false);
+                    player.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
             }
         }

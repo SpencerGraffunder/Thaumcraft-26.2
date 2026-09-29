@@ -50,7 +50,7 @@ public class ItemCreativeFluxSponge extends Item {
         ItemStack stack = player.getItemInHand(hand);
         
         if (level.isClientSide()) {
-            player.swing(hand);
+            player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
             level.playLocalSound(player.getX(), player.getY(), player.getZ(), 
                     ModSounds.CRAFT_START.get(), SoundSource.PLAYERS, 0.15f, 1.0f, false);
         } else {

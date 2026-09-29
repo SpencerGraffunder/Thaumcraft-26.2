@@ -221,7 +221,7 @@ public class EntityFireBat extends Monster {
                     
                     // Small chance to explode on attack
                     if (random.nextInt(10) == 0) {
-                        target.invulnerableTime = 0;
+                        target.setInvulnerableTime(0);
                         level().explode(this, getX(), getY(), getZ(), 1.5f, Level.ExplosionInteraction.MOB);
                         discard();
                     } else {

@@ -53,8 +53,8 @@ public class FireBatRenderer extends EntityRenderer<EntityFireBat, FireBatRender
         poseStack.pushPose();
         
         // Billboard rotation
-        poseStack.mulPose(camera.orientation);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.rotate(camera.orientation);
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
         
         float size = state.size;
         

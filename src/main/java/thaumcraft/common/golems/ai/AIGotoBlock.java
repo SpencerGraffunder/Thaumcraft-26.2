@@ -105,7 +105,7 @@ public class AIGotoBlock extends AIGoto {
             BlockPos adjacent = pos.relative(face);
             BlockState state = golem.level().getBlockState(adjacent);
             
-            if (!state.blocksMotion()) {
+            if (!state.isCollisionShapeFullBlock(golem.level(), adjacent)) {
                 double dist = adjacent.distToCenterSqr(golem.getX(), golem.getY(), golem.getZ());
                 if (dist < closestDist) {
                     closest = adjacent;

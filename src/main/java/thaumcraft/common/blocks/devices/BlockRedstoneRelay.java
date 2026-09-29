@@ -18,7 +18,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.level.block.RedstoneWireBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -159,7 +159,7 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
         
         BlockState inputState = level.getBlockState(inputPos);
         if (inputState.is(Blocks.REDSTONE_WIRE)) {
-            return Math.max(power, inputState.getValue(RedStoneWireBlock.POWER));
+            return Math.max(power, inputState.getValue(RedstoneWireBlock.POWER));
         }
         return power;
     }

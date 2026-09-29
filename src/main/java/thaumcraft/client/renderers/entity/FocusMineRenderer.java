@@ -60,8 +60,8 @@ public class FocusMineRenderer extends EntityRenderer<EntityFocusMine, FocusMine
         float blue = state.armed ? (1.0F - pulse) : 1.0F;
         
         // Rotation based on entity direction
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.xRot));
+        poseStack.rotate(Axis.YP.rotationDegrees(state.yRot - 90.0F));
+        poseStack.rotate(Axis.ZP.rotationDegrees(state.xRot));
         
         // Use full bright light when armed
         int light = state.armed ? 0xF000F0 : state.lightCoords;

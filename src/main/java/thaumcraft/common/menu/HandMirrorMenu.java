@@ -159,7 +159,7 @@ public class HandMirrorMenu extends AbstractContainerMenu implements ContainerLi
         if (!player.level().isClientSide()) {
             ItemStack remaining = transportSlot.removeItemNoUpdate(0);
             if (!remaining.isEmpty()) {
-                player.drop(remaining, false);
+                player.drop(remaining, false, net.minecraft.util.Prediction.SERVER_ONLY);
             }
         }
     }

@@ -1,14 +1,14 @@
 package thaumcraft.common.world.structures;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import thaumcraft.init.ModBlocks;
 
 /**
@@ -23,17 +23,20 @@ import thaumcraft.init.ModBlocks;
  * 
  * Finding an obelisk can provide research hints and spawn eldritch mobs.
  */
-public class EldritchObeliskFeature extends Feature<NoneFeatureConfiguration> {
+public class EldritchObeliskFeature implements Feature {
     
-    public EldritchObeliskFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+    public static final MapCodec<EldritchObeliskFeature> CODEC = MapCodec.unit(EldritchObeliskFeature::new);
+    
+    @Override
+    public MapCodec<? extends Feature> codec() {
+        return CODEC;
+    }
+    
+    public EldritchObeliskFeature() {
     }
     
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        RandomSource random = context.random();
-        BlockPos origin = context.origin();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         
         // Find solid ground
         BlockPos groundPos = findGround(level, origin);

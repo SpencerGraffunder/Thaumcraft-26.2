@@ -127,8 +127,7 @@ public class EntityUtils {
         Vec3 center = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         
         Vec3 direction = entityPos.subtract(center).normalize();
-        entity.setDeltaMovement(entity.getDeltaMovement().add(direction.scale(force)));
-        entity.hurtMarked = true;
+        entity.push(direction.scale(force));
     }
 
     /**
@@ -143,8 +142,7 @@ public class EntityUtils {
         Vec3 center = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         
         Vec3 direction = center.subtract(entityPos).normalize();
-        entity.setDeltaMovement(entity.getDeltaMovement().add(direction.scale(force)));
-        entity.hurtMarked = true;
+        entity.push(direction.scale(force));
     }
 
     /**

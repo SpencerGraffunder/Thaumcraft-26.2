@@ -73,9 +73,9 @@ public class EldritchOrbRenderer extends EntityRenderer<EntityEldritchOrb, Eldri
             poseStack.pushPose();
             
             // Random rotation for each tendril
-            poseStack.mulPose(Axis.XP.rotationDegrees(random.nextFloat() * 360.0f));
-            poseStack.mulPose(Axis.YP.rotationDegrees(random.nextFloat() * 360.0f));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(random.nextFloat() * 360.0f + age * 4.5f));
+            poseStack.rotate(Axis.XP.rotationDegrees(random.nextFloat() * 360.0f));
+            poseStack.rotate(Axis.YP.rotationDegrees(random.nextFloat() * 360.0f));
+            poseStack.rotate(Axis.ZP.rotationDegrees(random.nextFloat() * 360.0f + age * 4.5f));
             
             // Tendril dimensions
             float length = (random.nextFloat() * 20.0f + 5.0f) / 30.0f * scale;
@@ -108,8 +108,8 @@ public class EldritchOrbRenderer extends EntityRenderer<EntityEldritchOrb, Eldri
         poseStack.pushPose();
         
         // Billboard rotation
-        poseStack.mulPose(camera.orientation);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.rotate(camera.orientation);
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
         poseStack.scale(0.75f, 0.75f, 0.75f);
         
         // Animate through particle texture frames

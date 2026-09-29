@@ -90,7 +90,7 @@ public class TubeBufferRenderer implements BlockEntityRenderer<TileTubeBuffer, T
             poseStack.translate(0, -0.5 / 0.0625, 0);  // Move down
 
             submitNodeCollector.submitModelPart(this.model.getRod(), poseStack, renderType,
-                    state.lightCoords, OverlayTexture.NO_OVERLAY, null, tintedColor, state.breakProgress);
+                    state.lightCoords, OverlayTexture.NO_OVERLAY, null, tintedColor);
 
             poseStack.popPose();
         }
@@ -101,14 +101,14 @@ public class TubeBufferRenderer implements BlockEntityRenderer<TileTubeBuffer, T
      */
     private void applyDirectionRotation(PoseStack poseStack, Direction dir) {
         if (dir.getAxis() != Direction.Axis.Y) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            poseStack.rotate(Axis.YP.rotationDegrees(90));
         } else {
-            poseStack.mulPose(Axis.XN.rotationDegrees(90));
-            poseStack.mulPose(Axis.YP.rotationDegrees(90.0f * dir.getStepY()));
+            poseStack.rotate(Axis.XN.rotationDegrees(90));
+            poseStack.rotate(Axis.YP.rotationDegrees(90.0f * dir.getStepY()));
         }
         
-        poseStack.mulPose(Axis.XP.rotationDegrees(90.0f * dir.getStepX()));
-        poseStack.mulPose(Axis.YP.rotationDegrees(90.0f * dir.getStepY()));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f * dir.getStepZ()));
+        poseStack.rotate(Axis.XP.rotationDegrees(90.0f * dir.getStepX()));
+        poseStack.rotate(Axis.YP.rotationDegrees(90.0f * dir.getStepY()));
+        poseStack.rotate(Axis.ZP.rotationDegrees(90.0f * dir.getStepZ()));
     }
 }

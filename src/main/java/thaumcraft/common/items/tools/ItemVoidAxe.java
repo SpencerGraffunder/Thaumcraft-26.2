@@ -5,7 +5,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -19,10 +18,10 @@ import net.minecraft.server.level.ServerLevel;
 /**
  * Void Metal Axe - Powerful but warping axe that applies weakness and self-repairs.
  */
-public class ItemVoidAxe extends AxeItem implements IWarpingGear {
+public class ItemVoidAxe extends Item implements IWarpingGear {
     
     public ItemVoidAxe() {
-        super(ThaumcraftMaterials.TOOLMAT_VOID, 5.0F, -3.0F, thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE)));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE).axe(ThaumcraftMaterials.TOOLMAT_VOID, 5.0F, -3.0F)));
     }
     
     @Override

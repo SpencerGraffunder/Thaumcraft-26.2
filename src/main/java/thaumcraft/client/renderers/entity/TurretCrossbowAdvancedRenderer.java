@@ -54,7 +54,7 @@ public class TurretCrossbowAdvancedRenderer extends MobRenderer<EntityTurretCros
         super.extractRenderState(entity, state, partialTick);
         
         state.loadProgress = entity.getLoadProgress(partialTick);
-        state.attackAnim = entity.getAttackAnim(partialTick);
+        state.attackAnim = entity.getSwingProgress(partialTick);
         state.passenger = entity.isPassenger();
         
         // Hurt jiggle effect - computed once per frame in extract so submit stays deterministic

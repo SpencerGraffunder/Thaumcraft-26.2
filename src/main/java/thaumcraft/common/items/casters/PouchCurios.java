@@ -2,6 +2,7 @@ package thaumcraft.common.items.casters;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -15,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
@@ -40,7 +43,7 @@ import java.util.function.Predicate;
  *
  * Data flow: the in-memory {@link #stacks} list is persisted via
  * {@code saveInventory}/{@code loadInventory} (called by the Curios lib on
- * unequip/equip) and via {@code writeTag}/{@code readTag}.
+ * unequip/equip) and via the item's {@code serialize}/{@code deserialize}.
  */
 public class PouchCurios {
 
@@ -218,19 +221,6 @@ public class PouchCurios {
         }
     }
 
-    public Tag writeTag() {
-        CompoundTag tag = new CompoundTag();
-        tag.put("items", ItemFocusPouch.itemStackListCodec().encodeStart(NbtOps.INSTANCE, new ArrayList<>(stacks)).resultOrPartial().orElse(new ListTag()));
-        return tag;
-    }
-
-    public void readTag(Tag tag) {
-        if (tag instanceof CompoundTag compound && compound.contains("items")) {
-            // 26.2: CompoundTag.getList(String) returns Optional<ListTag>; use getListOrEmpty.
-            loadInventory(compound.getListOrEmpty("items"));
-        }
-    }
-
     public void clearCachedSlotModifiers() {
         // No-op.
     }
@@ -251,56 +241,51 @@ public class PouchCurios {
         @Override public String getIdentifier() { return SLOT_TYPE; }
         @Override public Map<Identifier, AttributeModifier> getModifiers() { return Collections.emptyMap(); }
         @Override public Set<AttributeModifier> getPermanentModifiers() { return Collections.emptySet(); }
-        @Override public Set<AttributeModifier> getCachedModifiers() { return Collections.emptySet(); }
         @Override public Collection<AttributeModifier> getModifiersByOperation(AttributeModifier.Operation operation) { return Collections.emptySet(); }
         @Override public void addTransientModifier(AttributeModifier modifier) { }
         @Override public void addPermanentModifier(AttributeModifier modifier) { }
         @Override public void removeModifier(Identifier id) { }
         @Override public void clearModifiers() { }
-        @Override public void clearCachedModifiers() { }
         @Override public void copyModifiers(ICurioStacksHandler other) { }
         @Override public void update() { }
-        @Override public void serialize(ValueOutput output) { /* persisted via writeTag */ }
-        @Override public void deserialize(ValueInput input) { /* restored via readTag */ }
+
+        // Curios 17: ICurioStacksHandler extends ValueIOSerializable.
+        // Item-backed curios persist via ItemFocusPouch's own serialize/deserialize;
+        // this mirrors the reference CurioStacksHandler for entity-side serialization.
+        @Override public void serialize(ValueOutput output) {
+            output.putChild("Stacks", getStacks());
+            output.store("Renders", Codec.BOOL.listOf(), new ArrayList<>(renders));
+        }
+        @Override public void deserialize(ValueInput input) {
+            input.child("Stacks").ifPresent(dynamic::deserialize);
+            input.read("Renders", Codec.BOOL.listOf()).ifPresent(list -> {
+                for (int i = 0; i < renders.size() && i < list.size(); i++) {
+                    renders.set(i, list.get(i));
+                }
+            });
+        }
     }
 
-    // ==================== IDynamicStackHandler / IItemHandlerModifiable ====================
+    // ==================== IDynamicStackHandler ====================
+    // Curios 17: IDynamicStackHandler extends ResourceHandler<ItemResource>.
+    // Extend NeoForge's ItemStacksResourceHandler (which operates directly on the shared
+    // stacks list, with transaction journaling) and only supply the legacy abstracts.
 
-    private class DynamicStacks implements IDynamicStackHandler {
-        @Override public ItemStack getStackInSlot(int slot) { return slot >= 0 && slot < stacks.size() ? stacks.get(slot) : ItemStack.EMPTY; }
-        @Override public void setStackInSlot(int slot, ItemStack stack) { if (slot >= 0 && slot < stacks.size()) stacks.set(slot, stack); }
-        @Override public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            if (slot < 0 || slot >= stacks.size() || !isItemValid(slot, stack)) return stack;
-            if (!simulate) {
-                stacks.set(slot, stack);
-                markDirty();
-            }
-            return ItemStack.EMPTY;
+    private class DynamicStacks extends ItemStacksResourceHandler implements IDynamicStackHandler {
+        DynamicStacks() {
+            super(PouchCurios.this.stacks);
         }
-        @Override public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (slot < 0 || slot >= stacks.size() || amount <= 0) return ItemStack.EMPTY;
-            ItemStack existing = stacks.get(slot);
-            if (existing.isEmpty()) return ItemStack.EMPTY;
-            int toExtract = Math.min(amount, existing.getCount());
-            if (!simulate) {
-                if (toExtract >= existing.getCount()) stacks.set(slot, ItemStack.EMPTY);
-                else existing.shrink(toExtract);
-                markDirty();
-            }
-            return existing.copyWithCount(toExtract);
+
+        @Override public void setStackInSlot(int slot, ItemStack stack) {
+            if (slot >= 0 && slot < stacks.size()) set(slot, ItemResource.of(stack), stack.getCount());
         }
-        @Override public int getSlotLimit(int slot) { return 64; }
-        @Override public boolean isItemValid(int slot, ItemStack stack) { return true; }
+        @Override public ItemStack getStackInSlot(int slot) {
+            return slot >= 0 && slot < size() ? getResource(slot).toStack(getAmountAsInt(slot)) : ItemStack.EMPTY;
+        }
         @Override public void setPreviousStackInSlot(int slot, ItemStack stack) { }
         @Override public ItemStack getPreviousStackInSlot(int slot) { return ItemStack.EMPTY; }
         @Override public int getSlots() { return stacks.size(); }
         @Override public void grow(int by) { }
         @Override public void shrink(int by) { }
-        private void markDirty() {
-            // Persist into the wearer's curio slot NBT is handled by the Curios lib
-            // via saveInventory/writeTag; nothing extra needed here.
-        }
-        @Override public void serialize(ValueOutput output) { /* persisted via writeTag */ }
-        @Override public void deserialize(ValueInput input) { /* restored via readTag */ }
     }
 }

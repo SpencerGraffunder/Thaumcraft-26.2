@@ -14,7 +14,9 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import thaumcraft.api.ItemHandlers;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
 
 import java.util.ArrayList;
@@ -97,10 +99,10 @@ public class ScanningManager {
             if (blockEntity != null) {
                 var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, Direction.UP);
                 if (handler != null) {
-                    IItemHandler itemHandler = IItemHandler.of(handler);
+                    ResourceHandler<ItemResource> itemHandler = handler;
                     int scanned = 0;
-                    for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
-                        ItemStack stack = itemHandler.getStackInSlot(slot);
+                    for (int slot = 0; slot < ItemHandlers.getSlots(itemHandler); slot++) {
+                        ItemStack stack = ItemHandlers.getStackInSlot(itemHandler, slot);
                         if (!stack.isEmpty()) {
                             scanTheThing(player, stack);
                             scanned++;

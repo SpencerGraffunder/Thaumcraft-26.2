@@ -84,7 +84,7 @@ public class FocalManipulatorRenderer implements BlockEntityRenderer<TileFocalMa
         if (!state.focusItem.isEmpty()) {
             poseStack.pushPose();
             poseStack.translate(0.5, 0.8, 0.5);
-            poseStack.mulPose(Axis.YP.rotationDegrees(ticks % 360.0f));
+            poseStack.rotate(Axis.YP.rotationDegrees(ticks % 360.0f));
 
             // Bobbing animation
             float bob = Mth.sin(ticks / 14.0f) * 0.2f + 0.2f;
@@ -113,13 +113,13 @@ public class FocalManipulatorRenderer implements BlockEntityRenderer<TileFocalMa
                 // Render glowing particle
                 poseStack.pushPose();
                 poseStack.translate(0.5, 1.3, 0.5);
-                poseStack.mulPose(Axis.YP.rotationDegrees(angle));
+                poseStack.rotate(Axis.YP.rotationDegrees(angle));
                 poseStack.translate(0, bob, 0.4);
-                poseStack.mulPose(Axis.YP.rotationDegrees(-angle));
+                poseStack.rotate(Axis.YP.rotationDegrees(-angle));
 
                 // Face camera
-                poseStack.mulPose(camera.orientation);
-                poseStack.mulPose(Axis.YP.rotationDegrees(180.0f));
+                poseStack.rotate(camera.orientation);
+                poseStack.rotate(Axis.YP.rotationDegrees(180.0f));
 
                 renderGlowingOrb(poseStack, submitNodeCollector, 0.175f, r, g, b, 0.66f);
 
@@ -128,7 +128,7 @@ public class FocalManipulatorRenderer implements BlockEntityRenderer<TileFocalMa
                 // Render crystal item
                 poseStack.pushPose();
                 poseStack.translate(0.5, 1.05, 0.5);
-                poseStack.mulPose(Axis.YP.rotationDegrees(angle));
+                poseStack.rotate(Axis.YP.rotationDegrees(angle));
                 poseStack.translate(0, bob, 0.4);
                 poseStack.scale(0.5f, 0.5f, 0.5f);
 
@@ -182,9 +182,9 @@ public class FocalManipulatorRenderer implements BlockEntityRenderer<TileFocalMa
         float aperture = Mth.sin((ticks + num * 10) / 14.0f) * 2.0f;
 
         poseStack.translate(0, 0.475f + lift, 0);
-        poseStack.mulPose(Axis.XN.rotationDegrees(90));
-        poseStack.mulPose(Axis.YP.rotationDegrees(angle));
-        poseStack.mulPose(Axis.XP.rotationDegrees(pan));
+        poseStack.rotate(Axis.XN.rotationDegrees(90));
+        poseStack.rotate(Axis.YP.rotationDegrees(angle));
+        poseStack.rotate(Axis.XP.rotationDegrees(pan));
 
         submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.lightning(), (pose, buffer) -> {
             Matrix4f matrix = pose.pose();

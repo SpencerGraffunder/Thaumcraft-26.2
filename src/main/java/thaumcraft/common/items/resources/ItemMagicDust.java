@@ -43,7 +43,7 @@ public class ItemMagicDust extends ItemTCBase {
             return InteractionResult.PASS;
         }
 
-        player.swing(hand);
+        player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
         for (IDustTrigger trigger : IDustTrigger.triggers) {
             IDustTrigger.Placement place = trigger.getValidFace(level, player, pos, face);

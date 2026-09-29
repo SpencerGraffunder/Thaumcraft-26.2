@@ -226,7 +226,7 @@ public class EntityCultistLeader extends EntityThaumcraftBoss implements RangedA
     @Override
     public void performRangedAttack(LivingEntity target, float power) {
         if (hasLineOfSight(target)) {
-            swing(InteractionHand.MAIN_HAND);
+            swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
             getLookControl().setLookAt(target, 30.0f, 30.0f);
             
             // Create and fire the orb projectile (red = true for boss)

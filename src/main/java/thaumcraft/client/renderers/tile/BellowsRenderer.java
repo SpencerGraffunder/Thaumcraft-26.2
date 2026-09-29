@@ -63,7 +63,7 @@ public class BellowsRenderer implements BlockEntityRenderer<TileBellows, Bellows
 
         // Set inflation state for animation (applied in model.setupAnim from the state)
         submitNodeCollector.submitModel(this.model, state, poseStack, this.model.renderType(TEXTURE),
-                state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, 0, state.breakProgress);
+                state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, 0);
 
         poseStack.popPose();
     }
@@ -75,23 +75,23 @@ public class BellowsRenderer implements BlockEntityRenderer<TileBellows, Bellows
         switch (facing) {
             case DOWN -> {
                 poseStack.translate(0, 1, -1);
-                poseStack.mulPose(Axis.XP.rotationDegrees(90));
+                poseStack.rotate(Axis.XP.rotationDegrees(90));
             }
             case UP -> {
                 poseStack.translate(0, 1, 1);
-                poseStack.mulPose(Axis.XP.rotationDegrees(-90));
+                poseStack.rotate(Axis.XP.rotationDegrees(-90));
             }
             case NORTH -> {
                 // Default orientation, no rotation needed
             }
             case SOUTH -> {
-                poseStack.mulPose(Axis.YP.rotationDegrees(180));
+                poseStack.rotate(Axis.YP.rotationDegrees(180));
             }
             case WEST -> {
-                poseStack.mulPose(Axis.YP.rotationDegrees(90));
+                poseStack.rotate(Axis.YP.rotationDegrees(90));
             }
             case EAST -> {
-                poseStack.mulPose(Axis.YP.rotationDegrees(-90));
+                poseStack.rotate(Axis.YP.rotationDegrees(-90));
             }
         }
     }

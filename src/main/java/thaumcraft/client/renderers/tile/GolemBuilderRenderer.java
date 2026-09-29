@@ -74,7 +74,7 @@ public class GolemBuilderRenderer implements BlockEntityRenderer<TileGolemBuilde
             case NORTH -> 0.0f;
             default -> 0.0f;
         };
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        poseStack.rotate(Axis.YP.rotationDegrees(rotation));
 
         // Render the press mechanism
         renderPress(state, poseStack, submitNodeCollector);
@@ -136,7 +136,7 @@ public class GolemBuilderRenderer implements BlockEntityRenderer<TileGolemBuilde
     private void renderLavaPool(PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         poseStack.pushPose();
         poseStack.translate(-0.3125, 0.625, 0.3125 + 1.0);
-        poseStack.mulPose(Axis.XN.rotationDegrees(90));
+        poseStack.rotate(Axis.XN.rotationDegrees(90));
 
         // Get lava texture from the fluid model
         net.minecraft.client.renderer.block.FluidModel fluidModel = net.minecraft.client.Minecraft.getInstance()

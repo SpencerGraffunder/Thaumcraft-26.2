@@ -73,8 +73,8 @@ public class WispRenderer extends EntityRenderer<EntityWisp, WispRenderState> {
         poseStack.pushPose();
         
         // Billboard rotation - always face camera
-        poseStack.mulPose(camera.orientation);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.rotate(camera.orientation);
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
         
         // Animation based on tick count
         int animFrame = state.frame;

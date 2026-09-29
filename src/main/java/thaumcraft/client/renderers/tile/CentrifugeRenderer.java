@@ -60,7 +60,7 @@ public class CentrifugeRenderer implements BlockEntityRenderer<TileCentrifuge, C
 
         // Render the whole model (static parts + spinning mechanism; rotation applied in model.setupAnim)
         submitNodeCollector.submitModel(this.model, state, poseStack, this.model.renderType(TEXTURE),
-                state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, 0, state.breakProgress);
+                state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, 0);
 
         poseStack.popPose();
     }

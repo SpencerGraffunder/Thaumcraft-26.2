@@ -331,7 +331,7 @@ public class EntityEldritchWarden extends EntityThaumcraftBoss implements Ranged
             BlockState below = level().getBlockState(checkPos.below());
             BlockState at = level().getBlockState(checkPos);
             
-            if (below.blocksMotion() && !at.blocksMotion()) {
+            if (below.isCollisionShapeFullBlock(level(), checkPos.below()) && !at.isCollisionShapeFullBlock(level(), checkPos)) {
                 // Valid position
                 teleportTo(x + 0.5, y + 0.1, z + 0.5);
                 

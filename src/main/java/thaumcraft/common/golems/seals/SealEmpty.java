@@ -8,7 +8,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import thaumcraft.api.ItemHandlers;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.EnumGolemTrait;
 import thaumcraft.api.golems.IGolemAPI;
@@ -92,11 +94,11 @@ public class SealEmpty extends SealFiltered implements ISealConfigToggles {
         BlockPos pos = seal.getSealPos().pos;
         Direction face = seal.getSealPos().face;
         
-        IItemHandler handler = getItemHandler(level, pos, face);
+        ResourceHandler<ItemResource> handler = getItemHandler(level, pos, face);
         if (handler == null) return ItemStack.EMPTY;
         
-        for (int slot = 0; slot < handler.getSlots(); slot++) {
-            ItemStack stack = handler.getStackInSlot(slot);
+        for (int slot = 0; slot < ItemHandlers.getSlots(handler); slot++) {
+            ItemStack stack = ItemHandlers.getStackInSlot(handler, slot);
             if (!stack.isEmpty() && matchesFilter(stack)) {
                 // Check leave-one option
                 if (props[5].getValue() && stack.getCount() <= 1) {
@@ -112,12 +114,12 @@ public class SealEmpty extends SealFiltered implements ISealConfigToggles {
     /**
      * Get item handler at position
      */
-    private IItemHandler getItemHandler(Level level, BlockPos pos, Direction face) {
+    private ResourceHandler<ItemResource> getItemHandler(Level level, BlockPos pos, Direction face) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
             var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, face);
             if (handler != null) {
-                return IItemHandler.of(handler);
+                return handler;
             }
         }
         return null;
@@ -202,12 +204,12 @@ public class SealEmpty extends SealFiltered implements ISealConfigToggles {
     }
     
     private int countItemsInInventory(Level level, BlockPos pos, Direction face, ItemStack stack) {
-        IItemHandler handler = getItemHandler(level, pos, face);
+        ResourceHandler<ItemResource> handler = getItemHandler(level, pos, face);
         if (handler == null) return 0;
         
         int count = 0;
-        for (int slot = 0; slot < handler.getSlots(); slot++) {
-            ItemStack slotStack = handler.getStackInSlot(slot);
+        for (int slot = 0; slot < ItemHandlers.getSlots(handler); slot++) {
+            ItemStack slotStack = ItemHandlers.getStackInSlot(handler, slot);
             if (ItemStack.isSameItemSameComponents(slotStack, stack)) {
                 count += slotStack.getCount();
             }
@@ -216,16 +218,16 @@ public class SealEmpty extends SealFiltered implements ISealConfigToggles {
     }
     
     private ItemStack extractFromInventory(Level level, BlockPos pos, Direction face, ItemStack match, int amount) {
-        IItemHandler handler = getItemHandler(level, pos, face);
+        ResourceHandler<ItemResource> handler = getItemHandler(level, pos, face);
         if (handler == null) return ItemStack.EMPTY;
         
         ItemStack result = ItemStack.EMPTY;
         int remaining = amount;
         
-        for (int slot = 0; slot < handler.getSlots() && remaining > 0; slot++) {
-            ItemStack slotStack = handler.getStackInSlot(slot);
+        for (int slot = 0; slot < ItemHandlers.getSlots(handler) && remaining > 0; slot++) {
+            ItemStack slotStack = ItemHandlers.getStackInSlot(handler, slot);
             if (ItemStack.isSameItemSameComponents(slotStack, match)) {
-                ItemStack extracted = handler.extractItem(slot, remaining, false);
+                ItemStack extracted = ItemHandlers.extractItem(handler, slot, remaining, false);
                 if (!extracted.isEmpty()) {
                     if (result.isEmpty()) {
                         result = extracted;

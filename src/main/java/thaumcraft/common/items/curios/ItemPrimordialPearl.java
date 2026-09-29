@@ -8,7 +8,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.FuelValues;
 import thaumcraft.common.items.ItemTCBase;
 
 import javax.annotation.Nullable;
@@ -87,10 +86,6 @@ public class ItemPrimordialPearl extends ItemTCBase {
     public boolean hasCraftingRemainingItem(ItemStack stack) {
         // Returns true if there's still uses left after this use
         return stack.getDamageValue() < MAX_DAMAGE - 1;
-    }
-
-    public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
-        return 0; // Not a fuel
     }
 
     public boolean isRepairable(ItemStack stack) {

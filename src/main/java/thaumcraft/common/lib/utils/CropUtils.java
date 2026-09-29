@@ -6,6 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.StemBlock;
@@ -170,7 +171,7 @@ public class CropUtils {
             // If it can't grow anymore, it's fully grown
             // (unless it's a stem which never stops being bonemealable)
             if (!(block instanceof StemBlock)) {
-                if (!bonemealable.isValidBonemealTarget(level, pos, state)) {
+                if (!bonemealable.isValidBonemealTarget(level, pos, state, BonemealSource.MOB)) {
                     return true;
                 }
             }

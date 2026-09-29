@@ -52,7 +52,7 @@ public class BlockBarrier extends Block {
                 .noOcclusion()
                 .noCollision() // Base collision is off, we handle it per-entity
                 .replaceable()
-                .pushReaction(PushReaction.BLOCK)));
+                .pushReaction(PushReaction.IMMOVEABLE)));
     }
 
     @Override

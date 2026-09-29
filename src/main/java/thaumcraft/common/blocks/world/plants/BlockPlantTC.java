@@ -1,6 +1,5 @@
 package thaumcraft.common.blocks.world.plants;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -68,8 +67,4 @@ public class BlockPlantTC extends BushBlock {
                 .offsetType(BlockBehaviour.OffsetType.XZ));
     }
 
-    @Override
-    public MapCodec<BushBlock> codec() {
-        return simpleCodec(BlockPlantTC::new);
-    }
 }

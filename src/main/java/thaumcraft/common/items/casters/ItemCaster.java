@@ -308,7 +308,7 @@ public class ItemCaster extends Item implements ICaster {
             }
         }
         
-        player.swing(hand);
+        player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
         
         // Apply cooldown
         int cooldown = focus.getActivationTime(focusStack);

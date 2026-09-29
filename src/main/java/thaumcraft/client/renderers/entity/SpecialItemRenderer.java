@@ -68,7 +68,7 @@ public class SpecialItemRenderer extends EntityRenderer<EntitySpecialItem, Speci
         poseStack.pushPose();
         
         // Spin the item
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.age * 2.0F));
+        poseStack.rotate(Axis.YP.rotationDegrees(state.age * 2.0F));
         
         // Scale up slightly
         poseStack.scale(0.5F, 0.5F, 0.5F);
@@ -93,12 +93,12 @@ public class SpecialItemRenderer extends EntityRenderer<EntitySpecialItem, Speci
             poseStack.pushPose();
             
             // Random rotation for each tendril
-            poseStack.mulPose(Axis.XP.rotationDegrees(random.nextFloat() * 360.0F));
-            poseStack.mulPose(Axis.YP.rotationDegrees(random.nextFloat() * 360.0F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(random.nextFloat() * 360.0F));
-            poseStack.mulPose(Axis.XP.rotationDegrees(random.nextFloat() * 360.0F));
-            poseStack.mulPose(Axis.YP.rotationDegrees(random.nextFloat() * 360.0F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(random.nextFloat() * 360.0F + ageFrac * 360.0F));
+            poseStack.rotate(Axis.XP.rotationDegrees(random.nextFloat() * 360.0F));
+            poseStack.rotate(Axis.YP.rotationDegrees(random.nextFloat() * 360.0F));
+            poseStack.rotate(Axis.ZP.rotationDegrees(random.nextFloat() * 360.0F));
+            poseStack.rotate(Axis.XP.rotationDegrees(random.nextFloat() * 360.0F));
+            poseStack.rotate(Axis.YP.rotationDegrees(random.nextFloat() * 360.0F));
+            poseStack.rotate(Axis.ZP.rotationDegrees(random.nextFloat() * 360.0F + ageFrac * 360.0F));
             
             // Scale based on entity age
             float length = (random.nextFloat() * 20.0F + 5.0F) / 30.0F * scaleFrac;

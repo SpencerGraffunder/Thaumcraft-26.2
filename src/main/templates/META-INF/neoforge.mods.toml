@@ -1,4 +1,4 @@
-# NeoForge mods.toml for Thaumcraft (MC 26.2)
+# NeoForge mods.toml for Thaumcraft (MC 26.3)
 modLoader="javafml" #mandatory
 
 # A version range to match for said mod loader - the NeoForge/FML version
@@ -37,7 +37,7 @@ description='''${mod_description}'''
     modId="neoforge" #mandatory
     # The version range of the dependency
     versionRange="${neo_version_range}" #mandatory
-    # 26.2: dependency type - REQUIRED (default), OPTIONAL, or INCOMPATIBLE
+    # 26.3: dependency type - REQUIRED (default), OPTIONAL, or INCOMPATIBLE
     type="REQUIRED" #mandatory
     # An ordering relationship for the dependency.
     ordering="NONE"
@@ -58,6 +58,11 @@ description='''${mod_description}'''
 [[dependencies.${mod_id}]]
     modId="curios"
     type="REQUIRED"
-    versionRange="[16.0.0,)"
+    # Lower bound is the pre-release, NOT the stable release: the 26.3 build
+    # ships as `17.0.0-beta.2+26.3`, and Maven (NeoForge's range parser) sorts a
+    # pre-release BELOW its release, so `[17.0.0,)` rejects it. `[17.0.0-beta,)`
+    # accepts the beta, a future stable 17.0.0, and later 17.x, while still
+    # rejecting 16.x (different API).
+    versionRange="[17.0.0-beta,)"
     ordering="AFTER"
     side="BOTH"

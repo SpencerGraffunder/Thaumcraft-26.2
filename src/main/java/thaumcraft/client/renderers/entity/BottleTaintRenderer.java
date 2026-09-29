@@ -59,8 +59,8 @@ public class BottleTaintRenderer extends EntityRenderer<EntityBottleTaint, Bottl
         poseStack.pushPose();
         
         // Spinning motion
-        poseStack.mulPose(Axis.YP.rotationDegrees(-90.0F - state.yRot));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.spinAge * 20.0F));
+        poseStack.rotate(Axis.YP.rotationDegrees(-90.0F - state.yRot));
+        poseStack.rotate(Axis.ZP.rotationDegrees(state.spinAge * 20.0F));
         
         // Scale down slightly
         poseStack.scale(0.5F, 0.5F, 0.5F);

@@ -68,8 +68,8 @@ public class GolemRenderer extends MobRenderer<EntityThaumcraftGolem, GolemRende
         
         // Animation data used by the model
         state.holdingItem = !entity.getMainHandItem().isEmpty();
-        state.swinging = entity.swinging;
-        state.attackAnim = entity.getAttackAnim(partialTick);
+        state.swinging = entity.isSwinging();
+        state.attackAnim = entity.getSwingAnimation(partialTick);
     }
     
     @Override

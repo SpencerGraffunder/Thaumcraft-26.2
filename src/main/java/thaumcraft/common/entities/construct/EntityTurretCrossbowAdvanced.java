@@ -221,7 +221,7 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
                 // Drop advanced turret placer
                 spawnAtLocation((ServerLevel) this.level(), new ItemStack(ModItems.TURRET_PLACER_ADVANCED.get()), 0.5f);
                 discard();
-                player.swing(hand);
+                player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                 return InteractionResult.SUCCESS;
             } else {
                 // Open GUI - show current targeting options

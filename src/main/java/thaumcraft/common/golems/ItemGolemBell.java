@@ -54,7 +54,7 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
             return InteractionResult.PASS;
         }
 
-        player.swing(context.getHand());
+        player.swingAndResetAttackStrength(context.getHand(), net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
         if (!level.isClientSide()) {
             // Check for seal at clicked position
@@ -99,7 +99,7 @@ public class ItemGolemBell extends Item implements ISealDisplayer {
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        player.swing(hand);
+        player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
         
         if (!level.isClientSide()) {
             // Try to find a seal by raytracing

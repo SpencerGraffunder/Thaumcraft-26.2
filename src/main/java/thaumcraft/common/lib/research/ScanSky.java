@@ -209,7 +209,7 @@ public class ScanSky implements IScanThing {
         }
         ItemStack reward = new ItemStack(item);
         if (!player.getInventory().add(reward)) {
-            player.drop(reward, false);
+            player.drop(reward, false, net.minecraft.util.Prediction.SERVER_ONLY);
         }
     }
     

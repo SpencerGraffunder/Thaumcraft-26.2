@@ -86,9 +86,9 @@ public class BannerRenderer implements BlockEntityRenderer<TileBanner, BannerRen
 
         // Position and orient the banner
         poseStack.translate(0.5, 1.5, 0.5);
-        poseStack.mulPose(Axis.XP.rotationDegrees(180.0f));
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0f));
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.bannerFacing));
+        poseStack.rotate(Axis.XP.rotationDegrees(180.0f));
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0f));
+        poseStack.rotate(Axis.YP.rotationDegrees(state.bannerFacing));
 
         // Render pole (only for standing banners)
         if (state.wall) {
@@ -105,7 +105,7 @@ public class BannerRenderer implements BlockEntityRenderer<TileBanner, BannerRen
 
         // Submit the whole banner model (pole, beam, tabs and cloth with wind animation)
         submitNodeCollector.submitModel(this.model, state, poseStack, this.model.renderType(texture),
-                state.lightCoords, OverlayTexture.NO_OVERLAY, tintedColor, null, 0, state.breakProgress);
+                state.lightCoords, OverlayTexture.NO_OVERLAY, tintedColor, null, 0);
 
         // Render aspect decoration if present
         Aspect aspect = state.aspect;
@@ -113,9 +113,9 @@ public class BannerRenderer implements BlockEntityRenderer<TileBanner, BannerRen
             poseStack.pushPose();
             poseStack.translate(0.0, 0.0, 0.05001);
             poseStack.scale(0.0375f, 0.0375f, 0.0375f);
-            poseStack.mulPose(Axis.YP.rotationDegrees(180.0f));
+            poseStack.rotate(Axis.YP.rotationDegrees(180.0f));
             // Rotate with banner animation
-            poseStack.mulPose(Axis.XP.rotationDegrees(-state.wind * 57.295776f * 2.0f));
+            poseStack.rotate(Axis.XP.rotationDegrees(-state.wind * 57.295776f * 2.0f));
 
             // Draw aspect icon in world space
             renderAspectIcon(poseStack, submitNodeCollector, aspect, -8, 0, state.lightCoords, 0.75f);

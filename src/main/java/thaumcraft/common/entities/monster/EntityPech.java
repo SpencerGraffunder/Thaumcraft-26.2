@@ -289,7 +289,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
             level().addFreshEntity(arrow);
         } else if (getPechType() == TYPE_MAGE) {
             // Magic attack
-            swing(getUsedItemHand());
+            swing(getUsedItemHand(), net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
             // Placeholder: just do direct damage for now
             if (distanceToSqr(target) < 256) {
                 target.hurtServer((ServerLevel) level(), damageSources().indirectMagic(this, this), 4.0f + random.nextFloat() * 2.0f);

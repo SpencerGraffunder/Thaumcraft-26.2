@@ -62,7 +62,7 @@ public class BlockFluidPure extends Block {
                 .mapColor(MapColor.QUARTZ)
                 .strength(0.0f)
                 .noOcclusion()
-                .pushReaction(PushReaction.DESTROY)
+                .pushReaction(PushReaction.POPPED)
                 .randomTicks()
                 .noCollision()
                 .lightLevel(state -> 10)

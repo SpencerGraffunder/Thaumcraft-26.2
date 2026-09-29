@@ -73,7 +73,7 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
             // If pedestal has item, give it to player
             if (!pedestalItem.isEmpty()) {
                 if (!player.getInventory().add(pedestalItem)) {
-                    player.drop(pedestalItem, false);
+                    player.drop(pedestalItem, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
                 pedestal.setItem(0, ItemStack.EMPTY);
                 level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,
@@ -99,7 +99,7 @@ public class BlockRechargePedestal extends Block implements EntityBlock {
             // If pedestal has item, give it to player
             if (!pedestalItem.isEmpty()) {
                 if (!player.getInventory().add(pedestalItem)) {
-                    player.drop(pedestalItem, false);
+                    player.drop(pedestalItem, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
                 pedestal.setItem(0, ItemStack.EMPTY);
                 level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS,

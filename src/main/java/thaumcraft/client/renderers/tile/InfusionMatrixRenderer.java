@@ -74,9 +74,9 @@ public class InfusionMatrixRenderer implements BlockEntityRenderer<TileInfusionM
 
         // Apply startup rotation
         if (state.startUp > 0) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(ticks % 360.0f * state.startUp));
-            poseStack.mulPose(Axis.XP.rotationDegrees(35.0f * state.startUp));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(45.0f * state.startUp));
+            poseStack.rotate(Axis.YP.rotationDegrees(ticks % 360.0f * state.startUp));
+            poseStack.rotate(Axis.XP.rotationDegrees(35.0f * state.startUp));
+            poseStack.rotate(Axis.ZP.rotationDegrees(45.0f * state.startUp));
         }
 
         // Choose texture based on pillar type (simplified - always use normal for now)
@@ -102,9 +102,9 @@ public class InfusionMatrixRenderer implements BlockEntityRenderer<TileInfusionM
                     poseStack.translate(wobbleX + signA * 0.25f, wobbleY + signB * 0.25f, wobbleZ + signC * 0.25f);
 
                     // Rotation for visual variety
-                    if (a > 0) poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
-                    if (b > 0) poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
-                    if (c > 0) poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f));
+                    if (a > 0) poseStack.rotate(Axis.XP.rotationDegrees(90.0f));
+                    if (b > 0) poseStack.rotate(Axis.YP.rotationDegrees(90.0f));
+                    if (c > 0) poseStack.rotate(Axis.ZP.rotationDegrees(90.0f));
 
                     poseStack.scale(0.45f, 0.45f, 0.45f);
                     submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture), (pose, buffer) ->
@@ -130,9 +130,9 @@ public class InfusionMatrixRenderer implements BlockEntityRenderer<TileInfusionM
                         poseStack.pushPose();
                         poseStack.translate(wobbleX + signA * 0.25f, wobbleY + signB * 0.25f, wobbleZ + signC * 0.25f);
 
-                        if (a > 0) poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
-                        if (b > 0) poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
-                        if (c > 0) poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f));
+                        if (a > 0) poseStack.rotate(Axis.XP.rotationDegrees(90.0f));
+                        if (b > 0) poseStack.rotate(Axis.YP.rotationDegrees(90.0f));
+                        if (c > 0) poseStack.rotate(Axis.ZP.rotationDegrees(90.0f));
 
                         poseStack.scale(0.45f, 0.45f, 0.45f);
 

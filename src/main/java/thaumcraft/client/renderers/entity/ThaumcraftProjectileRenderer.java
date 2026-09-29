@@ -49,12 +49,12 @@ public class ThaumcraftProjectileRenderer<T extends Entity> extends EntityRender
         poseStack.pushPose();
         
         // Billboard rotation
-        poseStack.mulPose(camera.orientation);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.rotate(camera.orientation);
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
         
         // Spin animation
         float spin = state.ageInTicks * 10.0F;
-        poseStack.mulPose(Axis.ZP.rotationDegrees(spin));
+        poseStack.rotate(Axis.ZP.rotationDegrees(spin));
         
         // Get render type
         RenderType renderType = emissive ? 

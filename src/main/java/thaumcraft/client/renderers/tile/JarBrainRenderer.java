@@ -60,7 +60,7 @@ public class JarBrainRenderer implements BlockEntityRenderer<TileJarBrain, JarBr
         poseStack.translate(0.5, 0.35 + state.yOffset, 0.5);
 
         // Apply rotation around Y axis (slow spin)
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.rotation));
+        poseStack.rotate(Axis.YP.rotationDegrees(state.rotation));
 
         // Scale down the brain to fit inside the jar
         // Original model is designed at 1/16 scale, we need it smaller for the jar
@@ -68,11 +68,11 @@ public class JarBrainRenderer implements BlockEntityRenderer<TileJarBrain, JarBr
         poseStack.scale(scale, scale, scale);
 
         // Flip the model (models are often upside down)
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180));
+        poseStack.rotate(Axis.ZP.rotationDegrees(180));
 
         // Render the brain model with a slightly pink/flesh color tint
         submitNodeCollector.submitModel(this.brainModel, Unit.INSTANCE, poseStack, this.brainModel.renderType(BRAIN_TEXTURE),
-                state.lightCoords, OverlayTexture.NO_OVERLAY, 0xFFD9D9D9, null, 0, state.breakProgress);
+                state.lightCoords, OverlayTexture.NO_OVERLAY, 0xFFD9D9D9, null, 0);
 
         poseStack.popPose();
     }

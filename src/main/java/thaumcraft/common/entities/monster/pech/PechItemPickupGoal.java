@@ -71,7 +71,7 @@ public class PechItemPickupGoal extends Goal {
                 }
             } else {
                 // Not a valued item, drop it
-                pech.drop(stack, false, false);
+                pech.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
             }
         }
     }

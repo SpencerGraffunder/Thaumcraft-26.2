@@ -21,8 +21,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import thaumcraft.api.ItemHandlers;
 import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
@@ -124,8 +125,8 @@ public class TilePatternCrafter extends TileThaumcraft {
         }
         
         // Get input and output inventories
-        IItemHandler above = getItemHandler(worldPosition.above(), Direction.DOWN);
-        IItemHandler below = getItemHandler(worldPosition.below(), Direction.UP);
+        ResourceHandler<ItemResource> above = getItemHandler(worldPosition.above(), Direction.DOWN);
+        ResourceHandler<ItemResource> below = getItemHandler(worldPosition.below(), Direction.UP);
         
         if (above == null || below == null) {
             return;
@@ -134,8 +135,8 @@ public class TilePatternCrafter extends TileThaumcraft {
         int amt = getPatternItemCount();
         
         // Search for items to craft
-        for (int a = 0; a < above.getSlots(); a++) {
-            ItemStack testStack = above.getStackInSlot(a).copy();
+        for (int a = 0; a < ItemHandlers.getSlots(above); a++) {
+            ItemStack testStack = ItemHandlers.getStackInSlot(above, a).copy();
             if (testStack.isEmpty()) continue;
             
             testStack.setCount(amt);
@@ -150,13 +151,13 @@ public class TilePatternCrafter extends TileThaumcraft {
             if (power < 1.0f) continue;
             
             // Check if we can insert output
-            if (!ItemHandlerHelper.insertItem(below, outStack.copy(), true).isEmpty()) continue;
+            if (!ItemHandlers.insertItemStacked(below, outStack.copy(), true).isEmpty()) continue;
             
             // Check if we can insert crafting byproducts
             boolean canInsertByproducts = true;
             for (int i = 0; i < 9; i++) {
                 ItemStack byproduct = craftMatrix.getItem(i);
-                if (!byproduct.isEmpty() && !ItemHandlerHelper.insertItem(below, byproduct.copy(), true).isEmpty()) {
+                if (!byproduct.isEmpty() && !ItemHandlers.insertItemStacked(below, byproduct.copy(), true).isEmpty()) {
                     canInsertByproducts = false;
                     break;
                 }
@@ -165,13 +166,13 @@ public class TilePatternCrafter extends TileThaumcraft {
             if (!canInsertByproducts) continue;
             
             // Do the craft!
-            ItemHandlerHelper.insertItem(below, outStack.copy(), false);
+            ItemHandlers.insertItemStacked(below, outStack.copy(), false);
             
             // Insert byproducts
             for (int i = 0; i < 9; i++) {
                 ItemStack byproduct = craftMatrix.getItem(i);
                 if (!byproduct.isEmpty()) {
-                    ItemHandlerHelper.insertItem(below, byproduct.copy(), false);
+                    ItemHandlers.insertItemStacked(below, byproduct.copy(), false);
                 }
             }
             
@@ -185,17 +186,16 @@ public class TilePatternCrafter extends TileThaumcraft {
         }
     }
     
-    private IItemHandler getItemHandler(BlockPos pos, Direction side) {
+    private ResourceHandler<ItemResource> getItemHandler(BlockPos pos, Direction side) {
         if (level == null) return null;
-        var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, side);
-        return handler != null ? IItemHandler.of(handler) : null;
+        return level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, side);
     }
     
-    private boolean canExtractStack(IItemHandler handler, ItemStack stack) {
+    private boolean canExtractStack(ResourceHandler<ItemResource> handler, ItemStack stack) {
         int needed = stack.getCount();
         int found = 0;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack slot = handler.getStackInSlot(i);
+        for (int i = 0; i < ItemHandlers.getSlots(handler); i++) {
+            ItemStack slot = ItemHandlers.getStackInSlot(handler, i);
             if (ItemStack.isSameItemSameComponents(slot, stack)) {
                 found += slot.getCount();
                 if (found >= needed) return true;
@@ -204,10 +204,10 @@ public class TilePatternCrafter extends TileThaumcraft {
         return false;
     }
     
-    private void extractStack(IItemHandler handler, ItemStack stack) {
+    private void extractStack(ResourceHandler<ItemResource> handler, ItemStack stack) {
         int remaining = stack.getCount();
-        for (int i = 0; i < handler.getSlots() && remaining > 0; i++) {
-            ItemStack extracted = handler.extractItem(i, remaining, false);
+        for (int i = 0; i < ItemHandlers.getSlots(handler) && remaining > 0; i++) {
+            ItemStack extracted = ItemHandlers.extractItem(handler, i, remaining, false);
             remaining -= extracted.getCount();
         }
     }

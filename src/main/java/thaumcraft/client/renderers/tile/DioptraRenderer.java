@@ -188,7 +188,7 @@ public class DioptraRenderer implements BlockEntityRenderer<TileDioptra, Dioptra
     private void renderSidePanels(DioptraRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         poseStack.pushPose();
         poseStack.translate(0, 1.0, 0);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(270));
+        poseStack.rotate(Axis.ZP.rotationDegrees(270));
 
         submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucentEmissive(SIDE_TEXTURE), (pose, buffer) -> {
             int fullLight = 0x00F000F0;

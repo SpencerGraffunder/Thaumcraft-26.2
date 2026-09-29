@@ -208,7 +208,7 @@ public class EntityTaintSwarm extends Monster {
                         target.getBoundingBox().minY < getBoundingBox().maxY) {
                     
                     if (isSummoned()) {
-                        target.invulnerableTime = 0; // Reset invulnerability for summoned swarms
+                        target.setInvulnerableTime(0); // Reset invulnerability for summoned swarms
                     }
                     
                     attackTime = 15 + random.nextInt(10);
@@ -223,7 +223,7 @@ public class EntityTaintSwarm extends Monster {
                     
                     // Restore momentum
                     target.setDeltaMovement(targetMotion);
-                    target.hurtMarked = false;
+                    target.needsSync = false;
                     
                     playSound(ModSounds.SWARM_ATTACK.get(), 0.3f, 0.9f + random.nextFloat() * 0.2f);
                 }

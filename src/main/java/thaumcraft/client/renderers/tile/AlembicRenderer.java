@@ -93,10 +93,10 @@ public class AlembicRenderer implements BlockEntityRenderer<TileAlembic, Alembic
         // Rotate based on alembic facing
         int facing = state.facing;
         switch (facing) {
-            case 2 -> poseStack.mulPose(Axis.YP.rotationDegrees(180)); // North - face south
-            case 3 -> poseStack.mulPose(Axis.YP.rotationDegrees(0));   // South - face north
-            case 4 -> poseStack.mulPose(Axis.YP.rotationDegrees(90));  // West - face east
-            case 5 -> poseStack.mulPose(Axis.YP.rotationDegrees(270)); // East - face west
+            case 2 -> poseStack.rotate(Axis.YP.rotationDegrees(180)); // North - face south
+            case 3 -> poseStack.rotate(Axis.YP.rotationDegrees(0));   // South - face north
+            case 4 -> poseStack.rotate(Axis.YP.rotationDegrees(90));  // West - face east
+            case 5 -> poseStack.rotate(Axis.YP.rotationDegrees(270)); // East - face west
         }
 
         // Move to label position on front face
@@ -155,10 +155,10 @@ public class AlembicRenderer implements BlockEntityRenderer<TileAlembic, Alembic
 
         // Rotate based on direction
         switch (dir) {
-            case NORTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            case NORTH -> poseStack.rotate(Axis.YP.rotationDegrees(180));
             case SOUTH -> { } // No rotation needed
-            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
-            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(-90));
+            case WEST -> poseStack.rotate(Axis.YP.rotationDegrees(90));
+            case EAST -> poseStack.rotate(Axis.YP.rotationDegrees(-90));
             default -> { }
         }
 

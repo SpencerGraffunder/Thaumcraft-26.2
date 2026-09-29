@@ -13,7 +13,7 @@ base {
     archivesName = mod_id
 }
 
-// MC 26.2 ships Java 25 to end users, so the mod targets Java 25.
+// MC 26.3 ships Java 25 to end users, so the mod targets Java 25.
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 repositories {
@@ -68,14 +68,27 @@ dependencies {
 // code is correct for the real runtime (minecraft-client-patched).
 //
 // The correct patched jar is produced by the local neoForm pipeline at
-//   build/neoForm/neoFormJoined26.2-2/steps/recompile/outputs.jar
+//   build/neoForm/neoFormJoined<mc_version>-<n>/steps/recompile/outputs.jar
 // (identical API surface to the runtime minecraft-client-patched jar).
 //
 // This task re-applies that patched jar over the raw artifact after userdev
 // selects it, so compilation sees the full API. It does NOT declare the target
 // as an output (that is owned by selectRawArtifact); it is forced to always run.
 // ---------------------------------------------------------------------------
-def patchedMcJar = project.file("build/neoForm/neoFormJoined26.2-2/steps/recompile/outputs.jar")
+// Resolve the recompiled patched jar dynamically: prefer the neoForm directory
+// for the CURRENT minecraft_version (e.g. neoFormJoined26.3-1), fall back to the
+// most recently modified neoFormJoined*/steps/recompile/outputs.jar otherwise.
+// The directory suffix is assigned by the neoForm pipeline, so we glob instead
+// of hardcoding it.
+def findPatchedMcJar = {
+    def base = project.file("build/neoForm")
+    def dirs = base.listFiles()?.findAll { it.directory && it.name.startsWith("neoFormJoined") } ?: []
+    def match = dirs.findAll { it.name.startsWith("neoFormJoined${minecraft_version}") }
+    if (match.isEmpty()) match = dirs
+    def candidates = match.collect { new File(it, "steps/recompile/outputs.jar") }.findAll { it.exists() }
+    if (candidates.isEmpty()) return null
+    return candidates.max { it.lastModified() }
+}
 def ngDummyJar = project.file(".gradle/repositories/ng_dummy_ng/net/neoforged/neoforge/${neo_version}/neoforge-${neo_version}.jar")
 
 // Swap the raw (vanilla) MC jar for the patched one immediately before javac runs.
@@ -84,35 +97,37 @@ def ngDummyJar = project.file(".gradle/repositories/ng_dummy_ng/net/neoforged/ne
 // classpath files, so javac sees the full NeoForge-injected API surface.
 //
 // Note: `neoFormRecompile` (which regenerates the patched jar) depends on
-// `neoFormPatchUserDev`, which currently has failing patch hunks on 26.2 — so it
-// can't be wired into the build graph. The patched jar is a stable build artifact
-// (build/neoForm/.../recompile/outputs.jar) produced by the neoForm pipeline; it
-// is committed to the machine and must be present for compilation. If it is ever
-// missing (e.g. after `clean` on a fresh clone), regenerate it via the neoForm
-// pipeline before building.
+// `neoFormPatchUserDev`, which can have failing patch hunks on some NeoForge
+// versions — so a tolerated partial run is fine as long as the recompiled jar
+// the mod needs is present. The patched jar is a stable build artifact
+// (build/neoForm/.../recompile/outputs.jar) produced by the neoForm pipeline;
+// it must be present for compilation. If it is ever missing (e.g. after `clean`
+// on a fresh clone), regenerate it via the neoForm pipeline (neoFormRecompile)
+// before building.
 tasks.named('compileJava').configure {
     doFirst {
-        if (!patchedMcJar.exists()) {
-            throw new GradleException("patched MC jar missing at ${patchedMcJar} — run the neoForm pipeline (neoFormRecompile) first")
+        def patchedMcJar = findPatchedMcJar()
+        if (patchedMcJar == null) {
+            throw new GradleException("patched MC jar missing under build/neoForm/ — run the neoForm pipeline (neoFormRecompile) first")
         }
         if (!ngDummyJar.exists() || ngDummyJar.bytes != patchedMcJar.readBytes()) {
             ngDummyJar.parentFile.mkdirs()
             ngDummyJar.bytes = patchedMcJar.readBytes()
-            logger.lifecycle("swapped raw ng_dummy MC artifact -> patched MC jar for compilation")
+            logger.lifecycle("swapped raw ng_dummy MC artifact -> patched MC jar for compilation: ${patchedMcJar}")
         }
     }
 }
 
 // ---------------------------------------------------------------------------
-// neoForm pipeline hardening (NeoForge 26.2)
+// neoForm pipeline hardening (NeoForge 26.2 / 26.3)
 //
 // The neoForm pipeline (neoFormDecompile -> neoFormPatch -> neoFormPatchUserDev ->
 // neoFormTransformSource -> neoFormRecompile) is a dependency of selectRawArtifact,
 // which feeds the net.neoforged:neoforge compile artifact. When its cache is
-// invalidated the pipeline re-runs, and neoFormPatchUserDev fails: three userdev
-// patch hunks (CustomPacketPayload, SpawnPlacements, Block) do not apply to the
-// freshly-decompiled source. Those hunks inject NeoForge API hooks that the
-// recompiled jar produced by an EARLIER successful pipeline run already contains
+// invalidated the pipeline re-runs, and neoFormPatchUserDev may fail: some userdev
+// patch hunks (e.g. CustomPacketPayload, SpawnPlacements, Block on 26.2) do not
+// apply to the freshly-decompiled source. Those hunks inject NeoForge API hooks
+// that the recompiled jar produced by a successful pipeline run already contains
 // (build/neoForm/.../recompile/outputs.jar — identical API surface to the runtime
 // minecraft-client-patched jar).
 //
@@ -138,7 +153,7 @@ tasks.matching { it.name == 'neoFormPatchUserDev' }.configureEach { t ->
 }
 tasks.matching { it.name == 'neoFormRecompile' }.configureEach {
     // Reuse the good recompiled jar if present; only regenerate it if it is missing.
-    onlyIf { !patchedMcJar.exists() }
+    onlyIf { findPatchedMcJar() == null }
 }
 
 tasks.withType(ProcessResources).configureEach {
@@ -188,11 +203,19 @@ project.afterEvaluate {
         def fixTask = tasks.register('fixNeoFormArtifacts') {
             mustRunAfter(tasks.named('neoFormTransformSource'))
             doLast {
-                def base = new File(project.layout.buildDirectory.get().asFile, 'neoForm/neoFormJoined26.2-2/steps/transformSource/transformed')
-                if (!base.exists()) {
+                // Resolve the transformSource dir dynamically (neoFormJoined<mc>-<n>)
+                def baseDir = new File(project.layout.buildDirectory.get().asFile, "neoForm")
+                def candidates = baseDir.listFiles()?.findAll { it.directory && it.name.startsWith("neoFormJoined") } ?: []
+                // Prefer the current minecraft_version, else newest
+                def match = candidates.findAll { it.name.startsWith("neoFormJoined${minecraft_version}") }
+                if (match.isEmpty()) match = candidates
+                def base = match.collect { new File(it, "steps/transformSource/transformed") }
+                    .findAll { it.exists() }
+                if (base.isEmpty()) {
                     logger.warn("fixNeoFormArtifacts: dir not found")
                     return
                 }
+                base = base.max { it.lastModified() }
                 // Run Python script to fix artifacts
                 def script = project.file('scripts/fix_neoform_artifacts.py')
                 if (script.exists()) {

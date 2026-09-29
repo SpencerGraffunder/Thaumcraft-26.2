@@ -51,8 +51,8 @@ public class TaintSwarmRenderer extends EntityRenderer<EntityTaintSwarm, TaintSw
         poseStack.pushPose();
         
         // Billboard rotation
-        poseStack.mulPose(camera.orientation);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.rotate(camera.orientation);
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F));
         
         Random random = new Random(state.seed);
         float time = state.time;
@@ -74,7 +74,7 @@ public class TaintSwarmRenderer extends EntityRenderer<EntityTaintSwarm, TaintSw
             poseStack.translate(offsetX, offsetY, offsetZ);
             
             // Individual particle rotation
-            poseStack.mulPose(Axis.ZP.rotationDegrees(random.nextFloat() * 360 + time * 5));
+            poseStack.rotate(Axis.ZP.rotationDegrees(random.nextFloat() * 360 + time * 5));
             
             float size = 0.15F + random.nextFloat() * 0.1F;
             

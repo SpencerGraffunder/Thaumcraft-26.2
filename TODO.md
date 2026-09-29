@@ -1,9 +1,82 @@
-# Thaumcraft 6 — Minecraft 26.2 (NeoForge) Migration Status
+# Thaumcraft 6 — Minecraft 26.3 (NeoForge) Migration Status
 
-> Tracks the active **26.2 port**. Milestones achieved so far —
-> compiles, builds, server boots to "Done" with clean chunk saves and full
-> research-data load — and historical one-off tickets are recorded in git
-> history. Only outstanding work appears below.
+> Tracks the active **26.3 port** (migrated from 26.2 on 2026-09-28). The 26.2
+> notes below are historical milestones; 26.3-specific work is recorded in the
+> section at the top of this file.
+
+## 26.3 Migration — full API port (2026-09-28/29, in progress → build green)
+
+User-directed migration: 26.2 → **NeoForge 26.3.0.33-beta** (MC 26.3, Java 25,
+pack format 121). Fresh Modrinth profile `NeoForge 26.3`.
+
+- **Build plumbing:** `gradle.properties` (neo_version 26.3.0.33-beta, pack
+  format 121, mod_version 6.2.0+26.3, Curios 17.0.0-beta.2+26.3, JEI 31.7.0.47);
+  `build.gradle` now globs the patched MC jar dynamically (no more hardcoded
+  `neoFormJoined26.2-2` path); `scripts/fix_neoform_artifacts.py` gained 2
+  26.3-only decompiler-artifact fixes (CustomPayload 4-arg codec call sites,
+  LevelEventHandler case-2003 variable renames); mods.toml template updated
+  (Curios range [17.0.0,)).
+- **Transfer API (biggest break):** NeoForge deleted `IItemHandler`,
+  `IFluidHandler`, `FluidTank`, `ItemHandlerHelper`, `InvWrapper`,
+  `SidedInvWrapper`, `SlotItemHandler`. New transaction-based
+  `net.neoforged.neoforge.transfer.ResourceHandler<T>` framework. Migrated ~40
+  files: capabilities (`Capabilities.Item.BLOCK` / `Capabilities.Fluid.BLOCK`),
+  `TileCapabilityRegistration`, 5 tile inventories, 8 seal classes, menus,
+  `ThaumcraftInvHelper` (now `WorldlyContainerWrapper` /
+  `VanillaContainerWrapper.of`), `PouchCurios` (extends
+  `ItemStacksResourceHandler`, Curios 17's `IDynamicStackHandler` is
+  ResourceHandler-based), `ItemFocusPouch` (writeTag/readTag →
+  serialize/deserialize). Two new adapters keep old call shapes:
+  `thaumcraft.api.ItemHandlers` + `thaumcraft.api.FluidTanks` (nesting-safe
+  Transaction handling).
+- **Worldgen:** `Feature` is now a plain interface; `ConfiguredFeature` /
+  `PlacedFeature` classes gone → 16 custom feature types registered in
+  `Registries.FEATURE_TYPE` (per-variant, `MapCodec.unit(...)`), 19 configured
+  feature JSONs moved to `data/thaumcraft/worldgen/feature/` (config wrapper
+  stripped), 19 placed-feature JSONs + 10 biome modifiers unchanged.
+- **Tools:** `AxeItem`/`ShovelItem`/`HoeItem`/`PickaxeItem`/`SwordItem`
+  removed → 12 tool items rebuilt on `Item.Properties.axe/shovel/hoe/pickaxe/
+  sword(ToolMaterial, ...)`. `ToolMaterial` is now a record (already ported).
+- **Rendering:** `mulPose(Quaternionf)` → `rotate`/`rotateDegrees` (16 sites);
+  `submitModel`/`submitModelPart` lost the trailing `breakProgress` arg
+  (8 tile renderers); `CameraRenderState` exposes `orientation` not
+  `rotation()`; `Block.codec()` overrides deleted (7 blocks).
+- **Entities:** `Entity.drop` → `LivingEntity.drop(ItemStack, boolean,
+  Prediction)` (12 sites); arm-swing fields (`swinging`/`swingTime`/
+  `handleEntityEvent(4)`) removed → `swing(hand, SwingAnimation.DEFAULT, true)`;
+  `hurtMarked` → public `needsSync`; `blocksMotion()` →
+  `isCollisionShapeFullBlock(level, pos)`; `invulnerableTime` →
+  `setInvulnerableTime(0)`.
+- **Fuel:** `FuelValues`/`level.fuelValues()` removed → `TileSmelter` reads
+  `DataComponents.COOKING_FUEL` via `CookingFuel.burnTime().get(lootContext, 0)`;
+  `ItemPrimordialPearl.getBurnTime()` (dead override) deleted.
+- **Misc:** `PushReaction.DESTROY`→`POPPED`, `BLOCK`→`IMMOVEABLE`; GLFW key
+  constants → literal ints + single-arg `InputConstants.isKeyDown` (GLFW not on
+  compile classpath); `LeavesBlock` ambient-sound float →
+  `AmbientLeavesBlockSoundPlayer.noAmbientSound()`; `KeyMapping` moved to
+  `net.minecraft.client`; `Block.playerDestroy` 6-arg.
+
+- **`runServer` smoke test (fresh 26.3 world): boots to `Done`** — zero
+  registry/worldgen errors, clean `level.dat`, research (148) + runtime
+  registration complete. Surfaced & fixed 3 runtime-only data issues the
+  compile never caught:
+  - **Curios dep range:** `mods.toml` `[17.0.0,)` rejected the installed
+    `17.0.0-beta.2+26.3` — NeoForge uses Maven `VersionRange`, which sorts a
+    pre-release below its release. → `[17.0.0-beta,)` (accepts beta + future
+    17.x, still rejects 16.x).
+  - **Ore feature `state`:** 26.3 `BlockState.CODEC` takes a plain string or an
+    `id`-keyed map; the old `{"Name":"..."}` object is gone. 3 ore features
+    (`ore_amber`/`ore_cinnabar`/`ore_quartz`) → plain-string `state`.
+  - **`crystals` item tag dir:** legacy `tags/items/` (plural) → `tags/item/`
+    (singular), matching every other tag in the mod. The Salis Mundus recipe's
+    `#thaumcraft:crystals` ingredient now resolves.
+
+**Status: BUILD GREEN (86/86 tests, 0 TODOs), `runServer` boots to `Done`.**
+Jar `thaumcraft-6.2.0+26.3.jar` installed into the `NeoForge 26.3` Modrinth
+profile; **Curios 17-beta jar added to the profile** (hard dep). **Pending:
+user in-game launch verification** — remaining first-boot risks are client-side
+(rendering, focus pouch, crossbow turret animation, smelter fuel) and in-world
+golem/seal item transfer; server-side registration & worldgen are verified.
 
 ## In-Game Bug Fixes — 3 follow-up issues (2026-09-28, shipped 4e63df2)
 

@@ -67,7 +67,7 @@ public class RechargePedestalRenderer implements BlockEntityRenderer<TileRecharg
         poseStack.scale(1.5f, 1.5f, 1.5f);
 
         // Spin the item
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.ticks % 360.0f));
+        poseStack.rotate(Axis.YP.rotationDegrees(state.ticks % 360.0f));
 
         // Slight bob
         float bob = (float) Math.sin(state.ticks * 0.1f) * 0.05f;

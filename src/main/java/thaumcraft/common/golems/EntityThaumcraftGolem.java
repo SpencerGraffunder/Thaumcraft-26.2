@@ -17,6 +17,7 @@ import net.minecraft.sounds.SoundEvents;
 import thaumcraft.init.ModSounds;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -401,7 +402,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         // Find valid position above
         BlockPos checkPos = blockPosition();
         while (checkPos.getY() < level().getMaxY()) {
-            if (level().getBlockState(checkPos.above()).blocksMotion()) {
+            if (level().getBlockState(checkPos.above()).isCollisionShapeFullBlock(level(), checkPos.above())) {
                 break;
             }
             setPos(getX(), getY() + 1, getZ());
@@ -723,13 +724,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
 
     @Override
     public void swingArm() {
-        if (!swinging || swingTime >= 3 || swingTime < 0) {
-            swingTime = -1;
-            swinging = true;
-            if (level() instanceof ServerLevel serverLevel) {
-                serverLevel.broadcastEntityEvent(this, (byte) 4);
-            }
-        }
+        this.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, true);
     }
 
     // ==================== Interaction ====================
@@ -759,7 +754,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
                 spawnAtLocation((ServerLevel) this.level(), placer, 0.5f);
                 
                 discard();
-                player.swing(hand);
+                player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                 return InteractionResult.SUCCESS;
             }
             
@@ -769,7 +764,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
                 setGolemColor(dyeToGolemColor(color));
                 heldItem.shrink(1);
                 playSound(ModSounds.ZAP.get(), 1.0f, 1.5f);
-                player.swing(hand);
+                player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                 return InteractionResult.SUCCESS;
             }
             
@@ -778,7 +773,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
             if (heldItem.getItem() == ModItems.GOLEM_BELL.get() && ThaumcraftCapabilities.isResearchKnown(player, "GOLEMDIRECT")) {
                 setFollowingOwner(!isFollowingOwner());
                 playSound(ModSounds.SCAN.get(), 1.0f, 1.0f);
-                player.swing(hand);
+                player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
                 return InteractionResult.SUCCESS;
             }
             

@@ -19,6 +19,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
+import thaumcraft.api.FluidTanks;
 import thaumcraft.client.renderers.tile.state.CrucibleRenderState;
 import thaumcraft.common.tiles.crafting.TileCrucible;
 
@@ -47,7 +48,7 @@ public class CrucibleRenderer implements BlockEntityRenderer<TileCrucible, Cruci
         BlockEntityRenderer.super.extractRenderState(tile, state, partialTicks, cameraPosition, breakProgress);
 
         // Only render if there's fluid in the crucible
-        state.hasFluid = tile.getTank().getFluidAmount() > 0;
+        state.hasFluid = FluidTanks.getAmount(tile.getTank()) > 0;
         if (!state.hasFluid) return;
 
         state.fluidHeight = tile.getFluidHeight();

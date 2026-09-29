@@ -19,8 +19,9 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import thaumcraft.api.ItemHandlers;
 import thaumcraft.api.ThaumcraftInvHelper;
 
 import javax.annotation.Nullable;
@@ -173,19 +174,19 @@ public class InventoryUtils {
     }
     
     /**
-     * Remove a stack from an IItemHandler.
+     * Remove a stack from an ResourceHandler<ItemResource>.
      */
-    public static ItemStack removeStackFrom(@Nullable IItemHandler inventory, ItemStack stack, 
+    public static ItemStack removeStackFrom(@Nullable ResourceHandler<ItemResource> inventory, ItemStack stack, 
             ThaumcraftInvHelper.InvFilter filter, boolean simulate) {
         int amount = stack.getCount();
         int removed = 0;
         
         if (inventory != null) {
-            for (int slot = 0; slot < inventory.getSlots(); slot++) {
-                ItemStack slotStack = inventory.getStackInSlot(slot);
+            for (int slot = 0; slot < ItemHandlers.getSlots(inventory); slot++) {
+                ItemStack slotStack = ItemHandlers.getStackInSlot(inventory, slot);
                 if (areItemStacksEqual(stack, slotStack, filter)) {
                     int toExtract = Math.min(amount - removed, slotStack.getCount());
-                    ItemStack extracted = inventory.extractItem(slot, toExtract, simulate);
+                    ItemStack extracted = ItemHandlers.extractItem(inventory, slot, toExtract, simulate);
                     if (!extracted.isEmpty()) {
                         removed += extracted.getCount();
                     }
@@ -430,7 +431,7 @@ public class InventoryUtils {
      * Find the first matching item from a filter list in an inventory.
      */
     public static ItemStack findFirstMatchFromFilter(NonNullList<ItemStack> filterStacks, boolean blacklist,
-            IItemHandler inv, Direction face, ThaumcraftInvHelper.InvFilter filter) {
+            ResourceHandler<ItemResource> inv, Direction face, ThaumcraftInvHelper.InvFilter filter) {
         return findFirstMatchFromFilter(filterStacks, blacklist, inv, face, filter, false);
     }
     
@@ -438,10 +439,10 @@ public class InventoryUtils {
      * Find the first matching item with optional leave-one behavior.
      */
     public static ItemStack findFirstMatchFromFilter(NonNullList<ItemStack> filterStacks, boolean blacklist,
-            IItemHandler inv, Direction face, ThaumcraftInvHelper.InvFilter filter, boolean leaveOne) {
+            ResourceHandler<ItemResource> inv, Direction face, ThaumcraftInvHelper.InvFilter filter, boolean leaveOne) {
         slotLoop:
-        for (int slot = 0; slot < inv.getSlots(); slot++) {
-            ItemStack slotStack = inv.getStackInSlot(slot);
+        for (int slot = 0; slot < ItemHandlers.getSlots(inv); slot++) {
+            ItemStack slotStack = ItemHandlers.getStackInSlot(inv, slot);
             if (slotStack.isEmpty() || slotStack.getCount() <= 0) continue;
             
             if (leaveOne && ThaumcraftInvHelper.countTotalItemsIn(inv, slotStack, filter) < 2) {
@@ -637,13 +638,13 @@ public class InventoryUtils {
     }
     
     /**
-     * Get an IItemHandler from a block entity.
+     * Get an ResourceHandler<ItemResource> from a block entity.
      */
     @Nullable
-    public static IItemHandler getItemHandler(Level level, BlockPos pos, Direction side) {
+    public static ResourceHandler<ItemResource> getItemHandler(Level level, BlockPos pos, Direction side) {
         var handler = level.getCapability(Capabilities.Item.BLOCK, pos, level.getBlockState(pos), null, side);
         if (handler != null) {
-            return IItemHandler.of(handler);
+            return handler;
         }
         return null;
     }

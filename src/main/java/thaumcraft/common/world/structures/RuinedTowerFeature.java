@@ -1,15 +1,15 @@
 package thaumcraft.common.world.structures;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import thaumcraft.init.ModBlocks;
 
 /**
@@ -25,17 +25,20 @@ import thaumcraft.init.ModBlocks;
  * The towers are weathered and partially destroyed, with missing
  * sections and vegetation growing through the cracks.
  */
-public class RuinedTowerFeature extends Feature<NoneFeatureConfiguration> {
+public class RuinedTowerFeature implements Feature {
     
-    public RuinedTowerFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+    public static final MapCodec<RuinedTowerFeature> CODEC = MapCodec.unit(RuinedTowerFeature::new);
+    
+    @Override
+    public MapCodec<? extends Feature> codec() {
+        return CODEC;
+    }
+    
+    public RuinedTowerFeature() {
     }
     
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        RandomSource random = context.random();
-        BlockPos origin = context.origin();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         
         // Find solid ground
         BlockPos groundPos = findGround(level, origin);

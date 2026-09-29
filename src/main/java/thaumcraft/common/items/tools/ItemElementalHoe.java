@@ -1,7 +1,6 @@
 package thaumcraft.common.items.tools;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -21,11 +20,10 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * Elemental Hoe - Enhanced thaumium hoe with elemental power.
  * Has increased durability and tilling area.
  */
-public class ItemElementalHoe extends HoeItem {
+public class ItemElementalHoe extends Item {
 
     public ItemElementalHoe() {
-        super(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, -2, -1.0f, thaumcraft.init.ItemRegistration.id(new Item.Properties()
-                        .rarity(Rarity.RARE)));
+        super(thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE).hoe(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, -2, -1.0f)));
     }
 
     @Override

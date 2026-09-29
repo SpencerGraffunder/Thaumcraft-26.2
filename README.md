@@ -1,15 +1,67 @@
-# Thaumcraft 6 — Minecraft 26.2 (NeoForge) Port
+# Thaumcraft 6 — Minecraft 26.3 (NeoForge) Port
 
 Port of **Thaumcraft 6** from the 1.20.1 Forge source fork
 ([ShobieShy/Thaumcraft-6-Source-Code-1.20.1](https://github.com/ShobieShy/Thaumcraft-6-Source-Code-1.20.1))
-to **Minecraft 26.2 "Chaos Cubed"** on **NeoForge 26.2.0.59** (Java 25).
+to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
 
-## Status: COMPILES & BUILDS — server boots to "Done" — multiplayer handshake verified
+> The port was developed and verified on 26.2 ("Chaos Cubed", NeoForge
+> 26.2.0.76) and migrated to 26.3 on 2026-09-28. The 26.2 notes below are
+> historical — the build now targets 26.3 end-to-end (gradle.properties,
+> mods.toml template, decompiled-source pipeline, CI).
 
-The 26.2 port is under active development.
+## Status: 26.3 migration — build green, installed, pending in-game verification
 
-- `./gradlew compileJava` — **GREEN (0 errors)**
-- `./gradlew build` — **SUCCESS** → `build/libs/thaumcraft-6.2.0+26.2.jar`
+- `./gradlew build` — **SUCCESS** → `build/libs/thaumcraft-6.2.0+26.3.jar`
+  (86/86 tests green, 0 TODOs left in source).
+- Full neoForm decompile→patch→recompile pipeline runs inside the build
+  (see `build.gradle`); `scripts/fix_neoform_artifacts.py` repairs
+  decompiler artifacts (26.3-specific fixes for `CustomPayload` codec call
+  sites and `LevelEventHandler` case-2003 locals).
+- **`runServer` smoke test: boots to `Done`** on a fresh 26.3 world — zero
+  registry/worldgen errors, clean world save, research (148 entries) + runtime
+  registration complete. This surfaced & fixed 3 runtime-only data issues the
+  compile never caught:
+  - **Curios dependency range:** `mods.toml` had `[17.0.0,)` but the 26.3 build
+    ships as `17.0.0-beta.2+26.3`. NeoForge parses ranges with Maven's
+    `VersionRange`, which sorts a pre-release *below* its release, so the beta
+    was rejected at mod-load. Lowered to `[17.0.0-beta,)` (accepts the beta, a
+    future stable 17.0.0, and 17.x; still rejects 16.x).
+  - **Ore feature `state` format:** `BlockState.CODEC` in 26.3 accepts a plain
+    string or a map with an `id` key — the old `{"Name": "..."}` block-state
+    object is gone. All 3 ore features (`ore_amber`/`ore_cinnabar`/`ore_quartz`)
+    now use plain-string `state` (e.g. `"thaumcraft:amber_ore"`).
+  - **`crystals` item tag directory:** was in the legacy `data/thaumcraft/tags/items/`
+    (plural); 26.3 (like every other tag in the mod) uses `data/thaumcraft/tags/item/`
+    (singular). Moved it — the Salis Mundus recipe's `#thaumcraft:crystals`
+    ingredient now resolves.
+- Jar installed into the Modrinth **`NeoForge 26.3`** profile
+  (NeoForge 26.3.0.33-beta). **The profile also needs
+  `curios-neoforge-17.0.0-beta.2+26.3.jar`** (hard dependency, was not
+  installed in the fresh profile). JEI is optional (31.7.0.47).
+- **26.3 transfer-API migration:** NeoForge removed `IItemHandler` /
+  `IFluidHandler`/`FluidTank` entirely; the new transaction-based
+  `net.neoforged.neoforge.transfer.ResourceHandler<T>` framework replaced
+  them. Thaumcraft now uses `ResourceHandler<ItemResource>` / `ResourceHandler<FluidResource>`
+  everywhere, with two thin adapters restoring the old call shapes:
+  `thaumcraft.api.ItemHandlers` (insert/extract/set with simulate flags) and
+  `thaumcraft.api.FluidTanks` (fill/drain/getAmount). Curios 17-beta's
+  `IDynamicStackHandler` was also re-based on `ResourceHandler`, so the
+  focus pouch (`PouchCurios`) now extends `ItemStacksResourceHandler`.
+- **Other 26.3 API breaks fixed in this pass:** `Feature` is a plain
+  interface (no `ConfiguredFeature`/`PlacedFeature` classes — configured
+  features moved to `data/<ns>/worldgen/feature/*.json`, 16 custom feature
+  types registered in `Registries.FEATURE_TYPE`); tool `Item` subclasses
+  (`AxeItem` etc.) replaced by `Item.Properties.axe/shovel/hoe/pickaxe(...)`
+  builder methods; `PoseStack.mulPose(Quaternionf)` → `rotate`/`rotateDegrees`;
+  `FuelValues` removed → fuel burn time read from
+  `DataComponents.COOKING_FUEL` (`TileSmelter`); arm-swing sync fields
+  removed → `swing(hand, SwingAnimation.DEFAULT, true)`;
+  `Entity.drop` moved to `LivingEntity` with a `Prediction` param;
+  `submitModel`/`submitModelPart` lost the `breakProgress` argument;
+  `PushReaction.DESTROY`/`BLOCK` → `POPPED`/`IMMOVEABLE`;
+  `blocksMotion()` → `isCollisionShapeFullBlock(level, pos)`;
+  `hurtMarked` → `needsSync` (now public); `KeyMapping` moved to
+  `net.minecraft.client` with `InputConstants.isKeyDown(int)` single-arg.
 - `./gradlew runServer` — gets through mod construction and block registration
   (id-injected via `BlockRegistration` ThreadLocal helper); **server reaches
   `Done`** — world loads, aura threads run per dimension, golem parts/seals/
@@ -111,11 +163,11 @@ CI=true ./gradlew runGameTestServer
 Dev note: `run/server.properties` sets `max-tick-time=300000` (first-boot world
 saves exceed the 60s default watchdog).
 
-Dev note: keep `CI=true` set for local runs — without it, NeoGradle takes the
-local decompile→patch→recompile pipeline, which is broken on this toolchain
-(`neoFormPatch` fails on `var1` parameter names from the decompiler). The
-`runServer` console does not forward a typed `stop` to the server process —
-stop it with Ctrl+C/SIGINT.
+Dev note: the build runs the local neoForm decompile→patch→recompile pipeline
+on demand; `neoFormPatchUserDev` may reject non-critical hunks, which
+`build.gradle` tolerates (the recompiled jar is guarded so a valid existing
+jar is never clobbered). The `runServer` console does not forward a typed
+`stop` to the server process — stop it with Ctrl+C/SIGINT.
 
 ## Deployment
 

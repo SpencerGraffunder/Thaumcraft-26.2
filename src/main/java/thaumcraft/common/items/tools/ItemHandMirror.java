@@ -73,7 +73,7 @@ public class ItemHandMirror extends Item {
         }
 
         if (level.isClientSide()) {
-            player.swing(context.getHand());
+            player.swingAndResetAttackStrength(context.getHand(), net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
             return InteractionResult.SUCCESS;
         }
 

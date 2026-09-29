@@ -134,7 +134,7 @@ public class EntityCultistCleric extends EntityCultist implements RangedAttackMo
         double dy = target.getBoundingBox().minY + target.getBbHeight() / 2.0f - (getY() + getBbHeight() / 2.0f);
         double dz = target.getZ() - getZ();
         
-        swing(InteractionHand.MAIN_HAND);
+        swing(InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
         
         float roll = random.nextFloat();
         if (roll > 0.66f) {

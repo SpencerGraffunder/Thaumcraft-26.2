@@ -8,12 +8,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
 import javax.annotation.Nullable;
 import thaumcraft.init.BlockRegistration;
@@ -32,7 +31,7 @@ public class BlockSaplingTC extends SaplingBlock {
      */
     public static BlockSaplingTC createGreatwood() {
         return new BlockSaplingTC(
-                new TreeGrower("thaumcraft_greatwood", java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty()),
+                new TreeGrower("thaumcraft_greatwood", WeightedList.of(), WeightedList.of(), WeightedList.of(), null),
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.PLANT)
                         .noCollision()
@@ -46,7 +45,7 @@ public class BlockSaplingTC extends SaplingBlock {
      */
     public static BlockSaplingTC createSilverwood() {
         return new BlockSaplingTC(
-                new TreeGrower("thaumcraft_silverwood", java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty()),
+                new TreeGrower("thaumcraft_silverwood", WeightedList.of(), WeightedList.of(), WeightedList.of(), null),
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.QUARTZ)
                         .noCollision()

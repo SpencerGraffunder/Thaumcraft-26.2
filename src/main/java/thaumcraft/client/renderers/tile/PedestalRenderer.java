@@ -68,7 +68,7 @@ public class PedestalRenderer implements BlockEntityRenderer<TilePedestal, Pedes
 
         // Rotation animation
         float rotation = state.time * 2.0F;
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
+        poseStack.rotate(Axis.YP.rotationDegrees(rotation));
 
         // Scale the item
         poseStack.scale(0.5F, 0.5F, 0.5F);

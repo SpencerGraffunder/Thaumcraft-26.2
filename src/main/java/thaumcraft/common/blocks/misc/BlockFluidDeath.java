@@ -55,7 +55,7 @@ public class BlockFluidDeath extends Block {
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(0.0f)
                 .noOcclusion()
-                .pushReaction(PushReaction.DESTROY)
+                .pushReaction(PushReaction.POPPED)
                 .randomTicks()
                 .noCollision()
                 .lightLevel(state -> 3)

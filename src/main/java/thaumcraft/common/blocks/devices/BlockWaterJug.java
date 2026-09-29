@@ -30,8 +30,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import thaumcraft.api.FluidTanks;
 import thaumcraft.common.tiles.devices.TileWaterJug;
 import thaumcraft.init.ModBlockEntities;
 
@@ -83,7 +84,14 @@ public class BlockWaterJug extends Block implements EntityBlock {
         }
 
         // Try standard fluid handler interaction (buckets)
-        if (FluidUtil.interactWithFluidHandler(player, hand, tile.tank)) {
+        boolean interacted;
+        try (Transaction tx = Transaction.open(null)) {
+            interacted = FluidUtil.interactWithFluidHandler(player, hand, pos, tile.tank, tx);
+            if (interacted) {
+                tx.commit();
+            }
+        }
+        if (interacted) {
             tile.setChanged();
             tile.syncTile(false);
             level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 
@@ -92,7 +100,7 @@ public class BlockWaterJug extends Block implements EntityBlock {
         }
 
         // Handle glass bottle filling
-        if (heldItem.is(Items.GLASS_BOTTLE) && tile.tank.getFluidAmount() >= 333) {
+        if (heldItem.is(Items.GLASS_BOTTLE) && FluidTanks.getAmount(tile.tank) >= 333) {
             ItemStack waterBottle = net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, Potions.WATER);
             
             if (!player.getAbilities().instabuild) {
@@ -102,10 +110,10 @@ public class BlockWaterJug extends Block implements EntityBlock {
             if (heldItem.isEmpty()) {
                 player.setItemInHand(hand, waterBottle);
             } else if (!player.getInventory().add(waterBottle)) {
-                player.drop(waterBottle, false);
+                player.drop(waterBottle, false, net.minecraft.util.Prediction.SERVER_ONLY);
             }
             
-            tile.tank.drain(333, IFluidHandler.FluidAction.EXECUTE);
+            FluidTanks.drain(tile.tank, 333, false);
             tile.setChanged();
             tile.syncTile(false);
             level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 

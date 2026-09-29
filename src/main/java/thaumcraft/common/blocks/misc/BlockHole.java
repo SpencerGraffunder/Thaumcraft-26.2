@@ -1,6 +1,5 @@
 package thaumcraft.common.blocks.misc;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -41,13 +40,9 @@ public class BlockHole extends BaseEntityBlock {
                 .lightLevel(state -> 11)
                 .noLootTable()
                 .noOcclusion()
-                .pushReaction(PushReaction.BLOCK)));
+                .pushReaction(PushReaction.IMMOVEABLE)));
     }
     
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(p -> new BlockHole());
-    }
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
