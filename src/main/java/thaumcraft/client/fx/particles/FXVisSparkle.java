@@ -69,6 +69,12 @@ public class FXVisSparkle extends ThaumcraftParticle {
     }
 
     @Override
+    public Layer getLayer() {
+        // Raw grid-fraction UVs sample Thaumcraft's 1024x1024 particles.png atlas.
+        return TC_PARTICLES_LAYER_TRANSLUCENT;
+    }
+
+    @Override
     protected float getU0() {
         return (float) spriteIndexX / (float) GRID_SIZE;
     }

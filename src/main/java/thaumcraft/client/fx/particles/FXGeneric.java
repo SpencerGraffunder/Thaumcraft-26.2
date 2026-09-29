@@ -227,6 +227,15 @@ public class FXGeneric extends ThaumcraftParticle {
     }
 
     @Override
+    public Layer getLayer() {
+        // Raw grid-fraction UVs sample Thaumcraft's 1024x1024 particles.png atlas.
+        // 1.12 layer 0 (normal) and 1 (additive) both map to translucent blending:
+        // 26.3 has no additive particle pipeline and OPAQUE would render
+        // semi-transparent smoke as solid.
+        return TC_PARTICLES_LAYER_TRANSLUCENT;
+    }
+
+    @Override
     protected float getU0() {
         return (float) spriteIndexX / (float) gridSize;
     }

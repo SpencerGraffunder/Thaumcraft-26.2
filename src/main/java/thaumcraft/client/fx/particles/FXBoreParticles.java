@@ -77,6 +77,13 @@ public class FXBoreParticles extends ThaumcraftParticle {
         this.gravity = 0.01f;
     }
     
+    @Override
+    public Layer getLayer() {
+        // Sprites come from the block atlas (blockState ctor) or the item atlas
+        // (item ctor) - bind the matching vanilla atlas texture, not the particle atlas.
+        return blockState != null ? Layer.TRANSLUCENT_TERRAIN : Layer.TRANSLUCENT_ITEMS;
+    }
+
     public FXBoreParticles(ClientLevel level, double x, double y, double z,
                            double tx, double ty, double tz,
                            double sx, double sy, double sz,

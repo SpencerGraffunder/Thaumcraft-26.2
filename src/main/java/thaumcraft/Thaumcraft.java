@@ -341,6 +341,25 @@ public class Thaumcraft {
     public static class ClientModEvents {
 
         /**
+         * Registers Thaumcraft's dedicated 1024x1024 particle atlas.
+         * <p>
+         * 1.12 rendered FX particles from a custom 1024x1024 particles.png (64 sprites per row).
+         * The vanilla particle atlas (createMipmaps=false) only accepts uniform 16x16 sprites,
+         * so a dedicated atlas is required. The definition file is
+         * assets/thaumcraft/atlases/particles.json (loaded from the definition location
+         * thaumcraft:particles) and samples textures/misc/particles.png as a single full-bleed
+         * sprite. Particles bound to this atlas (see ThaumcraftParticle) use raw [0,1) UV
+         * fractions, matching the 1.12 grid math exactly.
+         */
+        @SubscribeEvent
+        public static void registerTextureAtlases(net.neoforged.neoforge.client.event.RegisterTextureAtlasesEvent event) {
+            event.register(new net.minecraft.client.resources.model.sprite.AtlasManager.AtlasConfig(
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath(MODID, "textures/atlas/particles"),
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath(MODID, "particles"),
+                    false));
+        }
+
+        /**
          * Adds Thaumcraft status lines (runic charge, warp, vis discount, vis charge,
          * and essentia aspects) to item tooltips. Ported from the 1.12 PlayerEvents.tooltipEvent.
          */

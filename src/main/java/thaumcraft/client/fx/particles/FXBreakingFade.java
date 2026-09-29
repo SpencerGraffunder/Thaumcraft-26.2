@@ -34,6 +34,12 @@ public class FXBreakingFade extends ThaumcraftParticle {
         this(level, x, y, z, 0, 0, 0, item, meta);
     }
     
+    @Override
+    public Layer getLayer() {
+        // Sprite comes from the item atlas - bind the item atlas texture, not the particle atlas.
+        return Layer.TRANSLUCENT_ITEMS;
+    }
+
     public FXBreakingFade(ClientLevel level, double x, double y, double z, 
                           double vx, double vy, double vz, Item item, int meta) {
         super(level, x, y, z, vx, vy, vz);

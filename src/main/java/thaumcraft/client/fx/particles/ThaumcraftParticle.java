@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
@@ -20,6 +21,19 @@ import net.neoforged.api.distmarker.OnlyIn;
  */
 @OnlyIn(Dist.CLIENT)
 public class ThaumcraftParticle extends SingleQuadParticle {
+
+    /**
+     * Layers bound to Thaumcraft's dedicated 1024x1024 particle atlas
+     * (registered in ClientModEvents#registerTextureAtlases, definition location
+     * thaumcraft:particles). 26.3 has no additive particle pipeline, so 1.12's
+     * layer 1 (additive) also maps to the translucent variant.
+     * Only particles that override getU0..getV1 with raw [0,1) grid fractions
+     * (FXGeneric and friends) should use these; sprite-driven particles keep the
+     * vanilla atlas layers.
+     */
+    protected static final Identifier TC_PARTICLES_ATLAS_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/atlas/particles");
+    protected static final Layer TC_PARTICLES_LAYER_TRANSLUCENT = new Layer(true, TC_PARTICLES_ATLAS_TEXTURE, RenderPipelines.TRANSLUCENT_PARTICLE, RenderPipelines.OIT_PARTICLE);
+    protected static final Layer TC_PARTICLES_LAYER_OPAQUE = new Layer(false, TC_PARTICLES_ATLAS_TEXTURE, RenderPipelines.OPAQUE_PARTICLE, RenderPipelines.OIT_PARTICLE);
 
     // Color interpolation
     protected float startR, startG, startB;
