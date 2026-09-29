@@ -152,7 +152,8 @@ public class TaintHelper {
             return;
         }
         
-        MapColor material = bs.getMapColor(bs, level, target, MapColor.NONE);
+        // 26.3: getMapColor is (BlockGetter, BlockPos) — NeoForge routes it through the block, state mapColor as default
+        MapColor material = bs.getMapColor(level, target);
         
         // Check if block can be converted to taint fibre
         if (!block.defaultBlockState().canOcclude() && 

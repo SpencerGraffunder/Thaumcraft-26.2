@@ -78,6 +78,49 @@ user in-game launch verification** — remaining first-boot risks are client-sid
 (rendering, focus pouch, crossbow turret animation, smelter fuel) and in-world
 golem/seal item transfer; server-side registration & worldgen are verified.
 
+### CI build fixed + local build switched to the binary-patch pipeline (2026-09-29)
+
+GitHub Actions was failing on **every** push since the 26.2-era `doFirst` jar
+swap (commit 2005d6e) because CI (GitHub Actions exports `CI=true`) makes
+NeoGradle auto-disable the decompiler and take the **binary-patch pipeline**
+(PMJ `--apply-patches` from `patches.lzma` → `neoFormApplyAccessTransformer`
+→ `neoFormApplyInterfaceInjections`). That pipeline publishes a fully-patched
+jar straight into `ng_dummy` and produces **no** `build/neoForm/.../recompile/
+outputs.jar`, so the old unconditional swap threw `GradleException`.
+
+- **`build.gradle` swap is now conditional (3-branch):** if `ng_dummy` is
+  already NeoForge-patched (checked by looking for `neoforged` in
+  `Item.class`'s constant pool via `isPatchedMcJar`) → skip the swap
+  (binary mode, both CI and local). Else if a patched recompile jar exists
+  under `build/neoForm/` → swap it in (source mode, where `selectRawArtifact`
+  only publishes a 197-byte stub into `ng_dummy`). Else throw. Also fixed a
+  silent Groovy bug in `isPatchedMcJar` (`readBytes()` → `getBytes()` on the
+  `InputStream`; the old form threw `MissingMethodException` swallowed by the
+  catch, making the check always return false).
+- **`gradle.properties` now sets
+  `neogradle.subsystems.decompiler.enabled=false`** so local builds use the
+  same binary-patch pipeline as CI and compile against the exact API the game
+  runs with. **Gotcha:** the property is prefixed — a bare
+  `decompiler.enabled` is silently ignored (`WithPropertyLookup` prepends
+  `neogradle.subsystems.`).
+- **`TaintHelper.java:155`** was compiled against a stale **4-arg**
+  `BlockStateBase.getMapColor(BlockState, LevelReader, BlockPos, MapColor)`
+  that only existed in the local source-pipeline recompile jar; the true 26.3
+  runtime API (verified in the Modrinth runtime jar and the CI binary-patched
+  jar) is the **2-arg** `getMapColor(BlockGetter, BlockPos)` (NeoForge routes
+  it through the block). Fixed to the 2-arg form — the old code was a latent
+  `NoSuchMethodError` waiting to fire on taint spread.
+- **`~/.gradle/caches/ng_execute` trap:** NeoGradle's `ExecuteTask` cache is
+  keyed on declared task inputs only — the PMJ `--apply-patches` flag is not
+  one of them — so on a machine that ran the source pipeline first, the
+  binary-mode `neoFormSetup` restores the **unpatched clean-join** cache entry
+  (and `--rerun-tasks` does not override it; the task checks this cache inside
+  its action and calls `setDidWork(false)`). Fix applied on this machine:
+  moved the poisoned cache to `~/.gradle/caches/ng_execute.bak-20260929` and
+  re-ran the pipeline so a correct patched entry was written. If you ever
+  re-enable the decompiler here, clear `ng_execute` again or source mode will
+  serve the binary-patched jar as its "clean join".
+
 ## In-Game Bug Fixes — 3 follow-up issues (2026-09-28, shipped 4e63df2)
 
 User follow-ups to the 6-bug batch; supersedes the crystal-texture and
@@ -643,11 +686,12 @@ Copy the 26.2 constructor pattern from a working block, e.g. `BlockCondenser`:
 
 ## Known issues & environment
 
-- **`CI=true` required for local runs**: without it, NeoGradle takes the
-  local decompile→patch→recompile pipeline, which fails at `neoFormPatch`
-  (decompiler emits `var1` parameter names; the patch expects named
-  params). Some shells already export `CI`; otherwise prefix runs with
-  `CI=true ./gradlew …`.
+- **Binary-patch pipeline is the local default** (since the 2026-09-29 CI
+  fix): `neogradle.subsystems.decompiler.enabled=false` in `gradle.properties`
+  forces the same PMJ/`patches.lzma` pipeline CI uses, so no `CI=true` prefix
+  is needed anymore. `build.gradle`'s `compileJava` swap detects the mode
+  automatically (patched `ng_dummy` → skip; stub `ng_dummy` → swap in the
+  source-pipeline recompile jar).
 - **Dev-server console**: `stop` typed into the `runServer` console is not
   forwarded to the server process — stop with SIGINT/Ctrl+C.
 

@@ -71,9 +71,18 @@ dependencies {
 //   build/neoForm/neoFormJoined<mc_version>-<n>/steps/recompile/outputs.jar
 // (identical API surface to the runtime minecraft-client-patched jar).
 //
-// This task re-applies that patched jar over the raw artifact after userdev
-// selects it, so compilation sees the full API. It does NOT declare the target
-// as an output (that is owned by selectRawArtifact); it is forced to always run.
+// On CI (env CI=true, set by GitHub Actions), the NeoGradle userdev plugin
+// auto-disables the decompiler and runs the binary-patch pipeline instead:
+// PROCESS_MINECRAFT_JAR applies NeoForge's binary patches, then the AT and
+// interface-injection tasks run, and selectRawArtifact publishes the resulting
+// fully-patched jar directly as the ng_dummy artifact. No recompile output
+// exists in that mode, so the swap below detects the already-patched ng_dummy
+// and skips.
+//
+// In local source mode this task re-applies that patched jar over the raw
+// artifact after userdev selects it, so compilation sees the full API. It does
+// NOT declare the target as an output (that is owned by selectRawArtifact);
+// it is forced to always run.
 // ---------------------------------------------------------------------------
 // Resolve the recompiled patched jar dynamically: prefer the neoForm directory
 // for the CURRENT minecraft_version (e.g. neoFormJoined26.3-1), fall back to the
@@ -91,29 +100,67 @@ def findPatchedMcJar = {
 }
 def ngDummyJar = project.file(".gradle/repositories/ng_dummy_ng/net/neoforged/neoforge/${neo_version}/neoforge-${neo_version}.jar")
 
+// Detect whether an MC jar is NeoForge-patched. A patched Item.class references
+// the NeoForge extension interfaces (IItemExtension & co — injected either by
+// the binary patches on CI or by the source recompile locally); a raw vanilla
+// Item.class has zero "neoforged" references.
+def isPatchedMcJar = { File jar ->
+    if (jar == null || !jar.exists() || jar.length() < 10000) return false
+    try {
+        def zf = new java.util.zip.ZipFile(jar)
+        def entry = zf.getEntry("net/minecraft/world/item/Item.class")
+        if (entry == null) { zf.close(); return false }
+        def bytes = zf.getInputStream(entry).getBytes()
+        zf.close()
+        return new String(bytes, "ISO-8859-1").contains("neoforged")
+    } catch (Throwable t) {
+        logger.warn("isPatchedMcJar check failed for ${jar}: ${t}")
+        return false
+    }
+}
+
 // Swap the raw (vanilla) MC jar for the patched one immediately before javac runs.
 // doFirst runs after all upstream tasks (incl. selectRawArtifact, which would
 // otherwise leave the vanilla jar in place) and before the compiler reads the
 // classpath files, so javac sees the full NeoForge-injected API surface.
 //
-// Note: `neoFormRecompile` (which regenerates the patched jar) depends on
-// `neoFormPatchUserDev`, which can have failing patch hunks on some NeoForge
-// versions — so a tolerated partial run is fine as long as the recompiled jar
-// the mod needs is present. The patched jar is a stable build artifact
-// (build/neoForm/.../recompile/outputs.jar) produced by the neoForm pipeline;
-// it must be present for compilation. If it is ever missing (e.g. after `clean`
-// on a fresh clone), regenerate it via the neoForm pipeline (neoFormRecompile)
-// before building.
+// Two pipeline modes exist (NeoGradle userdev picks based on the CI env var):
+//  - LOCAL (source mode): full decompile -> patch -> recompile pipeline. The
+//    recompiled jar lands at build/neoForm/.../recompile/outputs.jar while
+//    selectRawArtifact publishes only a stub into ng_dummy — so we swap the
+//    recompiled jar into the ng_dummy slot here. Note: `neoFormRecompile`
+//    depends on `neoFormPatchUserDev`, which can have failing patch hunks on
+//    some NeoForge versions; a tolerated partial run is fine as long as the
+//    previously recompiled jar is present (see the hardening below).
+//  - CI (binary mode): the decompiler auto-disables when CI=true/CI=1, and the
+//    pipeline becomes neoFormSetup (PROCESS_MINECRAFT_JAR applies NeoForge's
+//    binary patches) -> neoFormApplyAccessTransformer ->
+//    neoFormApplyInterfaceInjections. selectRawArtifact publishes that fully
+//    patched jar directly into ng_dummy — no recompile output is produced and
+//    no swap is needed, so we detect the patched jar and skip.
 tasks.named('compileJava').configure {
     doFirst {
-        def patchedMcJar = findPatchedMcJar()
-        if (patchedMcJar == null) {
-            throw new GradleException("patched MC jar missing under build/neoForm/ — run the neoForm pipeline (neoFormRecompile) first")
-        }
-        if (!ngDummyJar.exists() || ngDummyJar.bytes != patchedMcJar.readBytes()) {
-            ngDummyJar.parentFile.mkdirs()
-            ngDummyJar.bytes = patchedMcJar.readBytes()
-            logger.lifecycle("swapped raw ng_dummy MC artifact -> patched MC jar for compilation: ${patchedMcJar}")
+        if (isPatchedMcJar(ngDummyJar)) {
+            // Binary-patch mode (CI=true or neogradle.subsystems.decompiler.enabled=false):
+            // ng_dummy is already the fully-patched jar produced by the
+            // PMJ+AT+II pipeline and is the authoritative compile target.
+            // Never swap in a source-pipeline recompile jar in this mode —
+            // stale recompile outputs may carry APIs that diverge from the
+            // binary-patched runtime (see BlockStateBase.getMapColor incident).
+            logger.lifecycle("ng_dummy MC artifact is already NeoForge-patched (binary-patch mode); skipping swap")
+        } else {
+            // Source mode: selectRawArtifact publishes only a stub into ng_dummy,
+            // so swap the recompiled jar into the ng_dummy slot to get the
+            // patched jar onto the compile classpath.
+            def patchedMcJar = findPatchedMcJar()
+            if (patchedMcJar == null || !isPatchedMcJar(patchedMcJar)) {
+                throw new GradleException("patched MC jar missing under build/neoForm/ and ng_dummy is not patched — run the neoForm pipeline (neoFormRecompile) first")
+            }
+            if (!ngDummyJar.exists() || ngDummyJar.bytes != patchedMcJar.readBytes()) {
+                ngDummyJar.parentFile.mkdirs()
+                ngDummyJar.bytes = patchedMcJar.readBytes()
+                logger.lifecycle("swapped raw ng_dummy MC artifact -> patched MC jar for compilation: ${patchedMcJar}")
+            }
         }
     }
 }
