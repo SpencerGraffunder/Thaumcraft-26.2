@@ -37,10 +37,6 @@ public class ItemMagicDust extends ItemTCBase {
 
         if (player == null) return InteractionResult.FAIL;
 
-        // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
-        Thaumcraft.LOGGER.info("[SALIS-DBG] useOn side={} pos={} face={} crouching={} triggers={}",
-            level.isClientSide() ? "CLIENT" : "SERVER", pos, face, player.isCrouching(), IDustTrigger.triggers.size());
-
         // Note: canPlayerEdit check is handled by Forge/Vanilla mostly but explicit check can be good
         // In 1.20.1 we rely on context usually.
 
@@ -53,7 +49,6 @@ public class ItemMagicDust extends ItemTCBase {
         for (IDustTrigger trigger : IDustTrigger.triggers) {
             IDustTrigger.Placement place = trigger.getValidFace(level, player, pos, face);
             if (place != null) {
-                Thaumcraft.LOGGER.info("[SALIS-DBG] trigger VALID on {}: {}", pos, trigger);
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
                 }
@@ -71,7 +66,6 @@ public class ItemMagicDust extends ItemTCBase {
                 return InteractionResult.SUCCESS;
             }
         }
-        Thaumcraft.LOGGER.info("[SALIS-DBG] no valid trigger on {} - falling through to super.useOn", pos);
 
         return super.useOn(context);
     }

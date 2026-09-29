@@ -26,16 +26,8 @@ public class PacketSyncKnowledgeClient {
         if (player == null) return;
         
         IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
-        if (knowledge == null || msg.data == null) {
-            // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
-            thaumcraft.Thaumcraft.LOGGER.info("[SALIS-DBG] client knowledge sync DROPPED (knowledge={}, data={})",
-                knowledge != null, msg.data != null);
-        }
         if (knowledge != null && msg.data != null) {
             knowledge.deserializeNBT(msg.data);
-            // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
-            thaumcraft.Thaumcraft.LOGGER.info("[SALIS-DBG] client received knowledge sync (research count={}, knows !gotdream={})",
-                knowledge.getResearchList().size(), knowledge.isResearchKnown("!gotdream"));
             
             // Show popup toasts for newly unlocked research
             for (String key : knowledge.getResearchList()) {

@@ -131,9 +131,6 @@ public class PlayerEvents {
                     if (syncList.remove(playerName) || ResearchManager.syncList.remove(playerName) != null) {
                         IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
                         if (knowledge != null) {
-                            // [SALIS-DBG] temporary diagnostic for the bookshelf trigger investigation
-                            Thaumcraft.LOGGER.info("[SALIS-DBG] firing knowledge sync for {} (research count={})",
-                                playerName, knowledge.getResearchList().size());
                             knowledge.sync(serverPlayer);
                         }
                     }
