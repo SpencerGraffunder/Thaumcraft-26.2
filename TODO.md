@@ -4,6 +4,48 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-09-29 — Salis Mundus bookshelf bug (under diagnosis, todo #36)
+
+User report: right-clicking a bookshelf with Salis Mundus (in the 26.3
+profile, after the dream was received at 08:10:22 per latest.log) produced no
+sparkle animation and no Thaumonomicon drop.
+
+**What is verified working (code + world inspection):**
+- Trigger registered: `DustTriggerSimple("!gotdream", Blocks.BOOKSHELF,
+  thaumonomicon)` at ConfigMultiblocks (log: "Registered 9 dust triggers").
+- Server-side flag granted: `!gotcrystal` (08:08:17 crystal pickup) and
+  `!gotdream` (08:10:22 wake-up) are both present in the player's saved NBT
+  (`saves/New World/players/data/<uuid>.dat` → `neoforge:attachments` →
+  `thaumcraft:knowledge` → research list). So `progressResearch`/syncList/
+  capability storage all work server-side.
+- Chain traced clean: `ItemMagicDust.useOn` → `IDustTrigger.triggers` loop →
+  `DustTriggerSimple.getValidFace` (block match + `knowsResearch("!gotdream")`)
+  → `execute` → `ServerEvents.addRunnableServer(50 ticks)` → `addSwapper` →
+  `tickBlockSwap` (bookshelf → Thaumonomicon item, bamf FX).
+
+**Remaining suspects (client-side only — server state is proven OK):**
+1. Client knowledge never received `!gotdream` (PacketSyncKnowledge not
+   delivered/applied) → client `getValidFace` fails → no sparkles AND no
+   UseItemOn packet → server never executes.
+2. Client `useOn` not reached (e.g. crouch early-return) or client knowledge
+   capability null.
+
+**Instrumentation (temporary, [SALIS-DBG] prefix — remove after diagnosis,
+todo #37):** commits b0fd157 + 5d033d5. Logging at: ItemMagicDust.useOn
+(entry/valid/no-trigger, both sides), DustTriggerSimple.getValidFace
+(research-fail) + execute, PlayerEvents.livingTick (sync fire),
+PacketSyncKnowledgeClient (received: research count + knows-!gotdream;
+dropped case), ServerEvents.tickBlockSwap (swapper dequeue/reject/execute).
+Jar installed in profile 08:50 (14,466,017 bytes). **NEXT: user reproduces
+the click → grep [SALIS-DBG] in
+`~/Library/Application Support/ModrinthApp/profiles/NeoForge 26.3/logs/latest.log`.**
+
+Also fixed in b0fd157 (permanent): creative-search tooltip NPE spam
+(`ItemVoidseerCharm` → `ThaumcraftCapabilities.getWarp(null)` via
+`SessionSearchTrees` tooltip generation on ForkJoinPool threads) —
+null-player guards in ThaumcraftCapabilities.getKnowledge/getWarp,
+Thaumcraft.onItemTooltip (hasPlayer gate), ItemVoidseerCharm.
+
 ## 26.3 Migration — full API port (2026-09-28/29, in progress → build green)
 
 User-directed migration: 26.2 → **NeoForge 26.3.0.33-beta** (MC 26.3, Java 25,
