@@ -141,9 +141,9 @@ public class FXGeneric extends ThaumcraftParticle {
             return;
         }
 
-        // Update rotation
+        // Update rotation (1.12: particleAngle += 2π * rotationSpeed)
         this.oRoll = this.roll;
-        this.roll += this.rotationSpeed;
+        this.roll += this.rotationSpeed * 6.2831855f;
 
         // Apply gravity
         this.yd -= 0.04 * this.gravity;
@@ -186,7 +186,7 @@ public class FXGeneric extends ThaumcraftParticle {
         // Update color interpolation
         float progress = (float) this.age / (float) this.lifetime;
         this.rCol = Mth.lerp(progress, this.startR, this.endR);
-        this.gCol = Mth.lerp(progress, this.startG, this.endB);
+        this.gCol = Mth.lerp(progress, this.startG, this.endG);
         this.bCol = Mth.lerp(progress, this.startB, this.endB);
 
         // Update sprite animation

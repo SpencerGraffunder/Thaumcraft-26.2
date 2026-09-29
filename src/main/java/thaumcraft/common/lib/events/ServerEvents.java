@@ -22,6 +22,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import thaumcraft.Thaumcraft;
 import thaumcraft.common.config.ModConfig;
 import thaumcraft.common.entities.EntityFluxRift;
+import thaumcraft.common.entities.EntitySpecialItem;
 import thaumcraft.common.golems.seals.SealHandler;
 import thaumcraft.common.golems.tasks.TaskHandler;
 import thaumcraft.common.lib.network.PacketHandler;
@@ -303,6 +304,15 @@ public class ServerEvents {
                     level.setBlock(vs.pos, targetBlock.defaultBlockState(), 3);
                 } else {
                     level.removeBlock(vs.pos, false);
+                    if (!level.isClientSide()) {
+                        // 1.12: non-block results (e.g. salis mundus bookshelf -> thaumonomicon)
+                        // pop out of the block as a floating item entity
+                        EntitySpecialItem item = new EntitySpecialItem(level,
+                                vs.pos.getX() + 0.5, vs.pos.getY() + 0.1, vs.pos.getZ() + 0.5,
+                                vs.target.copy());
+                        item.setDeltaMovement(0.0, 0.0, 0.0);
+                        level.addFreshEntity(item);
+                    }
                 }
             }
             

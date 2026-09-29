@@ -293,94 +293,105 @@ public class FXDispatcher {
                     0.4f, 1.0f + (float) rand.nextGaussian() * 0.05f, false);
         }
         
-        // Spawn colored smoke particles
-        int count = 8 + rand.nextInt(4);
-        for (int a = 0; a < count; a++) {
-            double vx = rand.nextGaussian() * 0.1;
-            double vy = rand.nextGaussian() * 0.1;
-            double vz = rand.nextGaussian() * 0.1;
+        // 1.12-faithful: colored smoke burst (texture 123 = smoke sprite row, 5 sprites)
+        for (int a = 0; a < 6 + rand.nextInt(3) + 2; a++) {
+            double vx = (0.05 + rand.nextFloat() * 0.05) * (rand.nextBoolean() ? -1.0 : 1.0);
+            double vy = (0.05 + rand.nextFloat() * 0.05) * (rand.nextBoolean() ? -1.0 : 1.0);
+            double vz = (0.05 + rand.nextFloat() * 0.05) * (rand.nextBoolean() ? -1.0 : 1.0);
             if (side != null) {
                 vx += side.getStepX() * 0.1;
                 vy += side.getStepY() * 0.1;
                 vz += side.getStepZ() * 0.1;
             }
             
-            // Create colored poof particle
-            FXGeneric poof = new FXGeneric(level, x + vx * 0.5, y + vy * 0.5, z + vz * 0.5, vx, vy, vz);
-            poof.setColor(r, g, b);
-            poof.setAlphaF(0.7f);
-            poof.setMaxAge(12 + rand.nextInt(8));
-            poof.setScale(0.4f + rand.nextFloat() * 0.3f);
-            poof.setParticles(72, 4, 1);  // Wispy sprites
-            poof.setLoop(true);
-            poof.setGravity(-0.02f);  // Slight upward float
-            addParticle(poof);
+            FXGeneric smoke = new FXGeneric(level, x + vx * 2.0, y + vy * 2.0, z + vz * 2.0,
+                    vx / 2.0, vy / 2.0, vz / 2.0);
+            smoke.setMaxAge(20 + rand.nextInt(15));
+            smoke.setColor(
+                    Mth.clamp(r * (1.0f + (float) rand.nextGaussian() * 0.1f), 0.0f, 1.0f),
+                    Mth.clamp(g * (1.0f + (float) rand.nextGaussian() * 0.1f), 0.0f, 1.0f),
+                    Mth.clamp(b * (1.0f + (float) rand.nextGaussian() * 0.1f), 0.0f, 1.0f));
+            smoke.setAlphaKeyframes(1.0f, 0.1f);
+            smoke.setGridSize(16);
+            smoke.setParticles(123, 5, 1);
+            // Port quad size is block units = 1.12 scale * 0.1
+            smoke.setScaleKeyframes(0.3f, 0.4f + rand.nextFloat() * 0.3f);
+            smoke.setLayer(1);
+            smoke.setSlowDown(0.7);
+            smoke.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? -1.0f : 1.0f);
+            addParticle(smoke);
         }
         
         if (flair) {
-            // Add sparkle flair
-            for (int a = 0; a < 5; a++) {
-                FXGeneric sparkle = new FXGeneric(level, x, y, z,
-                        rand.nextGaussian() * 0.08, rand.nextGaussian() * 0.08, rand.nextGaussian() * 0.08);
-                sparkle.setColor(1.0f, 1.0f, 1.0f);
-                sparkle.setAlphaF(0.9f);
-                sparkle.setMaxAge(8 + rand.nextInt(5));
-                sparkle.setScale(0.15f + rand.nextFloat() * 0.1f);
-                sparkle.setParticles(0, 4, 1);  // Bright sparkle
-                sparkle.setLayer(1);  // Additive blending
-                addParticle(sparkle);
+            // 1.12-faithful: wispy motes + white flash
+            for (int a = 0; a < 2 + rand.nextInt(3); a++) {
+                double vx = (0.025 + rand.nextFloat() * 0.025) * (rand.nextBoolean() ? -1.0 : 1.0);
+                double vy = (0.025 + rand.nextFloat() * 0.025) * (rand.nextBoolean() ? -1.0 : 1.0);
+                double vz = (0.025 + rand.nextFloat() * 0.025) * (rand.nextBoolean() ? -1.0 : 1.0);
+                drawWispyMotes(x + vx * 2.0, y + vy * 2.0, z + vz * 2.0, vx, vy, vz,
+                        15 + rand.nextInt(10), -0.01f);
             }
+            FXGeneric flash = new FXGeneric(level, x, y, z, 0.0, 0.0, 0.0);
+            flash.setMaxAge(10 + rand.nextInt(5));
+            flash.setColor(1.0f, 0.9f, 1.0f);
+            flash.setAlphaKeyframes(1.0f, 0.0f);
+            flash.setGridSize(16);
+            flash.setParticles(77, 1, 1);
+            // Port quad size is block units = 1.12 scale * 0.1
+            flash.setScaleKeyframes(1.0f + rand.nextFloat() * 0.2f, 0.0f);
+            flash.setLayer(0);
+            flash.setRotationSpeedWithStart(rand.nextFloat(), (float) rand.nextGaussian());
+            addParticle(flash);
+        }
+        
+        // 1.12-faithful: curly wisps (always spawn, more when flair)
+        for (int a = 0; a < (flair ? 2 : 0) + rand.nextInt(3); a++) {
+            drawCurlyWisp(x, y, z, 0.0, 0.0, 0.0, 1.0f,
+                    (0.9f + rand.nextFloat() * 0.1f + r) / 2.0f,
+                    (0.1f + g) / 2.0f,
+                    (0.5f + rand.nextFloat() * 0.1f + b) / 2.0f,
+                    0.75f, side, a, 0, 0);
         }
     }
     
     // ==================== Wispy Motes ====================
-    
     /**
-     * Create wispy mote particles rising from a block.
+     * Create wispy mote particles rising from a block (1.12-faithful).
      */
     public void drawWispyMotesOnBlock(BlockPos pp, int age, float grav) {
-        ClientLevel level = getClientLevel();
-        if (level != null) {
-            double x = pp.getX() + rand.nextFloat();
-            double y = pp.getY();
-            double z = pp.getZ() + rand.nextFloat();
-            
-            FXGeneric mote = new FXGeneric(level, x, y, z, 0, 0.03 + rand.nextFloat() * 0.02, 0);
-            mote.setColor(0.8f, 0.6f, 1.0f);  // Light purple
-            mote.setAlphaF(0.6f);
-            mote.setMaxAge(age > 0 ? age : 15 + rand.nextInt(10));
-            mote.setScale(0.15f + rand.nextFloat() * 0.1f);
-            mote.setParticles(64, 4, 1);  // Wispy sprites
-            mote.setLoop(true);
-            mote.setGravity(grav);
-            mote.setLayer(1);
-            addParticle(mote);
-        }
+        drawWispyMotes(pp.getX() + rand.nextFloat(), pp.getY(), pp.getZ() + rand.nextFloat(),
+                0.0, 0.0, 0.0, age,
+                0.4f + rand.nextFloat() * 0.6f, 0.6f + rand.nextFloat() * 0.4f, 0.6f + rand.nextFloat() * 0.4f, grav);
     }
     
     /**
-     * Create a wispy mote particle with velocity.
+     * Create a wispy mote particle with velocity (1.12-faithful random color).
      */
     public void drawWispyMotes(double x, double y, double z, double vx, double vy, double vz, int age, float grav) {
-        drawWispyMotes(x, y, z, vx, vy, vz, age, 0.8f, 0.6f, 1.0f, grav);
+        drawWispyMotes(x, y, z, vx, vy, vz, age,
+                0.25f + rand.nextFloat() * 0.75f, 0.25f + rand.nextFloat() * 0.75f, 0.25f + rand.nextFloat() * 0.75f, grav);
     }
     
     /**
-     * Create a colored wispy mote particle.
+     * Create a colored wispy mote particle (1.12-faithful: grid 64, sprites 512-527,
+     * fade-in/hold/fade-out alpha, scale 1.0 to 0.5, light wind, random movement).
      */
-    public void drawWispyMotes(double x, double y, double z, double vx, double vy, double vz, 
+    public void drawWispyMotes(double x, double y, double z, double vx, double vy, double vz,
             int age, float r, float g, float b, float grav) {
         ClientLevel level = getClientLevel();
         if (level != null) {
             FXGeneric mote = new FXGeneric(level, x, y, z, vx, vy, vz);
+            mote.setMaxAge((int) (age + age / 2 * rand.nextFloat()));
             mote.setColor(r, g, b);
-            mote.setAlphaF(0.6f);
-            mote.setMaxAge(age > 0 ? age : 15 + rand.nextInt(10));
-            mote.setScale(0.15f + rand.nextFloat() * 0.1f);
-            mote.setParticles(64, 4, 1);
+            mote.setAlphaKeyframes(0.0f, 0.6f, 0.6f, 0.0f);
+            mote.setGridSize(64);
+            mote.setParticles(512, 16, 1);
+            // Port quad size is block units = 1.12 scale * 0.1
+            mote.setScaleKeyframes(0.1f, 0.05f);
             mote.setLoop(true);
+            mote.setWindStrength(0.0001);  // 1.12 setWind(0.001) uses a 0.1-magnitude source vector
             mote.setGravity(grav);
-            mote.setLayer(1);
+            mote.setRandomMovementScale(0.0025f, 0.0f, 0.0025f);
             addParticle(mote);
         }
     }
@@ -846,12 +857,34 @@ public class FXDispatcher {
         }
     }
     
-    public void drawCurlyWisp(double x, double y, double z, double vx, double vy, double vz, 
+    public void drawCurlyWisp(double x, double y, double z, double vx, double vy, double vz,
             float scale, float r, float g, float b, float a, Direction side, int seed, int layer, int delay) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.WITCH, x, y, z, vx, vy, vz);
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        vx += (0.0025 + rand.nextFloat() * 0.005) * (rand.nextBoolean() ? -1.0 : 1.0);
+        vy += (0.0025 + rand.nextFloat() * 0.005) * (rand.nextBoolean() ? -1.0 : 1.0);
+        vz += (0.0025 + rand.nextFloat() * 0.005) * (rand.nextBoolean() ? -1.0 : 1.0);
+        if (side != null) {
+            vx += side.getStepX() * 0.025;
+            vy += side.getStepY() * 0.025;
+            vz += side.getStepZ() * 0.025;
         }
+        FXGeneric wisp = new FXGeneric(level, x + vx * 5.0, y + vy * 5.0, z + vz * 5.0, vx, vy, vz);
+        if (seed > 0 && rand.nextBoolean()) {
+            wisp.setAngles(90.0f * (float) rand.nextGaussian(), 90.0f * (float) rand.nextGaussian());
+        }
+        wisp.setMaxAge(25 + rand.nextInt(20 + 20 * seed));
+        wisp.setColorRange(r, g, b, 0.1f, 0.0f, 0.1f);
+        wisp.setAlphaKeyframes(a, 0.0f);
+        wisp.setGridSize(16);
+        wisp.setParticles(60 + rand.nextInt(4), 1, 1);
+        // Port quad size is block units = 1.12 scale * 0.1
+        wisp.setScaleKeyframes(0.5f * scale, (1.0f + rand.nextFloat() * 0.4f) * scale);
+        wisp.setLayer(layer);
+        wisp.setRotationSpeedWithStart(rand.nextFloat(),
+                rand.nextBoolean() ? (-2.0f - rand.nextFloat() * 2.0f) : (2.0f + rand.nextFloat() * 2.0f));
+        // delay is 0 at every call site (1.12 addEffectWithDelay had no non-zero uses)
+        addParticle(wisp);
     }
     
     public void voidStreak(double x, double y, double z, double x2, double y2, double z2, int seed, float scale) {

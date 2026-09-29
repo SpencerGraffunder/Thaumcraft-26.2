@@ -4,7 +4,54 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
-## 2026-09-29 — Salis Mundus bookshelf bug (under diagnosis, todo #36)
+## 2026-09-29 — Salis Mundus bookshelf bug — ROOT CAUSE FOUND + FIXED (todo #36 done)
+
+User report: right-clicking a bookshelf with Salis Mundus (in the 26.3
+profile, after the dream was received at 08:10:22 per latest.log) produced no
+sparkle animation and no Thaumonomicon drop.
+
+**Root cause (confirmed via [SALIS-DBG] in-game test, 09:57 log):** the whole
+trigger chain works (client sync received `!gotdream=true`, trigger valid on
+both sides, swapper dequeued and EXECUTING) — but in `ServerEvents.tickBlockSwap`
+the item-placement logic called `Block.byItem(target.getItem())`, which returns
+`Blocks.AIR` for non-block items like the Thaumonomicon. It then fell into
+`level.removeBlock(pos, false)` — destroying the bookshelf with no loot and
+never spawning an `ItemEntity`. The "animation" the user saw was only the
+`PacketFXBlockBamf` packet, whose ported `drawBamf` used placeholder particles
+and `drawCurlyWisp` was a `ParticleTypes.WITCH` stub (the "enchanting glyphs").
+
+**Fixes (this commit):**
+1. `ServerEvents.tickBlockSwap`: non-block target results now spawn a
+   `EntitySpecialItem` (floating item entity, 1.12 behavior) at
+   `pos + (0.5, 0.1, 0.5)` with zeroed motion, after removing the block.
+   (The ported `EntitySpecialItem` cancels `ItemEntity`'s 0.04 gravity for a
+   net-zero hover, identical to 1.12.)
+2. `FXDispatcher.drawBamf` rewritten 1.12-faithful: 8–10 smoke sprites
+   (texture 123, 5-sprite anim, alpha 1.0→0.1, scale 0.3→0.4–0.7 block units
+   (= 1.12 3.0→4.0–7.0 × 0.1), slowDown 0.7, random ±1°/tick spin), flair:
+   2–4 wispy motes + white flash (texture 77, 1.0–1.2→0 size), plus
+   2–4 curly wisps (texture 60–63, scale 0.5→1.0–1.4, ±2–4°/tick spin,
+   color → dark purple 0.1/0.0/0.1). Port quad size is block units = 1.12
+   scale × 0.1; 1.12 sprite indices carry over (particles.png is
+   byte-identical).
+3. `FXDispatcher.drawWispyMotes*` rewritten 1.12-faithful: grid 64, sprites
+   512–527, alpha keyframes 0→0.6→0.6→0, scale 0.1→0.05, wind 0.0001
+   (1.12 setWind(0.001) × 0.1 source-magnitude), random movement 0.0025,
+   OnBlock colors 0.4+0.6r / 0.6+0.4r / 0.6+0.4r.
+4. `FXGeneric.tick()` pre-existing bugs fixed: missing 2π rotation factor
+   (`roll += rotationSpeed * 2π` now, matching 1.12) and green-channel lerp
+   typo (was lerping toward endB). Both were latent — only scan-source FX use
+   rotation and it passes 0.
+5. `setRotationSpeedWithStart` startAngle is in TURNS (×2π), matching 1.12's
+   `start * 2π` — so 1.12 `setRotationSpeed(rand, ±speed)` maps 1:1.
+
+**Status:** build green (86/86 tests), jar (14,467,001 bytes) installed in the
+Modrinth `NeoForge 26.3` profile. **NEXT: user retests the bookshelf click —
+expect poof sound, purple smoke + wisps + white flash, and a hovering
+Thaumonomicon. [SALIS-DBG] logs are still in place (todo #37 removes them
+after this verification).**
+
+## 2026-09-29 — Salis Mundus bookshelf bug (diagnosis history, resolved above)
 
 User report: right-clicking a bookshelf with Salis Mundus (in the 26.3
 profile, after the dream was received at 08:10:22 per latest.log) produced no
