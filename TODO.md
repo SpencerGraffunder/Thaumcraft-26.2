@@ -73,10 +73,13 @@ pack format 121). Fresh Modrinth profile `NeoForge 26.3`.
 
 **Status: BUILD GREEN (86/86 tests, 0 TODOs), `runServer` boots to `Done`.**
 Jar `thaumcraft-6.2.0+26.3.jar` installed into the `NeoForge 26.3` Modrinth
-profile; **Curios 17-beta jar added to the profile** (hard dep). **Pending:
-user in-game launch verification** — remaining first-boot risks are client-side
-(rendering, focus pouch, crossbow turret animation, smelter fuel) and in-world
-golem/seal item transfer; server-side registration & worldgen are verified.
+profile; **Curios 17-beta jar added to the profile** (hard dep). The 26.2
+branch (`feat/26.2-port`, 26.2.0.76 / 6.2.0+26.2 / pack 108) was re-verified
+**build green with 86/86 tests** the same day, so both branches ship from a
+verified tree. **Pending: user in-game launch verification** — remaining
+first-boot risks are client-side (rendering, focus pouch, crossbow turret
+animation, smelter fuel) and in-world golem/seal item transfer; server-side
+registration & worldgen are verified.
 
 ### CI build fixed + local build switched to the binary-patch pipeline (2026-09-29)
 
