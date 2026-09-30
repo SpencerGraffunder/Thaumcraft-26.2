@@ -13,12 +13,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.crafting.IDustTrigger;
+import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.common.items.ItemTCBase;
 import thaumcraft.common.lib.network.PacketHandler;
-import thaumcraft.common.lib.network.fx.PacketFXBlockBamf;
 import thaumcraft.init.ModSounds;
 
 import java.util.List;
+import java.util.Random;
 
 public class ItemMagicDust extends ItemTCBase {
 
@@ -71,42 +72,34 @@ public class ItemMagicDust extends ItemTCBase {
     }
 
     private void doSparkles(Player player, Level level, BlockPos pos, Vec3 hitVec, InteractionHand hand, IDustTrigger trigger, IDustTrigger.Placement place) {
-        // Play sound
-        if (ModSounds.DUST.get() != null) {
-            level.playSound(player, pos, ModSounds.DUST.get(), SoundSource.PLAYERS, 0.33f, 1.0f + (float)level.getRandom().nextGaussian() * 0.05f);
+        // 1.12-faithful: hand-to-block sparkle line (drawSimpleSparkle) + block sparkles
+        // (drawBlockSparkles). Replaces the old vanilla ENCHANT-particle stubs.
+        if (!level.isClientSide()) return;
+        Random rand = new Random();
+        Vec3 v1 = player.getEyePosition();
+        Vec3 v2 = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5).subtract(v1);
+        for (int a = 0; a < 50; a++) {
+            boolean floaty = a < 50 / 3;
+            float r = 1.0f;
+            float g = (189 + rand.nextInt(67)) / 255.0f;
+            float b = (64 + rand.nextInt(192)) / 255.0f;
+            FXDispatcher.INSTANCE.drawSimpleSparkle(rand, v1.x, v1.y, v1.z,
+                    v2.x / 6.0 + rand.nextGaussian() * 0.05,
+                    v2.y / 6.0 + rand.nextGaussian() * 0.05 + (floaty ? 0.05 : 0.15),
+                    v2.z / 6.0 + rand.nextGaussian() * 0.05,
+                    0.5f, r, g, b, rand.nextInt(5),
+                    floaty ? (0.3f + rand.nextFloat() * 0.5f) : 0.85f,
+                    floaty ? 0.2f : 0.5f, 16);
         }
-
-        // Calculate positions for sparkles
+        if (ModSounds.DUST.get() != null) {
+            level.playSound(player, pos, ModSounds.DUST.get(), SoundSource.PLAYERS, 0.33f, 1.0f + (float) rand.nextGaussian() * 0.05f);
+        }
         List<BlockPos> sparkles = trigger.sparkle(level, player, pos, place);
         if (sparkles != null) {
+            Vec3 v3 = new Vec3(pos.getX() + hitVec.x, pos.getY() + hitVec.y, pos.getZ() + hitVec.z);
             for (BlockPos p : sparkles) {
-                // We use a packet here even though we are client side? 
-                // Actually if we are client side we can just spawn particles directly.
-                // But the original code used FXDispatcher.
-                // In 1.20.1 we should probably use Minecraft.getInstance().particleEngine or similar.
-                
-                // For now, let's assume we want to trigger the "bamf" effect or similar
-                // But wait, PacketFXBlockBamf is for server -> client.
-                // Since we are already on client, we should spawn particles directly.
-                
-                // Client particles
-                if (level.isClientSide()) {
-                    level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT, p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, 0, 0.1, 0);
-                }
-                // FXDispatcher.INSTANCE.drawBlockSparkles(p, hitVec);
+                FXDispatcher.INSTANCE.drawBlockSparkles(p, v3);
             }
         }
-        
-        // Also spawn floating sparkles from hand to block
-        // Sparkles logic
-            if (level.isClientSide()) {
-                Vec3 eye = player.getEyePosition();
-                Vec3 look = player.getLookAngle();
-                for (int i = 0; i < 5; i++) {
-                    double t = i / 4.0;
-                    level.addParticle(net.minecraft.core.particles.ParticleTypes.ENCHANT,
-                        eye.x + look.x * t * 2.0, eye.y + look.y * t * 2.0, eye.z + look.z * t * 2.0, 0, 0, 0);
-                }
-            }
     }
 }

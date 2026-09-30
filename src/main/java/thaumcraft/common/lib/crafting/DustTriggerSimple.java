@@ -2,6 +2,7 @@ package thaumcraft.common.lib.crafting;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.crafting.IDustTrigger;
 import thaumcraft.common.lib.events.ServerEvents;
@@ -52,6 +54,11 @@ public class DustTriggerSimple implements IDustTrigger {
         
         // Check research requirement
         if (research != null && !ThaumcraftCapabilities.knowsResearch(player, research)) {
+            if (!level.isClientSide()) {
+                Thaumcraft.LOGGER.info("[SALIS-DBG] dust trigger blocked by research: block={} player={} needs='{}' knows={}",
+                        BuiltInRegistries.BLOCK.getKey(target), player.getName().getString(), research,
+                        ThaumcraftCapabilities.knowsResearch(player, research));
+            }
             return null;
         }
         
