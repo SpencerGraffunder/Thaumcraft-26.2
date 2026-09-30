@@ -46,6 +46,7 @@ import thaumcraft.common.lib.network.fx.PacketFXBlockArc;
 import thaumcraft.common.lib.network.fx.PacketFXBlockBamf;
 import thaumcraft.common.lib.network.fx.PacketFXBlockMist;
 import thaumcraft.common.lib.network.fx.PacketFXBoreDig;
+import thaumcraft.common.lib.network.fx.PacketFXCrucible;
 import thaumcraft.common.lib.network.fx.PacketFXEssentiaSource;
 import thaumcraft.common.lib.network.fx.PacketFXFocusEffect;
 import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
@@ -99,6 +100,7 @@ public class PacketHandler {
         reg.playToClient(PacketFXInfusionSource.TYPE, PacketFXInfusionSource.STREAM_CODEC, PacketFXInfusionSource::handle);
         reg.playToClient(PacketFXPollute.TYPE, PacketFXPollute.STREAM_CODEC, PacketFXPollute::handle);
         reg.playToClient(PacketFXBoreDig.TYPE, PacketFXBoreDig.STREAM_CODEC, PacketFXBoreDig::handle);
+        reg.playToClient(PacketFXCrucible.TYPE, PacketFXCrucible.STREAM_CODEC, PacketFXCrucible::handle);
         reg.playToClient(PacketFXScanSource.TYPE, PacketFXScanSource.STREAM_CODEC, PacketFXScanSource::handle);
         reg.playToClient(PacketFXSonic.TYPE, PacketFXSonic.STREAM_CODEC, PacketFXSonic::handle);
         reg.playToClient(PacketFXBlockMist.TYPE, PacketFXBlockMist.STREAM_CODEC, PacketFXBlockMist::handle);

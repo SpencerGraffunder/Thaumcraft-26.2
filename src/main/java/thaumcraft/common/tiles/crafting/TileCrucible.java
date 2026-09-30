@@ -5,6 +5,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,10 +23,13 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aura.AuraHelper;
+import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
 import thaumcraft.common.lib.crafting.ThaumcraftCraftingManager;
 import thaumcraft.common.lib.crafting.CrucibleRecipeType;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXCrucible;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -187,14 +192,8 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
                 level.playSound(null, worldPosition, SoundEvents.EXPERIENCE_ORB_PICKUP,
                         SoundSource.BLOCKS, 0.5f, 1.0f);
                 
-                // Effects
-                if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                    // Craft FX
-                    if (level != null && !level.isClientSide()) {
-                        level.addParticle(net.minecraft.core.particles.ParticleTypes.CLOUD,
-                            (double)getBlockPos().getX() + 0.5, (double)getBlockPos().getY() + 0.5, (double)getBlockPos().getZ() + 0.5, 0, 0.1, 0);
-                    }
-                }
+                // 1.12-faithful: block event 99 (bamf above the crucible + spill sound)
+                sendCrucibleFX(99, 0);
                 
                 remaining--;
                 itemChanged = true;
@@ -223,6 +222,9 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
 
             level.playSound(null, worldPosition, SoundEvents.BUBBLE_COLUMN_BUBBLE_POP,
                     SoundSource.BLOCKS, 0.2f, 1.0f + level.getRandom().nextFloat() * 0.4f);
+
+            // 1.12-faithful: block event 2/1 (10x crucibleBoil + spill sound)
+            sendCrucibleFX(2, 1);
         }
 
         if (itemChanged) {
@@ -280,11 +282,49 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
             }
 
             aspects = new AspectList();
+
+            // 1.12-faithful: block event 2/5 (10x crucibleBoil + spill sound)
+            sendCrucibleFX(2, 5);
             markDirtyAndSync();
         }
     }
-
-    // ==================== IAspectContainer ====================
+    
+    /**
+     * Send a crucible FX event to tracking clients (1.12 addBlockEvent replacement).
+     */
+    private void sendCrucibleFX(int type, int data) {
+        if (level instanceof ServerLevel serverLevel) {
+            PacketHandler.sendToAllTrackingChunk(new PacketFXCrucible(worldPosition, type, data), serverLevel, worldPosition);
+        }
+    }
+    
+    /**
+     * 1.12-faithful client-side crucible effects (1.12 TileCrucible.drawEffects).
+     * Called from BlockCrucible.animateTick while the crucible holds fluid.
+     */
+    public void drawEffects(RandomSource rand) {
+        if (heat > 150) {
+            FXDispatcher.INSTANCE.crucibleFroth(worldPosition.getX() + 0.2f + rand.nextFloat() * 0.6f,
+                    worldPosition.getY() + getFluidHeight(), worldPosition.getZ() + 0.2f + rand.nextFloat() * 0.6f);
+            if (aspects.visSize() > 500) {
+                for (int a = 0; a < 2; a++) {
+                    FXDispatcher.INSTANCE.crucibleFrothDown(worldPosition.getX(), worldPosition.getY() + 1, worldPosition.getZ() + rand.nextFloat());
+                    FXDispatcher.INSTANCE.crucibleFrothDown(worldPosition.getX() + 1, worldPosition.getY() + 1, worldPosition.getZ() + rand.nextFloat());
+                    FXDispatcher.INSTANCE.crucibleFrothDown(worldPosition.getX() + rand.nextFloat(), worldPosition.getY() + 1, worldPosition.getZ());
+                    FXDispatcher.INSTANCE.crucibleFrothDown(worldPosition.getX() + rand.nextFloat(), worldPosition.getY() + 1, worldPosition.getZ() + 1);
+                }
+            }
+        }
+        if (rand.nextInt(6) == 0 && aspects.size() > 0) {
+            int color = aspects.getAspects()[rand.nextInt(aspects.getAspects().length)].getColor() - 16777216;
+            int x = 5 + rand.nextInt(22);
+            int y = 5 + rand.nextInt(22);
+            java.awt.Color c = new java.awt.Color(color);
+            FXDispatcher.INSTANCE.crucibleBubble(worldPosition.getX() + x / 32.0f + 0.015625f,
+                    worldPosition.getY() + 0.05f + getFluidHeight(), worldPosition.getZ() + y / 32.0f + 0.015625f,
+                    c.getRed() / 255.0f, c.getGreen() / 255.0f, c.getBlue() / 255.0f);
+        }
+    }
 
     @Override
     public AspectList getAspects() {

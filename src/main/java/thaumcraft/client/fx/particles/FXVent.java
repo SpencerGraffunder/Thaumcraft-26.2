@@ -145,6 +145,10 @@ public class FXVent extends ThaumcraftParticle {
 
     // ==================== Configuration Methods ====================
 
+    public void setAlphaF(float alpha) {
+        this.alpha = alpha;
+    }
+    
     public void setRGB(float r, float g, float b) {
         this.rCol = r;
         this.gCol = g;

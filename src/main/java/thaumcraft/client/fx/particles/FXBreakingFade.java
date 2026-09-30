@@ -88,6 +88,18 @@ public class FXBreakingFade extends ThaumcraftParticle {
         return this;
     }
     
+    public FXBreakingFade setRGB(float r, float g, float b) {
+        this.rCol = r;
+        this.gCol = g;
+        this.bCol = b;
+        return this;
+    }
+    
+    public FXBreakingFade setAlphaF(float alpha) {
+        this.alpha = alpha;
+        return this;
+    }
+    
     public void boom() {
         float f = (float)(this.random.nextFloat() + this.random.nextFloat() + 1.0) * 0.15f;
         float len = Mth.sqrt((float)(this.xd * this.xd + this.yd * this.yd + this.zd * this.zd));

@@ -171,4 +171,10 @@ public class FXBoreSparkle extends ThaumcraftParticle {
     public void setGravity(float value) {
         this.gravity = value;
     }
+    
+    public void setColor(float r, float g, float b) {
+        this.rCol = r;
+        this.gCol = g;
+        this.bCol = b;
+    }
 }

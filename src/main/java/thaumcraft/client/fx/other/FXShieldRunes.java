@@ -19,7 +19,8 @@ import thaumcraft.client.fx.particles.ThaumcraftParticle;
 @OnlyIn(Dist.CLIENT)
 public class FXShieldRunes extends ThaumcraftParticle {
     
-    private final Entity target;
+    private Entity target;
+    private double originX, originY, originZ;
     private float orbitAngle;
     private float orbitHeight;
     private float orbitSpeed;
@@ -48,13 +49,43 @@ public class FXShieldRunes extends ThaumcraftParticle {
         this.noClip = true;
     }
     
+    /**
+     * Position-based shield (no entity target) - the 1.12 pedestal shield renders the
+     * shield centered on a fixed point with a purple tint. We approximate the 3D shield
+     * model with the same orbiting-runes particle around that point.
+     */
+    public FXShieldRunes(ClientLevel level, double x, double y, double z, int lifetime) {
+        super(level, x, y, z);
+        
+        this.target = null;
+        this.originX = x;
+        this.originY = y;
+        this.originZ = z;
+        
+        this.rCol = 0.65f;
+        this.gCol = 0.1f;
+        this.bCol = 0.5f;
+        this.alpha = 0.8f;
+        
+        this.orbitAngle = this.random.nextFloat() * 360.0f;
+        this.orbitHeight = this.random.nextFloat() * 0.5f;
+        this.orbitSpeed = 3.0f + this.random.nextFloat() * 2.0f;
+        this.orbitRadius = 0.75f;
+        this.runeIndex = this.random.nextInt(16);
+        
+        this.quadSize = 0.15f + this.random.nextFloat() * 0.1f;
+        this.lifetime = lifetime;
+        this.gravity = 0;
+        this.noClip = true;
+    }
+    
     @Override
     public void tick() {
         this.xo = this.x;
         this.yo = this.y;
         this.zo = this.z;
         
-        if (this.age++ >= this.lifetime || target == null || !target.isAlive()) {
+        if (this.age++ >= this.lifetime || (target != null && !target.isAlive())) {
             this.remove();
             return;
         }
@@ -62,11 +93,17 @@ public class FXShieldRunes extends ThaumcraftParticle {
         // Update orbit
         this.orbitAngle += this.orbitSpeed;
         
-        // Calculate position on orbit
+        // Calculate position on orbit (around the target entity or the fixed origin)
         float rad = (float) Math.toRadians(this.orbitAngle);
-        this.x = this.target.getX() + Mth.cos(rad) * this.orbitRadius;
-        this.y = this.target.getY() + this.orbitHeight;
-        this.z = this.target.getZ() + Mth.sin(rad) * this.orbitRadius;
+        if (this.target != null) {
+            this.x = this.target.getX() + Mth.cos(rad) * this.orbitRadius;
+            this.y = this.target.getY() + this.orbitHeight;
+            this.z = this.target.getZ() + Mth.sin(rad) * this.orbitRadius;
+        } else {
+            this.x = this.originX + Mth.cos(rad) * this.orbitRadius;
+            this.y = this.originY + this.orbitHeight;
+            this.z = this.originZ + Mth.sin(rad) * this.orbitRadius;
+        }
         
         // Fade in/out
         float progress = (float) this.age / (float) this.lifetime;

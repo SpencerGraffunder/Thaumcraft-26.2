@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,18 +17,26 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Items;
 import thaumcraft.client.fx.beams.FXArc;
 import thaumcraft.client.fx.beams.FXBeamBore;
 import thaumcraft.client.fx.beams.FXBeamWand;
 import thaumcraft.client.fx.beams.FXBolt;
+import thaumcraft.client.fx.other.FXBoreStream;
+import thaumcraft.client.fx.other.FXEssentiaStream;
+import thaumcraft.client.fx.other.FXShieldRunes;
+import thaumcraft.client.fx.other.FXVoidStream;
 import thaumcraft.client.fx.particles.FXBlockRunes;
 import thaumcraft.client.fx.particles.FXBlockWard;
+import thaumcraft.client.fx.particles.FXBoreParticles;
 import thaumcraft.client.fx.particles.FXBoreSparkle;
-import thaumcraft.client.fx.particles.FXCrucibleBubble;
-import thaumcraft.client.fx.particles.FXEssentiaTrail;
+import thaumcraft.client.fx.particles.FXBreakingFade;
 import thaumcraft.client.fx.particles.FXFireMote;
-import thaumcraft.client.fx.particles.FXTaintParticle;
 import thaumcraft.client.fx.particles.FXGeneric;
+import thaumcraft.client.fx.particles.FXGenericGui;
 import thaumcraft.client.fx.particles.FXGenericP2E;
 import thaumcraft.client.fx.particles.FXGenericP2P;
 import thaumcraft.client.fx.particles.FXPlane;
@@ -37,21 +44,26 @@ import thaumcraft.client.fx.particles.FXSlimyBubble;
 import thaumcraft.client.fx.particles.FXSmokeSpiral;
 import thaumcraft.client.fx.particles.FXSwarm;
 import thaumcraft.client.fx.particles.FXVent;
+import thaumcraft.client.fx.particles.FXVent2;
 import thaumcraft.client.fx.particles.FXVisSparkle;
 import thaumcraft.client.fx.particles.FXWisp;
+import thaumcraft.common.tiles.crafting.TileCrucible;
+import thaumcraft.init.ModItems;
 import thaumcraft.init.ModSounds;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
  * FXDispatcher - Central particle effect dispatcher for Thaumcraft.
- * 
- * This is a stub implementation that provides the interface used by
- * the rest of the mod without crashing. Real particle effects will
- * be incrementally added.
- * 
- * For now, most methods use vanilla particles as placeholders.
+ *
+ * Methods are 1.12-faithful ports of the original Thaumcraft 6 FXDispatcher:
+ * they spawn the same custom particle classes (FXGeneric, FXBoreParticles,
+ * FXBreakingFade, FXVent, FXPlane, beam/stream classes, ...) with the same
+ * sprite indices, colors, lifetimes, and motion as 1.12. A small delay queue
+ * ({@link #tickDelayed}) reproduces 1.12's {@code ParticleEngine.addEffectWithDelay}.
  */
 @OnlyIn(Dist.CLIENT)
 public class FXDispatcher {
@@ -80,16 +92,46 @@ public class FXDispatcher {
         }
     }
     
+    // ==================== Delayed particles (1.12 ParticleEngine.addEffectWithDelay) ====================
+    
+    private static final List<DelayedParticle> DELAYED_PARTICLES = new ArrayList<>();
+    
+    private record DelayedParticle(int ticks, Particle particle) {}
+    
+    private void addEffectWithDelay(Particle particle, int delay) {
+        if (particle == null) return;
+        if (delay <= 0) {
+            Minecraft.getInstance().particleEngine.add(particle);
+        } else {
+            DELAYED_PARTICLES.add(new DelayedParticle(delay, particle));
+        }
+    }
+    
+    /**
+     * Process the delayed-particle queue. Called every client tick (ClientTickHandler).
+     */
+    public static void tickDelayed() {
+        if (DELAYED_PARTICLES.isEmpty()) return;
+        for (int i = DELAYED_PARTICLES.size() - 1; i >= 0; i--) {
+            DelayedParticle dp = DELAYED_PARTICLES.get(i);
+            if (dp.ticks() <= 1) {
+                DELAYED_PARTICLES.remove(i);
+                Minecraft.getInstance().particleEngine.add(dp.particle());
+            } else {
+                DELAYED_PARTICLES.set(i, new DelayedParticle(dp.ticks() - 1, dp.particle()));
+            }
+        }
+    }
+    
     // ==================== Fire/Alumentum Effects ====================
     
     public void drawFireMote(float x, float y, float z, float vx, float vy, float vz, 
             float r, float g, float b, float alpha, float scale) {
-        ClientLevel level = getClientLevel();
-        if (level != null) {
-            FXFireMote particle = new FXFireMote(level, x, y, z, vx, vy, vz, r, g, b, scale);
-            particle.setAlpha(alpha);
-            addParticle(particle);
-        }
+        // 1.12-faithful: half the time a smaller additive mote, half the time a normal one
+        boolean bb = rand.nextBoolean();
+        FXFireMote particle = new FXFireMote(getClientLevel(), x, y, z, vx, vy, vz, r, g, b, bb ? (scale / 3.0f) : scale, bb ? 1 : 0);
+        particle.setAlpha(alpha);
+        addParticle(particle);
     }
     
     public void drawAlumentum(float x, float y, float z, float vx, float vy, float vz, 
@@ -106,36 +148,60 @@ public class FXDispatcher {
     // ==================== Taint Effects ====================
     
     /**
-     * Draw taint corruption particles.
+     * Draw taint corruption particles (1.12-faithful).
      */
     public void drawTaintParticles(float x, float y, float z, float vx, float vy, float vz, float scale) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            FXTaintParticle particle = new FXTaintParticle(level, x, y, z, vx, vy, vz, scale);
-            addParticle(particle);
-        }
+        if (level == null) return;
+        FXGeneric fb = new FXGeneric(level, x, y, z, vx, vy, vz);
+        fb.setMaxAge(80 + rand.nextInt(20));
+        fb.setColor(0.4f + rand.nextFloat() * 0.2f, 0.1f + rand.nextFloat() * 0.3f, 0.5f + rand.nextFloat() * 0.2f);
+        fb.setAlphaKeyframes(0.75f, 0.0f);
+        fb.setGridSize(16);
+        fb.setParticles(57 + rand.nextInt(3), 1, 1);
+        // 1.12 scale is in factor units (1.0 = 0.1 block); the port uses block units
+        fb.setScaleKeyframes(scale * 0.1f, scale / 4.0f * 0.1f);
+        fb.setLayer(1);
+        fb.setSlowDown(0.975);
+        fb.setGravity(0.2f);
+        fb.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? -1.0f : 1.0f);
+        addParticle(fb);
     }
     
     // ==================== Lightning/Spark Effects ====================
     
     public void drawLightningFlash(double x, double y, double z, float r, float g, float b, float alpha, float scale) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ColorParticleOption.create(ParticleTypes.FLASH, r, g, b), x, y, z, 0, 0, 0);
-        }
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        FXGeneric fb = new FXGeneric(level, x, y, z, 0.0, 0.0, 0.0);
+        fb.setMaxAge(5 + rand.nextInt(5));
+        fb.setGridSize(16);
+        fb.setColor(r, g, b);
+        fb.setAlphaKeyframes(alpha, 0.0f);
+        fb.setParticles(108 + rand.nextInt(4), 1, 1);
+        fb.setScale(scale * 0.1f);
+        fb.setLayer(0);
+        fb.setRotationSpeedWithStart(rand.nextFloat(), 0.0f);
+        addParticle(fb);
     }
     
     public void spark(double x, double y, double z, float size, float r, float g, float b, float a) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.ELECTRIC_SPARK, x, y, z, 0, 0, 0);
-        }
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        FXGeneric fb = new FXGeneric(level, x, y, z, 0.0, 0.0, 0.0);
+        fb.setMaxAge(5 + rand.nextInt(5));
+        fb.setAlphaF(a);
+        fb.setColor(r, g, b);
+        fb.setGridSize(16);
+        fb.setParticles(8 + rand.nextInt(3) * 16, 8, 1);
+        fb.setScale(size * 0.1f);
+        fb.setFlipped(rand.nextBoolean());
+        addParticle(fb);
     }
     
     public void sparkle(float x, float y, float z, float r, float g, float b) {
-        Level level = getWorld();
-        if (level != null && rand.nextInt(6) < 4) {
-            level.addParticle(ParticleTypes.END_ROD, x, y, z, 0, 0.01, 0);
+        if (rand.nextInt(6) < 4) {
+            drawGenericParticles(x, y, z, 0.0, 0.0, 0.0, r, g, b, 0.9f, true, 320, 16, 1, 6 + rand.nextInt(4), 0, 0.6f + rand.nextFloat() * 0.2f, 0.0f, 0);
         }
     }
     
@@ -153,107 +219,148 @@ public class FXDispatcher {
     
     // ==================== Generic Particle Drawing ====================
     
+    /**
+     * 1.12-faithful generic particle. Note: {@code scale} is in 1.12 factor units
+     * (1.0 = 0.1 block) and is converted to the port's block units internally.
+     */
     public void drawGenericParticles(double x, double y, double z, double mx, double my, double mz, 
             float r, float g, float b, float alpha, boolean loop, int start, int num, int inc, 
             int age, int delay, float scale, float rot, int layer) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            FXGeneric particle = new FXGeneric(level, x, y, z, mx, my, mz);
-            particle.setColor(r, g, b);
-            particle.setAlphaF(alpha);
-            particle.setLoop(loop);
-            particle.setParticles(start, num, inc);
-            particle.setMaxAge(age);
-            particle.setScale(scale);
-            particle.setRotationSpeed(rot);
-            particle.setLayer(layer);
-            addParticle(particle);
-        }
+        if (level == null) return;
+        FXGeneric particle = new FXGeneric(level, x, y, z, mx, my, mz);
+        particle.setColor(r, g, b);
+        particle.setAlphaF(alpha);
+        particle.setLoop(loop);
+        particle.setParticles(start, num, inc);
+        particle.setMaxAge(age);
+        particle.setScale(scale * 0.1f);
+        particle.setRotationSpeed(rot);
+        particle.setLayer(layer);
+        addEffectWithDelay(particle, delay);
     }
     
+    /** Same as {@link #drawGenericParticles} but with a 16x16 sprite grid (1.12). */
     public void drawGenericParticles16(double x, double y, double z, double x2, double y2, double z2, 
             float r, float g, float b, float alpha, boolean loop, int start, int num, int inc, 
             int age, int delay, float scale, float rot, int layer) {
-        drawGenericParticles(x, y, z, x2, y2, z2, r, g, b, alpha, loop, start, num, inc, age, delay, scale, rot, layer);
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        FXGeneric particle = new FXGeneric(level, x, y, z, x2, y2, z2);
+        particle.setGridSize(16);
+        particle.setColor(r, g, b);
+        particle.setAlphaF(alpha);
+        particle.setLoop(loop);
+        particle.setParticles(start, num, inc);
+        particle.setMaxAge(age);
+        particle.setScale(scale * 0.1f);
+        particle.setRotationSpeed(rot);
+        particle.setLayer(layer);
+        addEffectWithDelay(particle, delay);
     }
     
+    /** 1.12-faithful GenPart overload (color range, alpha/scale keyframes, grid, rotstart, slowDown, gravity, delay). */
     public void drawGenericParticles(double x, double y, double z, double mx, double my, double mz, GenPart part) {
-        if (part != null) {
-            drawGenericParticles(x, y, z, mx, my, mz, part.redStart, part.greenStart, part.blueStart, 
-                    part.alpha, part.loop, part.partStart, part.partNum, part.partInc, 
-                    part.age, part.delay, part.scale, part.rot, part.layer);
-        }
+        if (part == null) return;
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        FXGeneric particle = new FXGeneric(level, x, y, z, mx, my, mz);
+        particle.setMaxAge(part.age);
+        particle.setColorRange(part.redStart, part.greenStart, part.blueStart, part.redEnd, part.greenEnd, part.blueEnd);
+        particle.setAlphaKeyframes(part.alpha);
+        particle.setLoop(part.loop);
+        particle.setParticles(part.partStart, part.partNum, part.partInc);
+        // 1.12 scale keyframes are in factor units; convert to block units
+        float[] scale = new float[part.scale.length];
+        for (int i = 0; i < scale.length; i++) scale[i] = part.scale[i] * 0.1f;
+        particle.setScaleKeyframes(scale);
+        particle.setLayer(part.layer);
+        particle.setRotationSpeedWithStart(part.rotstart, part.rot);
+        particle.setSlowDown(part.slowDown);
+        particle.setGravity(part.grav);
+        particle.setGridSize(part.grid);
+        addEffectWithDelay(particle, part.delay);
     }
     
     // ==================== Crucible Effects ====================
     
     /**
-     * Create a colored bubble in the crucible.
+     * Create a colored bubble in the crucible (1.12-faithful: sprite 64, inflate-then-pop 65/66).
      */
     public void crucibleBubble(float x, float y, float z, float cr, float cg, float cb) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            FXCrucibleBubble bubble = new FXCrucibleBubble(level, x, y, z, cr, cg, cb);
-            addParticle(bubble);
-        }
+        if (level == null) return;
+        FXGeneric fb = new FXGeneric(level, x, y, z, 0.0, 0.0, 0.0);
+        fb.setMaxAge(15 + rand.nextInt(10));
+        fb.setScale(rand.nextFloat() * 0.3f + 0.3f);
+        fb.setColor(cr, cg, cb);
+        fb.setRandomMovementScale(0.002f, 0.002f, 0.002f);
+        fb.setGravity(-0.001f);
+        fb.setParticle(64);
+        fb.setFinalFrames(65, 66, 66);
+        addParticle(fb);
     }
     
     /**
-     * Create boiling bubbles in the crucible.
+     * Create boiling bubbles in the crucible (1.12-faithful).
      */
-    public void crucibleBoil(BlockPos pos, Object tile, int aspectColor) {
+    public void crucibleBoil(BlockPos pos, TileCrucible tile, int j) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            // Extract color from aspect
-            float r = ((aspectColor >> 16) & 0xFF) / 255.0f;
-            float g = ((aspectColor >> 8) & 0xFF) / 255.0f;
-            float b = (aspectColor & 0xFF) / 255.0f;
-            
-            for (int a = 0; a < 2; a++) {
-                double x = pos.getX() + 0.2f + rand.nextFloat() * 0.6f;
-                double y = pos.getY() + 0.65f;
-                double z = pos.getZ() + 0.2f + rand.nextFloat() * 0.6f;
-                
-                FXCrucibleBubble bubble = new FXCrucibleBubble(level, x, y, z, r, g, b);
-                addParticle(bubble);
+        if (level == null) return;
+        for (int a = 0; a < 2; ++a) {
+            FXGeneric fb = new FXGeneric(level, pos.getX() + 0.2f + rand.nextFloat() * 0.6f, pos.getY() + 0.1f + tile.getFluidHeight(), pos.getZ() + 0.2f + rand.nextFloat() * 0.6f, 0.0, 0.002, 0.0);
+            fb.setMaxAge((int) (7.0 + 8.0 / (Math.random() * 0.8 + 0.2)));
+            fb.setScale(rand.nextFloat() * 0.3f + 0.2f);
+            if (tile.aspects.size() == 0) {
+                fb.setColor(1.0f, 1.0f, 1.0f);
+            } else {
+                int color = tile.aspects.getAspects()[rand.nextInt(tile.aspects.getAspects().length)].getColor();
+                Color c = new Color(color);
+                fb.setColor(c.getRed() / 255.0f, c.getGreen() / 255.0f, c.getBlue() / 255.0f);
             }
+            fb.setRandomMovementScale(0.001f, 0.001f, 0.001f);
+            fb.setGravity(-0.025f * j);
+            fb.setParticle(64);
+            fb.setFinalFrames(65, 66);
+            addParticle(fb);
         }
     }
     
     /**
-     * Create frothy splash particles on crucible surface.
+     * Create frothy splash particles on crucible surface (1.12-faithful).
      */
     public void crucibleFroth(float x, float y, float z) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            // Small white splash particle
-            FXGeneric splash = new FXGeneric(level, x, y, z, 
-                    (rand.nextFloat() - 0.5f) * 0.02, 0.02, (rand.nextFloat() - 0.5f) * 0.02);
-            splash.setColor(0.9f, 0.9f, 1.0f);
-            splash.setAlphaF(0.6f);
-            splash.setMaxAge(6 + rand.nextInt(4));
-            splash.setScale(0.2f + rand.nextFloat() * 0.1f);
-            splash.setParticles(160, 1, 1);
-            addParticle(splash);
-        }
+        if (level == null) return;
+        FXGeneric fb = new FXGeneric(level, x, y, z, 0.0, 0.0, 0.0);
+        fb.setMaxAge(4 + rand.nextInt(3));
+        fb.setScale(rand.nextFloat() * 0.2f + 0.2f);
+        fb.setColor(0.5f, 0.5f, 0.7f);
+        fb.setRandomMovementScale(0.001f, 0.001f, 0.001f);
+        fb.setGravity(0.1f);
+        fb.setParticle(64);
+        fb.setFinalFrames(65, 66);
+        addParticle(fb);
     }
     
     /**
-     * Create dripping particles from crucible overflow.
+     * Create dripping particles from crucible overflow (1.12-faithful: sprite 73).
      */
     public void crucibleFrothDown(float x, float y, float z) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            // Dripping particle that falls
-            FXGeneric drip = new FXGeneric(level, x, y, z, 0, -0.01, 0);
-            drip.setColor(0.6f, 0.7f, 0.9f);
-            drip.setAlphaF(0.5f);
-            drip.setMaxAge(15 + rand.nextInt(10));
-            drip.setScale(0.15f);
-            drip.setParticles(160, 1, 1);
-            drip.setGravity(0.05f);
-            addParticle(drip);
-        }
+        if (level == null) return;
+        FXGeneric fb = new FXGeneric(level, x, y, z, 0.0, 0.0, 0.0);
+        fb.setMaxAge(12 + rand.nextInt(12));
+        fb.setScale(rand.nextFloat() * 0.2f + 0.4f);
+        fb.setColor(0.25f, 0.0f, 0.75f);
+        fb.setAlphaF(0.8f);
+        fb.setRandomMovementScale(0.001f, 0.001f, 0.001f);
+        fb.setGravity(0.05f);
+        fb.setNoClip(false);
+        fb.setParticle(73);
+        fb.setFinalFrames(65, 66);
+        fb.setLayer(1);
+        addParticle(fb);
     }
     
     // ==================== Bamf/Teleport Effects ====================
@@ -389,7 +496,7 @@ public class FXDispatcher {
             // Port quad size is block units = 1.12 scale * 0.1
             mote.setScaleKeyframes(0.1f, 0.05f);
             mote.setLoop(true);
-            mote.setWindStrength(0.0001);  // 1.12 setWind(0.001) uses a 0.1-magnitude source vector
+            mote.setWind(0.001);
             mote.setGravity(grav);
             mote.setRandomMovementScale(0.0025f, 0.0f, 0.0025f);
             addParticle(mote);
@@ -417,270 +524,450 @@ public class FXDispatcher {
     }
     
     /**
-     * Highlight a bounding box with scan sparkles.
+     * Highlight a bounding box with scan sparkles (1.12-faithful: iterates all 6 faces,
+     * 2*num sparkles per face with distance-based random delays).
      */
     public void scanHighlight(AABB bb) {
         ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        int num = Mth.ceil(bb.getSize() * 3);
-        double cx = (bb.minX + bb.maxX) / 2;
-        double cy = (bb.minY + bb.maxY) / 2;
-        double cz = (bb.minZ + bb.maxZ) / 2;
-        
-        for (int a = 0; a < num; a++) {
-            double x = cx + rand.nextGaussian() * (bb.maxX - bb.minX) * 0.35;
-            double y = cy + rand.nextGaussian() * (bb.maxY - bb.minY) * 0.35;
-            double z = cz + rand.nextGaussian() * (bb.maxZ - bb.minZ) * 0.35;
-            
-            FXGeneric sparkle = new FXGeneric(level, x, y, z, 0, 0.01, 0);
-            sparkle.setColor(0.9f, 0.95f, 1.0f);  // Bright white-blue
-            sparkle.setAlphaF(0.8f);
-            sparkle.setMaxAge(10 + rand.nextInt(8));
-            sparkle.setScale(0.1f + rand.nextFloat() * 0.08f);
-            sparkle.setParticles(0, 4, 1);  // Sparkle sprite
-            sparkle.setLayer(1);  // Additive
-            sparkle.setGravity(-0.01f);  // Slight upward float
-            addParticle(sparkle);
+        int num = Mth.ceil((bb.getXsize() + bb.getYsize() + bb.getZsize()) / 3.0f * 2.0);
+        double ax = (bb.minX + bb.maxX) / 2.0;
+        double ay = (bb.minY + bb.maxY) / 2.0;
+        double az = (bb.minZ + bb.maxZ) / 2.0;
+        for (Direction face : Direction.values()) {
+            double mx = 0.5 + face.getStepX() * 0.51;
+            double my = 0.5 + face.getStepY() * 0.51;
+            double mz = 0.5 + face.getStepZ() * 0.51;
+            for (int a = 0; a < num * 2; ++a) {
+                double x = mx;
+                double y = my;
+                double z = mz;
+                x += rand.nextGaussian() * (bb.maxX - bb.minX);
+                y += rand.nextGaussian() * (bb.maxY - bb.minY);
+                z += rand.nextGaussian() * (bb.maxZ - bb.minZ);
+                x = Mth.clamp(x, bb.minX - ax, bb.maxX - ax);
+                y = Mth.clamp(y, bb.minY - ay, bb.maxY - ay);
+                z = Mth.clamp(z, bb.minZ - az, bb.maxZ - az);
+                float r = (16 + rand.nextInt(17)) / 255.0f;
+                float g = (132 + rand.nextInt(34)) / 255.0f;
+                float b = (223 + rand.nextInt(17)) / 255.0f;
+                drawSimpleSparkle(rand, ax + x, ay + y, az + z, 0.0, 0.0, 0.0, 0.4f + (float) rand.nextGaussian() * 0.1f, r, g, b, rand.nextInt(10), 1.0f, 0.0f, 4);
+            }
         }
     }
     
     /**
-     * Create sparkles flowing from block toward a point.
+     * Create sparkles flowing from block toward a point (1.12-faithful: per-face,
+     * gated on the adjacent block being open, distance-based delays).
      */
     public void drawBlockSparkles(BlockPos p, Vec3 start) {
         ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        // Create sparkles that flow toward the start position
-        for (int i = 0; i < 3; i++) {
-            double x = p.getX() + rand.nextFloat();
-            double y = p.getY() + rand.nextFloat();
-            double z = p.getZ() + rand.nextFloat();
-            
-            double vx = (start.x - x) * 0.05;
-            double vy = (start.y - y) * 0.05;
-            double vz = (start.z - z) * 0.05;
-            
-            FXGeneric sparkle = new FXGeneric(level, x, y, z, vx, vy, vz);
-            sparkle.setColor(0.9f, 0.95f, 1.0f);
-            sparkle.setAlphaF(0.7f);
-            sparkle.setMaxAge(12 + rand.nextInt(6));
-            sparkle.setScale(0.12f + rand.nextFloat() * 0.08f);
-            sparkle.setParticles(0, 4, 1);
-            sparkle.setLayer(1);
-            addParticle(sparkle);
+        AABB bs = level.getBlockState(p).getShape(level, p).bounds().move(p).inflate(0.1);
+        int num = (int) ((bs.getXsize() + bs.getYsize() + bs.getZsize()) / 3.0f * 20.0);
+        for (Direction face : Direction.values()) {
+            BlockPos adjPos = p.offset(face.getStepX(), face.getStepY(), face.getStepZ());
+            BlockState state = level.getBlockState(adjPos);
+            if (!state.isSolidRender() && !state.isFaceSturdy(level, adjPos, face.getOpposite())) {
+                boolean rx = face.getStepX() == 0;
+                boolean ry = face.getStepY() == 0;
+                boolean rz = face.getStepZ() == 0;
+                double mx = 0.5 + face.getStepX() * 0.51;
+                double my = 0.5 + face.getStepY() * 0.51;
+                double mz = 0.5 + face.getStepZ() * 0.51;
+                for (int a = 0; a < num * 2; ++a) {
+                    double x = mx;
+                    double y = my;
+                    double z = mz;
+                    if (rx) x += rand.nextGaussian() * 0.6;
+                    if (ry) y += rand.nextGaussian() * 0.6;
+                    if (rz) z += rand.nextGaussian() * 0.6;
+                    x = Mth.clamp(x, bs.minX, bs.maxX);
+                    y = Mth.clamp(y, bs.minY, bs.maxY);
+                    z = Mth.clamp(z, bs.minZ, bs.maxZ);
+                    float r = 255.0f / 255.0f;
+                    float g = (189 + rand.nextInt(67)) / 255.0f;
+                    float b = (64 + rand.nextInt(192)) / 255.0f;
+                    Vec3 v1 = new Vec3(p.getX() + x, p.getY() + y, p.getZ() + z);
+                    double delay = rand.nextInt(5) + v1.distanceTo(start) * 16.0;
+                    drawSimpleSparkle(rand, p.getX() + x, p.getY() + y, p.getZ() + z, 0.0, 0.0025, 0.0, 0.4f + (float) rand.nextGaussian() * 0.1f, r, g, b, (int) delay, 1.0f, 0.01f, 16);
+                }
+            }
         }
     }
     
     /**
-     * Create a simple sparkle particle.
+     * Create a simple sparkle particle (1.12-faithful: random flicker alpha keyframes,
+     * sprite 320/512, grow-then-shrink scale, wind + random movement, delayed spawn).
      */
     public void drawSimpleSparkle(Random rand, double x, double y, double z, double x2, double y2, double z2, 
             float scale, float r, float g, float b, int delay, float decay, float grav, int baseAge) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            FXGeneric sparkle = new FXGeneric(level, x, y, z, x2, y2, z2);
-            sparkle.setColor(r, g, b);
-            sparkle.setAlphaF(0.8f);
-            sparkle.setMaxAge(baseAge > 0 ? baseAge : 15);
-            sparkle.setScale(scale > 0 ? scale : 0.15f);
-            sparkle.setParticles(0, 4, 1);
-            sparkle.setLayer(1);
-            sparkle.setGravity(grav);
-            addParticle(sparkle);
+        if (level == null) return;
+        boolean sp = rand.nextFloat() < 0.2;
+        FXGeneric fb = new FXGeneric(level, x, y, z, x2, y2, z2);
+        int age = baseAge * 4 + rand.nextInt(Math.max(1, baseAge));
+        fb.setMaxAge(age);
+        fb.setColor(r, g, b);
+        float[] alphas = new float[6 + rand.nextInt(Math.max(1, age / 3))];
+        for (int a = 1; a < alphas.length - 1; ++a) {
+            alphas[a] = rand.nextFloat();
         }
+        fb.setAlphaKeyframes(alphas);
+        fb.setParticles(sp ? 320 : 512, 16, 1);
+        fb.setLoop(true);
+        fb.setGravity(grav);
+        fb.setScaleKeyframes(scale * 0.1f, scale * 2.0f * 0.1f);
+        fb.setLayer(0);
+        fb.setSlowDown(decay);
+        fb.setRandomMovementScale(5.0E-4f, 0.001f, 5.0E-4f);
+        fb.setWind(5.0E-4);
+        addEffectWithDelay(fb, delay);
     }
     
     /**
-     * Create a line of sparkle particles.
+     * Create a line sparkle particle (1.12-faithful: fixed fade-in/out alpha, 3-keyframe scale).
      */
     public void drawLineSparkle(Random rand, double x, double y, double z, double x2, double y2, double z2, 
             float scale, float r, float g, float b, int delay, float decay, float grav, int baseAge) {
-        drawSimpleSparkle(rand, x, y, z, x2, y2, z2, scale, r, g, b, delay, decay, grav, baseAge);
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        boolean sp = rand.nextFloat() < 0.2;
+        FXGeneric fb = new FXGeneric(level, x, y, z, x2, y2, z2);
+        int age = baseAge * 4 + rand.nextInt(Math.max(1, baseAge));
+        fb.setMaxAge(age);
+        fb.setColor(r, g, b);
+        fb.setAlphaKeyframes(0.0f, 1.0f, 0.0f);
+        fb.setParticles(sp ? 320 : 512, 16, 1);
+        fb.setLoop(true);
+        fb.setGravity(grav);
+        fb.setScaleKeyframes(scale * 0.1f, scale * 2.0f * 0.1f, scale * 0.1f);
+        fb.setLayer(0);
+        fb.setSlowDown(decay);
+        fb.setRandomMovementScale(5.0E-5f, 0.0f, 5.0E-5f);
+        addEffectWithDelay(fb, delay);
     }
     
     // ==================== Block Mist/Fog ====================
     
+    /** 1.12-faithful: 8 mist puffs (sprite 56) with long alpha fade and wind. */
     public void drawBlockMistParticles(BlockPos p, int c) {
-        Level level = getWorld();
+        ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        for (int a = 0; a < 4; a++) {
-            double x = p.getX() + rand.nextFloat();
-            double y = p.getY() + rand.nextFloat();
-            double z = p.getZ() + rand.nextFloat();
-            level.addParticle(ParticleTypes.CLOUD, x, y, z, 0, 0.02, 0);
+        AABB bs = level.getBlockState(p).getShape(level, p).bounds().move(p);
+        Color color = new Color(c);
+        for (int a = 0; a < 8; ++a) {
+            double x = p.getX() + bs.minX + rand.nextFloat() * (bs.maxX - bs.minX);
+            double y = p.getY() + bs.minY + rand.nextFloat() * (bs.maxY - bs.minY);
+            double z = p.getZ() + bs.minZ + rand.nextFloat() * (bs.maxZ - bs.minZ);
+            FXGeneric fb = new FXGeneric(level, x, y, z, rand.nextGaussian() * 0.01, rand.nextFloat() * 0.075, rand.nextGaussian() * 0.01);
+            fb.setMaxAge(50 + rand.nextInt(25));
+            fb.setColor(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f);
+            fb.setAlphaKeyframes(0.0f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0.0f);
+            fb.setGridSize(16);
+            fb.setParticles(56, 1, 1);
+            fb.setScaleKeyframes(5.0f * 0.1f, 1.0f * 0.1f);
+            fb.setLayer(0);
+            fb.setSlowDown(1.0);
+            fb.setGravity(0.1f);
+            fb.setWind(0.001);
+            fb.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? -1.0f : 1.0f);
+            addParticle(fb);
         }
     }
     
+    /** 1.12-faithful: 6 flat mist puffs (grid 8, sprite 24) drifting along the ground. */
     public void drawBlockMistParticlesFlat(BlockPos p, int c) {
-        Level level = getWorld();
+        ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        for (int a = 0; a < 3; a++) {
+        Color color = new Color(c);
+        for (int a = 0; a < 6; ++a) {
             double x = p.getX() + rand.nextFloat();
-            double y = p.getY() + 0.1;
+            double y = p.getY() + rand.nextFloat() * 0.125f;
             double z = p.getZ() + rand.nextFloat();
-            level.addParticle(ParticleTypes.CLOUD, x, y, z, 0, 0.01, 0);
+            FXGeneric fb = new FXGeneric(level, x, y, z, (rand.nextFloat() - rand.nextFloat()) * 0.005, 0.005, (rand.nextFloat() - rand.nextFloat()) * 0.005);
+            fb.setMaxAge(400 + rand.nextInt(100));
+            fb.setColor(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f);
+            fb.setAlphaKeyframes(1.0f, 0.0f);
+            fb.setGridSize(8);
+            fb.setParticles(24, 1, 1);
+            fb.setScaleKeyframes(2.0f * 0.1f, 5.0f * 0.1f);
+            fb.setLayer(0);
+            fb.setSlowDown(1.0);
+            fb.setWind(0.001);
+            fb.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? -1.0f : 1.0f);
+            addParticle(fb);
         }
     }
     
+    /** 1.12-faithful: soft colored cloud for wand focus effects. */
     public void drawFocusCloudParticle(double x, double y, double z, double mx, double my, double mz, int c) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.CLOUD, x, y, z, mx, my, mz);
-        }
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        Color color = new Color(c);
+        FXGeneric fb = new FXGeneric(level, x, y, z, mx, my, mz);
+        fb.setMaxAge(20 + rand.nextInt(10));
+        fb.setColor(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f);
+        fb.setAlphaKeyframes(0.0f, 0.66f, 0.0f);
+        fb.setGridSize(16);
+        fb.setParticles(56 + rand.nextInt(4), 1, 1);
+        fb.setScaleKeyframes((5.0f + rand.nextFloat()) * 0.1f, (10.0f + rand.nextFloat()) * 0.1f);
+        fb.setLayer(0);
+        fb.setSlowDown(0.99);
+        fb.setWind(0.001);
+        fb.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? -0.25f : 0.25f);
+        addParticle(fb);
     }
     
     // ==================== Vis/Aura Effects ====================
     
     public void visSparkle(int x, int y, int z, int x2, int y2, int z2, int color) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            Color c = new Color(color);
-            FXVisSparkle particle = new FXVisSparkle(level, 
-                    x + rand.nextFloat(), y + rand.nextFloat(), z + rand.nextFloat(),
-                    x2 + 0.5, y2 + 0.5, z2 + 0.5);
-            particle.setColor(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f);
-            addParticle(particle);
-        }
-    }
-    
-    public void drawLevitatorParticles(double x, double y, double z, double x2, double y2, double z2) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.ENCHANT, x, y, z, x2, y2, z2);
-        }
-    }
-    
-    public void drawStabilizerParticles(double x, double y, double z, double x2, double y2, double z2, int life) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.PORTAL, x, y, z, x2, y2, z2);
-        }
-    }
-    
-    public void drawGolemFlyParticles(double x, double y, double z, double x2, double y2, double z2) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.ENCHANT, x, y, z, x2, y2, z2);
-        }
-    }
-    
-    public void drawPollutionParticles(BlockPos p) {
-        Level level = getWorld();
         if (level == null) return;
         
-        double x = p.getX() + 0.2 + rand.nextFloat() * 0.6;
-        double y = p.getY() + 0.2 + rand.nextFloat() * 0.6;
-        double z = p.getZ() + 0.2 + rand.nextFloat() * 0.6;
-        level.addParticle(ParticleTypes.WITCH, x, y, z, 0, 0.02, 0);
+        Color c = new Color(color);
+        FXVisSparkle particle = new FXVisSparkle(level,
+                x + rand.nextFloat(), y + rand.nextFloat(), z + rand.nextFloat(),
+                x2 + 0.4 + rand.nextFloat() * 0.2f, y2 + 0.4 + rand.nextFloat() * 0.2f, z2 + 0.4 + rand.nextFloat() * 0.2f);
+        particle.setColor(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f);
+        addParticle(particle);
+    }
+    
+    /** 1.12-faithful levitator dust (sprite 56, slow rising, long lifetime). */
+    public void drawLevitatorParticles(double x, double y, double z, double x2, double y2, double z2) {
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXGeneric fb = new FXGeneric(level, x, y, z, x2, y2, z2);
+        fb.setMaxAge(200 + rand.nextInt(100));
+        fb.setColor(0.5f, 0.5f, 0.2f);
+        fb.setAlphaKeyframes(0.3f, 0.0f);
+        fb.setGridSize(16);
+        fb.setParticles(56, 1, 1);
+        fb.setScaleKeyframes(2.0f * 0.1f, 5.0f * 0.1f);
+        fb.setLayer(0);
+        fb.setSlowDown(1.0);
+        fb.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? -1.0f : 1.0f);
+        addParticle(fb);
+    }
+    
+    /** 1.12-faithful stabilizer shimmer (sprite 72+, accelerating drift). */
+    public void drawStabilizerParticles(double x, double y, double z, double x2, double y2, double z2, int life) {
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXGeneric fb = new FXGeneric(level, x, y, z, x2, y2, z2);
+        fb.setMaxAge(life + rand.nextInt(Math.max(1, life)));
+        fb.setColor(0.5f, 0.2f, 0.5f);
+        fb.setAlphaKeyframes(0.3f, 0.0f);
+        fb.setGridSize(16);
+        fb.setParticles(72 + rand.nextInt(4), 1, 1);
+        fb.setScaleKeyframes(1.0f * 0.1f, 10.0f * 0.1f);
+        fb.setLayer(0);
+        fb.setSlowDown(1.01);
+        fb.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? -1.0f : 1.0f);
+        addParticle(fb);
+    }
+    
+    /** 1.12-faithful golem flight trail (3-keyframe expanding scale, sprite 56). */
+    public void drawGolemFlyParticles(double x, double y, double z, double x2, double y2, double z2) {
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        try {
+            FXGeneric fb = new FXGeneric(level, x, y, z, x2, y2, z2);
+            fb.setMaxAge(20 + rand.nextInt(5));
+            fb.setAlphaKeyframes(0.3f, 0.0f);
+            fb.setGridSize(16);
+            fb.setParticles(56, 1, 1);
+            fb.setScaleKeyframes(1.5f * 0.1f, 3.0f * 0.1f, 8.0f * 0.1f);
+            fb.setLayer(0);
+            fb.setSlowDown(1.0);
+            fb.setWind(0.001);
+            fb.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? -1.0f : 1.0f);
+            addParticle(fb);
+        } catch (Exception ex) {
+            // 1.12 wrapped this in a try/catch (world unload races) - keep that
+        }
+    }
+    
+    /** 1.12-faithful pollution motes (sprite 56, pink, layer 1). */
+    public void drawPollutionParticles(BlockPos p) {
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        float x = p.getX() + 0.2f + rand.nextFloat() * 0.6f;
+        float y = p.getY() + 0.2f + rand.nextFloat() * 0.6f;
+        float z = p.getZ() + 0.2f + rand.nextFloat() * 0.6f;
+        FXGeneric fb = new FXGeneric(level, x, y, z, (rand.nextFloat() - rand.nextFloat()) * 0.005, 0.02, (rand.nextFloat() - rand.nextFloat()) * 0.005);
+        fb.setMaxAge(100 + rand.nextInt(60));
+        fb.setColor(1.0f, 0.3f, 0.9f);
+        fb.setAlphaKeyframes(0.5f, 0.0f);
+        fb.setGridSize(16);
+        fb.setParticles(56, 1, 1);
+        fb.setScaleKeyframes(2.0f * 0.1f, 5.0f * 0.1f);
+        fb.setLayer(1);
+        fb.setSlowDown(1.0);
+        fb.setWind(0.001);
+        fb.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? -1.0f : 1.0f);
+        addParticle(fb);
     }
     
     // ==================== Essentia Effects ====================
     
     /**
-     * Create an essentia stream flowing from source to target.
-     * Uses FXEssentiaTrail for a flowing chain of particles.
+     * Create an essentia stream flowing from source to target
+     * (1.12-faithful: a single FXEssentiaStream particle; {@code count} is the stream's segment count).
      */
     public void essentiaTrailFx(BlockPos p1, BlockPos p2, int count, int color, float scale, int ext) {
         ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        // Spawn essentia trail particles
-        for (int i = 0; i < count; i++) {
-            double startX = p1.getX() + 0.5 + rand.nextGaussian() * 0.05;
-            double startY = p1.getY() + 0.5 + rand.nextGaussian() * 0.05;
-            double startZ = p1.getZ() + 0.5 + rand.nextGaussian() * 0.05;
-            
-            FXEssentiaTrail trail = new FXEssentiaTrail(level, startX, startY, startZ,
-                    p2.getX() + 0.5, p2.getY() + 0.5, p2.getZ() + 0.5,
-                    color, scale, ext);
-            addParticle(trail);
-        }
+        FXEssentiaStream fb = new FXEssentiaStream(level, p1.getX() + 0.5, p1.getY() + 0.5, p1.getZ() + 0.5,
+                p2.getX() + 0.5, p2.getY() + 0.5, p2.getZ() + 0.5, count, color, scale, ext, 0.0);
+        addParticle(fb);
     }
     
     /**
      * Create a small essentia drip/drop particle.
      */
+    /** 1.12-faithful: small colored essentia droplet (sprite 25, layer 1). */
     public void essentiaDropFx(double x, double y, double z, float r, float g, float b, float alpha) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            // Create a small colored drip particle
-            FXGeneric drop = new FXGeneric(level, x, y, z, 0, -0.02, 0);
-            drop.setColor(r, g, b);
-            drop.setAlphaF(alpha);
-            drop.setMaxAge(8 + rand.nextInt(4));
-            drop.setScale(0.3f + rand.nextFloat() * 0.2f);
-            drop.setParticles(144, 1, 1);  // Essentia blob sprite
-            drop.setGravity(0.1f);
-            addParticle(drop);
-        }
+        if (level == null) return;
+        
+        FXGeneric fb = new FXGeneric(level, x, y, z, rand.nextGaussian() * 0.005, rand.nextGaussian() * 0.005, rand.nextGaussian() * 0.005);
+        fb.setMaxAge(20 + rand.nextInt(10));
+        fb.setColor(r, g, b);
+        fb.setAlphaF(alpha);
+        fb.setLoop(false);
+        fb.setParticles(25, 1, 1);
+        fb.setScaleKeyframes((0.4f + rand.nextFloat() * 0.2f) * 0.1f, 0.2f * 0.1f);
+        fb.setLayer(1);
+        fb.setGravity(0.01f);
+        fb.setRotationSpeed(0.0f);
+        addParticle(fb);
     }
     
+    /** 1.12-faithful: FXVent with 0.4 alpha. */
     public void drawVentParticles(double x, double y, double z, double x2, double y2, double z2, int color) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            FXVent vent = new FXVent(level, x, y, z, x2, y2, z2, color);
-            addParticle(vent);
-        }
+        if (level == null) return;
+        
+        FXVent fb = new FXVent(level, x, y, z, x2, y2, z2, color);
+        fb.setAlphaF(0.4f);
+        addParticle(fb);
     }
     
+    /** 1.12-faithful: FXVent with 0.4 alpha + scale. */
     public void drawVentParticles(double x, double y, double z, double x2, double y2, double z2, int color, float scale) {
         ClientLevel level = getClientLevel();
-        if (level != null) {
-            FXVent vent = new FXVent(level, x, y, z, x2, y2, z2, color);
-            vent.setScale(scale);
-            addParticle(vent);
-        }
+        if (level == null) return;
+        
+        FXVent fb = new FXVent(level, x, y, z, x2, y2, z2, color);
+        fb.setAlphaF(0.4f);
+        fb.setScale(scale);
+        addParticle(fb);
     }
     
+    /** 1.12-faithful: FXVent2 + 33% chance of a bonus orange spark. */
     public void drawVentParticles2(double x, double y, double z, double x2, double y2, double z2, int color, float scale) {
-        drawVentParticles(x, y, z, x2, y2, z2, color, scale);
-    }
-    
-    public void jarSplashFx(double x, double y, double z) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.SPLASH, x, y, z, 0, 0.1, 0);
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXVent2 fb = new FXVent2(level, x, y, z, x2, y2, z2, color);
+        fb.setAlphaF(0.4f);
+        fb.setScale(scale);
+        addParticle(fb);
+        
+        if (rand.nextInt(6) < 2) {
+            drawGenericParticles(x, y, z, x2 / 2.0, y2 / 2.0, z2 / 2.0, 1.0f, 0.7f, 0.2f, 0.9f, true, 320, 16, 1, 10 + rand.nextInt(4), 0, 0.25f + rand.nextFloat() * 0.1f, 0.0f, 0);
         }
     }
     
+    /** 1.12-faithful: dark-green droplet (sprite 73, layer 1, strong gravity). */
+    public void jarSplashFx(double x, double y, double z) {
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXGeneric fb = new FXGeneric(level, x + rand.nextGaussian() * 0.075, y, z + rand.nextGaussian() * 0.075,
+                rand.nextGaussian() * 0.015, 0.075f + rand.nextFloat() * 0.05f, rand.nextGaussian() * 0.015);
+        fb.setMaxAge(20 + rand.nextInt(10));
+        Color c = new Color(2650102);
+        fb.setColor(c.getRed() / 255.0f, c.getGreen() / 255.0f, c.getBlue() / 255.0f);
+        fb.setAlphaF(0.5f);
+        fb.setLoop(false);
+        fb.setParticles(73, 1, 1);
+        fb.setScaleKeyframes((0.4f + rand.nextFloat() * 0.3f) * 0.1f, 0.0f);
+        fb.setLayer(1);
+        fb.setGravity(0.3f);
+        fb.setRotationSpeed(0.0f);
+        addParticle(fb);
+    }
+    
+    /** 1.12-faithful: water is the same stream particle, source offset +0.66 on Y, extend 0. */
     public void waterTrailFx(BlockPos p1, BlockPos p2, int count, int color, float scale) {
-        essentiaTrailFx(p1, p2, count, color, scale, 0);
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXEssentiaStream fb = new FXEssentiaStream(level, p1.getX() + 0.5, p1.getY() + 0.66, p1.getZ() + 0.5,
+                p2.getX() + 0.5, p2.getY() + 0.5, p2.getZ() + 0.5, count, color, scale, 0, 0.2);
+        addParticle(fb);
     }
     
     // ==================== Infusion Effects ====================
     
+    /**
+     * Create infusion particles flowing from an item ingredient to the matrix (1.12-faithful).
+     */
     public void drawInfusionParticles1(double x, double y, double z, BlockPos pos, ItemStack stack) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.ENCHANT, x, y, z, 
-                    (pos.getX() + 0.5 - x) * 0.1, (pos.getY() - 0.5 - y) * 0.1, (pos.getZ() + 0.5 - z) * 0.1);
-        }
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXBoreParticles particle = new FXBoreParticles(level, x, y, z, pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5, rand.nextGaussian() * 0.03, rand.nextGaussian() * 0.03, rand.nextGaussian() * 0.03, stack);
+        particle.setAlphaF(0.3f);
+        addParticle(particle);
     }
     
+    /**
+     * Create infusion particles from a problem block (1.12-faithful).
+     */
     public void drawInfusionParticles2(double x, double y, double z, BlockPos pos, BlockState state, int md) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.ENCHANT, x, y, z, 
-                    (pos.getX() + 0.5 - x) * 0.1, (pos.getY() - 0.5 - y) * 0.1, (pos.getZ() + 0.5 - z) * 0.1);
-        }
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXBoreParticles particle = new FXBoreParticles(level, x, y, z, pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5, state, md);
+        particle.setAlphaF(0.3f);
+        addParticle(particle);
     }
     
+    /**
+     * Create infusion particles at the center of the matrix (1.12-faithful: purple sparkle).
+     */
     public void drawInfusionParticles3(double x, double y, double z, int x2, int y2, int z2) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.ENCHANTED_HIT, x, y, z, 0, 0, 0);
-        }
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXBoreSparkle particle = new FXBoreSparkle(level, x, y, z, x2 + 0.5, y2 - 0.5, z2 + 0.5);
+        particle.setColor(0.4f + rand.nextFloat() * 0.2f, 0.2f, 0.6f + rand.nextFloat() * 0.3f);
+        addParticle(particle);
     }
     
+    /**
+     * Create infusion particles at a pillar location (1.12-faithful: blue sparkle).
+     */
     public void drawInfusionParticles4(double x, double y, double z, int x2, int y2, int z2) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.HAPPY_VILLAGER, x, y, z, 0, 0, 0);
-        }
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXBoreSparkle particle = new FXBoreSparkle(level, x, y, z, x2 + 0.5, y2 - 0.5, z2 + 0.5);
+        particle.setColor(0.2f, 0.6f + rand.nextFloat() * 0.3f, 0.3f);
+        addParticle(particle);
     }
     
     // ==================== Arc/Lightning ====================
@@ -688,7 +975,7 @@ public class FXDispatcher {
     public void arcLightning(double x, double y, double z, double tx, double ty, double tz, float r, float g, float b, float h) {
         ClientLevel level = getClientLevel();
         if (level != null) {
-            FXArc arc = new FXArc(level, x, y, z, tx, ty, tz, r, g, b, h);
+            FXArc arc = new FXArc(level, x, y, z, tx, ty, tz, r, g, b, h <= 0.0f ? 0.1f : h);
             addParticle(arc);
         }
     }
@@ -799,42 +1086,55 @@ public class FXDispatcher {
     
     // ==================== Misc Effects ====================
     
+    /** 1.12-faithful burst (sprite 208, 31 particles, age 31) at an arbitrary point. */
     public void burst(double sx, double sy, double sz, float size) {
-        Level level = getWorld();
+        ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        for (int i = 0; i < 10; i++) {
-            level.addParticle(ParticleTypes.POOF, sx, sy, sz, 
-                    rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1);
+        FXGeneric fb = new FXGeneric(level, sx, sy, sz, 0.0, 0.0, 0.0);
+        fb.setGridSize(16);
+        fb.setParticles(208, 31, 1);
+        fb.setMaxAge(31);
+        fb.setScale(size * 0.1f);
+        addParticle(fb);
+    }
+    
+    /** 1.12-faithful: client crack overlay for the given entity. */
+    public void excavateFX(BlockPos pos, LivingEntity p, int progress) {
+        ClientLevel level = getClientLevel();
+        if (level != null) {
+            level.destroyBlockProgress(p.getId(), pos, progress);
         }
     }
     
-    public void excavateFX(BlockPos pos, LivingEntity p, int progress) {
-        // Block breaking animation is handled by vanilla
-    }
-    
+    /** 1.12-faithful: runes centered on the given block (offset +0.5 applied here). */
     public void blockRunes(double x, double y, double z, float r, float g, float b, int dur, float grav) {
         ClientLevel level = getClientLevel();
         if (level != null) {
-            FXBlockRunes runes = new FXBlockRunes(level, x, y, z, r, g, b, dur);
+            FXBlockRunes runes = new FXBlockRunes(level, x + 0.5, y + 0.5, z + 0.5, r, g, b, dur);
             runes.setGravity(grav);
             addParticle(runes);
         }
     }
     
+    /** 1.12-faithful: like blockRunes but with a random scale around 0.5. */
     public void blockRunes2(double x, double y, double z, float r, float g, float b, int dur, float grav) {
-        blockRunes(x, y, z, r, g, b, dur, grav);
+        ClientLevel level = getClientLevel();
+        if (level != null) {
+            FXBlockRunes runes = new FXBlockRunes(level, x + 0.5, y + 0.5, z + 0.5, r, g, b, dur);
+            runes.setGravity(grav);
+            runes.setScale(0.5f + (float) rand.nextGaussian() * 0.1f);
+            runes.setOffsetX(0);
+            addParticle(runes);
+        }
     }
     
+    /** 1.12-faithful: position-based shield runes above the pedestal (no entity target). */
     public void drawPedestalShield(BlockPos pos) {
-        Level level = getWorld();
+        ClientLevel level = getClientLevel();
         if (level != null) {
-            for (int i = 0; i < 8; i++) {
-                double angle = i * Math.PI / 4;
-                double x = pos.getX() + 0.5 + Math.cos(angle) * 0.5;
-                double z = pos.getZ() + 0.5 + Math.sin(angle) * 0.5;
-                level.addParticle(ParticleTypes.ENCHANT, x, pos.getY() + 1, z, 0, 0.1, 0);
-            }
+            FXShieldRunes fb = new FXShieldRunes(level, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 8);
+            addParticle(fb);
         }
     }
     
@@ -887,62 +1187,94 @@ public class FXDispatcher {
         addParticle(wisp);
     }
     
+    /** 1.12-faithful: single FXVoidStream. */
     public void voidStreak(double x, double y, double z, double x2, double y2, double z2, int seed, float scale) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.PORTAL, x, y, z, x2 - x, y2 - y, z2 - z);
-        }
-    }
-    
-    public void furnaceLavaFx(int x, int y, int z, int facingX, int facingZ) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.LAVA, 
-                    x + 0.5 + facingX * 0.6, y + 0.3, z + 0.5 + facingZ * 0.6, 0, 0, 0);
-        }
-    }
-    
-    public void bottleTaintBreak(double x, double y, double z) {
-        Level level = getWorld();
-        if (level == null) return;
-        
-        for (int i = 0; i < 8; i++) {
-            level.addParticle(ParticleTypes.WITCH, x, y, z, 
-                    rand.nextGaussian() * 0.15, rand.nextDouble() * 0.2, rand.nextGaussian() * 0.15);
-        }
-        level.playLocalSound(x, y, z, SoundEvents.SPLASH_POTION_BREAK, SoundSource.NEUTRAL, 
-                1.0f, rand.nextFloat() * 0.1f + 0.9f, false);
-    }
-    
-    public void cultistSpawn(double x, double y, double z, double a, double b, double c) {
-        Level level = getWorld();
-        if (level != null) {
-            for (int i = 0; i < 5; i++) {
-                level.addParticle(ParticleTypes.FLAME, x, y, z, a, b, c);
-            }
-        }
-    }
-    
-    public void pechsCurseTick(double posX, double posY, double posZ) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.WITCH, posX, posY, posZ, 0, 0, 0);
-        }
-    }
-    
-    public void wispFXEG(double posX, double posY, double posZ, Entity target) {
         ClientLevel level = getClientLevel();
         if (level != null) {
-            FXWisp particle = new FXWisp(level, posX, posY, posZ, target);
+            FXVoidStream particle = new FXVoidStream(level, x, y, z, x2, y2, z2, seed, scale);
             addParticle(particle);
         }
     }
     
-    public void drawSlash(double x, double y, double z, double x2, double y2, double z2, int dur) {
+    /** 1.12-faithful: single lava particle pushed out along the facing. */
+    public void furnaceLavaFx(int x, int y, int z, int facingX, int facingZ) {
         Level level = getWorld();
         if (level != null) {
-            level.addParticle(ParticleTypes.SWEEP_ATTACK, (x + x2) / 2, (y + y2) / 2, (z + z2) / 2, 0, 0, 0);
+            float qx = (facingX == 0) ? (rand.nextFloat() - rand.nextFloat()) * 0.5f : facingX * rand.nextFloat();
+            float qz = (facingZ == 0) ? (rand.nextFloat() - rand.nextFloat()) * 0.5f : facingZ * rand.nextFloat();
+            level.addParticle(ParticleTypes.LAVA,
+                    x + 0.5f + (rand.nextFloat() - rand.nextFloat()) * 0.3f + facingX * 1.0f, y + 0.3f, z + 0.5f + (rand.nextFloat() - rand.nextFloat()) * 0.3f + facingZ * 1.0f,
+                    0.15f * qx, 0.2f * rand.nextFloat(), 0.15f * qz);
         }
+    }
+    
+    /** 1.12-faithful: 8 taint-bottle item-crack particles + break sound. */
+    public void bottleTaintBreak(double x, double y, double z) {
+        Level level = getWorld();
+        if (level == null) return;
+        
+        for (int a = 0; a < 8; a++) {
+            level.addParticle(new ItemParticleOption(ParticleTypes.ITEM, ModItems.BOTTLE_TAINT.get()),
+                    x, y, z,
+                    (float) rand.nextGaussian() * 0.15f, (float) rand.nextDouble() * 0.2f, (float) rand.nextGaussian() * 0.15f);
+        }
+        level.playLocalSound(x, y, z, SoundEvents.SPLASH_POTION_BREAK, SoundSource.NEUTRAL,
+                1.0f, rand.nextFloat() * 0.1f + 0.9f, false);
+    }
+    
+    /** 1.12-faithful: white-to-red FXGeneric (sprite 160, 6 frames, layer 1). */
+    public void cultistSpawn(double x, double y, double z, double a, double b, double c) {
+        ClientLevel level = getClientLevel();
+        if (level != null) {
+            FXGeneric fb = new FXGeneric(level, x, y, z, a, b, c);
+            fb.setMaxAge(10 + rand.nextInt(10));
+            fb.setColorRange(1.0f, 1.0f, 1.0f, 0.6f, 0.0f, 0.0f);
+            fb.setAlphaF(0.8f);
+            fb.setGridSize(16);
+            fb.setParticles(160, 6, 1);
+            fb.setScale((3.0f + rand.nextFloat() * 2.0f) * 0.1f);
+            fb.setLayer(1);
+            addParticle(fb);
+        }
+    }
+    
+    /** 1.12-faithful: angled FXGeneric (grid 8, sprite 28) + wispy motes. */
+    public void pechsCurseTick(double posX, double posY, double posZ) {
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXGeneric fb = new FXGeneric(level, posX, posY, posZ, 0.0, 0.0, 0.0);
+        fb.setAngles(90.0f * (float) rand.nextGaussian(), 90.0f * (float) rand.nextGaussian());
+        fb.setMaxAge(50 + rand.nextInt(50));
+        fb.setColorRange(0.9f, 0.1f, 0.5f, 0.1f + rand.nextFloat() * 0.1f, 0.0f, 0.5f + rand.nextFloat() * 0.1f);
+        fb.setAlphaKeyframes(0.75f, 0.0f);
+        fb.setGridSize(8);
+        fb.setParticles(28 + rand.nextInt(4), 1, 1);
+        fb.setScaleKeyframes(3.0f * 0.1f, (5.0f + rand.nextFloat() * 2.0f) * 0.1f);
+        fb.setLayer(0);
+        fb.setRotationSpeedWithStart(rand.nextFloat(), rand.nextBoolean() ? (-3.0f - rand.nextFloat() * 3.0f) : (3.0f + rand.nextFloat() * 3.0f));
+        addParticle(fb);
+        
+        drawWispyMotes(posX, posY, posZ, 0.0, 0.0, 0.0, 10 + rand.nextInt(10), -0.01f);
+    }
+    
+    /** 1.12-faithful: two homing wisps. */
+    public void wispFXEG(double posX, double posY, double posZ, Entity target) {
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        for (int a = 0; a < 2; a++) {
+            addParticle(new FXWisp(level, posX, posY, posZ, target));
+        }
+    }
+    
+    /** 1.12-faithful: single FXPlane slash between the two points. */
+    public void drawSlash(double x, double y, double z, double x2, double y2, double z2, int dur) {
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        FXPlane particle = new FXPlane(level, x, y, z, x2, y2, z2, dur);
+        addParticle(particle);
     }
     
     /**
@@ -960,10 +1292,12 @@ public class FXDispatcher {
                         x + rand.nextFloat(), y + rand.nextFloat(), z + rand.nextFloat(), e);
                 addParticle(sparkle);
             } else {
-                // Use vanilla enchant particle as fallback for block debris
-                level.addParticle(ParticleTypes.ENCHANT, 
+                // Block debris heading to the entity (1.12-faithful)
+                FXBoreParticles fb = new FXBoreParticles(level, 
                         x + rand.nextFloat(), y + rand.nextFloat(), z + rand.nextFloat(),
-                        (e.getX() - x) * 0.1, (e.getY() - y) * 0.1, (e.getZ() - z) * 0.1);
+                        e.getX(), e.getY(), e.getZ(), bi, md);
+                fb.setTarget(e);
+                addParticle(fb);
             }
         }
     }
@@ -983,100 +1317,105 @@ public class FXDispatcher {
         }
     }
     
+    /** 1.12-faithful: single FXBoreStream from the block toward the entity. */
     public void boreTrailFx(BlockPos p1, Entity e, int count, int color, float scale, int ext) {
-        Level level = getWorld();
+        ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        level.addParticle(ParticleTypes.ENCHANT, 
-                p1.getX() + 0.5, p1.getY() + 0.5, p1.getZ() + 0.5,
-                (e.getX() - p1.getX()) * 0.1, (e.getY() - p1.getY()) * 0.1, (e.getZ() - p1.getZ()) * 0.1);
+        FXBoreStream particle = new FXBoreStream(level, p1.getX() + 0.5, p1.getY() + 0.5, p1.getZ() + 0.5,
+                e.getX(), e.getY(), e.getZ(), scale);
+        addParticle(particle);
     }
     
     // ==================== Entity Effects ====================
     
+    /** 1.12-faithful: slime-ball breaking-fade splash in a random direction. */
     public void splooshFX(Entity e) {
-        Level level = getWorld();
-        if (level != null) {
-            level.addParticle(ParticleTypes.WITCH, e.getX(), e.getY() + e.getBbHeight() / 2, e.getZ(), 
-                    rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1, rand.nextGaussian() * 0.1);
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        float f = (float) (rand.nextFloat() * Math.PI * 2.0);
+        float f2 = 0.5f + rand.nextFloat() * 0.5f;
+        float f3 = (float) (Math.sin(f) * f2);
+        float f4 = (float) (Math.cos(f) * f2);
+        FXBreakingFade fb = new FXBreakingFade(level, e.getX() + f3, e.getY() + rand.nextFloat() * e.getBbHeight(), e.getZ() + f4, Items.SLIME_BALL, 0);
+        if (rand.nextBoolean()) {
+            fb.setRGB(0.6f, 0.0f, 0.3f);
+            fb.setAlphaF(0.4f);
+        } else {
+            fb.setRGB(0.3f, 0.0f, 0.3f);
+            fb.setAlphaF(0.6f);
         }
+        fb.setParticleMaxAge((int) (66 / (rand.nextFloat() * 0.9f + 0.1f)));
+        addParticle(fb);
     }
     
-    /**
-     * Create explosion of taint particles from an entity.
-     */
+    /** 1.12-faithful: slime-ball breaking-fade at the entity position. */
     public void taintsplosionFX(Entity e) {
         ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        for (int i = 0; i < 8; i++) {
-            double px = e.getX() + rand.nextGaussian() * 0.3;
-            double py = e.getY() + rand.nextFloat() * e.getBbHeight();
-            double pz = e.getZ() + rand.nextGaussian() * 0.3;
-            
-            FXTaintParticle particle = new FXTaintParticle(level, px, py, pz,
-                    rand.nextGaussian() * 0.15, rand.nextGaussian() * 0.15, rand.nextGaussian() * 0.15,
-                    0.5f + rand.nextFloat() * 0.5f);
-            addParticle(particle);
+        FXBreakingFade fb = new FXBreakingFade(level, e.getX(), e.getY(), e.getZ(), Items.SLIME_BALL, 0);
+        if (rand.nextBoolean()) {
+            fb.setRGB(0.6f, 0.0f, 0.3f);
+            fb.setAlphaF(0.4f);
+        } else {
+            fb.setRGB(0.3f, 0.0f, 0.3f);
+            fb.setAlphaF(0.6f);
         }
+        fb.setParticleMaxAge((int) (66 / (rand.nextFloat() * 0.9f + 0.1f)));
+        addParticle(fb);
     }
     
-    /**
-     * Create taint particles rising when tentacle emerges.
-     */
+    /** 1.12-faithful: same breaking-fade pattern as taintsplosion. */
     public void tentacleAriseFX(Entity e) {
         ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        int count = (int)(3 * e.getBbHeight());
-        for (int i = 0; i < count; i++) {
-            double px = e.getX() + rand.nextGaussian() * 0.3;
-            double py = e.getY() + rand.nextFloat() * 0.3;
-            double pz = e.getZ() + rand.nextGaussian() * 0.3;
-            
-            FXTaintParticle particle = new FXTaintParticle(level, px, py, pz,
-                    rand.nextGaussian() * 0.02, 0.05 + rand.nextFloat() * 0.05, rand.nextGaussian() * 0.02,
-                    0.4f + rand.nextFloat() * 0.3f);
-            addParticle(particle);
+        FXBreakingFade fb = new FXBreakingFade(level, e.getX(), e.getY(), e.getZ(), Items.SLIME_BALL, 0);
+        if (rand.nextBoolean()) {
+            fb.setRGB(0.6f, 0.0f, 0.3f);
+            fb.setAlphaF(0.4f);
+        } else {
+            fb.setRGB(0.3f, 0.0f, 0.3f);
+            fb.setAlphaF(0.6f);
         }
+        fb.setParticleMaxAge((int) (66 / (rand.nextFloat() * 0.9f + 0.1f)));
+        addParticle(fb);
     }
     
-    /**
-     * Create taint splash when slime jumps.
-     */
+    /** 1.12-faithful: same breaking-fade pattern as taintsplosion. */
     public void slimeJumpFX(Entity e, int size) {
         ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        int count = 2 + size;
-        for (int i = 0; i < count; i++) {
-            double px = e.getX() + rand.nextGaussian() * 0.2 * size;
-            double py = e.getY() + e.getBbHeight() / 2;
-            double pz = e.getZ() + rand.nextGaussian() * 0.2 * size;
-            
-            FXTaintParticle particle = new FXTaintParticle(level, px, py, pz,
-                    rand.nextGaussian() * 0.05, 0.05 + rand.nextFloat() * 0.05, rand.nextGaussian() * 0.05,
-                    0.3f + rand.nextFloat() * 0.2f * size);
-            addParticle(particle);
+        FXBreakingFade fb = new FXBreakingFade(level, e.getX(), e.getY(), e.getZ(), Items.SLIME_BALL, 0);
+        if (rand.nextBoolean()) {
+            fb.setRGB(0.6f, 0.0f, 0.3f);
+            fb.setAlphaF(0.4f);
+        } else {
+            fb.setRGB(0.3f, 0.0f, 0.3f);
+            fb.setAlphaF(0.6f);
         }
+        fb.setParticleMaxAge((int) (66 / (rand.nextFloat() * 0.9f + 0.1f)));
+        addParticle(fb);
     }
     
-    /**
-     * Create taint splatter when entity lands.
-     */
+    /** 1.12-faithful: same breaking-fade pattern as taintsplosion. */
     public void taintLandFX(Entity e) {
         ClientLevel level = getClientLevel();
         if (level == null) return;
         
-        for (int i = 0; i < 4; i++) {
-            double angle = rand.nextFloat() * Math.PI * 2;
-            double speed = 0.05 + rand.nextFloat() * 0.05;
-            
-            FXTaintParticle particle = new FXTaintParticle(level, e.getX(), e.getY() + 0.1, e.getZ(),
-                    Math.cos(angle) * speed, 0.02, Math.sin(angle) * speed,
-                    0.3f + rand.nextFloat() * 0.2f);
-            addParticle(particle);
+        FXBreakingFade fb = new FXBreakingFade(level, e.getX(), e.getY() + 0.1, e.getZ(), Items.SLIME_BALL, 0);
+        if (rand.nextBoolean()) {
+            fb.setRGB(0.6f, 0.0f, 0.3f);
+            fb.setAlphaF(0.4f);
+        } else {
+            fb.setRGB(0.3f, 0.0f, 0.3f);
+            fb.setAlphaF(0.6f);
         }
+        fb.setParticleMaxAge((int) (66 / (rand.nextFloat() * 0.9f + 0.1f)));
+        addParticle(fb);
     }
     
     /**
@@ -1110,7 +1449,7 @@ public class FXDispatcher {
     // ==================== Nitor Effects ====================
     
     /**
-     * Draw the white core glow of a Nitor flame.
+     * Draw the white core glow of a Nitor flame (1.12-faithful: 3-keyframe scale pulse).
      */
     public void drawNitorCore(double x, double y, double z, double vx, double vy, double vz) {
         ClientLevel level = getClientLevel();
@@ -1120,7 +1459,7 @@ public class FXDispatcher {
             particle.setColor(1.0f, 1.0f, 1.0f);
             particle.setAlphaF(1.0f);
             particle.setParticles(457, 1, 1);  // Bright glow particle
-            particle.setScale(1.0f + (float)rand.nextGaussian() * 0.1f);
+            particle.setScaleKeyframes(1.0f * 0.1f, (1.0f + (float) rand.nextGaussian() * 0.1f) * 0.1f, 1.0f * 0.1f);
             particle.setLayer(1);
             particle.setRandomMovementScale(0.0002f, 0.0002f, 0.0002f);
             addParticle(particle);
@@ -1141,36 +1480,95 @@ public class FXDispatcher {
             particle.setLoop(true);
             particle.setGridSize(64);
             particle.setParticles(264, 8, 1);  // Flame animation
-            particle.setScale(3.0f + rand.nextFloat());
+            particle.setScaleKeyframes((3.0f + rand.nextFloat()) * 0.1f, 0.05f * 0.1f);
             particle.setRandomMovementScale(0.0025f, 0.0f, 0.0025f);
-            // Delay is not currently supported by FXGeneric - particle spawns immediately
-            addParticle(particle);
+            particle.setFlipped(rand.nextBoolean());
+            addEffectWithDelay(particle, delay);
         }
     }
     
     // ==================== GUI Effects ====================
     
+    /**
+     * 1.12-faithful GUI sparkle: an FXGenericGui billboard at z=0 between the two points
+     * (used by in-screen effects, e.g. the Thaumonomicon research pages).
+     */
     public void drawSimpleSparkleGui(Random rand, double x, double y, double x2, double y2, 
             float scale, float r, float g, float b, int delay, float decay, float grav) {
-        // GUI particles need special handling - stub for now
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        boolean sp = rand.nextFloat() < 0.2;
+        FXGenericGui fb = new FXGenericGui(level, x, y, 0.0, x2, y2, 0.0);
+        int age = 32 + rand.nextInt(8);
+        fb.setMaxAge(age);
+        fb.setColor(r, g, b);
+        fb.setAlphaKeyframes(0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+        fb.setParticles(sp ? 320 : 512, 16, 1);
+        fb.setLoop(true);
+        fb.setGravity(grav);
+        fb.setScaleKeyframes(scale * 0.1f, scale * 2.0f * 0.1f);
+        fb.setNoClip(true); // 1.12 setNoClip(false) = no collision (inverted semantics in the port)
+        fb.setLayer(4);
+        fb.setSlowDown(decay);
+        fb.setRandomMovementScale(0.025f, 0.025f, 0.0f);
+        addEffectWithDelay(fb, delay);
     }
     
     /**
-     * GenPart - Generic particle configuration class.
+     * 1.12-faithful: entity-following wispy motes (sprite 512, 16 frames).
+     */
+    public void drawWispyMotesEntity(ClientLevel level, double x, double y, double z, Entity entity, float r, float g, float b) {
+        if (level == null) return;
+        
+        FXGenericP2E fb = new FXGenericP2E(level, x, y, z, entity);
+        fb.setColor(r, g, b);
+        fb.setAlphaF(0.6f);
+        fb.setParticles(512, 16, 1);
+        fb.setLoop(true);
+        fb.setWind(0.001);
+        fb.setRandomMovementScale(0.0025f, 0.0f, 0.0025f);
+        addParticle(fb);
+    }
+    
+    /**
+     * 1.12-faithful: nitor-flame-style wisps (grid 64, sprite 264, 8 frames, looped, delayed).
+     */
+    public void drawWispParticles(double x, double y, double z, double vx, double vy, double vz, int color, int delay) {
+        ClientLevel level = getClientLevel();
+        if (level == null) return;
+        
+        Color c = new Color(color);
+        FXGeneric fb = new FXGeneric(level, x, y, z, vx, vy, vz);
+        fb.setMaxAge(10 + rand.nextInt(5));
+        fb.setColor(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f);
+        fb.setAlphaF(0.5f);
+        fb.setLoop(true);
+        fb.setGridSize(64);
+        fb.setParticles(264, 8, 1);
+        fb.setScaleKeyframes((1.0f + rand.nextFloat() * 0.25f) * 0.1f, 0.05f * 0.1f);
+        fb.setWind(0.00025);
+        fb.setRandomMovementScale(0.0025f, 0.0f, 0.0025f);
+        addEffectWithDelay(fb, delay);
+    }
+    
+    /**
+     * GenPart - Generic particle configuration (1.12 field-for-field compatible).
      */
     public static class GenPart {
-        public int age = 20;
-        public float redStart = 1f, greenStart = 1f, blueStart = 1f;
-        public float redEnd = 1f, greenEnd = 1f, blueEnd = 1f;
-        public float alpha = 1f;
+        public int grid = 64;
+        public int age = 0;
+        public float redStart = 1.0f, greenStart = 1.0f, blueStart = 1.0f;
+        public float redEnd = 1.0f, greenEnd = 1.0f, blueEnd = 1.0f;
+        public float[] alpha = new float[]{1.0f};
+        public float[] scale = new float[]{1.0f};
+        public float rot = 0.0f;
+        public float rotstart = 0.0f;
         public boolean loop = false;
         public int partStart = 0, partNum = 1, partInc = 1;
-        public float scale = 1f;
         public int layer = 0;
-        public float rotstart = 0f, rot = 0f;
-        public double slowDown = 1.0;
-        public float grav = 0f;
-        public int grid = 8;
+        public double slowDown = 0.98;
+        public float grav = 0.0f;
         public int delay = 0;
     }
 }

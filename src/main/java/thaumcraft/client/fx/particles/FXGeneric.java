@@ -1,10 +1,15 @@
 package thaumcraft.client.fx.particles;
 
+import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.joml.Quaternionf;
 
 /**
  * FXGeneric - The most commonly used particle type in Thaumcraft.
@@ -237,12 +242,54 @@ public class FXGeneric extends ThaumcraftParticle {
 
     @Override
     protected float getU0() {
-        return (float) spriteIndexX / (float) gridSize;
+        float u0 = (float) spriteIndexX / (float) gridSize;      // left edge of sprite
+        float u1 = ((float) spriteIndexX + 1.0f) / (float) gridSize; // right edge of sprite
+        // 1.12 default (flipped=false) renders X-mirrored: the -x corner gets the RIGHT
+        // edge (tx2) and the +x corner the LEFT edge (tx1). 26.3's renderRotatedQuad maps
+        // -x -> getU0() and +x -> getU1(), so the compensation is: unflipped returns the
+        // mirrored pair; setFlipped(true) restores the vanilla (unmirrored) orientation.
+        return flipped ? u0 : u1;
     }
 
     @Override
     protected float getU1() {
-        return ((float) spriteIndexX + 1.0f) / (float) gridSize;
+        float u0 = (float) spriteIndexX / (float) gridSize;
+        float u1 = ((float) spriteIndexX + 1.0f) / (float) gridSize;
+        return flipped ? u1 : u0;
+    }
+
+    /**
+     * 1.12-faithful angled rendering: when {@link #setAngles} has been called, the quad is
+     * rendered with a fixed world-space orientation (yaw/pitch) plus spin instead of the
+     * camera-facing billboard. 1.12 did this with GL fixed-function transforms
+     * (glRotatef(-yaw+90, Y) then glRotatef(pitch+90, X) then glRotated(roll, Z)); the 26.3
+     * render-state pipeline stores a per-particle quaternion, so we build the equivalent
+     * quaternion here and feed the quad through the same {@code state.add} path.
+     */
+    @Override
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTick) {
+        if (!angled) {
+            super.extract(state, camera, partialTick);
+            return;
+        }
+        // joml 1.10.x: rotateX/Y/Z take radians and post-multiply (same order as GL's matrix stack)
+        // 1.12 applied these rotations in VIEW space (modelview = camera view matrix).
+        // The 26.3 render state rotates in WORLD space, so start from the camera's
+        // camera->world rotation and post-multiply: q_world = R_cam * Ry * Rx * Rz.
+        Quaternionf q = new Quaternionf(camera.rotation());
+        q.rotateY((float) Math.toRadians(-angleYaw + 90.0f));
+        q.rotateX((float) Math.toRadians(anglePitch + 90.0f));
+        float rollAngle = Mth.lerp(partialTick, oRoll, roll);
+        if (rollAngle != 0.0f) {
+            q.rotateZ(rollAngle);
+        }
+        Vec3 cam = camera.position();
+        float px = (float) (Mth.lerp(partialTick, xo, x) - cam.x());
+        float py = (float) (Mth.lerp(partialTick, yo, y) - cam.y());
+        float pz = (float) (Mth.lerp(partialTick, zo, z) - cam.z());
+        state.add(getLayer(), px, py, pz, q.x(), q.y(), q.z(), q.w(),
+                getQuadSize(partialTick), getU0(), getU1(), getV0(), getV1(),
+                ARGB.colorFromFloat(alpha, rCol, gCol, bCol), getLightCoords(partialTick));
     }
 
     @Override
@@ -367,12 +414,15 @@ public class FXGeneric extends ThaumcraftParticle {
         this.randomZ = z;
     }
 
-    public void setWindStrength(double windStrength) {
-        // Simple wind calculation based on moon phase
+    /**
+     * 1.12-faithful {@code setWind(d)}: wind vector has magnitude 0.1 (per-tick displacement
+     * {@code 0.1 * d}) and its direction rotates with the moon phase.
+     */
+    public void setWind(double d) {
         int m = (int) ((this.level.getOverworldClockTime() / 24000L) % 8);
         double angle = m * (40 + this.random.nextInt(10)) / 180.0f * Math.PI;
-        this.windX = Math.cos(angle) * windStrength;
-        this.windZ = Math.sin(angle) * windStrength;
+        this.windX = 0.1 * Math.cos(angle) * d;
+        this.windZ = -0.1 * Math.sin(angle) * d;
     }
 
     public void setWind(double windX, double windZ) {

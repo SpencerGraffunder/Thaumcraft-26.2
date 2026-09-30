@@ -142,6 +142,10 @@ public class FXBoreParticles extends ThaumcraftParticle {
         return this;
     }
     
+    public void setAlphaF(float alpha) {
+        this.alpha = alpha;
+    }
+    
     public FXBoreParticles getObjectColor(BlockPos pos) {
         if (this.blockState != null) {
             try {

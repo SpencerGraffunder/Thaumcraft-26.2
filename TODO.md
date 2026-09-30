@@ -4,6 +4,83 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-09-30 — Full FX/animation audit vs 1.12 — ALL stubs fixed (todo #40–#43 done)
+
+User directive: audit **every** FX/animation in the 26.3 port against 1.12
+(called out cauldron, infusion altar, wand/gauntlet foci) and make all
+appearances match 1.12. Result: the ~30 `FXDispatcher` methods that were
+vanilla-`ParticleTypes` stubs (plus the core particle plumbing) are now
+1.12-faithful ports. Build green, 86/86 tests pass, jar installed in the
+Modrinth **NeoForge 26.3** profile.
+
+**Core particle plumbing (FXGeneric):**
+- **X-mirror UV fix:** 26.3 `renderRotatedQuad` maps −x→`getU0()`, +x→`getU1()`
+  (unmirrored), but 1.12 `FXGeneric` renders its sprite X-**mirrored** by default
+  (−x corner gets the right sprite edge). `getU0`/`getU1` now compensate so the
+  default is 1.12-mirrored and `setFlipped(true)` restores the unmirrored look.
+- **Angled particles (1.12 `setAngles`):** new `extract()` override builds the
+  1.12 GL transform `R_cam · Ry(−yaw+90) · Rx(pitch+90) · Rz(roll)` as a quaternion
+  (1.12 rotated in view space; the 26.3 pipeline rotates in world space, so the
+  camera's camera→world rotation is prepended). Replaces 1.12's GL11 billboard
+  bypass, which is unavailable in the modern pipeline.
+- **Wind:** `setWindStrength` replaced by 1.12-faithful `setWind(d)` — magnitude
+  `0.1·d` (1.12's internal source magnitude folded in) and the Z-sign corrected
+  to match `Utils.rotateAroundY`. Call sites now pass the raw 1.12 wind value.
+- **Rotation 2π factor + green-channel lerp typo** (both latent bugs) fixed in a
+  prior commit; `tick()` does `roll += rotationSpeed·2π` and lerps green→endG.
+
+**FXDispatcher method rewrites (1.12-exact sprites/colors/lifetimes/motion):**
+`drawFireMote`, `drawAlumentum`, `drawTaintParticles`, `drawLightningFlash`,
+`spark`, `sparkle`, `drawGenericParticles` (18-arg + `drawGenericParticles16` +
+the `GenPart` overload with full color-range/grid/rotstart/slowDown/grav/delay),
+`crucibleBubble`/`Boil`/`Froth`/`FrothDown`, `drawBamf` (all overloads),
+`drawWispyMotes*`, `scanHighlight`, `drawBlockSparkles`, `drawSimpleSparkle`,
+`drawLineSparkle`, `drawBlockMistParticles`(+Flat), `drawFocusCloudParticle`,
+`visSparkle`, `drawLevitatorParticles`, `drawStabilizerParticles`,
+`drawGolemFlyParticles`, `drawPollutionParticles`, `essentiaTrailFx`/`DropFx`,
+`drawVentParticles`(×2)/`2`, `jarSplashFx`, `waterTrailFx`,
+`drawInfusionParticles1–4`, `burst`, `excavateFX` (now real
+`level.destroyBlockProgress`), `blockRunes`/`2` (+0.5 offset restored),
+`drawPedestalShield`, `voidStreak`, `furnaceLavaFx`, `bottleTaintBreak` (8× item
+particles + splash sound), `cultistSpawn`, `pechsCurseTick` (angled FXGeneric +
+wisp motes), `wispFXEG`, `drawSlash`, `boreDigFx`, `boreTrailFx`,
+`splooshFX`/`taintsplosionFX`/`tentacleAriseFX`/`slimeJumpFX`/`taintLandFX`
+(`FXBreakingFade` + slime-ball item), `drawNitorCore`/`Flames`,
+`drawSimpleSparkleGui`, `drawWispyMotesEntity`, `drawWispParticles`. `beamCont`/
+`beamBore`/`arcLightning`/`arcBolt` were already 1.12-faithful (verified). `sonicBoom`
+is port-specific (no 1.12 equivalent).
+
+**Delay queue:** 1.12's `ParticleEngine.addEffectWithDelay` is reproduced by a
+static per-particle delay list in `FXDispatcher`, drained by
+`ClientTickHandler` → `FXDispatcher.tickDelayed()` each client tick.
+
+**Particle-class API additions:** `FXBoreSparkle.setColor`,
+`FXBoreParticles.setAlphaF`, `FXBreakingFade.setColor`/`setAlphaF`,
+`FXVent`/`FXVent2.setAlphaF`, and a position-based `FXShieldRunes` constructor
+(origin-orbiting) for the stationary pedestal shield.
+
+**Crucible FX (was entirely missing on the client):** `TileCrucible` now has a
+`drawEffects(rand)` client method (froth when heat>150, 8× frothDown at the rim
+when aspect vis>500, a colored bubble every ~6 ticks) called from
+`BlockCrucible.animateTick` on the client when fluid is present. Event-driven FX
+(boil on smelt/bubble, bamf on craft/spill) travel via a new
+`PacketFXCrucible` (pos, type, data) — server sends `(99,0)`/`(2,1)`/`(2,5)` from
+`attemptSmelt`/dissolve/`spillAll`; the client handler plays the 1.12 bamf +
+spill sound + 10× `crucibleBoil`.
+
+**Infusion altar FX (was missing in `doEffects`):** now spawns 1.12's
+`blockRunes` (every tick while crafting), per-source particles
+(`drawInfusionParticles1–4` for player/pedestal/block sources), the instability
+spark (crafting & stability<0) and problem-block spark. `clientTick` also runs
+`scanSurroundings` when `checkSurroundings` is set (mirrors 1.12 `update()`).
+
+**Remaining risks (client-side, in-game only):** exact visual tuning of the
+ported particle classes (FXWisp/FXFireMote/FXVent/FXBlockRunes/etc.) still uses
+the port's natural (unmirrored) UV convention, unlike 1.12's X-mirrored grid
+particles — FXGeneric (the central class) is now faithful; the other ~12
+grid-based classes were left at the pre-existing port convention to avoid
+regressing already-shipping effects.
+
 ## 2026-09-29 — Salis Mundus bookshelf bug — ROOT CAUSE FOUND + FIXED (todo #36 done)
 
 User report: right-clicking a bookshelf with Salis Mundus (in the 26.3

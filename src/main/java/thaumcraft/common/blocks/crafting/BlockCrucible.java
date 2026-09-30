@@ -263,6 +263,16 @@ public class BlockCrucible extends BlockTCDevice {
                 }
             }
         }
+        
+        // 1.12-faithful: client-side crucible FX every tick while the crucible holds fluid
+        if (level.isClientSide()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof TileCrucible crucible) {
+                if (FluidTanks.getAmount(crucible.getTank()) > 0) {
+                    crucible.drawEffects(random);
+                }
+            }
+        }
     }
 
     @Nullable

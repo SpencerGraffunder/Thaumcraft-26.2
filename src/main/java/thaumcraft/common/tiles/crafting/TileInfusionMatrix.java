@@ -11,8 +11,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -37,6 +40,7 @@ import thaumcraft.api.capabilities.IPlayerWarp;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.crafting.IInfusionStabiliser;
 import thaumcraft.api.crafting.IInfusionStabiliserExt;
+import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.common.blocks.basic.BlockPillarTC;
 import thaumcraft.common.blocks.devices.BlockPedestal;
 import thaumcraft.common.lib.crafting.InfusionRecipeType;
@@ -247,10 +251,20 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
     }
 
     public static void clientTick(Level level, BlockPos pos, BlockState state, TileInfusionMatrix tile) {
+        // 1.12 update() runs the surroundings scan on the client as well (keeps problemBlocks current)
+        if (tile.checkSurroundings) {
+            tile.checkSurroundings = false;
+            tile.scanSurroundings();
+        }
         tile.doEffects();
     }
 
+    /**
+     * 1.12-faithful client effects (1.12 TileInfusionMatrix.doEffects).
+     */
     private void doEffects() {
+        RandomSource rand = level.getRandom();
+
         // Handle crafting animation
         if (crafting) {
             if (craftCount == 0 || craftCount % 65 == 0) {
@@ -259,6 +273,9 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
                         SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 0.5f, 1.0f, false);
             }
             craftCount++;
+            // Runes flowing up the base column while crafting
+            FXDispatcher.INSTANCE.blockRunes(worldPosition.getX(), worldPosition.getY() - 2, worldPosition.getZ(),
+                    0.5f + rand.nextFloat() * 0.2f, 0.1f, 0.7f + rand.nextFloat() * 0.3f, 25, -0.03f);
         } else if (craftCount > 0) {
             craftCount -= 2;
             if (craftCount < 0) craftCount = 0;
@@ -281,9 +298,64 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
             if (fx.ticks <= 0) {
                 sourceFX.remove(fxk);
             } else {
+                if (fx.loc.equals(worldPosition)) {
+                    // Player source: sparkles orbiting the caster toward the matrix
+                    Entity player = level.getEntity(fx.color);
+                    if (player != null) {
+                        for (int a = 0; a < 4; a++) {
+                            FXDispatcher.INSTANCE.drawInfusionParticles4(
+                                    player.getX() + (rand.nextFloat() - rand.nextFloat()) * player.getBbWidth(),
+                                    player.getBoundingBox().minY + rand.nextFloat() * player.getBbHeight(),
+                                    player.getZ() + (rand.nextFloat() - rand.nextFloat()) * player.getBbWidth(),
+                                    worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
+                        }
+                    }
+                } else {
+                    BlockEntity tile = level.getBlockEntity(fx.loc);
+                    if (tile instanceof TilePedestal pedestal) {
+                        ItemStack is = pedestal.getItem(0);
+                        if (!is.isEmpty()) {
+                            if (rand.nextInt(3) == 0) {
+                                FXDispatcher.INSTANCE.drawInfusionParticles3(fx.loc.getX() + rand.nextFloat(),
+                                        fx.loc.getY() + rand.nextFloat() + 1.0f, fx.loc.getZ() + rand.nextFloat(),
+                                        worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
+                            } else {
+                                if (is.getItem() instanceof BlockItem bi) {
+                                    for (int a2 = 0; a2 < 4; a2++) {
+                                        FXDispatcher.INSTANCE.drawInfusionParticles2(fx.loc.getX() + rand.nextFloat(),
+                                                fx.loc.getY() + rand.nextFloat() + 1.0f, fx.loc.getZ() + rand.nextFloat(),
+                                                worldPosition, bi.getBlock().defaultBlockState(), 0);
+                                    }
+                                } else {
+                                    for (int a2 = 0; a2 < 4; a2++) {
+                                        FXDispatcher.INSTANCE.drawInfusionParticles1(fx.loc.getX() + 0.4f + rand.nextFloat() * 0.2f,
+                                                fx.loc.getY() + 1.23f + rand.nextFloat() * 0.2f, fx.loc.getZ() + 0.4f + rand.nextFloat() * 0.2f,
+                                                worldPosition, is);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        fx.ticks = 0;
+                    }
+                }
                 fx.ticks--;
                 sourceFX.put(fxk, fx);
             }
+        }
+
+        // Instability sparks
+        if (crafting && stability < 0.0f && rand.nextInt(250) <= Math.abs(stability)) {
+            FXDispatcher.INSTANCE.spark(worldPosition.getX() + rand.nextFloat(), worldPosition.getY() + rand.nextFloat(),
+                    worldPosition.getZ() + rand.nextFloat(), 3.0f + rand.nextFloat() * 2.0f,
+                    0.7f + rand.nextFloat() * 0.1f, 0.1f, 0.65f + rand.nextFloat() * 0.1f, 0.8f);
+        }
+
+        // Problem block sparks
+        if (active && !problemBlocks.isEmpty() && rand.nextInt(25) == 0) {
+            BlockPos p = problemBlocks.get(rand.nextInt(problemBlocks.size()));
+            FXDispatcher.INSTANCE.spark(p.getX() + rand.nextFloat(), p.getY() + rand.nextFloat(), p.getZ() + rand.nextFloat(),
+                    2.0f + rand.nextFloat(), 0.7f + rand.nextFloat() * 0.1f, 0.1f, 0.65f + rand.nextFloat() * 0.1f, 0.8f);
         }
     }
 

@@ -47,6 +47,13 @@ public class FXVent2 extends ThaumcraftParticle {
         this.noClip = false;
     }
     
+    private float baseAlpha = 0.33f;
+    
+    public void setAlphaF(float alpha) {
+        this.baseAlpha = alpha;
+        this.alpha = alpha;
+    }
+    
     public FXVent2 setScale(float f) {
         this.quadSize *= f;
         this.maxScale *= f;
@@ -96,7 +103,7 @@ public class FXVent2 extends ThaumcraftParticle {
         this.quadSize = Mth.lerp(progress, this.startScale, this.endScale);
         
         // Fade out alpha as scale reaches max
-        this.alpha = 0.33f * (1.0f - progress);
+        this.alpha = baseAlpha * (1.0f - progress);
         
         if (this.onGround) {
             this.xd *= 0.7;

@@ -5,6 +5,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import thaumcraft.Thaumcraft;
+import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.client.lib.network.misc.PacketMiscEventClient;
 
 /**
@@ -18,5 +19,6 @@ public class ClientTickHandler {
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         PacketMiscEventClient.tickMist();
+        FXDispatcher.tickDelayed();
     }
 }
