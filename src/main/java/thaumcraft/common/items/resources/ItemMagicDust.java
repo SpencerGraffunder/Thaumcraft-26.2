@@ -3,6 +3,7 @@ package thaumcraft.common.items.resources;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -66,6 +67,10 @@ public class ItemMagicDust extends ItemTCBase {
                 
                 return InteractionResult.SUCCESS;
             }
+        }
+
+        if (level.getBlockState(pos).is(Blocks.CRAFTING_TABLE) && !level.isClientSide()) {
+            Thaumcraft.LOGGER.info("[SALIS-DBG] salis useOn on CRAFTING_TABLE fell through (no trigger matched) -> super.useOn (GUI will open). player={}", player.getName().getString());
         }
 
         return super.useOn(context);
