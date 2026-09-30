@@ -213,6 +213,11 @@ public class FXSwarm extends ThaumcraftParticle {
     }
     
     @Override
+    public Layer getLayer() {
+        return TC_PARTICLES_LAYER_TRANSLUCENT;
+    }
+
+    @Override
     public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         Vec3 camPos = camera.position();
         float px = (float)(Mth.lerp(partialTicks, xo, x) - camPos.x());
@@ -243,7 +248,8 @@ public class FXSwarm extends ThaumcraftParticle {
         int color = ARGB.colorFromFloat(trans, rCol, gCol / dd, bCol / dd);
 
         Quaternionf rotation = camera.rotation();
+        // 1.12 X-mirror: pass (u1, u0) so the -x corner gets the right sprite edge
         state.add(getLayer(), px, py, pz, rotation.x, rotation.y, rotation.z, rotation.w, size,
-                u0, u1, v0, v1, color, light);
+                u1, u0, v0, v1, color, light);
     }
 }

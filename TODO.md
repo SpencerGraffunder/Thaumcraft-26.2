@@ -74,12 +74,33 @@ spill sound + 10× `crucibleBoil`.
 spark (crafting & stability<0) and problem-block spark. `clientTick` also runs
 `scanSurroundings` when `checkSurroundings` is set (mirrors 1.12 `update()`).
 
-**Remaining risks (client-side, in-game only):** exact visual tuning of the
-ported particle classes (FXWisp/FXFireMote/FXVent/FXBlockRunes/etc.) still uses
-the port's natural (unmirrored) UV convention, unlike 1.12's X-mirrored grid
-particles — FXGeneric (the central class) is now faithful; the other ~12
-grid-based classes were left at the pre-existing port convention to avoid
-regressing already-shipping effects.
+**1:1 UV parity sweep (2026-09-30, all grid particle classes):** every TC
+grid-based particle now matches 1.12's UV convention. Findings + fixes:
+- **X-mirror applied** (1.12 renders grid sprites X-mirrored; 26.3's
+  `renderRotatedQuad` is unmirrored): `FXWisp`, `FXBoreSparkle`, `FXFireMote`,
+  `FXSwarm`, `FXSmokeSpiral`, `FXSlimyBubble`, `FXPlane`, `FXBlockRunes`,
+  `FXVent`, `FXVent2`, `FXVisSparkle` — the `state.add` call now passes
+  `(u1, u0)` so the −x corner gets the right sprite edge.
+- **Full-texture → 1/64 grid cell** (these sampled the whole atlas before):
+  `FXVent` (cell = `part%16, part/64`), `FXVent2` (same formula), `FXVisSparkle`
+  (cell = `age%16, row 8`), `FXBlockRunes` (cell = `runeIndex%16, row 6`; ctor
+  now sets `runeIndex = rand 0–15`).
+- **Missing TC-atlas binding fixed:** 9 grid classes (`FXVent`, `FXVent2`,
+  `FXBlockRunes`, `FXBoreSparkle`, `FXSlimyBubble`, `FXSwarm`, `FXSmokeSpiral`,
+  `FXPlane`, + `FXVent2`'s new `extract`) had **no `getLayer()` override**, so
+  they sampled the *vanilla* particle atlas with TC grid UVs. All now return
+  `TC_PARTICLES_LAYER_TRANSLUCENT` (the dedicated 1024×1024 TC atlas).
+- **Item/block sprites are NOT mirrored** in 1.12 (`FXBoreParticles`,
+  `FXBreakingFade`) — left natural (correct).
+- **`FXBlockWard`** V-flip applied (1.12 full-texture: top→V=1.0, bottom→0.0).
+
+**Known residual simplifications (pipeline limits, documented not fixed):**
+- `FXBlockRunes`/`FXPlane` rotate their sprite 90° in 1.12 (sprite-U aligns with
+  world-Y); the 26.3 axis-aligned `state.add(u0,u1,v0,v1)` cannot express a
+  rotated UV, so they render axis-aligned (X-mirrored) instead.
+- `FXBlockWard` in 1.12 is a 15-frame animated particle (`hemis1–15.png`,
+  additive); the port renders a single billboard quad — the frame animation is
+  not ported.
 
 ## 2026-09-29 — Salis Mundus bookshelf bug — ROOT CAUSE FOUND + FIXED (todo #36 done)
 

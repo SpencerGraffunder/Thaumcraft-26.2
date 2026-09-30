@@ -53,6 +53,11 @@ public class FXSmokeSpiral extends ThaumcraftParticle {
     }
 
     @Override
+    public Layer getLayer() {
+        return TC_PARTICLES_LAYER_TRANSLUCENT;
+    }
+
+    @Override
     public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         Vec3 cameraPos = camera.position();
 
@@ -92,8 +97,9 @@ public class FXSmokeSpiral extends ThaumcraftParticle {
         int color = ARGB.colorFromFloat(displayAlpha, this.rCol, this.gCol, this.bCol);
         int light = 0xF000F0;
 
+        // 1.12 X-mirror: pass (u1, u0) so the -x corner gets the right sprite edge
         state.add(getLayer(), x, y, z, rot.x, rot.y, rot.z, rot.w, size,
-                u0, u1, v0, v1, color, light);
+                u1, u0, v0, v1, color, light);
     }
 
     // ==================== Configuration Methods ====================

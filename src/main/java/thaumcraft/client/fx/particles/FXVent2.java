@@ -1,9 +1,14 @@
 package thaumcraft.client.fx.particles;
 
+import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.joml.Quaternionf;
 
 import java.awt.Color;
 
@@ -76,6 +81,35 @@ public class FXVent2 extends ThaumcraftParticle {
         return this;
     }
     
+    @Override
+    public Layer getLayer() {
+        return TC_PARTICLES_LAYER_TRANSLUCENT;
+    }
+
+    @Override
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
+        Vec3 cameraPos = camera.position();
+        float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
+        float y = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
+        float z = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
+
+        float size = 0.3f * this.quadSize;
+        int color = ARGB.colorFromFloat(this.alpha, this.rCol, this.gCol, this.bCol);
+        int light = this.getLightCoords(partialTicks);
+
+        Quaternionf rot = camera.rotation();
+
+        // 1.12: part = 1 + growth*4, cell = (part%16, part/64); X-mirrored (pass u1, u0)
+        int part = (int) (1.0f + (this.maxScale > 0.0f ? this.quadSize / this.maxScale : 0.0f) * 4.0f);
+        float uL = (part % 16) / 64.0f;
+        float uR = uL + 0.015625f;
+        float vT = (part / 64) / 64.0f;
+        float vB = vT + 0.015625f;
+
+        state.add(getLayer(), x, y, z, rot.x, rot.y, rot.z, rot.w, size,
+                uR, uL, vT, vB, color, light);
+    }
+
     @Override
     public void tick() {
         this.xo = this.x;

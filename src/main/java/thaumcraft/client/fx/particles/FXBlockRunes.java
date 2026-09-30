@@ -32,7 +32,8 @@ public class FXBlockRunes extends ThaumcraftParticle {
         this.offsetX = 0.0;
         this.offsetY = 0.0;
         this.rotation = 0.0f;
-        this.runeIndex = 0;
+        // 1.12: runeIndex = random*16 + 224; the cell column is runeIndex%16 (224%16==0)
+        this.runeIndex = this.random.nextInt(16);
 
         // Ensure non-zero color
         if (r == 0.0f) r = 1.0f;
@@ -90,6 +91,11 @@ public class FXBlockRunes extends ThaumcraftParticle {
     }
 
     @Override
+    public Layer getLayer() {
+        return TC_PARTICLES_LAYER_TRANSLUCENT;
+    }
+
+    @Override
     public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         Vec3 cameraPos = camera.position();
         float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
@@ -111,9 +117,16 @@ public class FXBlockRunes extends ThaumcraftParticle {
         float offsetXf = (float) this.offsetX;
         float offsetYf = (float) this.offsetY;
 
+        // 1.12: sprite = runeIndex%16 (column), row 6 (v=0.09375); X-mirrored (pass u1, u0)
+        // (1.12 also rotates the rune sprite 90 degrees, which the axis-aligned render state cannot express)
+        float uL = (this.runeIndex % 16) / 64.0f;
+        float uR = uL + 0.015625f;
+        float vT = 0.09375f;
+        float vB = vT + 0.015625f;
+
         state.add(getLayer(), x + offsetXf, y + offsetYf, z - 0.51f,
                 quaternion.x, quaternion.y, quaternion.z, quaternion.w,
-                size / 2.0f, 0.0f, 1.0f, 0.0f, 1.0f, color, light);
+                size / 2.0f, uR, uL, vT, vB, color, light);
     }
 
     @Override

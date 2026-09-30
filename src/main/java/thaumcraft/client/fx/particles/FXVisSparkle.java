@@ -169,8 +169,15 @@ public class FXVisSparkle extends ThaumcraftParticle {
 
         Quaternionf rot = camera.rotation();
 
+        // 1.12: sprite = age % 16 (column), row 8 (v=0.125); X-mirrored (pass u1, u0)
+        int part = this.age % 16;
+        float uL = part / 64.0f;
+        float uR = uL + 0.015625f;
+        float vT = 0.125f;
+        float vB = vT + 0.015625f;
+
         state.add(getLayer(), x, y, z, rot.x, rot.y, rot.z, rot.w, size,
-                0.0f, 1.0f, 0.0f, 1.0f, color, light);
+                uR, uL, vT, vB, color, light);
     }
 
     @Override

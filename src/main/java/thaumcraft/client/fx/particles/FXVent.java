@@ -123,6 +123,11 @@ public class FXVent extends ThaumcraftParticle {
     }
 
     @Override
+    public Layer getLayer() {
+        return TC_PARTICLES_LAYER_TRANSLUCENT;
+    }
+
+    @Override
     public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         Vec3 cameraPos = camera.position();
         float x = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
@@ -139,8 +144,15 @@ public class FXVent extends ThaumcraftParticle {
 
         Quaternionf rot = camera.rotation();
 
+        // 1.12: part = 1 + growth*4, cell = (part%16, part/64); X-mirrored (pass u1, u0)
+        int part = (int) (1.0f + (this.quadSize / this.targetScale) * 4.0f);
+        float uL = (part % 16) / 64.0f;
+        float uR = uL + 0.015625f;
+        float vT = (part / 64) / 64.0f;
+        float vB = vT + 0.015625f;
+
         state.add(getLayer(), x, y, z, rot.x, rot.y, rot.z, rot.w, size,
-                0.0f, 1.0f, 0.0f, 1.0f, color, light);
+                uR, uL, vT, vB, color, light);
     }
 
     // ==================== Configuration Methods ====================

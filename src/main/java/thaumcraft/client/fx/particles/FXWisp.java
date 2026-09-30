@@ -131,8 +131,9 @@ public class FXWisp extends ThaumcraftParticle {
         int color = ARGB.colorFromFloat(finalAlpha, this.rCol, this.gCol, this.bCol);
 
         Quaternionf quaternion = camera.rotation();
+        // 1.12 X-mirror: pass (u1, u0) so the -x corner gets the right sprite edge
         state.add(getLayer(), x, y, z, quaternion.x, quaternion.y, quaternion.z, quaternion.w, size,
-                u0, u1, v0, v1, color, light);
+                u1, u0, v0, v1, color, light);
     }
 
     @Override

@@ -117,8 +117,9 @@ public class FXBlockWard extends ThaumcraftParticle {
         int color = ARGB.colorFromFloat(renderAlpha, rCol, gCol, bCol);
         int light = 0xF000F0; // Full brightness
         
+        // 1.12: full-texture, U natural, V flipped (top -> 1.0, bottom -> 0.0)
         state.add(getLayer(), px, py, pz, rot.x, rot.y, rot.z, rot.w, size,
-                0.0f, 1.0f, 0.0f, 1.0f, color, light);
+                0.0f, 1.0f, 1.0f, 0.0f, color, light);
     }
     
     public void setColor(float r, float g, float b) {
