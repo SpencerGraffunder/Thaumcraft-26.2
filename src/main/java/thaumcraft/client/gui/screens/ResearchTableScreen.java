@@ -191,7 +191,8 @@ public class ResearchTableScreen extends AbstractContainerScreen<ResearchTableMe
     }
     
     @Override
-    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         int xx = this.leftPos;
         int yy = this.topPos;
         

@@ -289,7 +289,8 @@ public class SealScreen extends AbstractContainerScreen<SealMenu> {
     }
     
     @Override
-    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         // Draw circular background
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + middleX - 80, topPos + middleY - 80, 96.0F, 0.0F, 160, 160, 256, 256);
         
