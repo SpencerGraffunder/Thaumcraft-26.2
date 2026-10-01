@@ -610,7 +610,7 @@ public class ResearchPageScreen extends Screen {
             int ay = sh + 9;
             boolean hov = noPopup && mouseInside(x - 48, ay, 25, 16, mx, my);
             int le = hov ? 0 : 3;
-            if (hov) setTip("tc.aspect.name");
+            if (hov) setTip(Component.translatable("tc.aspect.name").getString());
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x - 48 + le, ay, 76, 232, 24 - le, 16, 256, 256);
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x - 28, ay, 100, 232, 4, 16, 256, 256);
         }
@@ -621,7 +621,7 @@ public class ResearchPageScreen extends Screen {
             int ky = sh + 32;
             boolean hov = noPopup && mouseInside(x - 49, ky, 25, 16, mx, my);
             int le = hov ? 0 : 3;
-            if (hov) setTip("tc.knowledge.name");
+            if (hov) setTip(Component.translatable("tc.knowledge.name").getString());
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x - 49 + le, ky, 44, 232, 24 - le, 16, 256, 256);
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x - 29, ky, 100, 232, 4, 16, 256, 256);
         }
