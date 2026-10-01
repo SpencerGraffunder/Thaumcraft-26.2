@@ -5,6 +5,7 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectHelper;
@@ -31,6 +32,18 @@ public class ThaumcraftCraftingManager {
     // Aspect cap for generated tags
     public static final int ASPECT_CAP = 500;
     
+    /**
+     * Safely obtain the recipe manager for a level on either the client or the server.
+     * In 26.3 the recipe manager is reachable via {@link Level#recipeAccess()} on both sides;
+     * the old {@code level.getServer().getRecipeManager()} NPEs on the client (where
+     * getServer() is null), which crashed GUIs that preview recipes client-side.
+     *
+     * @return the recipe manager, or null if it is unavailable
+     */
+    private static RecipeManager safeRecipeManager(Level level) {
+        return (level != null && level.recipeAccess() instanceof RecipeManager rm) ? rm : null;
+    }
+    
     // ==================== Arcane Workbench Recipes ====================
     
     /**
@@ -52,8 +65,17 @@ public class ThaumcraftCraftingManager {
         
         Level level = player.level();
         
+        // 26.3: recipe access lives on the Level itself and works on BOTH the client and
+        // server. The old level.getServer().getRecipeManager() NPE'd on the client (where
+        // getServer() returns null) -- which crashed the arcane workbench GUI every frame
+        // because ArcaneWorkbenchScreen.extractContents calls this for the preview.
+        RecipeManager recipeManager = safeRecipeManager(level);
+        if (recipeManager == null) {
+            return null;
+        }
+        
         // Search through all arcane workbench recipes
-        for (RecipeHolder<?> recipe : level.getServer().getRecipeManager().recipeMap().byType(ModRecipeTypes.ARCANE_WORKBENCH.get())) {
+        for (RecipeHolder<?> recipe : recipeManager.recipeMap().byType(ModRecipeTypes.ARCANE_WORKBENCH.get())) {
             if (recipe.value() instanceof IArcaneRecipe arcaneRecipe) {
                 // Check if the recipe matches
                 if (arcaneRecipe.matches(workbench, level)) {
@@ -130,7 +152,12 @@ public class ThaumcraftCraftingManager {
             return null;
         }
         
-        for (RecipeHolder<?> recipe : level.getServer().getRecipeManager().recipeMap().byType(ModRecipeTypes.CRUCIBLE.get())) {
+        RecipeManager recipeManager = safeRecipeManager(level);
+        if (recipeManager == null) {
+            return null;
+        }
+        
+        for (RecipeHolder<?> recipe : recipeManager.recipeMap().byType(ModRecipeTypes.CRUCIBLE.get())) {
             if (recipe.value() instanceof CrucibleRecipeType crucibleRecipe) {
                 // Check if the recipe matches
                 if (crucibleRecipe.matchesCrucible(crucibleAspects, catalyst)) {
@@ -158,7 +185,11 @@ public class ThaumcraftCraftingManager {
      * @return List of matching recipes
      */
     public static List<CrucibleRecipeType> findCrucibleRecipesForCatalyst(ItemStack catalyst, Level level) {
-        return level.getServer().getRecipeManager().recipeMap().byType(ModRecipeTypes.CRUCIBLE.get())
+        RecipeManager recipeManager = safeRecipeManager(level);
+        if (recipeManager == null) {
+            return List.of();
+        }
+        return recipeManager.recipeMap().byType(ModRecipeTypes.CRUCIBLE.get())
                 .stream()
                 .map(RecipeHolder::value)
                 .filter(recipe -> recipe instanceof CrucibleRecipeType)
@@ -186,7 +217,12 @@ public class ThaumcraftCraftingManager {
             return null;
         }
         
-        for (RecipeHolder<?> recipe : level.getServer().getRecipeManager().recipeMap().byType(ModRecipeTypes.INFUSION.get())) {
+        RecipeManager recipeManager = safeRecipeManager(level);
+        if (recipeManager == null) {
+            return null;
+        }
+        
+        for (RecipeHolder<?> recipe : recipeManager.recipeMap().byType(ModRecipeTypes.INFUSION.get())) {
             if (recipe.value() instanceof InfusionRecipeType infusionRecipe) {
                 if (infusionRecipe.matchesInfusion(pedestalItems, centralItem, level, player)) {
                     return infusionRecipe;
