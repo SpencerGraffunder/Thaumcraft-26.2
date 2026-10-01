@@ -93,7 +93,7 @@ public class ItemRobeArmor extends Item implements IVisDiscountGear {
      * Allow using cauldron to wash dye off robes (vanilla behavior for leather)
      */
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public InteractionResult onItemUseFirst(ItemStack theStack, UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
@@ -111,6 +111,6 @@ public class ItemRobeArmor extends Item implements IVisDiscountGear {
             }
         }
         
-        return super.useOn(context);
+        return InteractionResult.PASS;
     }
 }

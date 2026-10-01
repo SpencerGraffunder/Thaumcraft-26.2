@@ -138,7 +138,7 @@ public class ItemVoidRobeArmor extends Item
      * Allow using cauldron to wash dye off robes.
      */
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public InteractionResult onItemUseFirst(ItemStack theStack, UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
@@ -154,6 +154,6 @@ public class ItemVoidRobeArmor extends Item
             }
         }
         
-        return super.useOn(context);
+        return InteractionResult.PASS;
     }
 }

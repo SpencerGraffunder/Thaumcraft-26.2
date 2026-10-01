@@ -47,7 +47,7 @@ public class ItemGolemPlacer extends Item implements ISealDisplayer {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public InteractionResult onItemUseFirst(ItemStack theStack, UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Direction side = context.getClickedFace();

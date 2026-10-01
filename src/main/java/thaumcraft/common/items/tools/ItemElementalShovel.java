@@ -42,7 +42,7 @@ public class ItemElementalShovel extends Item {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public InteractionResult onItemUseFirst(ItemStack theStack, UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Direction side = context.getClickedFace();
@@ -55,7 +55,7 @@ public class ItemElementalShovel extends Item {
 
         // Only works when sneaking
         if (!player.isShiftKeyDown()) {
-            return super.useOn(context);
+            return InteractionResult.PASS;
         }
 
         BlockState clickedState = level.getBlockState(pos);
