@@ -28,14 +28,19 @@ public class ItemMagicDust extends ItemTCBase {
         super(new Properties().rarity(Rarity.UNCOMMON));
     }
 
+    // 26.3 dispatches "item used on a block" to Item.onItemUseFirst(stack, context) (called
+    // BEFORE the block's useItemOn). This is the 1.12 onItemUseFirst equivalent. The old port
+    // put this logic in useOn(context), which 26.3 only calls AFTER the block's useItemOn -- so
+    // for blocks that consume the interaction (e.g. the crafting table opening its GUI) the dust
+    // logic was never reached and the GUI just opened. Must be onItemUseFirst so the dust trigger
+    // gets first crack at the block.
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         Player player = context.getPlayer();
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         Direction face = context.getClickedFace();
         InteractionHand hand = context.getHand();
-        ItemStack stack = context.getItemInHand();
 
         if (player == null) return InteractionResult.FAIL;
 
@@ -70,10 +75,10 @@ public class ItemMagicDust extends ItemTCBase {
         }
 
         if (level.getBlockState(pos).is(Blocks.CRAFTING_TABLE) && !level.isClientSide()) {
-            Thaumcraft.LOGGER.info("[SALIS-DBG] salis useOn on CRAFTING_TABLE fell through (no trigger matched) -> super.useOn (GUI will open). player={}", player.getName().getString());
+            Thaumcraft.LOGGER.info("[SALIS-DBG] salis onItemUseFirst on CRAFTING_TABLE fell through (no trigger matched) -> super (GUI will open). player={}", player.getName().getString());
         }
 
-        return super.useOn(context);
+        return super.onItemUseFirst(stack, context);
     }
 
     private void doSparkles(Player player, Level level, BlockPos pos, Vec3 hitVec, InteractionHand hand, IDustTrigger trigger, IDustTrigger.Placement place) {
