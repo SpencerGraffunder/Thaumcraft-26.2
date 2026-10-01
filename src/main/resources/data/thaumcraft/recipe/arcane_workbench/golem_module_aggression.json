@@ -1,0 +1,22 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "SEALGUARD",
+  "vis": 50,
+  "crystals": {
+    "ignis": 1
+  },
+  "pattern": [
+    " R ",
+    "RTR",
+    "PGP"
+  ],
+  "key": {
+    "R": "minecraft:glass_pane",
+    "T": "minecraft:blaze_powder",
+    "P": "thaumcraft:plate_brass",
+    "G": "thaumcraft:mechanism_simple"
+  },
+  "result": {
+    "id": "thaumcraft:golem_module_aggression"
+  }
+}

@@ -13,12 +13,12 @@
     "IMI"
   ],
   "key": {
-    "S": "thaumcraft:arcane_stone_slab",
     "R": "minecraft:redstone_block",
+    "S": "thaumcraft:arcane_stone_slab",
     "B": "thaumcraft:arcane_stone",
+    "M": "thaumcraft:mechanism_complex",
     "V": "thaumcraft:vis_resonator",
-    "I": "thaumcraft:inlay",
-    "M": "thaumcraft:mechanism_complex"
+    "I": "thaumcraft:inlay"
   },
   "result": {
     "id": "thaumcraft:stabilizer"

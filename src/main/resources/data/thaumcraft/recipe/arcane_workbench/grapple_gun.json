@@ -1,0 +1,24 @@
+{
+  "type": "thaumcraft:arcane_workbench_shaped",
+  "research": "GRAPPLEGUN",
+  "vis": 75,
+  "crystals": {
+    "aer": 1,
+    "ignis": 1
+  },
+  "pattern": [
+    "  S",
+    "TII",
+    " BW"
+  ],
+  "key": {
+    "B": "thaumcraft:plate_brass",
+    "I": "thaumcraft:plate_iron",
+    "T": "thaumcraft:grapple_gun_tip",
+    "W": "#minecraft:planks",
+    "S": "thaumcraft:grapple_gun_spool"
+  },
+  "result": {
+    "id": "thaumcraft:grapple_gun"
+  }
+}
