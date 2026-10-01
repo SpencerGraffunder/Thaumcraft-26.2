@@ -4,6 +4,43 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-09-30 — Salis Mundus follow-ups: dust sparkles + research deadlock — FIXED (commit 283af73)
+
+Two follow-up bugs from testing the Salis Mundus / arcane-workbench chain after
+the FX audit. Both now fixed; build green, 86/86 tests, jar installed in the
+Modrinth **NeoForge 26.3** profile.
+
+**1. Bookshelf/dust "witch particles" (ItemMagicDust.doSparkles).**
+The dust-sparkle effect was still a vanilla `ParticleTypes.ENCHANT` (enchant/
+witch sparkle) stub with the real FX call commented out. Rewrote it to the
+1.12-faithful `FXDispatcher.drawSimpleSparkle` (50-pt hand→block line, white/
+green/blue, "floaty" first third) + `drawBlockSparkles` per trigger sparkle
+position + the `DUST` sound. (The FX audit covered `FXDispatcher` methods but
+missed this separate caller.)
+
+**2. Crafting table → arcane workbench never fires (research deadlock).**
+Root cause: the dust trigger is gated on `FIRSTSTEPS@1` (stage ≥ 1), but
+`FIRSTSTEPS` could **never reach stage 1**. The `ResearchBrowserScreen` click
+handler only sent `PacketSyncResearchFlagsToServer` (flags/popups) and **never**
+the `PacketSyncProgressToServer(first=true, checks=false)` that 1.12's
+`GuiResearchBrowser.mouseClicked` sends when you click an *unknown-but-
+unlockable* research. So research stayed "unknown" (map entry kept blinking),
+the stage-1 gate was unsatisfiable, and the whole chain was a circular
+deadlock (need the workbench to research `FIRSTSTEPS`, need `FIRSTSTEPS` to
+make the workbench).
+
+Fix (matches 1.12 `GuiResearchBrowser.mouseClicked`): clicking an unknown +
+`canUnlockResearch` research now sends `PacketSyncProgressToServer(key, true)`
+(server: `doesPlayerHaveRequisites` checks **parents only** → `addResearch` →
+stage 1) + the "Researching: <name>" popup; clicking a known research clears
+the RESEARCH/PAGE flags (stops blinking) and, if at the final stage, sends a
+progress packet to complete it. This unblocks `FIRSTSTEPS@1` (and every other
+first-stage research), so the Salis→crafting-table→workbench conversion works.
+
+Note: the `[SALIS-DBG]` diagnostics added to `ItemMagicDust.useOn` /
+`DustTriggerSimple.getValidFace` are still in place (server-side logs) —
+remove once the user confirms the full chain works in-game.
+
 ## 2026-09-30 — Full FX/animation audit vs 1.12 — ALL stubs fixed (todo #40–#43 done)
 
 User directive: audit **every** FX/animation in the 26.3 port against 1.12
