@@ -4,6 +4,49 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-01 — GUI render order + arcane-workbench recipe research gates — FIXED (commits 597e330, a713318, 452c17c)
+
+Two systemic bugs found while testing the arcane workbench after the
+recipe-manager fix (456ee22). Build green, 86/86 tests, jar installed in the
+Modrinth **NeoForge 26.3** profile.
+
+**1. Items hidden behind the GUI background (all 17 container screens).**
+In MC 26.3 screens render in *strata*: `Screen.extractBackground` (stratum 0,
+drawn first) → `extractRenderState`→`extractContents` (stratum 1, draws the
+slot items via `extractSlots`). Every Thaumcraft container screen overrode
+**`extractContents`** to blit its GUI texture, so the background (which includes
+the player-inventory area) painted in the *items* stratum — on top of the items
+— hiding them (movable but invisible). Fix: renamed each screen's
+`extractContents`→`extractBackground` (now calls `super.extractBackground`
+first) for all 17 container screens, matching vanilla's `AbstractFurnaceScreen`.
+The base `extractContents` now runs unoverridden and draws the items on top.
+Nested inner-class `extractContents` in ResearchBrowser/Seal are separate
+renderables and were left untouched.
+
+**2. Wrong research gates on arcane-workbench recipes (10 fixed).**
+The thaumometer (and activator rail) had the WRONG research gate, so players
+following FIRSTSTEPS ("Getting Started" shows the thaumometer as the next
+craft) could never craft it — it was locked behind `UNLOCKAUROMANCY` (needs
+alchemy + deep/high discovery) instead of 1.12's `FIRSTSTEPS@2`. Audited every
+ported arcane-workbench recipe against the 1.12 `ConfigRecipes` source and
+fixed 10 gates:
+- thaumometer `UNLOCKAUROMANCY`→`FIRSTSTEPS@2`
+- activatorrail `BASICTURRET`→`FIRSTSTEPS`
+- caster_basic / vis_resonator `UNLOCKAUROMANCY`→`UNLOCKAUROMANCY@2` (dropped @stage)
+- infusion_matrix `INFUSION`→`INFUSION@2`
+- mind_clockwork `MINDCLOCKWORK`→`MINDCLOCKWORK@2`
+- wand_workbench `BASEAUROMANCY`→`BASEAUROMANCY@2`
+- inlay `INFUSION`→`INFUSIONSTABLE`
+- smelter_basic `ESSENTIASMELTER`→`ESSENTIASMELTER@2`
+- metal_alchemical_advanced `ESSENTIASMELTERVOID`→`ESSENTIASMELTERVOID@1`
+
+`isResearchKnown` already parses the `@stage` suffix (`getResearchStage(key) >= n`)
+and the recipe CODEC reads `research` as a plain string, so `@2` is preserved
+and enforced. The other ~90 recipes match 1.12 (renames like
+`ArcanePedestal`→`pedestal_arcane` keep the correct gate). Golem modules +
+grapple gun exist as **infusion** recipes in the port (design difference, not a
+gate bug); banner recipes are port-only (no 1.12 arcane equivalent).
+
 ## 2026-09-30 — Salis Mundus follow-ups: dust sparkles + research deadlock — FIXED (commit 283af73)
 
 Two follow-up bugs from testing the Salis Mundus / arcane-workbench chain after
