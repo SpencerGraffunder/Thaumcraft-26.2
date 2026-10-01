@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:arcane_workbench_shaped",
-  "research": "BASICTURRET",
+  "research": "FIRSTSTEPS",
   "vis": 50,
   "aspects": {
     "potentia": 1

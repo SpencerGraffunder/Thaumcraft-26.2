@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:arcane_workbench_shaped",
-  "research": "INFUSION",
+  "research": "INFUSION@2",
   "vis": 150,
   "crystals": {
     "aer": 1,

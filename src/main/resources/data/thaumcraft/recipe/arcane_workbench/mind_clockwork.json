@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:arcane_workbench_shaped",
-  "research": "MINDCLOCKWORK",
+  "research": "MINDCLOCKWORK@2",
   "vis": 25,
   "aspects": {
     "ignis": 1,

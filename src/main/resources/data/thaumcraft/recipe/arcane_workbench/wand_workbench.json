@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:arcane_workbench_shaped",
-  "research": "BASEAUROMANCY",
+  "research": "BASEAUROMANCY@2",
   "vis": 100,
   "crystals": {
     "terra": 1,

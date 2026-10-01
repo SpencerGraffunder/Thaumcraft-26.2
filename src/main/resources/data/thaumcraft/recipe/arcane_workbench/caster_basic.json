@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:arcane_workbench_shaped",
-  "research": "UNLOCKAUROMANCY",
+  "research": "UNLOCKAUROMANCY@2",
   "vis": 100,
   "crystals": {
     "aer": 1,
