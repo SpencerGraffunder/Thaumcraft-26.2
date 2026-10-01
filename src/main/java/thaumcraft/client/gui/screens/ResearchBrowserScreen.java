@@ -540,16 +540,38 @@ public class ResearchBrowserScreen extends Screen {
         popuptime = System.currentTimeMillis() - 1L;
         
         if (!searching && currentHighlight != null) {
-            // Handle research click (1.12: just opens the page, doesn't auto-start)
-            // Clear the RESEARCH/PAGE flags so the entry stops blinking
-            ThaumcraftCapabilities.getKnowledge(player).ifPresent(knowledge -> {
-                knowledge.clearResearchFlag(currentHighlight.getKey(), IPlayerKnowledge.EnumResearchFlag.RESEARCH);
-                knowledge.clearResearchFlag(currentHighlight.getKey(), IPlayerKnowledge.EnumResearchFlag.PAGE);
-            });
-            // Send flag sync packet to server
-            PacketHandler.sendToServer(new PacketSyncResearchFlagsToServer(currentHighlight.getKey(), false, false, false));
-            minecraft.gui.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
-            return true;
+            // 1.12 GuiResearchBrowser.mouseClicked: clicking an UNKNOWN but unlockable research
+            // marks it KNOWN (stage 1) via PacketSyncProgressToServer(first=true); clicking a KNOWN
+            // research clears its RESEARCH/PAGE flags (stops blinking) and, if at the final stage,
+            // sends a progress packet to complete it. The old port only sent a flags packet on click,
+            // so research never became "known" -> deadlock (e.g. FIRSTSTEPS never reached stage 1, so
+            // the crafting-table -> arcane workbench dust trigger's FIRSTSTEPS@1 gate could never be
+            // satisfied, and the entry kept blinking forever).
+            String key = currentHighlight.getKey();
+            boolean known = ThaumcraftCapabilities.isResearchKnown(player, key);
+            if (!known && canUnlockResearch(currentHighlight)) {
+                updateResearch();
+                PacketHandler.sendToServer(new PacketSyncProgressToServer(key, true));
+                popupmessage = currentHighlight.getLocalizedName().getString();
+                popuptime = System.currentTimeMillis() + 3000L;
+                minecraft.gui.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
+                return true;
+            }
+            if (known) {
+                ThaumcraftCapabilities.getKnowledge(player).ifPresent(knowledge -> {
+                    knowledge.clearResearchFlag(key, IPlayerKnowledge.EnumResearchFlag.RESEARCH);
+                    knowledge.clearResearchFlag(key, IPlayerKnowledge.EnumResearchFlag.PAGE);
+                });
+                PacketHandler.sendToServer(new PacketSyncResearchFlagsToServer(key, false, false, false));
+                int stage = ThaumcraftCapabilities.getKnowledge(player)
+                        .map(k -> k.getResearchStage(key)).orElse(0);
+                ResearchStage[] stages = currentHighlight.getStages();
+                if (stages != null && stage > 1 && stage >= stages.length) {
+                    PacketHandler.sendToServer(new PacketSyncProgressToServer(key, false, true, false));
+                }
+                minecraft.gui.setScreen(new ResearchPageScreen(currentHighlight, null, guiMapX, guiMapY));
+                return true;
+            }
         } else if (searching) {
             // Handle search result click
             int q = 0;
