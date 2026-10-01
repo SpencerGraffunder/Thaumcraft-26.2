@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:arcane_workbench_shaped",
-  "research": "ESSENTIASMELTERVOID",
+  "research": "ESSENTIASMELTERVOID@1",
   "vis": 200,
   "crystals": {
     "terra": 1,

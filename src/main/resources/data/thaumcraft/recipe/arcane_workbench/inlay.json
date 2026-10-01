@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:arcane_workbench_shaped",
-  "research": "INFUSION",
+  "research": "INFUSIONSTABLE",
   "vis": 25,
   "aspects": {
     "ordo": 1

@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:arcane_workbench_shaped",
-  "research": "ESSENTIASMELTER",
+  "research": "ESSENTIASMELTER@2",
   "vis": 50,
   "crystals": {
     "ignis": 1
