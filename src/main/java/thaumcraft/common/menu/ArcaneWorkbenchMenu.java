@@ -17,6 +17,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
@@ -79,6 +80,7 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
     
     private int lastVis = -1;
     private long lastCheck = 0L;
+    private static long lastWorkbenchLog = 0L; // 2026-10-02: throttle for [WORKBENCH] diagnostics
     
     // Client constructor
     public ArcaneWorkbenchMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
@@ -198,7 +200,32 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
             boolean hasResearch = ThaumcraftCapabilities.getKnowledge(player)
                     .map(k -> k.isResearchKnown(arcaneRecipe.getResearch()))
                     .orElse(false);
-            
+
+            // [WORKBENCH] diagnostic log (2026-10-02) — throttled, shows exactly what gates the craft
+            if (System.currentTimeMillis() - lastWorkbenchLog > 2000L) {
+                lastWorkbenchLog = System.currentTimeMillis();
+                StringBuilder cbs = new StringBuilder();
+                if (crystals != null && crystals.size() > 0) {
+                    for (Aspect aspect : crystals.getAspects()) {
+                        int req = crystals.getAmount(aspect);
+                        int avail = 0;
+                        for (int i = 10; i <= 15; i++) {
+                            ItemStack s = craftMatrix.getItem(i);
+                            if (!s.isEmpty() && s.getItem() instanceof IEssentiaContainerItem ci) {
+                                var a = ci.getAspects(s);
+                                if (a != null && a.getAspects().length > 0 && a.getAspects()[0] == aspect) avail += s.getCount();
+                            }
+                        }
+                        cbs.append(aspect.getName()).append(':').append(avail).append('/').append(req).append(' ');
+                    }
+                } else {
+                    cbs.append("none");
+                }
+                Thaumcraft.LOGGER.info("[WORKBENCH] research={} known={} | visCost={} aura={} hasVis={} | crystals=[{}] hasCrystals={} => {}",
+                        arcaneRecipe.getResearch(), hasResearch, visCost, tile.auraVisServer, hasVis,
+                        cbs.toString().trim(), hasCrystals, (hasVis && hasCrystals && hasResearch) ? "OK" : "BLOCKED");
+            }
+
             if (hasVis && hasCrystals && hasResearch) {
                 craftResult.setRecipeUsed(new net.minecraft.world.item.crafting.RecipeHolder<>(
                         net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
@@ -207,6 +234,11 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
                 result = arcaneRecipe.assemble(craftMatrix);
             }
         } else {
+            // [WORKBENCH] no arcane recipe matched — log (throttled) so the user knows the grid didn't match
+            if (System.currentTimeMillis() - lastWorkbenchLog > 2000L) {
+                lastWorkbenchLog = System.currentTimeMillis();
+                Thaumcraft.LOGGER.info("[WORKBENCH] no matching arcane recipe for the current grid");
+            }
             // Check for vanilla recipes
             var server = level.getServer();
             if (server != null) {

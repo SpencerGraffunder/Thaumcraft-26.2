@@ -133,8 +133,10 @@ public class ResearchPageScreen extends Screen {
         // Exit/close button (top-right of the 1.3x book)
         int bookRight = (width + (int)(PANE_WIDTH * 1.3f)) / 2;
         int bookTop = (height - (int)(PANE_HEIGHT * 1.3f)) / 2;
+        // Moved up (2026-10-02) so it sits just above the page background instead of
+        // overlapping the right-side bookmarks.
         addRenderableWidget(Button.builder(Component.literal("✕"), b -> this.onClose())
-                .bounds(bookRight - 18, bookTop + 4, 16, 16)
+                .bounds(bookRight - 18, bookTop - 12, 16, 16)
                 .build());
         parsePages();
     }
@@ -819,12 +821,14 @@ public class ResearchPageScreen extends Screen {
                 ResearchStage.Knowledge kn = stage.getKnow()[i];
                 Identifier knowTex = knowTypeTexture(kn.type);
                 if (knowTex != null) {
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, knowTex, ix, y, 0, 0, ss, ss, 256, 256);
+                    // 16x16 texture (2026-10-02: was blitted as 256x256 -> only top-left px showed)
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, knowTex, ix, y, 0, 0, 16, 16, 16, 16);
                 }
                 if (kn.type.hasFields() && kn.category != null) {
                     Identifier catIcon = kn.category.icon;
                     if (catIcon != null) {
-                        graphics.blit(RenderPipelines.GUI_TEXTURED, catIcon, ix + 8, y + 8, 0, 0, 10, 10, 16, 16, ARGB.white(0.75f));
+                        // 1.12: category badge at +2,+2 (was +8,+8 -> shifted down/right)
+                        graphics.blit(RenderPipelines.GUI_TEXTURED, catIcon, ix + 2, y + 2, 0, 0, 12, 12, 16, 16, ARGB.white(0.75f));
                     }
                 }
                 boolean ok = hasKnow != null && i < hasKnow.length && hasKnow[i];

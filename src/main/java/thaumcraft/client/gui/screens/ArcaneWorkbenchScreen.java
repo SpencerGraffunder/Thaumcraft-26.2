@@ -48,7 +48,9 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
         // Adjust label positions for the larger GUI
         this.titleLabelY = 6;
         this.inventoryLabelX = 16;
-        this.inventoryLabelY = 140;
+        // The image's player-inventory background starts at ~y=145; the default
+        // (imageHeight - 94 = 140) left the "Inventory" label half hanging above it.
+        this.inventoryLabelY = 146;
     }
     
     @Override

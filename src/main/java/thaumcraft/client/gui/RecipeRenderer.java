@@ -884,7 +884,8 @@ public class RecipeRenderer {
      */
     public static void renderItem(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y) {
         if (stack.isEmpty()) return;
-        graphics.fill(x - 1, y - 1, x + 17, y + 17, 0x50303030);
+        // 2026-10-02: removed the 0x50303030 dark square behind items (user: "shouldn't have
+        // that darkened background" on the nomicon requirement icons; not in 1.12).
         graphics.item(stack, x, y);
         graphics.itemDecorations(Minecraft.getInstance().font, stack, x, y);
     }
