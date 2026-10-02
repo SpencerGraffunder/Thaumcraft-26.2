@@ -4,6 +4,44 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-02 — IE* load crash fixed + infusion recipes restored to 1.12 (commit 4b48005)
+
+User loaded the world and hit a **data-pack load failure**: all 8 IE* recipes
+threw `IllegalStateException: Item must be non-empty`. Root cause: the
+`InfusionEnchantmentRecipe` constructor called `ItemStackTemplate.fromStack(
+ItemStack.EMPTY)` (the output is dynamic — the input tool + enchantment — so
+there is no fixed result), and `fromStack` throws on an empty stack. The build
+doesn't catch recipe-load errors, so this shipped silently and only surfaced on
+world load. Fix: pass a `null` result from the IE* constructor and null-guard
+`assemble()`/`getResultItem()` in `InfusionRecipeType`. (The IE* serializer never
+serializes the result field, so null is safe.)
+
+Then a full 1.12-vs-port infusion audit found the port had **invented** several
+recipes (wrong central / ingredients / aspects / instability). Restored to exact
+1.12:
+- **traveller_boots**: leather boots (not thaumium) + 2× air crystal + 2×
+  enchanted fabric + feather + cod; aspects volatus/motus 100; instability 1.
+- **charm_undying**: totem of undying + 1× plate brass; aspect victus 25; inst 2
+  (port had golden apple + shards + void seed).
+- **lamp_fertility**: fire crystal (port had essence crystal).
+- **lamp_growth**: green dye + earth crystal (port had bone meal + essence crystal).
+- **void_robe_chest/helm/legs**: 1.12 materials (cloth armor + void plates +
+  salis + fabric + leather / goggles + fabric; port had fabric + void seed +
+  nether star); instability 6 (port had 4).
+- **5 elemental tools**: removed the extra crystal-aspect I'd wrongly added (1.12
+  essentia costs don't include the crystal's aspect).
+
+Also added the missing **enchanted-book catalyst** to all 8 IE* recipes (1.12
+surrounding components are `[enchanted_book, ingredient]`; the port had only the
+ingredient). Corrected the earlier note: 1.12 IE* is **tool-based** (tool in the
+matrix center), not book-based.
+
+Note: the port's `Ingredient` codec has no per-slot `count` field (only
+`HolderSet<Item>`), and the altar has 8 pedestals, so 1.12's "10 nuggets in one
+slot" can't be expressed 1:1 — the elemental tools use 1 nugget (best available).
+
+---
+
 ## 2026-10-01 — 1:1 recipe parity vs 1.12 (user: "make it just like 1.12") — DONE (commits a9dd2a6, 250de6c, b6bb2c1, 1ce474e)
 
 User directive (2026-10-01): restore 1:1 faithfulness with 1.12 — no design
