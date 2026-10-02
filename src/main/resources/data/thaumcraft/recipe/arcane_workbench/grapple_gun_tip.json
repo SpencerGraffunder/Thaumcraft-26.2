@@ -6,13 +6,14 @@
     "terra": 1
   },
   "pattern": [
-    " I ",
-    "IMI",
-    " I "
+    "BRB",
+    "RHR",
+    "BRB"
   ],
   "key": {
-    "I": "#c:ingots/iron",
-    "M": "thaumcraft:mechanism_simple"
+    "B": "thaumcraft:plate_brass",
+    "R": "thaumcraft:nugget_rareearth",
+    "H": "minecraft:tripwire_hook"
   },
   "result": {
     "id": "thaumcraft:grapple_gun_tip"

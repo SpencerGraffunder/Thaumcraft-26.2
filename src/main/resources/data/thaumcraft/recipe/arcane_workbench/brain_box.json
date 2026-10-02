@@ -14,7 +14,7 @@
   "key": {
     "I": "#thaumcraft:plates/iron",
     "A": "thaumcraft:amber",
-    "B": "thaumcraft:brain_clockwork"
+    "B": "thaumcraft:mind"
   },
   "result": {
     "id": "thaumcraft:brain_box"

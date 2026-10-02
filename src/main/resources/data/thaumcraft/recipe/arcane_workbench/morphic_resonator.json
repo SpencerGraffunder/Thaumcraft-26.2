@@ -14,7 +14,7 @@
   "key": {
     "G": "#c:glass_panes",
     "B": "thaumcraft:plate_brass",
-    "S": "thaumcraft:quicksilver"
+    "S": "thaumcraft:nugget_rareearth"
   },
   "result": {
     "id": "thaumcraft:morphic_resonator"
