@@ -4,6 +4,43 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-01 — 1:1 recipe parity vs 1.12 (user: "make it just like 1.12") — DONE (commits a9dd2a6, 250de6c, b6bb2c1, 1ce474e)
+
+User directive (2026-10-01): restore 1:1 faithfulness with 1.12 — no design
+changes, same experience. Audited every 1.12 recipe (arcane 74 / infusion 57 /
+crucible 43) against the port. Most "missing" names were just **renames** the port
+uses (all 17 seals, foci `focus_basic/advanced/greater`, fortress armor, verdant
+charms, `voidseer_charm`, hand mirror, sanity soap, all 7 crystal clusters, masks,
+amulets, and the brain / biothaumic-mind / cloud-ring / curiosity-band /
+arcane-bore recipes all already exist). The genuine gaps, all now fixed:
+
+**1. Five recipes in the wrong category (a9dd2a6).** 1.12 makes these
+arcane-workbench recipes; the port had them as infusion. Moved to
+`data/thaumcraft/recipe/arcane_workbench/` (deleted the infusion copies):
+`grapple_gun`, `stabilizer`, `vis_generator`, `golem_module_aggression`
+(1.12 `modaggression`), `golem_module_vision` (1.12 `modvision`).
+
+**2. Elemental tools (250de6c + b6bb2c1).** Added the 4 missing infusion recipes
+(`elemental_axe/hoe/pick/shovel`) and corrected `elemental_sword` (the port had
+invented a shards+blaze-powder recipe). All 5 now match 1.12: input = thaumium
+tool, 2× essence crystal + `nugget_rareearth` + `greatwood_planks`, per-tool
+aspects, research `ELEMENTALTOOLS`, instability 1.
+
+**3. Eight infusion-enchantment (IE*) recipes (1ce474e).** The port had the recipe
+type (`InfusionEnchantmentRecipe` + serializer), the `EnumInfusionEnchantment`
+enum, the effects (`ToolEvents`), and the `INFUSIONENCHANTMENT` research, but zero
+recipes. Added all 8 to `data/thaumcraft/recipe/infusion_enchantment/` matching
+1.12 (enchantment enum, 1.12 aspects mapped to port IDs, 1.12 ingredient each):
+burrowing (rabbit_foot), collector (lead), destructive (tnt), refining (salis),
+sounding (map), arcing (redstone_block), essence (crystal_essence), lamplight
+(nitor). Note: the port's IE* is **tool-based** (infuse the tool directly in the
+matrix) vs 1.12's book-based (infuse a book, then apply) — a pre-existing port
+design choice, left as-is.
+
+Build green; all recipe references (enum/ingredient/aspect/research) cross-checked
+against the registry. In-game test pending (user's turn — recipe changes only need a
+reload, no restart).
+
 ## 2026-10-01 — GUI render order + arcane-workbench recipe research gates — FIXED (commits 597e330, a713318, 452c17c)
 
 Two systemic bugs found while testing the arcane workbench after the
