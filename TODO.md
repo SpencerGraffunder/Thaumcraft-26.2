@@ -21,12 +21,17 @@ User reported 6 GUI issues; all fixed:
    → bookTop-12) so it sits just above the page background.
 5. **Workbench "Inventory" label** half hanging above the player-inventory background:
    `inventoryLabelY` 140 → 146 (image's inventory bg starts ~y=145).
-6. **Thaumometer won't craft** — added throttled `[WORKBENCH]` server logging
-   (research/known, vis cost/aura, crystals available/required) so the blocking
-   condition is visible in the game log. The workbench draws vis from the **aura**
-   (current chunk, or a 3×3-chunk area if an Arcane Workbench Charger is on top),
-   not a wand (TC5 mechanic). The 6 crystal slots need a vis crystal of each aspect
-   the recipe lists (thaumometer = all 6 primals).
+6. **Thaumometer won't craft — ROOT CAUSE FOUND (commit da063d4):** the 6 crystal
+   slots are matrix slots **9-14** (`new CrystalSlot(..., 9+i, ...)`), but the
+   crafting check looped over **10-15** — so it never counted the crystal in slot 9
+   and read a non-existent slot 15. A fully-loaded workbench (176 vis + 64 of each
+   crystal) therefore produced no output. Fixed the check + the `[WORKBENCH]` log to
+   use 9-14. (The workbench draws vis from the **aura** — current chunk, or a 3×3-chunk
+   area if an Arcane Workbench Charger is on top — not a wand. The 6 crystal slots need
+   a vis crystal of each aspect the recipe lists; thaumometer = all 6 primals.)
+
+   Remaining cosmetic (not fixed): the JEI arcane-workbench recipe shows all 6 crystal
+   slots as *aer* crystals (texture only; crafting uses the real per-slot aspect).
 
 ---
 
