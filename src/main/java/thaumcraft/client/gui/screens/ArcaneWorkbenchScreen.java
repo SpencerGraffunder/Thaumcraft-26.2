@@ -158,9 +158,8 @@ public class ArcaneWorkbenchScreen extends AbstractContainerScreen<ArcaneWorkben
                 graphics.fill(159, 63, 177, 81, 0x80000000);
             }
         }
-        
-        // Draw inventory label
-        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
+        // 2026-10-02: the "Inventory" label was removed (it clipped the player-inventory
+        // background and looked wrong); the slots are self-explanatory.
     }
     
     /**

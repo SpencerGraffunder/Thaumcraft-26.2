@@ -177,7 +177,7 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
                 for (Aspect aspect : crystals.getAspects()) {
                     int required = crystals.getAmount(aspect);
                     int available = 0;
-                    for (int i = 10; i <= 15; i++) {
+                    for (int i = 9; i <= 14; i++) {
                         ItemStack stack = craftMatrix.getItem(i);
                         if (!stack.isEmpty() && stack.getItem() instanceof IEssentiaContainerItem crystalItem) {
                             var aspects = crystalItem.getAspects(stack);
@@ -209,7 +209,7 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
                     for (Aspect aspect : crystals.getAspects()) {
                         int req = crystals.getAmount(aspect);
                         int avail = 0;
-                        for (int i = 10; i <= 15; i++) {
+                        for (int i = 9; i <= 14; i++) {
                             ItemStack s = craftMatrix.getItem(i);
                             if (!s.isEmpty() && s.getItem() instanceof IEssentiaContainerItem ci) {
                                 var a = ci.getAspects(s);
