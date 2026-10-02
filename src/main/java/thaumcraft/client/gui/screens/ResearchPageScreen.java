@@ -974,8 +974,9 @@ public class ResearchPageScreen extends Screen {
     }
 
     /**
-     * Knowledge grid (1.12 drawKnowledges). inpage=true: 16px icons, 20px rows,
-     * in-page bar; inpage=false: 255px icons, 28px rows (popup overlay).
+     * Knowledge grid (1.12 drawKnowledges). Icons are always 16x16 (1.12 scales a
+     * 255x255 texture by 0.0625). inpage=true: 20px rows + in-page bar; inpage=false
+     * (popup overlay): 28px rows.
      */
     private void drawKnowledges(GuiGraphicsExtractor graphics, int x, int y, int mx, int my, boolean inpage, boolean noPopup) {
         y -= 18;
@@ -1000,7 +1001,7 @@ public class ResearchPageScreen extends Screen {
                 int ix = x - 10 + (inpage ? 18 : hs) * fc;
                 int iy = y - tc * (inpage ? 20 : 28);
                 Identifier knowTex = knowTypeTexture(type);
-                int s = inpage ? 16 : 255;
+                int s = 16; // 1.12: always 16x16 (the 255x255 texture scaled by 0.0625)
                 if (knowTex != null) {
                     graphics.blit(RenderPipelines.GUI_TEXTURED, knowTex, ix, iy, 0, 0, 255, 255, s, s);
                 }
@@ -1011,7 +1012,7 @@ public class ResearchPageScreen extends Screen {
                 }
                 String as = "" + amt;
                 int m = font.width(as);
-                graphics.text(font, as, ix + s - m, iy + (inpage ? 8 : 28), 0xFFFFFFFF, true);
+                graphics.text(font, as, ix + s - m, iy + 8, 0xFFFFFFFF, true);
                 String s2 = Component.translatable("tc.type." + type.toString().toLowerCase()).getString();
                 if (type.hasFields() && category != null) {
                     s2 = s2 + ": " + Component.translatable(category.key).getString();

@@ -16,6 +16,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
 import thaumcraft.api.aspects.IEssentiaTransport;
+import thaumcraft.init.ModItems;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -122,13 +123,28 @@ public class ThaumcraftApiHelper {
      */
     public static ItemStack makeCrystal(Aspect aspect, int stackSize) {
         if (aspect == null) return ItemStack.EMPTY;
-        
-        // Get the crystal essence item from the registry
-        Item crystalItem = BuiltInRegistries.ITEM.getValue(
+
+        // 2026-10-02: return the per-aspect vis crystal item (each has its own
+        // model/tint) so the recipe display shows the correctly-colored crystal.
+        // (Was a generic crystal_essence with the aspect in NBT, which rendered
+        // every crystal the same color - they all looked like aer.)
+        Item crystalItem = null;
+        if (aspect == Aspect.AIR) crystalItem = ModItems.VIS_CRYSTAL_AIR.get();
+        else if (aspect == Aspect.FIRE) crystalItem = ModItems.VIS_CRYSTAL_FIRE.get();
+        else if (aspect == Aspect.WATER) crystalItem = ModItems.VIS_CRYSTAL_WATER.get();
+        else if (aspect == Aspect.EARTH) crystalItem = ModItems.VIS_CRYSTAL_EARTH.get();
+        else if (aspect == Aspect.ORDER) crystalItem = ModItems.VIS_CRYSTAL_ORDER.get();
+        else if (aspect == Aspect.ENTROPY) crystalItem = ModItems.VIS_CRYSTAL_ENTROPY.get();
+        else if (aspect == Aspect.FLUX) crystalItem = ModItems.FLUX_CRYSTAL.get();
+
+        if (crystalItem != null) {
+            return new ItemStack(crystalItem, stackSize);
+        }
+
+        // Fallback for other aspects: generic crystal_essence with the aspect in NBT
+        crystalItem = BuiltInRegistries.ITEM.getValue(
                 Identifier.fromNamespaceAndPath("thaumcraft", "crystal_essence"));
-        
         if (crystalItem == null) return ItemStack.EMPTY;
-        
         ItemStack stack = new ItemStack(crystalItem, stackSize);
         if (crystalItem instanceof IEssentiaContainerItem container) {
             container.setAspects(stack, new AspectList().add(aspect, 1));

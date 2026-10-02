@@ -15,13 +15,11 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.particles.ParticleTypes;
-import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.api.research.ScanningManager;
 import thaumcraft.common.items.ItemTC;
 import thaumcraft.init.ModSounds;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 
 /**
  * Thaumometer - the basic scanning tool of Thaumcraft.
@@ -74,10 +72,8 @@ public class ItemThaumometer extends ItemTC {
         
         if (!held) return;
 
-        // Server: periodically update aura info
-        if (!level.isClientSide() && entity.tickCount % 20 == 0) {
-            updateAuraInfo(level, player);
-        }
+        // 2026-10-02: the aura info is shown in the Arcane Workbench GUI, not as a
+        // per-second chat message while the thaumometer is held (removed the spam).
 
         // Client: highlight scannable targets
         if (level.isClientSide() && entity.tickCount % 5 == 0) {
@@ -105,22 +101,6 @@ public class ItemThaumometer extends ItemTC {
 
         // No target - scan the sky/void
         ScanningManager.scanTheThing(player, (BlockPos) null);
-    }
-
-    /**
-     * Update aura information for the player.
-     */
-    private void updateAuraInfo(Level level, Player player) {
-        // Send aura chunk data to player via chat message (simplified)
-        if (player instanceof ServerPlayer serverPlayer) {
-            int vis = (int) AuraHelper.getVis(level, player.blockPosition());
-            float radius = AuraHelper.getAuraBase(level, player.blockPosition());
-            if (vis > 0 || radius > 0) {
-                serverPlayer.sendSystemMessage(
-                    net.minecraft.network.chat.Component.literal(
-                        String.format("§5§oAura: §7%d vis, §7r=%.1f", vis, radius)));
-            }
-        }
     }
 
     /**
