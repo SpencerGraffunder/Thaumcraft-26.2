@@ -4,6 +4,23 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-02 — arcane-category 1:1 fixes (commit c8dbbcd)
+
+Continued the 1.12-vs-port audit into **crucible** (clean — 0 deviations) and
+**arcane** (the audit's 19 flags were mostly false positives from item-naming
+order + the 1.12 parser missing ingredients; the port was usually correct or
+more complete). The genuine deviations, fixed:
+- **morphic_resonator**: center was quicksilver → rare-earth nuggets (1.12).
+- **brain_box**: center was brain_clockwork → the Mind item (1.12).
+- **grapple_gun_tip**: port invented iron+mechanism → 1.12's 4× brass plate +
+  rare-earth nuggets + tripwire hook (`BRB/RHR/BRB`).
+
+Unfixable 1:1: **pedestal_eldritch** — 1.12 uses 8× eldritch **slab** + 1× tile,
+but the port has no eldritch slab (only `eldritch_stone_tile`), so the all-tile
+recipe is the best available.
+
+---
+
 ## 2026-10-02 — IE* load crash fixed + infusion recipes restored to 1.12 (commit 4b48005)
 
 User loaded the world and hit a **data-pack load failure**: all 8 IE* recipes
