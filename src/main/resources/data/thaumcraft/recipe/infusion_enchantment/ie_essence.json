@@ -2,6 +2,7 @@
   "type": "thaumcraft:infusion_enchantment",
   "enchantment": "ESSENCE",
   "components": [
+    "minecraft:enchanted_book",
     "thaumcraft:crystal_essence"
   ],
   "aspects": {

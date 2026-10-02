@@ -102,11 +102,13 @@ public class InfusionRecipeType implements Recipe<RecipeInput>, IThaumcraftRecip
     
     @Override
     public ItemStack assemble(RecipeInput input) {
-        return result.create();
+        return result == null ? ItemStack.EMPTY : result.create();
     }
     
     public ItemStack getResultItem() {
-        return result.create();
+        // result may be null for recipes whose output is computed dynamically
+        // (e.g. infusion enchantments, where the output is the input tool + enchantment).
+        return result == null ? ItemStack.EMPTY : result.create();
     }
     
     @Override

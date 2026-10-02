@@ -2,6 +2,7 @@
   "type": "thaumcraft:infusion_enchantment",
   "enchantment": "COLLECTOR",
   "components": [
+    "minecraft:enchanted_book",
     "minecraft:lead"
   ],
   "aspects": {

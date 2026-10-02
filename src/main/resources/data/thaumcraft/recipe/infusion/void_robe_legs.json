@@ -1,18 +1,22 @@
 {
   "type": "thaumcraft:infusion",
   "research": "VOIDROBEARMOR",
-  "instability": 4,
-  "input": "thaumcraft:void_legs",
+  "instability": 6,
+  "center": "thaumcraft:void_legs",
   "ingredients": [
+    "thaumcraft:cloth_legs",
+    "thaumcraft:plate_void",
+    "thaumcraft:plate_void",
+    "thaumcraft:salis_mundus",
     "thaumcraft:enchanted_fabric",
-    "thaumcraft:enchanted_fabric",
-    "thaumcraft:void_seed",
-    "minecraft:nether_star"
+    "minecraft:leather"
   ],
   "aspects": {
-    "praecantatio": 60,
-    "vacuos": 40,
-    "alienis": 40
+    "metallum": 30,
+    "praemunio": 30,
+    "potentia": 25,
+    "alienis": 25,
+    "vacuos": 30
   },
   "result": {
     "id": "thaumcraft:void_robe_legs"

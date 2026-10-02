@@ -4,12 +4,12 @@
   "instability": 4,
   "center": "thaumcraft:lamp_arcane",
   "ingredients": [
-    "#c:ingots/gold",
-    "minecraft:bone_meal",
-    "thaumcraft:crystal_essence",
-    "#c:ingots/gold",
-    "minecraft:bone_meal",
-    "thaumcraft:crystal_essence"
+    "minecraft:gold_ingot",
+    "minecraft:green_dye",
+    "thaumcraft:crystal_earth",
+    "minecraft:gold_ingot",
+    "minecraft:green_dye",
+    "thaumcraft:crystal_earth"
   ],
   "aspects": {
     "herba": 20,

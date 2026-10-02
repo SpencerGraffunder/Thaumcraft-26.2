@@ -2,6 +2,7 @@
   "type": "thaumcraft:infusion_enchantment",
   "enchantment": "ARCING",
   "components": [
+    "minecraft:enchanted_book",
     "minecraft:redstone_block"
   ],
   "aspects": {

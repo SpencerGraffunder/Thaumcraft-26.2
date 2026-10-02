@@ -2,6 +2,7 @@
   "type": "thaumcraft:infusion_enchantment",
   "enchantment": "REFINING",
   "components": [
+    "minecraft:enchanted_book",
     "thaumcraft:salis_mundus"
   ],
   "aspects": {

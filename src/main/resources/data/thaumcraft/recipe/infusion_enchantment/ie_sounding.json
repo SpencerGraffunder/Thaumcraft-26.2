@@ -2,6 +2,7 @@
   "type": "thaumcraft:infusion_enchantment",
   "enchantment": "SOUNDING",
   "components": [
+    "minecraft:enchanted_book",
     "minecraft:map"
   ],
   "aspects": {

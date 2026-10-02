@@ -1,18 +1,23 @@
 {
   "type": "thaumcraft:infusion",
   "research": "VOIDROBEARMOR",
-  "instability": 4,
-  "input": "thaumcraft:void_helm",
+  "instability": 6,
+  "center": "thaumcraft:void_helm",
   "ingredients": [
+    "thaumcraft:goggles",
     "thaumcraft:enchanted_fabric",
     "thaumcraft:enchanted_fabric",
-    "thaumcraft:void_seed",
-    "minecraft:nether_star"
+    "thaumcraft:salis_mundus",
+    "thaumcraft:enchanted_fabric",
+    "thaumcraft:enchanted_fabric"
   ],
   "aspects": {
-    "praecantatio": 50,
-    "vacuos": 30,
-    "alienis": 30
+    "metallum": 25,
+    "sensus": 25,
+    "praemunio": 25,
+    "potentia": 25,
+    "alienis": 25,
+    "vacuos": 25
   },
   "result": {
     "id": "thaumcraft:void_robe_helm"

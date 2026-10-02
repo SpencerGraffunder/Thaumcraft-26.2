@@ -1,20 +1,19 @@
 {
   "type": "thaumcraft:infusion",
   "research": "BOOTSTRAVELLER",
-  "instability": 3,
-  "center": "thaumcraft:thaumium_boots",
+  "instability": 1,
+  "center": "minecraft:leather_boots",
   "ingredients": [
-    "minecraft:rabbit_foot",
-    "minecraft:feather",
+    "thaumcraft:crystal_air",
+    "thaumcraft:crystal_air",
     "thaumcraft:enchanted_fabric",
-    "minecraft:rabbit_foot",
+    "thaumcraft:enchanted_fabric",
     "minecraft:feather",
-    "thaumcraft:enchanted_fabric"
+    "minecraft:cod"
   ],
   "aspects": {
-    "motus": 30,
-    "volatus": 20,
-    "aer": 15
+    "volatus": 100,
+    "motus": 100
   },
   "result": {
     "id": "thaumcraft:traveller_boots"
