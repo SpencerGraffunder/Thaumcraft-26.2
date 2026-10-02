@@ -4,6 +4,32 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-02 — GUI polish: raw lang keys, nomicon icons, workbench label (commit 5e2ddd7)
+
+User reported 6 GUI issues; all fixed:
+1. **Raw lang key** `gui.thaumcraft.workbench.available` (and many others): the code
+   references fully-namespaced keys but the lang file was missing 56 of them. Added
+   all 56 (workbench available/vis/discount, 6 IE* enchantment names, item tooltip
+   `.desc`/`.text`, sanity checker, fortress-helm masks, GUI titles). Audit method:
+   extract every `translatable("...")` from code, diff against the lang file.
+2. **Nomicon know/observation icon** ("Observation: BASICS") was blitted as if the
+   16×16 texture were 256×256 (`0,0,18,18,256,256`) → only the top-left px showed.
+   Fixed to `0,0,16,16,16,16`; category badge offset +8→+2 (1.12).
+3. **Darkened background** on requirement icons: `RecipeRenderer.renderItem` drew a
+   0x50303030 square behind every item (a port addition, not in 1.12). Removed.
+4. **Page close (✕) button** was over the right-side bookmarks; moved up (bookTop+4
+   → bookTop-12) so it sits just above the page background.
+5. **Workbench "Inventory" label** half hanging above the player-inventory background:
+   `inventoryLabelY` 140 → 146 (image's inventory bg starts ~y=145).
+6. **Thaumometer won't craft** — added throttled `[WORKBENCH]` server logging
+   (research/known, vis cost/aura, crystals available/required) so the blocking
+   condition is visible in the game log. The workbench draws vis from the **aura**
+   (current chunk, or a 3×3-chunk area if an Arcane Workbench Charger is on top),
+   not a wand (TC5 mechanic). The 6 crystal slots need a vis crystal of each aspect
+   the recipe lists (thaumometer = all 6 primals).
+
+---
+
 ## 2026-10-02 — arcane-category 1:1 fixes (commit c8dbbcd)
 
 Continued the 1.12-vs-port audit into **crucible** (clean — 0 deviations) and
