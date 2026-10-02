@@ -1,0 +1,11 @@
+{
+  "type": "thaumcraft:infusion_enchantment",
+  "enchantment": "REFINING",
+  "components": [
+    "thaumcraft:salis_mundus"
+  ],
+  "aspects": {
+    "ordo": 80,
+    "permutatio": 60
+  }
+}

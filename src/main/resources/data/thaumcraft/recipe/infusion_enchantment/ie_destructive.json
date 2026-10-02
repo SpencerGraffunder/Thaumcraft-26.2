@@ -1,0 +1,11 @@
+{
+  "type": "thaumcraft:infusion_enchantment",
+  "enchantment": "DESTRUCTIVE",
+  "components": [
+    "minecraft:tnt"
+  ],
+  "aspects": {
+    "aversio": 200,
+    "perditio": 250
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "thaumcraft:infusion_enchantment",
+  "enchantment": "SOUNDING",
+  "components": [
+    "minecraft:map"
+  ],
+  "aspects": {
+    "sensus": 40,
+    "ignis": 60
+  }
+}

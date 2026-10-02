@@ -1,0 +1,11 @@
+{
+  "type": "thaumcraft:infusion_enchantment",
+  "enchantment": "ARCING",
+  "components": [
+    "minecraft:redstone_block"
+  ],
+  "aspects": {
+    "potentia": 40,
+    "aer": 60
+  }
+}

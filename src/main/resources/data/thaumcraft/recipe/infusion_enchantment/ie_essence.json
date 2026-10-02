@@ -1,0 +1,11 @@
+{
+  "type": "thaumcraft:infusion_enchantment",
+  "enchantment": "ESSENCE",
+  "components": [
+    "thaumcraft:crystal_essence"
+  ],
+  "aspects": {
+    "bestia": 40,
+    "vitium": 60
+  }
+}

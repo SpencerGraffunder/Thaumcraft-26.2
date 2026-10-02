@@ -1,0 +1,11 @@
+{
+  "type": "thaumcraft:infusion_enchantment",
+  "enchantment": "BURROWING",
+  "components": [
+    "minecraft:rabbit_foot"
+  ],
+  "aspects": {
+    "sensus": 80,
+    "terra": 150
+  }
+}
