@@ -30,8 +30,21 @@ User reported 6 GUI issues; all fixed:
    area if an Arcane Workbench Charger is on top — not a wand. The 6 crystal slots need
    a vis crystal of each aspect the recipe lists; thaumometer = all 6 primals.)
 
-   Remaining cosmetic (not fixed): the JEI arcane-workbench recipe shows all 6 crystal
-   slots as *aer* crystals (texture only; crafting uses the real per-slot aspect).
+   **Crystal colors (commit a6ca484):** the nomicon recipe popup (`drawArcane`) drew the
+   required crystals via `ThaumcraftApiHelper.makeCrystal`, which built a generic
+   `crystal_essence` with the aspect in NBT — a single model with a fixed tint, so all 6
+   crystals rendered as *aer*. Now returns the per-aspect `vis_crystal_*` item (each has
+   its own model/tint), so the thaumometer recipe shows 6 correctly-colored crystals.
+   (The user has no JEI; this is the nomicon recipe page, not JEI.)
+
+   **Knowledge-totals popup (commit a6ca484):** in `drawKnowledges` (inpage=false) the
+   knowledge-type icons were blitted at **255×255** (`s = inpage ? 16 : 255`) — the "way
+   too big background" the user saw. 1.12 scales a 255×255 texture by 0.0625 → 16×16 in
+   BOTH modes. Fixed to `s = 16` + count text at `iconY + 8` (both modes).
+
+   **Thaumometer chat spam (commit a6ca484):** removed the per-second `Aura: N vis` chat
+   message while the thaumometer is held (1.12 has no such chat; the aura is shown in the
+   Arcane Workbench GUI).
 
 ---
 
