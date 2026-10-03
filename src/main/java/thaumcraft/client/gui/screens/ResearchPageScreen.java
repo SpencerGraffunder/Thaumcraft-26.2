@@ -827,8 +827,14 @@ public class ResearchPageScreen extends Screen {
                 if (kn.type.hasFields() && kn.category != null) {
                     Identifier catIcon = kn.category.icon;
                     if (catIcon != null) {
-                        // 1.12: category badge at +2,+2 (was +8,+8 -> shifted down/right)
-                        graphics.blit(RenderPipelines.GUI_TEXTURED, catIcon, ix + 2, y + 2, 0, 0, 12, 12, 16, 16, ARGB.white(0.75f));
+                        // 1.12: the WHOLE category icon scaled to 0.75 (12px), fully opaque, at +2,+2
+                        // (was: a 12x12 1:1 top-left crop + 0.75 alpha -> the icon showed ~10% too big and faint,
+                        //  because 1:1 crop doesn't scale the texture down the way 1.12's glScaled(0.75) does)
+                        graphics.pose().pushMatrix();
+                        graphics.pose().translate(ix + 2, y + 2);
+                        graphics.pose().scale(0.75f);
+                        graphics.blit(RenderPipelines.GUI_TEXTURED, catIcon, 0, 0, 0, 0, 16, 16, 16, 16);
+                        graphics.pose().popMatrix();
                     }
                 }
                 boolean ok = hasKnow != null && i < hasKnow.length && hasKnow[i];
@@ -1003,12 +1009,18 @@ public class ResearchPageScreen extends Screen {
                 Identifier knowTex = knowTypeTexture(type);
                 int s = 16; // 1.12: always 16x16 (the 255x255 texture scaled by 0.0625)
                 if (knowTex != null) {
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, knowTex, ix, iy, 0, 0, 255, 255, s, s);
+                    // width/height are the ON-SCREEN size (was 255x255 -> giant icons); the 16x16
+                    // texture drawn 1:1 matches 1.12's 255*0.0625 = 15.9px
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, knowTex, ix, iy, 0, 0, s, s, s, s);
                 }
                 if (type.hasFields() && category != null && category.icon != null) {
-                    int os = (int)(s * 0.66);
-                    int o = (s - os) / 2;
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, category.icon, ix + o, iy + o, 0, 0, 15, 15, 16, 16, ARGB.white(0.75f));
+                    // 1.12: whole category icon scaled to 0.66 (~10.6px), 0.75 alpha, at +3,+3
+                    // (was a 15x15 1:1 crop -> ~40% too big)
+                    graphics.pose().pushMatrix();
+                    graphics.pose().translate(ix + 3, iy + 3);
+                    graphics.pose().scale(0.66f);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, category.icon, 0, 0, 0, 0, 16, 16, 16, 16, ARGB.white(0.75f));
+                    graphics.pose().popMatrix();
                 }
                 String as = "" + amt;
                 int m = font.width(as);
