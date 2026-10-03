@@ -4,6 +4,37 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-02 — Nomicon icon sizes: badge + knowledge-grid follow-up (commit d17981c)
+
+The earlier know-icon / knowledge-popup fixes left three size bugs (the 1.12 code
+scales a texture *down*; the port had been 1:1-cropping it, which shows features
+bigger than 1.12):
+
+1. **`drawRequirements` know badge** (the small category icon on the "Observation:
+   BASICS" book): was `blit(..., 12, 12, 16, 16, alpha 0.75)` — a 12×12 **1:1 top-left
+   crop** (no scale-down, so a ~14px feature shows ~10% bigger) **and** 0.75 *alpha*
+   (faint). 1.12 does `glScaled(0.75)` on the **whole** icon (→12px) and keeps it
+   **opaque**. Now: `pose: translate(+2,+2) + scale(0.75)` + full 16×16 blit, opaque.
+   This is the "book icon ~10% too big" the user saw.
+2. **`drawKnowledges` grid icons** (knowledge-totals popup + in-page): the blit used
+   `width/height = 255` → **255×255 screen pixels** (giant). The earlier fix set `s=16`
+   but the blit still hard-coded 255. Now `blit(..., s, s, s, s)` = 16×16 (1.12's
+   `255*0.0625` = 15.9px).
+3. **`drawKnowledges` grid badge**: was a 15×15 **1:1 crop** (~40% bigger). 1.12 does
+   `glScaled(0.66)` on the whole icon (→~10.6px), 0.75 alpha, at (66,66)→+3,+3. Now:
+   `pose: translate(+3,+3) + scale(0.66)` + full 16×16 blit, 0.75 alpha.
+
+**Confirmed 1.12-faithful (no change needed):**
+- **Essence bookmark** ("Aspects of Essentia") shows only when `isResearchComplete(
+  "FIRSTSTEPS")` — 1.12 line 365, i.e. all 3 stages done, NOT at 2/3.
+- **KNOWLEDGETYPES in-page grid** at `sh - 16 + 210` (bottom of the page) is exactly
+  1.12 line 391 — it's the point of that page, shown without the popup.
+- **"clearly mark those things I still need to examine"** (FIRSTSTEPS stage 2 text)
+  is flavor — 1.12's thaumometer scans and shows aspects but draws no persistent
+  graphical marker on blocks.
+
+---
+
 ## 2026-10-02 — GUI polish: raw lang keys, nomicon icons, workbench label (commit 5e2ddd7)
 
 User reported 6 GUI issues; all fixed:
