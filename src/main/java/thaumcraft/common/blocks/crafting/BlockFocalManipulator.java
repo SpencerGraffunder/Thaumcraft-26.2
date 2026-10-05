@@ -96,7 +96,7 @@ public class BlockFocalManipulator extends BlockTCDevice {
             serverPlayer.openMenu(new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
-                    return Component.translatable("container.thaumcraft.focal_manipulator");
+                    return Component.translatable("block.thaumcraft.focal_manipulator");
                 }
                 @Override
                 public AbstractContainerMenu createMenu(int id, Inventory inv, Player pl) {

@@ -133,23 +133,22 @@ public class ItemSealPlacer extends Item implements ISealDisplayer {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        if (!sealKey.equals("blank")) {
-            ISeal seal = SealHandler.getSeal(sealKey);
-            if (seal != null) {
-                // Show seal description
-                builder.accept(Component.translatable("seal." + sealKey.replace(":", ".") + ".desc")
-                        .withStyle(style -> style.withColor(0x808080)));
-            }
-        }
+        // 1.12 ItemSealPlacer adds no tooltip of its own
         super.appendHoverText(stack, context, display, builder, flag);
     }
 
     @Override
     public Component getName(ItemStack stack) {
         if (sealKey.equals("blank")) {
-            return Component.translatable("item.thaumcraft.seal_blank");
+            return Component.translatable("item.thaumcraft.seal.blank");
         }
-        return Component.translatable("item.thaumcraft.seal." + sealKey.replace(":", "."));
+        return Component.translatable("item.thaumcraft.seal." + stripNamespace(sealKey));
+    }
+
+    /** Lang keys are namespaced-free, e.g. item.thaumcraft.seal.breaker for thaumcraft:breaker. */
+    private static String stripNamespace(String key) {
+        int i = key.indexOf(':');
+        return i >= 0 ? key.substring(i + 1) : key;
     }
 
     /**

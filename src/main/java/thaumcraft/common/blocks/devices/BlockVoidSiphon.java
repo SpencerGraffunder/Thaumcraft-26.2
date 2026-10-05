@@ -101,7 +101,7 @@ public class BlockVoidSiphon extends Block implements EntityBlock {
                 serverPlayer.openMenu(new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
-                        return Component.translatable("container.thaumcraft.void_siphon");
+                        return Component.translatable("block.thaumcraft.void_siphon");
                     }
                     @Override
                     public AbstractContainerMenu createMenu(int id, Inventory inv, Player pl) {

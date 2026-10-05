@@ -411,7 +411,7 @@ public class EntityPech extends Monster implements RangedAttackMob {
             serverPlayer.openMenu(new net.minecraft.world.MenuProvider() {
                 @Override
                 public net.minecraft.network.chat.Component getDisplayName() {
-                    return net.minecraft.network.chat.Component.translatable("container.thaumcraft.pech_trade");
+                    return net.minecraft.network.chat.Component.translatable("gui.thaumcraft.pech.trade");
                 }
 
                 @Override

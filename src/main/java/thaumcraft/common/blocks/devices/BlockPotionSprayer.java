@@ -98,7 +98,7 @@ public class BlockPotionSprayer extends Block implements EntityBlock {
             serverPlayer.openMenu(new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
-                    return Component.translatable("container.thaumcraft.potion_sprayer");
+                    return Component.translatable("block.thaumcraft.potion_sprayer");
                 }
                 @Override
                 public AbstractContainerMenu createMenu(int id, Inventory inv, Player pl) {

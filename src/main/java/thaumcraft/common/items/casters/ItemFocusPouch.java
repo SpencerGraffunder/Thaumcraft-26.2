@@ -240,7 +240,7 @@ public class ItemFocusPouch extends Item implements ICuriosItemHandler {
             serverPlayer.openMenu(new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
-                    return Component.translatable("container.thaumcraft.focus_pouch");
+                    return Component.translatable("item.thaumcraft.focus_pouch");
                 }
 
                 @Override

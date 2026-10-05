@@ -140,7 +140,7 @@ public class ItemHandMirror extends Item {
                     serverPlayer.openMenu(new MenuProvider() {
                         @Override
                         public Component getDisplayName() {
-                            return Component.translatable("container.thaumcraft.hand_mirror");
+                            return Component.translatable("item.thaumcraft.hand_mirror");
                         }
 
                         @Override

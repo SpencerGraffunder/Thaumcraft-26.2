@@ -98,7 +98,7 @@ public class BlockHungryChest extends Block implements EntityBlock {
             serverPlayer.openMenu(new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
-                    return Component.translatable("container.thaumcraft.hungry_chest");
+                    return Component.translatable("block.thaumcraft.hungry_chest");
                 }
 
                 @Override

@@ -64,7 +64,7 @@ public class ItemCelestialNotes extends ItemTCBase {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         super.appendHoverText(stack, context, display, builder, flag);
-        builder.accept(Component.translatable("item.thaumcraft.celestial_notes." + noteType.getId() + ".text")
+        builder.accept(Component.translatable("item.celestial_notes." + noteType.getId() + ".text")
                 .withStyle(ChatFormatting.AQUA));
     }
 

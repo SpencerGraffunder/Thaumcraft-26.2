@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.network.chat.Component;
+import thaumcraft.api.golems.seals.ISeal;
 import thaumcraft.api.golems.seals.ISealEntity;
 import thaumcraft.api.golems.seals.SealPos;
 import thaumcraft.common.golems.seals.SealEntity;
@@ -28,7 +29,14 @@ public class SealMenuProvider implements MenuProvider {
     
     @Override
     public Component getDisplayName() {
-        return Component.translatable("golem.seal.config");
+        // 1.12 titles the seal config GUI with the seal being configured
+        ISeal seal = this.seal != null ? this.seal.getSeal() : null;
+        if (seal != null) {
+            String key = seal.getKey();
+            int i = key.indexOf(':');
+            return Component.translatable("item.thaumcraft.seal." + (i >= 0 ? key.substring(i + 1) : key));
+        }
+        return Component.translatable("item.thaumcraft.seal.blank");
     }
     
     @Override
