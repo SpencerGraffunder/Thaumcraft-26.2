@@ -435,7 +435,7 @@ public class ToolEvents {
         }
         
         // LAMPLIGHT - Place light in dark areas
-        if (enchantments.contains(EnumInfusionEnchantment.LAMPLIGHT) && !player.isShiftKeyDown()) {
+        if (enchantments.contains(EnumInfusionEnchantment.LAMPLIGHT) && !player.isShiftKeyDown() && level.getServer() != null) {
             // Schedule for next tick to run after block is broken
             level.getServer().execute(() -> {
                 if (level.isEmptyBlock(pos) && level.getRawBrightness(pos, 0) < 10) {

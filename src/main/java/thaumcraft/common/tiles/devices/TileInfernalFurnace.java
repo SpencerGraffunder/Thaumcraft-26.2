@@ -143,7 +143,10 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
     private ItemStack getSmeltingResult(ItemStack input) {
         if (input.isEmpty() || level == null) return ItemStack.EMPTY;
         
-        RecipeManager recipeManager = level.getServer().getRecipeManager();
+        // level.getServer() is null whenever this is reached from a client-side context
+        // (menu/screen preview), which NPE'd the whole furnace. The level's own recipe access
+        // works on both sides.
+        if (!(level.recipeAccess() instanceof RecipeManager recipeManager)) return ItemStack.EMPTY;
         Optional<SmeltingRecipe> recipe = recipeManager.getRecipeFor(
                 RecipeType.SMELTING, 
                 new SingleRecipeInput(input), 
@@ -161,7 +164,7 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
         if (level == null) return 0;
         
         // Try to get experience from recipe
-        RecipeManager recipeManager = level.getServer().getRecipeManager();
+        if (!(level.recipeAccess() instanceof RecipeManager recipeManager)) return 0f;
         for (RecipeHolder<SmeltingRecipe> holder : recipeManager.recipeMap().byType(RecipeType.SMELTING)) {
             SmeltingRecipe recipe = holder.value();
             if (ItemStack.isSameItem(recipe.assemble(new SingleRecipeInput(ItemStack.EMPTY)), result)) {

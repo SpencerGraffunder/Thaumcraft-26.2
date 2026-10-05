@@ -74,10 +74,15 @@ public class ThaumcraftJEIPlugin implements IModPlugin {
         }
         
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || mc.level.getServer() == null) {
+        if (mc.level == null) {
             return;
         }
-        RecipeManager recipeManager = mc.level.getServer().getRecipeManager();
+        // JEI registers recipes on the CLIENT, where level.getServer() is always null -- the old
+        // gate made this method return early, so JEI showed ZERO Thaumcraft recipes. The client
+        // level's own recipe access is the synced RecipeManager, which works on both sides.
+        if (!(mc.level.recipeAccess() instanceof RecipeManager recipeManager)) {
+            return;
+        }
 
         // Get all arcane recipes (both shaped and shapeless use same recipe type)
         List<IArcaneRecipe> arcaneRecipes = recipeManager.recipeMap().byType(ModRecipeTypes.ARCANE_WORKBENCH.get())
