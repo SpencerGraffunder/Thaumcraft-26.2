@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "ESSENTIASMELTER",
+  "research": "LIQUIDDEATH",
   "catalyst": "minecraft:bucket",
   "aspects": {
     "mortuus": 100,
