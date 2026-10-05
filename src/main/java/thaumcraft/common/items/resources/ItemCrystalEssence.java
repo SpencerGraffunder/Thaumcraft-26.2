@@ -78,7 +78,9 @@ public class ItemCrystalEssence extends Item implements IEssentiaContainerItem {
             // Format: "Aspect Crystal" or localized version
             return Component.translatable(this.getDescriptionId(), aspect.getName());
         }
-        return super.getName(stack);
+        // A generic crystal with no aspect assigned yet (e.g. a recipe ingredient) would otherwise show the
+        // raw "item.thaumcraft.crystal_essence" lang value ("%s Vis Crystal") with an unfilled %s placeholder.
+        return Component.translatable("item.thaumcraft.crystal_essence.generic");
     }
     
     // ==================== Random Aspect Assignment ====================

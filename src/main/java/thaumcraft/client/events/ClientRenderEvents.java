@@ -11,7 +11,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.golems.ISealDisplayer;
+import thaumcraft.client.ThaumometerHUD;
 import thaumcraft.client.renderers.SealRenderer;
+import thaumcraft.client.renderers.ThaumometerTagRenderer;
+import thaumcraft.common.items.tools.ItemThaumometer;
 
 /**
  * ClientRenderEvents - Handles client-side rendering events.
@@ -44,6 +47,33 @@ public class ClientRenderEvents {
                 player
             );
         }
+
+        // Check if player is holding a thaumometer with a scan target: draw the target's aspect
+        // tags above it (1.12 RenderEventHandler.thaumTarget + drawTagsOnContainer).
+        if (isHoldingThaumometer(player) && ThaumometerHUD.target != null) {
+            ThaumometerTagRenderer.renderTags(
+                event.getPoseStack(),
+                event.getSubmitNodeCollector(),
+                player
+            );
+        }
+    }
+    
+    /**
+     * Check if the player is holding a thaumometer (main or off hand).
+     */
+    private static boolean isHoldingThaumometer(Player player) {
+        ItemStack mainHand = player.getMainHandItem();
+        if (!mainHand.isEmpty() && mainHand.getItem() instanceof ItemThaumometer) {
+            return true;
+        }
+        
+        ItemStack offHand = player.getOffhandItem();
+        if (!offHand.isEmpty() && offHand.getItem() instanceof ItemThaumometer) {
+            return true;
+        }
+        
+        return false;
     }
     
     /**

@@ -14,8 +14,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.core.particles.ParticleTypes;
 import thaumcraft.api.research.ScanningManager;
+import thaumcraft.client.ThaumometerHUD;
+import thaumcraft.client.fx.FXDispatcher;
 import thaumcraft.common.items.ItemTC;
 import thaumcraft.init.ModSounds;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -45,16 +46,27 @@ public class ItemThaumometer extends ItemTC {
                 ModSounds.SCAN.get(), SoundSource.PLAYERS, 0.5f, 1.0f);
 
         if (level.isClientSide()) {
-            // Client-side: spawn scanning beam particles
-            Vec3 eyePos = player.getEyePosition();
-            Vec3 lookVec = player.getLookAngle();
-            for (int i = 0; i < 5; i++) {
-                double t = i / 4.0;
-                level.addParticle(ParticleTypes.ENCHANT, 
-                    eyePos.x + lookVec.x * t * SCAN_RANGE,
-                    eyePos.y + lookVec.y * t * SCAN_RANGE,
-                    eyePos.z + lookVec.z * t * SCAN_RANGE,
-                    0, 0, 0);
+            // 1.12-faithful: draw blockRunes (runes) on the scan target (entity or block) instead of
+            // vanilla ENCHANT particles. Matches 1.12 ItemThaumometer.drawFX.
+            Entity target = getTargetEntity(level, player, SCAN_RANGE);
+            if (target != null) {
+                for (int a = 0; a < 10; ++a) {
+                    FXDispatcher.INSTANCE.blockRunes(
+                        target.getX() - 0.5, target.getY() + target.getBbHeight() / 2.0f, target.getZ() - 0.5,
+                        0.3f + level.getRandom().nextFloat() * 0.7f, 0.0f, 0.3f + level.getRandom().nextFloat() * 0.7f,
+                        (int) (target.getBbHeight() * 15.0f), 0.03f);
+                }
+            } else {
+                BlockHitResult blockHit = getTargetBlock(level, player, SCAN_RANGE);
+                if (blockHit.getType() == HitResult.Type.BLOCK) {
+                    BlockPos pos = blockHit.getBlockPos();
+                    for (int a = 0; a < 10; ++a) {
+                        FXDispatcher.INSTANCE.blockRunes(
+                            pos.getX(), pos.getY() + 0.25, pos.getZ(),
+                            0.3f + level.getRandom().nextFloat() * 0.7f, 0.0f, 0.3f + level.getRandom().nextFloat() * 0.7f,
+                            15, 0.03f);
+                    }
+                }
             }
             return InteractionResult.SUCCESS;
         }
@@ -107,21 +119,23 @@ public class ItemThaumometer extends ItemTC {
      * Highlight scannable things on the client.
      */
     private void highlightScannables(Level level, Player player) {
-        // Highlight scannable targets with particles
+        // 1.12-faithful: TC scan sparkles (FXDispatcher.scanHighlight) instead of vanilla ENCHANT.
+        // Matches 1.12 ItemThaumometer.onUpdate (scanHighlight every 5 ticks while held).
         Entity target = getTargetEntity(level, player, 16.0);
+        // 1.12 RenderEventHandler.thaumTarget: the aspect-tag renderer reads this to draw the
+        // target's aspects above it while the thaumometer is held.
+        ThaumometerHUD.target = target;
         if (target != null && ScanningManager.isThingStillScannable(player, target)) {
-            level.addParticle(ParticleTypes.ENCHANT, 
-                target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(),
-                0, 0.1, 0);
+            FXDispatcher.INSTANCE.scanHighlight(target);
         }
         
         // Also highlight blocks
         BlockHitResult blockHit = getTargetBlock(level, player, 16.0);
         if (blockHit.getType() == HitResult.Type.BLOCK) {
             BlockPos pos = blockHit.getBlockPos();
-            level.addParticle(ParticleTypes.ENCHANT, 
-                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                0, 0.1, 0);
+            if (ScanningManager.isThingStillScannable(player, pos)) {
+                FXDispatcher.INSTANCE.scanHighlight(pos);
+            }
         }
     }
 
