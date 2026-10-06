@@ -4,6 +4,35 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-06 — 3D in-hand Thaumometer model (commit 92b0ecd)
+
+User (3×): "still need the correct model in hand" — the port rendered the
+thaumometer as a flat 16×16 icon. 1.12's in-hand model is a real 3D object:
+`models/item/scanner.obj` (a hexagonal washer: 12-gon ring, outer R=1.4 / inner
+R=1.0, ~0.2 thick) textured `scanner.png` (body, UV-unrolled) +
+`scanscreen.png` (translucent blue hexagon pane) — the "shaded window".
+
+**26.3 has no OBJ loader** (vanilla model system is cuboid-only; the port
+hand-converted its other .obj assets), so the device is reconstructed:
+
+- Baked a front view of the *actual* 1.12 OBJ (Python renderer over the real
+  geometry + textures, bilinear sampling, alpha preserved) →
+  `textures/item/thaumometer_face.png` (256×222): gold frame, shaded blue
+  window, transparent corners → the hex silhouette shows through.
+- `textures/item/thaumometer_edge.png`: dark-gold rim for the 4 side faces.
+- `models/item/thaumometer.json`: single cuboid slab [0,6,1]→[16,10,15],
+  face texture on up/down, edge on the rim, `gui_light: front`.
+- Display transforms: firstperson x=90 (window faces the player, like 1.12's
+  `rotation x=90`), scale 1.4; gui/thirdperson/ground/fixed/head set for the
+  26.3 conventions (26.3 first-person items render in-world, so 1.12's 2.8-block
+  raw size is scaled to ~1.4 blocks rather than 1:1).
+
+Verified: `runClient` reaches the menu with **0 "Missing item model" / 0
+"Missing texture"** for thaumcraft; jar installed to the Modrinth 26.3 profile.
+Open: in-game size/angle is a best-guess transform — if the held device looks
+wrong (upside down, too big/small, wrong angle) the knobs are the `display`
+values in `models/item/thaumometer.json` and the V-flip in the bake script.
+
 ## 2026-10-06 — Thaumometer HUD 1.12 parity + research sync + audit K2 (commits b904dda, 2b6f668, b68dacb, eb0c875)
 
 User: "not showing the correct thing" on the thaumometer HUD. Root causes:

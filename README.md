@@ -128,6 +128,17 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   lands). Audit K2: 6 invented crucible recipes dropped and 3 bogus research
   gates removed. The temporary `[TC-DIAG]` trace used to diagnose the Salis
   chain was removed once the chain was fixed.
+- **3D in-hand Thaumometer model (2026-10-06, commit 92b0ecd):** 26.3 dropped
+  OBJ item models, so the flat 16x16 icon was the best the port could do. The
+  real 1.12 model is `scanner.obj` — a hexagonal washer body (`scanner.png`
+  UV-unrolled) with a translucent `scanscreen` hexagon pane. It is now
+  reconstructed as a cuboid slab: a front face of the actual 1.12 model baked
+  to `textures/item/thaumometer_face.png` (gold frame + shaded blue window,
+  transparent corners for the hex silhouette) on the up/down faces, a dark-gold
+  rim on the sides, and a first-person transform (x=90, scale 1.4) that faces
+  the window at the player like 1.12. The original `scanner.obj`/`mtl`/`png`
+  remain in the jar as reference assets. `runClient` bakes it with 0 model/
+  texture errors.
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a
   plain (integrated / Modrinth) client never sees — so opening the creative
