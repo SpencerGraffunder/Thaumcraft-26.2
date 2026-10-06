@@ -4,6 +4,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -40,11 +41,14 @@ public class HudHandler {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#######.#");
     
+    /** 1.12 HudHandler.HUD = thaumcraft:textures/gui/hud.png (byte-identical asset in this port). */
+    public static final Identifier HUD_TEXTURE = Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "textures/gui/hud.png");
+    
     // Current aura data (updated by packets from server)
     public static AuraChunk currentAura = new AuraChunk(null, (short) 0, 0.0f, 0.0f);
     
-    // Max vis for gauge scaling
-    private static final float MAX_VIS = 500.0f;
+    // 1.12 HudHandler.renderThaumometerHud divides the aura values by 525
+    public static final float MAX_VIS = 525.0f;
     
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
@@ -86,61 +90,77 @@ public class HudHandler {
     private static void renderThaumometerHud(GuiGraphicsExtractor graphics, Minecraft mc, Player player, 
                                               int yOffset, DeltaTracker deltaTracker) {
         
-        int x = 2;
-        int y = yOffset + 2;
-        
-        // Get aura values
-        float base = currentAura != null ? currentAura.getBase() : 100;
-        float vis = currentAura != null ? currentAura.getVis() : 50;
-        float flux = currentAura != null ? currentAura.getFlux() : 10;
-        
-        // Normalize to 0-1 range
-        float visNorm = Mth.clamp(vis / MAX_VIS, 0, 1);
-        float fluxNorm = Mth.clamp(flux / MAX_VIS, 0, 1);
-        float baseNorm = Mth.clamp(base / MAX_VIS, 0, 1);
-        
-        // Scale if total exceeds 1
-        if (visNorm + fluxNorm > 1) {
-            float scale = 1.0f / (visNorm + fluxNorm);
-            visNorm *= scale;
-            fluxNorm *= scale;
+        // ---- 1.12 HudHandler.renderThaumometerHud, 1:1 ----
+        // GL11.glTranslated(2.0, shifty, 0.0) wraps every quad below, so x = 2 + <quad x>.
+        final int x = 2;
+        final int hudH = 64; // gauge travel is 64px in hud.png
+        float count = mc.player.tickCount + deltaTracker.getGameTimeDeltaPartialTick(false);
+        float count2 = mc.player.tickCount / 3.0f + deltaTracker.getGameTimeDeltaPartialTick(false);
+
+        float base = Mth.clamp(currentAura.getBase() / MAX_VIS, 0.0f, 1.0f);
+        float vis = Mth.clamp(currentAura.getVis() / MAX_VIS, 0.0f, 1.0f);
+        float flux = Mth.clamp(currentAura.getFlux() / MAX_VIS, 0.0f, 1.0f);
+        if (flux + vis > 1.0f) {
+            float m = 1.0f / (flux + vis);
+            base *= m;
+            vis *= m;
+            flux *= m;
         }
-        
-        int gaugeHeight = 64;
-        int gaugeWidth = 8;
-        
-        // Textured HUD frame rendering — 26.2 render-state rewrite: the old
-        // blit(Identifier, ...) overload is gone (needs a RenderPipeline + screen-space
-        // UVs). Skipped until the texture pipeline is wired (see ThaumcraftClient).
-        
-        // Draw vis bar (purple)
-        if (visNorm > 0) {
-            int visHeight = (int) (gaugeHeight * visNorm);
-            int visY = y + 10 + (gaugeHeight - visHeight);
-            graphics.fill(x + 5, visY, x + 5 + gaugeWidth, visY + visHeight, 0xB0664499);
+
+        // Vis column: glTranslated(5, 10 + (1 - vis) * 64) then glScaled(1, vis) over an 8x64 quad
+        float start = 10.0f + (1.0f - vis) * hudH;
+        if (vis > 0.0f) {
+            int visH = (int) (vis * hudH);
+            blitHud(graphics, x + 5, (int) (yOffset + start), 88, 56, 8, hudH, 8, visH, 0xFFB266E5);
+            // additive white shimmer, source row scrolls with the tick counter
+            blitHud(graphics, x + 5, (int) (yOffset + start), 96, (int) (56 + count % 64.0f),
+                    8, visH, 8, visH, 0x7FFFFFFF);
+            if (player.isShiftKeyDown()) {
+                drawSmallText(graphics, mc, DECIMAL_FORMAT.format(currentAura.getVis()),
+                        x + 16, (int) (yOffset + start), 0xFFEEAAFF);
+            }
         }
-        
-        // Draw flux bar (dark purple) below vis
-        if (fluxNorm > 0) {
-            int fluxHeight = (int) (gaugeHeight * fluxNorm);
-            int fluxY = y + 10 + (int)(gaugeHeight * (1 - visNorm - fluxNorm));
-            graphics.fill(x + 5, fluxY, x + 5 + gaugeWidth, fluxY + fluxHeight, 0xB0331144);
+
+        // Flux column sits directly under the vis column
+        if (flux > 0.0f) {
+            start = 10.0f + (1.0f - flux - vis) * hudH;
+            int fluxH = (int) (flux * hudH);
+            blitHud(graphics, x + 5, (int) (yOffset + start), 88, 56, 8, hudH, 8, fluxH, 0xFF401A4C);
+            blitHud(graphics, x + 5, (int) (yOffset + start), 104, (int) (120 - count2 % 64.0f),
+                    8, fluxH, 8, fluxH, 0x7FB266FF);
+            if (player.isShiftKeyDown()) {
+                drawSmallText(graphics, mc, DECIMAL_FORMAT.format(currentAura.getFlux()),
+                        x + 16, (int) (yOffset + start) - 4, 0xFFAA11BB);
+            }
         }
-        
-        // Draw base marker line
-        int baseY = y + 8 + (int)((1 - baseNorm) * gaugeHeight);
-        graphics.fill(x + 2, baseY, x + 16, baseY + 2, 0xFFFFFFFF);
-        
-        // Draw values if sneaking
-        if (player.isShiftKeyDown()) {
-            Font font = mc.font;
-            int textX = x + 18;
-            int visTextY = y + 20;
-            int fluxTextY = y + 40;
-            
-            graphics.text(font, DECIMAL_FORMAT.format(vis), textX, visTextY, 0xFFEE99FF, false);
-            graphics.text(font, DECIMAL_FORMAT.format(flux), textX, fluxTextY, 0xFFAA33BB, false);
-        }
+
+        // Gauge frame: quad(1, 1, 72, 48, 16, 80)
+        blitHud(graphics, x + 1, yOffset + 1, 72, 48, 16, 80, 16, 80, 0xFFFFFFFF);
+
+        // Base (natural aura) pip: quad(2, 8 + (1 - base) * 64, 117, 61, 14, 5)
+        int baseStart = 8 + (int) ((1.0f - base) * hudH);
+        blitHud(graphics, x + 2, yOffset + baseStart, 117, 61, 14, 5, 14, 5, 0xFFFFFFFF);
+    }
+
+    /**
+     * Blit a rectangle out of the 256x256 hud.png, 1.12 UtilsFX.drawTexturedQuad style:
+     * the source region (su,sv,sw,sh) is stretched to the drawn size (dw,dh).
+     */
+    private static void blitHud(GuiGraphicsExtractor graphics, int x, int y, int su, int sv,
+                                int sw, int sh, int dw, int dh, int color) {
+        if (dw <= 0 || dh <= 0) return;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, HUD_TEXTURE, x, y, su, sv, dw, dh, 256, 256, color);
+    }
+
+    /** 1.12 drew the sneaking read-out with glScaled(0.5, 0.5, 0.5). */
+    private static void drawSmallText(GuiGraphicsExtractor graphics, Minecraft mc, String msg,
+                                      int x, int y, int color) {
+        var pose = graphics.pose();
+        pose.pushMatrix();
+        pose.translate((float) x, (float) y);
+        pose.scale(0.5f, 0.5f);
+        graphics.text(mc.font, msg, 0, 0, color, false);
+        pose.popMatrix();
     }
     
     /**

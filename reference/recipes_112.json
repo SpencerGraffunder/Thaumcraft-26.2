@@ -1,0 +1,4156 @@
+{
+ "vis_crystal_\" + aspect.getTag(": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 190,
+   "research": "BASEALCHEMY",
+   "result": "ThaumcraftApiHelper.makeCrystal(aspect)",
+   "ingredient": "\"nuggetQuartz\"",
+   "aspects": []
+  }
+ ],
+ "nitor": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 198,
+   "research": "UNLOCKALCHEMY@3",
+   "result": "BlocksTC.nitor.get(EnumDyeColor.YELLOW)",
+   "ingredient": "\"dustGlowstone\"",
+   "aspects": [
+    [
+     "ENERGY",
+     "10"
+    ],
+    [
+     "FIRE",
+     "10"
+    ],
+    [
+     "LIGHT",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "alumentum": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 216,
+   "research": "ALUMENTUM",
+   "result": "ItemsTC.alumentum",
+   "ingredient": "Items.field_151044_h, 1, 32767",
+   "aspects": [
+    [
+     "ENERGY",
+     "10"
+    ],
+    [
+     "FIRE",
+     "10"
+    ],
+    [
+     "ENTROPY",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "brassingot": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 225,
+   "research": "METALLURGY@1",
+   "result": "ItemsTC.ingots, 1, 2",
+   "ingredient": "\"ingotIron\"",
+   "aspects": [
+    [
+     "TOOL",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "thaumiumingot": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 229,
+   "research": "METALLURGY@2",
+   "result": "ItemsTC.ingots, 1, 0",
+   "ingredient": "\"ingotIron\"",
+   "aspects": [
+    [
+     "MAGIC",
+     "5"
+    ],
+    [
+     "EARTH",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "voidingot": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 233,
+   "research": "BASEELDRITCH",
+   "result": "ItemsTC.ingots, 1, 1",
+   "ingredient": "ItemsTC.voidSeed",
+   "aspects": [
+    [
+     "METAL",
+     "10"
+    ],
+    [
+     "FLUX",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "hedge_tallow": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 242,
+   "research": "HEDGEALCHEMY@1",
+   "result": "ItemsTC.tallow",
+   "ingredient": "Items.field_151078_bh",
+   "aspects": [
+    [
+     "FIRE",
+     "1"
+    ]
+   ]
+  }
+ ],
+ "hedge_leather": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 246,
+   "research": "HEDGEALCHEMY@1",
+   "result": "Items.field_151116_aA",
+   "ingredient": "Items.field_151078_bh",
+   "aspects": [
+    [
+     "AIR",
+     "3"
+    ],
+    [
+     "BEAST",
+     "3"
+    ]
+   ]
+  }
+ ],
+ "focus_1": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 255,
+   "research": "UNLOCKAUROMANCY",
+   "result": "ItemsTC.focus1",
+   "ingredient": "ConfigItems.ORDER_CRYSTAL",
+   "aspects": [
+    [
+     "CRYSTAL",
+     "20"
+    ],
+    [
+     "MAGIC",
+     "10"
+    ],
+    [
+     "AURA",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "metal_purification_iron": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 265,
+   "research": "METALPURIFICATION",
+   "result": "ItemsTC.clusters, 1, 0",
+   "ingredient": "\"oreIron\"",
+   "aspects": [
+    [
+     "METAL",
+     "5"
+    ],
+    [
+     "ORDER",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "metal_purification_gold": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 271,
+   "research": "METALPURIFICATION",
+   "result": "ItemsTC.clusters, 1, 1",
+   "ingredient": "\"oreGold\"",
+   "aspects": [
+    [
+     "METAL",
+     "5"
+    ],
+    [
+     "ORDER",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "metal_purification_cinnabar": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 277,
+   "research": "METALPURIFICATION",
+   "result": "ItemsTC.clusters, 1, 6",
+   "ingredient": "\"oreCinnabar\"",
+   "aspects": [
+    [
+     "METAL",
+     "5"
+    ],
+    [
+     "ORDER",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "metal_purification_copper": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 284,
+   "research": "METALPURIFICATION",
+   "result": "ItemsTC.clusters, 1, 2",
+   "ingredient": "\"oreCopper\"",
+   "aspects": [
+    [
+     "METAL",
+     "5"
+    ],
+    [
+     "ORDER",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "metal_purification_tin": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 293,
+   "research": "METALPURIFICATION",
+   "result": "ItemsTC.clusters, 1, 3",
+   "ingredient": "\"oreTin\"",
+   "aspects": [
+    [
+     "METAL",
+     "5"
+    ],
+    [
+     "ORDER",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "metal_purification_silver": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 302,
+   "research": "METALPURIFICATION",
+   "result": "ItemsTC.clusters, 1, 4",
+   "ingredient": "\"oreSilver\"",
+   "aspects": [
+    [
+     "METAL",
+     "5"
+    ],
+    [
+     "ORDER",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "metal_purification_lead": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 311,
+   "research": "METALPURIFICATION",
+   "result": "ItemsTC.clusters, 1, 5",
+   "ingredient": "\"oreLead\"",
+   "aspects": [
+    [
+     "METAL",
+     "5"
+    ],
+    [
+     "ORDER",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "LiquidDeath": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 319,
+   "research": "LIQUIDDEATH",
+   "result": "FluidUtil.getFilledBucket(new FluidStack(ConfigBlocks.FluidDeath.instance, 1000))",
+   "ingredient": "Items.field_151133_ar",
+   "aspects": [
+    [
+     "DEATH",
+     "100"
+    ],
+    [
+     "ALCHEMY",
+     "20"
+    ],
+    [
+     "ENTROPY",
+     "50"
+    ]
+   ]
+  }
+ ],
+ "BottleTaint": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 328,
+   "research": "BOTTLETAINT",
+   "result": "ItemsTC.bottleTaint",
+   "ingredient": "ItemPhial.makeFilledPhial(Aspect.FLUX)",
+   "aspects": [
+    [
+     "FLUX",
+     "30"
+    ],
+    [
+     "WATER",
+     "30"
+    ]
+   ]
+  }
+ ],
+ "BathSalts": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 337,
+   "research": "BATHSALTS",
+   "result": "ItemsTC.bathSalts",
+   "ingredient": "ItemsTC.salisMundus",
+   "aspects": [
+    [
+     "MIND",
+     "40"
+    ],
+    [
+     "AIR",
+     "40"
+    ],
+    [
+     "ORDER",
+     "40"
+    ],
+    [
+     "LIFE",
+     "40"
+    ]
+   ]
+  }
+ ],
+ "SaneSoap": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 346,
+   "research": "SANESOAP",
+   "result": "ItemsTC.sanitySoap",
+   "ingredient": "BlocksTC.fleshBlock",
+   "aspects": [
+    [
+     "MIND",
+     "75"
+    ],
+    [
+     "ELDRITCH",
+     "50"
+    ],
+    [
+     "ORDER",
+     "75"
+    ],
+    [
+     "LIFE",
+     "50"
+    ]
+   ]
+  }
+ ],
+ "SealCollect": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 355,
+   "research": "SEALCOLLECT",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:pickup\")",
+   "ingredient": "ItemsTC.seals",
+   "aspects": [
+    [
+     "DESIRE",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealCollectAdv": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 359,
+   "research": "SEALCOLLECT&&MINDBIOTHAUMIC",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:pickup_advanced\")",
+   "ingredient": "GolemHelper.getSealStack(\"thaumcraft:pickup\")",
+   "aspects": [
+    [
+     "SENSES",
+     "10"
+    ],
+    [
+     "MIND",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealStore": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 368,
+   "research": "SEALSTORE",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:fill\")",
+   "ingredient": "ItemsTC.seals",
+   "aspects": [
+    [
+     "AVERSION",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealStoreAdv": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 372,
+   "research": "SEALSTORE&&MINDBIOTHAUMIC",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:fill_advanced\")",
+   "ingredient": "GolemHelper.getSealStack(\"thaumcraft:fill\")",
+   "aspects": [
+    [
+     "SENSES",
+     "10"
+    ],
+    [
+     "MIND",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealEmpty": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 381,
+   "research": "SEALEMPTY",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:empty\")",
+   "ingredient": "ItemsTC.seals",
+   "aspects": [
+    [
+     "VOID",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealEmptyAdv": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 385,
+   "research": "SEALEMPTY&&MINDBIOTHAUMIC",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:empty_advanced\")",
+   "ingredient": "GolemHelper.getSealStack(\"thaumcraft:empty\")",
+   "aspects": [
+    [
+     "SENSES",
+     "10"
+    ],
+    [
+     "MIND",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealProvide": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 394,
+   "research": "SEALPROVIDE",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:provider\")",
+   "ingredient": "GolemHelper.getSealStack(\"thaumcraft:empty_advanced\")",
+   "aspects": [
+    [
+     "EXCHANGE",
+     "10"
+    ],
+    [
+     "DESIRE",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealStock": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 403,
+   "research": "SEALSTOCK",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:stock\")",
+   "ingredient": "GolemHelper.getSealStack(\"thaumcraft:fill\")",
+   "aspects": [
+    [
+     "MIND",
+     "10"
+    ],
+    [
+     "DESIRE",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealGuard": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 412,
+   "research": "SEALGUARD",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:guard\")",
+   "ingredient": "ItemsTC.seals",
+   "aspects": [
+    [
+     "AVERSION",
+     "20"
+    ],
+    [
+     "PROTECT",
+     "20"
+    ]
+   ]
+  }
+ ],
+ "SealGuardAdv": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 421,
+   "research": "SEALGUARD&&MINDBIOTHAUMIC",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:guard_advanced\")",
+   "ingredient": "GolemHelper.getSealStack(\"thaumcraft:guard\")",
+   "aspects": [
+    [
+     "SENSES",
+     "20"
+    ],
+    [
+     "MIND",
+     "20"
+    ]
+   ]
+  }
+ ],
+ "SealLumber": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 430,
+   "research": "SEALLUMBER",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:lumber\")",
+   "ingredient": "GolemHelper.getSealStack(\"thaumcraft:breaker\")",
+   "aspects": [
+    [
+     "PLANT",
+     "40"
+    ],
+    [
+     "SENSES",
+     "20"
+    ]
+   ]
+  }
+ ],
+ "SealUse": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 439,
+   "research": "SEALUSE",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:use\")",
+   "ingredient": "ItemsTC.seals",
+   "aspects": [
+    [
+     "CRAFT",
+     "20"
+    ],
+    [
+     "SENSES",
+     "10"
+    ],
+    [
+     "MIND",
+     "20"
+    ]
+   ]
+  }
+ ],
+ "SealBreakAdv": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 448,
+   "research": "SEALBREAK&&MINDBIOTHAUMIC",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:breaker_advanced\")",
+   "ingredient": "GolemHelper.getSealStack(\"thaumcraft:breaker\")",
+   "aspects": [
+    [
+     "SENSES",
+     "10"
+    ],
+    [
+     "MIND",
+     "10"
+    ],
+    [
+     "TOOL",
+     "20"
+    ]
+   ]
+  }
+ ],
+ "EverfullUrn": [
+  {
+   "station": "crucible",
+   "kind": "addCrucibleRecipe",
+   "line": 457,
+   "research": "EVERFULLURN",
+   "result": "BlocksTC.everfullUrn",
+   "ingredient": "Items.field_151162_bE",
+   "aspects": [
+    [
+     "WATER",
+     "30"
+    ],
+    [
+     "CRAFT",
+     "10"
+    ],
+    [
+     "EARTH",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "mechanism_simple": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 469,
+   "research": "BASEARTIFICE",
+   "vis": "10",
+   "aspects": [
+    [
+     "FIRE",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.mechanismSimple",
+   "pattern": [
+    " B ",
+    "ISI",
+    " B "
+   ],
+   "key": {
+    "B": "\"plateBrass\"",
+    "I": "\"plateIron\"",
+    "S": "\"stickWood\""
+   }
+  }
+ ],
+ "mechanism_complex": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 488,
+   "research": "BASEARTIFICE",
+   "vis": "50",
+   "aspects": [
+    [
+     "FIRE",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.mechanismComplex",
+   "pattern": [
+    " M ",
+    "TQT",
+    " M "
+   ],
+   "key": {
+    "T": "\"plateThaumium\"",
+    "Q": "Blocks.field_150331_J",
+    "M": "ItemsTC.mechanismSimple"
+   }
+  }
+ ],
+ "vis_resonator": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 507,
+   "research": "UNLOCKAUROMANCY@2",
+   "vis": "50",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.visResonator",
+   "pattern": [],
+   "key": {}
+  }
+ ],
+ "activatorrail": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 513,
+   "research": "FIRSTSTEPS",
+   "vis": "10",
+   "aspects": [],
+   "result": "BlocksTC.activatorRail",
+   "pattern": [],
+   "key": {}
+  }
+ ],
+ "thaumometer": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 517,
+   "research": "FIRSTSTEPS@2",
+   "vis": "20",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "EARTH",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ],
+    [
+     "FIRE",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ],
+    [
+     "ENTROPY",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.thaumometer",
+   "pattern": [
+    " I ",
+    "IGI",
+    " I "
+   ],
+   "key": {
+    "I": "\"ingotGold\"",
+    "G": "Blocks.field_150410_aZ"
+   }
+  }
+ ],
+ "sanitychecker": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 534,
+   "research": "WARP",
+   "vis": "20",
+   "aspects": [
+    [
+     "ORDER",
+     "1"
+    ],
+    [
+     "ENTROPY",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.sanityChecker",
+   "pattern": [
+    "BN ",
+    "M N",
+    "BN "
+   ],
+   "key": {
+    "N": "\"nuggetBrass\"",
+    "B": "ItemsTC.brain",
+    "M": "ItemsTC.mirroredGlass"
+   }
+  }
+ ],
+ "rechargepedestal": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 553,
+   "research": "RECHARGEPEDESTAL",
+   "vis": "100",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.rechargePedestal",
+   "pattern": [
+    " R ",
+    "DID",
+    "SSS"
+   ],
+   "key": {
+    "I": "\"ingotGold\"",
+    "D": "\"gemDiamond\"",
+    "R": "ItemsTC.visResonator",
+    "S": "\"stone\""
+   }
+  }
+ ],
+ "workbenchcharger": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 574,
+   "research": "WORKBENCHCHARGER",
+   "vis": "200",
+   "aspects": [
+    [
+     "AIR",
+     "2"
+    ],
+    [
+     "ORDER",
+     "2"
+    ]
+   ],
+   "result": "BlocksTC.arcaneWorkbenchCharger",
+   "pattern": [
+    " R ",
+    "W W",
+    "I I"
+   ],
+   "key": {
+    "I": "\"ingotIron\"",
+    "R": "ItemsTC.visResonator",
+    "W": "BlocksTC.plankGreatwood"
+   }
+  }
+ ],
+ "wand_workbench": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 593,
+   "research": "BASEAUROMANCY@2",
+   "vis": "100",
+   "aspects": [
+    [
+     "EARTH",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.wandWorkbench",
+   "pattern": [
+    "ISI",
+    "BRB",
+    "GTG"
+   ],
+   "key": {
+    "S": "BlocksTC.slabArcaneStone",
+    "T": "BlocksTC.tableStone",
+    "R": "ItemsTC.visResonator",
+    "B": "BlocksTC.stoneArcane",
+    "G": "\"ingotGold\"",
+    "I": "\"plateIron\""
+   }
+  }
+ ],
+ "caster_basic": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 618,
+   "research": "UNLOCKAUROMANCY@2",
+   "vis": "100",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "EARTH",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ],
+    [
+     "FIRE",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ],
+    [
+     "ENTROPY",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.casterBasic",
+   "pattern": [
+    "III",
+    "LRL",
+    "LTL"
+   ],
+   "key": {
+    "T": "ItemsTC.thaumometer",
+    "R": "ItemsTC.visResonator",
+    "L": "\"leather\"",
+    "I": "\"ingotIron\""
+   }
+  }
+ ],
+ "EnchantedFabric": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 639,
+   "research": "UNLOCKINFUSION",
+   "vis": "5",
+   "aspects": [],
+   "result": "ItemsTC.fabric",
+   "pattern": [
+    " S ",
+    "SCS",
+    " S "
+   ],
+   "key": {
+    "S": "\"string\"",
+    "C": "Blocks.field_150325_L, 1, 32767"
+   }
+  }
+ ],
+ "RobeChest": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 656,
+   "research": "UNLOCKINFUSION",
+   "vis": "100",
+   "aspects": [],
+   "result": "ItemsTC.clothChest, 1",
+   "pattern": [
+    "I I",
+    "III",
+    "III"
+   ],
+   "key": {
+    "I": "ItemsTC.fabric"
+   }
+  }
+ ],
+ "RobeLegs": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 662,
+   "research": "UNLOCKINFUSION",
+   "vis": "100",
+   "aspects": [],
+   "result": "ItemsTC.clothLegs, 1",
+   "pattern": [
+    "III",
+    "I I",
+    "I I"
+   ],
+   "key": {
+    "I": "ItemsTC.fabric"
+   }
+  }
+ ],
+ "RobeBoots": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 668,
+   "research": "UNLOCKINFUSION",
+   "vis": "100",
+   "aspects": [],
+   "result": "ItemsTC.clothBoots, 1",
+   "pattern": [
+    "I I",
+    "I I"
+   ],
+   "key": {
+    "I": "ItemsTC.fabric"
+   }
+  }
+ ],
+ "Goggles": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 674,
+   "research": "UNLOCKARTIFICE",
+   "vis": "50",
+   "aspects": [],
+   "result": "ItemsTC.goggles",
+   "pattern": [
+    "LGL",
+    "L L",
+    "TGT"
+   ],
+   "key": {
+    "T": "ItemsTC.thaumometer",
+    "G": "\"ingotBrass\"",
+    "L": "\"leather\""
+   }
+  }
+ ],
+ "SealBlank": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 693,
+   "research": "CONTROLSEALS",
+   "vis": "20",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.seals, 3",
+   "pattern": [],
+   "key": {}
+  }
+ ],
+ "modvision": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 704,
+   "research": "GOLEMVISION",
+   "vis": "50",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.modules, 1, 0",
+   "pattern": [
+    "B B",
+    "E E",
+    "PGP"
+   ],
+   "key": {
+    "B": "Items.field_151069_bo",
+    "E": "Items.field_151071_bq",
+    "P": "\"plateBrass\"",
+    "G": "ItemsTC.mechanismSimple"
+   }
+  }
+ ],
+ "modaggression": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 725,
+   "research": "SEALGUARD",
+   "vis": "50",
+   "aspects": [
+    [
+     "FIRE",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.modules, 1, 1",
+   "pattern": [
+    " R ",
+    "RTR",
+    "PGP"
+   ],
+   "key": {
+    "R": "\"paneGlass\"",
+    "T": "Items.field_151065_br",
+    "P": "\"plateBrass\"",
+    "G": "ItemsTC.mechanismSimple"
+   }
+  }
+ ],
+ "mirrorglass": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 746,
+   "research": "BASEARTIFICE",
+   "vis": "50",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.mirroredGlass",
+   "pattern": [],
+   "key": {}
+  }
+ ],
+ "ArcaneSpa": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 757,
+   "research": "ARCANESPA",
+   "vis": "50",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.spa",
+   "pattern": [
+    "QIQ",
+    "SJS",
+    "SPS"
+   ],
+   "key": {
+    "P": "ItemsTC.mechanismSimple",
+    "J": "BlocksTC.jarNormal",
+    "S": "BlocksTC.stoneArcane",
+    "Q": "Blocks.field_150371_ca",
+    "I": "Blocks.field_150411_aY"
+   }
+  }
+ ],
+ "Tube": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 780,
+   "research": "TUBES",
+   "vis": "10",
+   "aspects": [],
+   "result": "BlocksTC.tube, 8, 0",
+   "pattern": [
+    " Q ",
+    "IGI",
+    " B "
+   ],
+   "key": {
+    "I": "\"plateIron\"",
+    "B": "\"nuggetBrass\"",
+    "G": "\"blockGlass\"",
+    "Q": "\"nuggetQuicksilver\""
+   }
+  }
+ ],
+ "Resonator": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 801,
+   "research": "TUBES",
+   "vis": "50",
+   "aspects": [],
+   "result": "ItemsTC.resonator",
+   "pattern": [
+    "I I",
+    "INI",
+    " S "
+   ],
+   "key": {
+    "I": "\"plateIron\"",
+    "N": "Items.field_151128_bU",
+    "S": "\"stickWood\""
+   }
+  }
+ ],
+ "TubeValve": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 820,
+   "research": "TUBES",
+   "vis": "10",
+   "aspects": [],
+   "result": "BlocksTC.tubeValve",
+   "pattern": [],
+   "key": {}
+  }
+ ],
+ "TubeFilter": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 831,
+   "research": "TUBES",
+   "vis": "10",
+   "aspects": [],
+   "result": "BlocksTC.tubeFilter",
+   "pattern": [],
+   "key": {}
+  }
+ ],
+ "TubeRestrict": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 842,
+   "research": "TUBES",
+   "vis": "10",
+   "aspects": [
+    [
+     "EARTH",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.tubeRestrict",
+   "pattern": [],
+   "key": {}
+  }
+ ],
+ "TubeOneway": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 848,
+   "research": "TUBES",
+   "vis": "10",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.tubeOneway",
+   "pattern": [],
+   "key": {}
+  }
+ ],
+ "TubeBuffer": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 854,
+   "research": "TUBES",
+   "vis": "25",
+   "aspects": [],
+   "result": "BlocksTC.tubeBuffer",
+   "pattern": [
+    "PVP",
+    "TWT",
+    "PRP"
+   ],
+   "key": {
+    "T": "BlocksTC.tube",
+    "V": "BlocksTC.tubeValve",
+    "W": "\"plateIron\"",
+    "R": "BlocksTC.tubeRestrict",
+    "P": "ItemsTC.phial"
+   }
+  }
+ ],
+ "WardedJar": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 877,
+   "research": "WARDEDJARS",
+   "vis": "5",
+   "aspects": [],
+   "result": "BlocksTC.jarNormal",
+   "pattern": [
+    "GWG",
+    "G G",
+    "GGG"
+   ],
+   "key": {
+    "W": "\"slabWood\"",
+    "G": "\"paneGlass\""
+   }
+  }
+ ],
+ "JarVoid": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 881
+  }
+ ],
+ "Banner\" + d.func_176762_d(": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 899,
+   "research": "BASEINFUSION",
+   "vis": "10",
+   "aspects": [],
+   "result": "banner",
+   "pattern": [
+    "WS",
+    "WS",
+    "WB"
+   ],
+   "key": {
+    "W": "Blocks.field_150325_L, 1, a",
+    "S": "\"stickWood\"",
+    "B": "\"slabWood\""
+   }
+  }
+ ],
+ "PaveBarrier": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 921,
+   "research": "PAVINGSTONES",
+   "vis": "50",
+   "aspects": [
+    [
+     "FIRE",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.pavingStoneBarrier, 4",
+   "pattern": [
+    "SS",
+    "SS"
+   ],
+   "key": {
+    "S": "BlocksTC.stoneArcaneBrick"
+   }
+  }
+ ],
+ "PaveTravel": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 935,
+   "research": "PAVINGSTONES",
+   "vis": "50",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "EARTH",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.pavingStoneTravel, 4",
+   "pattern": [
+    "SS",
+    "SS"
+   ],
+   "key": {
+    "S": "BlocksTC.stoneArcaneBrick"
+   }
+  }
+ ],
+ "ArcaneLamp": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 949,
+   "research": "ARCANELAMP",
+   "vis": "50",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "FIRE",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.lampArcane",
+   "pattern": [
+    " I ",
+    "IAI",
+    " I "
+   ],
+   "key": {
+    "A": "BlocksTC.amberBlock",
+    "I": "\"plateIron\""
+   }
+  }
+ ],
+ "Levitator": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 966,
+   "research": "LEVITATOR",
+   "vis": "35",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.levitator",
+   "pattern": [
+    "WIW",
+    "BNB",
+    "WGW"
+   ],
+   "key": {
+    "I": "\"plateThaumium\"",
+    "N": "\"nitor\"",
+    "W": "\"plankWood\"",
+    "B": "\"plateIron\"",
+    "G": "ItemsTC.mechanismSimple"
+   }
+  }
+ ],
+ "RedstoneRelay": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 989,
+   "research": "REDSTONERELAY",
+   "vis": "10",
+   "aspects": [
+    [
+     "ORDER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.redstoneRelay",
+   "pattern": [
+    "   ",
+    "TGT",
+    "SSS"
+   ],
+   "key": {
+    "T": "Blocks.field_150429_aA",
+    "G": "ItemsTC.mechanismSimple",
+    "S": "Blocks.field_150333_U"
+   }
+  }
+ ],
+ "ArcaneEar": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1008,
+   "research": "ARCANEEAR",
+   "vis": "15",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.arcaneEar",
+   "pattern": [
+    "P P",
+    " G ",
+    "WRW"
+   ],
+   "key": {
+    "W": "\"slabWood\"",
+    "R": "Items.field_151137_ax",
+    "G": "ItemsTC.mechanismSimple",
+    "P": "\"plateBrass\""
+   }
+  }
+ ],
+ "InfusionMatrix": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1035,
+   "research": "INFUSION@2",
+   "vis": "150",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "EARTH",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ],
+    [
+     "FIRE",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ],
+    [
+     "ENTROPY",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.infusionMatrix",
+   "pattern": [
+    "S S",
+    " N ",
+    "S S"
+   ],
+   "key": {
+    "S": "BlocksTC.stoneArcaneBrick",
+    "N": "\"nitor\""
+   }
+  }
+ ],
+ "MatrixMotion": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1052,
+   "research": "INFUSIONBOOST",
+   "vis": "500",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.matrixSpeed",
+   "pattern": [
+    "SNS",
+    "NGN",
+    "SNS"
+   ],
+   "key": {
+    "S": "BlocksTC.stoneArcane",
+    "N": "\"nitor\"",
+    "G": "Blocks.field_150484_ah"
+   }
+  }
+ ],
+ "MatrixCost": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1071,
+   "research": "INFUSIONBOOST",
+   "vis": "500",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ],
+    [
+     "ENTROPY",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.matrixCost",
+   "pattern": [
+    "SAS",
+    "AGA",
+    "SAS"
+   ],
+   "key": {
+    "S": "BlocksTC.stoneArcane",
+    "A": "ItemsTC.alumentum",
+    "G": "Blocks.field_150484_ah"
+   }
+  }
+ ],
+ "ArcanePedestal": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1090,
+   "research": "INFUSION",
+   "vis": "10",
+   "aspects": [],
+   "result": "BlocksTC.pedestalArcane",
+   "pattern": [
+    "SSS",
+    " B ",
+    "SSS"
+   ],
+   "key": {
+    "S": "BlocksTC.slabArcaneStone",
+    "B": "BlocksTC.stoneArcane"
+   }
+  }
+ ],
+ "AncientPedestal": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1107,
+   "research": "INFUSIONANCIENT",
+   "vis": "150",
+   "aspects": [],
+   "result": "BlocksTC.pedestalAncient",
+   "pattern": [
+    "SSS",
+    " B ",
+    "SSS"
+   ],
+   "key": {
+    "S": "BlocksTC.slabAncient",
+    "B": "BlocksTC.stoneAncient"
+   }
+  }
+ ],
+ "EldritchPedestal": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1124,
+   "research": "INFUSIONELDRITCH",
+   "vis": "150",
+   "aspects": [],
+   "result": "BlocksTC.pedestalEldritch",
+   "pattern": [
+    "SSS",
+    " B ",
+    "SSS"
+   ],
+   "key": {
+    "S": "BlocksTC.slabEldritch",
+    "B": "BlocksTC.stoneEldritchTile"
+   }
+  }
+ ],
+ "FocusPouch": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1141,
+   "research": "FOCUSPOUCH",
+   "vis": "25",
+   "aspects": [],
+   "result": "ItemsTC.focusPouch",
+   "pattern": [
+    "LGL",
+    "LBL",
+    "LLL"
+   ],
+   "key": {
+    "B": "ItemsTC.baubles, 1, 2",
+    "L": "\"leather\"",
+    "G": "Items.field_151043_k"
+   }
+  }
+ ],
+ "dioptra": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1160,
+   "research": "DIOPTRA",
+   "vis": "50",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.dioptra",
+   "pattern": [
+    "APA",
+    "IGI",
+    "AAA"
+   ],
+   "key": {
+    "A": "BlocksTC.stoneArcane",
+    "G": "ItemsTC.thaumometer",
+    "P": "ItemsTC.visResonator",
+    "I": "\"plateIron\""
+   }
+  }
+ ],
+ "HungryChest": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1181,
+   "research": "HUNGRYCHEST",
+   "vis": "15",
+   "aspects": [
+    [
+     "EARTH",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.hungryChest",
+   "pattern": [
+    "WTW",
+    "W W",
+    "WWW"
+   ],
+   "key": {
+    "W": "BlocksTC.plankGreatwood",
+    "T": "\"trapdoorWood\""
+   }
+  }
+ ],
+ "Filter": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1198,
+   "research": "BASEALCHEMY",
+   "vis": "15",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.filter, 2, 0",
+   "pattern": [
+    "GWG"
+   ],
+   "key": {
+    "G": "Items.field_151043_k",
+    "W": "BlocksTC.plankSilverwood"
+   }
+  }
+ ],
+ "MorphicResonator": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1213,
+   "research": "BASEALCHEMY",
+   "vis": "50",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "FIRE",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.morphicResonator",
+   "pattern": [
+    " G ",
+    "BSB",
+    " G "
+   ],
+   "key": {
+    "G": "\"paneGlass\"",
+    "B": "\"plateBrass\"",
+    "S": "ItemsTC.nuggets, 1, 10"
+   }
+  }
+ ],
+ "Alembic": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1232,
+   "research": "ESSENTIASMELTER",
+   "vis": "50",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.alembic",
+   "pattern": [
+    "WFW",
+    "SBS",
+    "WFW"
+   ],
+   "key": {
+    "W": "BlocksTC.plankGreatwood",
+    "B": "Items.field_151133_ar",
+    "F": "ItemsTC.filter",
+    "S": "\"plateBrass\""
+   }
+  }
+ ],
+ "EssentiaSmelter": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1253,
+   "research": "ESSENTIASMELTER@2",
+   "vis": "50",
+   "aspects": [
+    [
+     "FIRE",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.smelterBasic",
+   "pattern": [
+    "BCB",
+    "SFS",
+    "SSS"
+   ],
+   "key": {
+    "C": "BlocksTC.crucible",
+    "F": "Blocks.field_150460_al",
+    "S": "\"cobblestone\"",
+    "B": "\"plateBrass\""
+   }
+  }
+ ],
+ "EssentiaSmelterThaumium": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1274,
+   "research": "ESSENTIASMELTERTHAUMIUM",
+   "vis": "250",
+   "aspects": [
+    [
+     "FIRE",
+     "2"
+    ]
+   ],
+   "result": "BlocksTC.smelterThaumium",
+   "pattern": [
+    "BFB",
+    "IGI",
+    "III"
+   ],
+   "key": {
+    "F": "BlocksTC.smelterBasic",
+    "G": "BlocksTC.metalAlchemical",
+    "I": "\"plateThaumium\"",
+    "B": "\"plateBrass\""
+   }
+  }
+ ],
+ "EssentiaSmelterVoid": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1295,
+   "research": "ESSENTIASMELTERVOID",
+   "vis": "750",
+   "aspects": [
+    [
+     "FIRE",
+     "3"
+    ]
+   ],
+   "result": "BlocksTC.smelterVoid",
+   "pattern": [
+    "BFB",
+    "IGI",
+    "III"
+   ],
+   "key": {
+    "F": "BlocksTC.smelterBasic",
+    "G": "BlocksTC.metalAlchemicalAdvanced",
+    "I": "\"plateVoid\"",
+    "B": "\"plateBrass\""
+   }
+  }
+ ],
+ "AlchemicalConstruct": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1316,
+   "research": "TUBES",
+   "vis": "75",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ],
+    [
+     "ENTROPY",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.metalAlchemical, 2",
+   "pattern": [
+    "IVI",
+    "TWT",
+    "IVI"
+   ],
+   "key": {
+    "W": "BlocksTC.plankGreatwood",
+    "V": "BlocksTC.tubeValve",
+    "T": "BlocksTC.tube",
+    "I": "\"plateIron\""
+   }
+  }
+ ],
+ "AdvAlchemyConstruct": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1337,
+   "research": "ESSENTIASMELTERVOID@1",
+   "vis": "200",
+   "aspects": [
+    [
+     "EARTH",
+     "1"
+    ],
+    [
+     "FIRE",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.metalAlchemicalAdvanced",
+   "pattern": [
+    " A ",
+    "VPV",
+    " A "
+   ],
+   "key": {
+    "A": "BlocksTC.metalAlchemical",
+    "V": "\"plateVoid\"",
+    "P": "Ingredient.func_193367_a(ItemsTC.primordialPearl)"
+   }
+  }
+ ],
+ "PotionSprayer": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1356,
+   "research": "POTIONSPRAYER",
+   "vis": "75",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ],
+    [
+     "FIRE",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.potionSprayer",
+   "pattern": [
+    "BDB",
+    "IAI",
+    "ICI"
+   ],
+   "key": {
+    "B": "\"plateBrass\"",
+    "I": "\"plateIron\"",
+    "A": "Items.field_151067_bt",
+    "D": "Blocks.field_150367_z",
+    "C": "BlocksTC.metalAlchemical"
+   }
+  }
+ ],
+ "SmelterAux": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1379,
+   "research": "IMPROVEDSMELTING",
+   "vis": "100",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "EARTH",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.smelterAux",
+   "pattern": [
+    "WTW",
+    "RGR",
+    "IBI"
+   ],
+   "key": {
+    "W": "BlocksTC.plankGreatwood",
+    "B": "BlocksTC.bellows",
+    "R": "\"plateBrass\"",
+    "T": "BlocksTC.tubeFilter",
+    "I": "\"plateIron\"",
+    "G": "BlocksTC.metalAlchemical"
+   }
+  }
+ ],
+ "SmelterVent": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1404,
+   "research": "IMPROVEDSMELTING2",
+   "vis": "150",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.smelterVent",
+   "pattern": [
+    "IBI",
+    "MGF",
+    "IBI"
+   ],
+   "key": {
+    "I": "\"plateIron\"",
+    "B": "\"plateBrass\"",
+    "F": "ItemsTC.filter",
+    "M": "ItemsTC.filter",
+    "G": "BlocksTC.metalAlchemical"
+   }
+  }
+ ],
+ "EssentiaTransportIn": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1427,
+   "research": "ESSENTIATRANSPORT",
+   "vis": "100",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.essentiaTransportInput",
+   "pattern": [
+    "   ",
+    "BQB",
+    "IGI"
+   ],
+   "key": {
+    "I": "\"plateIron\"",
+    "B": "\"plateBrass\"",
+    "Q": "Blocks.field_150367_z",
+    "G": "BlocksTC.metalAlchemical"
+   }
+  }
+ ],
+ "EssentiaTransportOut": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1448,
+   "research": "ESSENTIATRANSPORT",
+   "vis": "100",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.essentiaTransportOutput",
+   "pattern": [
+    "   ",
+    "BQB",
+    "IGI"
+   ],
+   "key": {
+    "I": "\"plateIron\"",
+    "B": "\"plateBrass\"",
+    "Q": "Blocks.field_150438_bZ",
+    "G": "BlocksTC.metalAlchemical"
+   }
+  }
+ ],
+ "Bellows": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1469,
+   "research": "BELLOWS",
+   "vis": "25",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.bellows",
+   "pattern": [
+    "WW ",
+    "LLI",
+    "WW "
+   ],
+   "key": {
+    "W": "\"plankWood\"",
+    "I": "\"ingotIron\"",
+    "L": "\"leather\""
+   }
+  }
+ ],
+ "Centrifuge": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1488,
+   "research": "CENTRIFUGE",
+   "vis": "100",
+   "aspects": [
+    [
+     "ORDER",
+     "1"
+    ],
+    [
+     "ENTROPY",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.centrifuge",
+   "pattern": [
+    " T ",
+    "RCP",
+    " T "
+   ],
+   "key": {
+    "T": "BlocksTC.tube",
+    "P": "ItemsTC.mechanismSimple",
+    "R": "ItemsTC.morphicResonator",
+    "C": "BlocksTC.metalAlchemical"
+   }
+  }
+ ],
+ "MnemonicMatrix": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1509,
+   "research": "THAUMATORIUM",
+   "vis": "50",
+   "aspects": [
+    [
+     "EARTH",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.brainBox",
+   "pattern": [
+    "IAI",
+    "ABA",
+    "IAI"
+   ],
+   "key": {
+    "B": "ItemsTC.mind, 1, 0",
+    "A": "\"gemAmber\"",
+    "I": "\"plateIron\""
+   }
+  }
+ ],
+ "MindClockwork": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1528,
+   "research": "MINDCLOCKWORK@2",
+   "vis": "25",
+   "aspects": [
+    [
+     "FIRE",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.mind, 1, 0",
+   "pattern": [
+    " P ",
+    "PGP",
+    "BCB"
+   ],
+   "key": {
+    "G": "ItemsTC.mechanismSimple",
+    "B": "\"plateBrass\"",
+    "P": "\"paneGlass\"",
+    "C": "Items.field_151132_bS"
+   }
+  }
+ ],
+ "AutomatedCrossbow": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1549,
+   "research": "BASICTURRET",
+   "vis": "100",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.turretPlacer, 1, 0",
+   "pattern": [
+    "BGI",
+    "WMW",
+    "S S"
+   ],
+   "key": {
+    "G": "ItemsTC.mechanismSimple",
+    "I": "\"plateIron\"",
+    "S": "\"stickWood\"",
+    "M": "ItemsTC.mind",
+    "B": "Ingredient.func_193367_a(Items.field_151031_f)",
+    "W": "BlocksTC.plankGreatwood"
+   }
+  }
+ ],
+ "AdvancedCrossbow": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1574,
+   "research": "ADVANCEDTURRET",
+   "vis": "150",
+   "aspects": [
+    [
+     "AIR",
+     "2"
+    ]
+   ],
+   "result": "ItemsTC.turretPlacer, 1, 1",
+   "pattern": [
+    "PMP",
+    "PTP",
+    "   "
+   ],
+   "key": {
+    "T": "ItemsTC.turretPlacer, 1, 0",
+    "P": "\"plateIron\"",
+    "M": "ItemsTC.mind, 1, 1"
+   }
+  }
+ ],
+ "patterncrafter": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1593,
+   "research": "ARCANEPATTERNCRAFTER",
+   "vis": "50",
+   "aspects": [
+    [
+     "EARTH",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.patternCrafter",
+   "pattern": [
+    "VH ",
+    "GCG",
+    " W "
+   ],
+   "key": {
+    "H": "Blocks.field_150438_bZ",
+    "W": "BlocksTC.plankGreatwood",
+    "G": "ItemsTC.mechanismSimple",
+    "V": "ItemsTC.visResonator",
+    "C": "\"workbench\""
+   }
+  }
+ ],
+ "GrappleGunTip": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1616,
+   "research": "GRAPPLEGUN",
+   "vis": "25",
+   "aspects": [
+    [
+     "EARTH",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.grappleGunTip",
+   "pattern": [
+    "BRB",
+    "RHR",
+    "BRB"
+   ],
+   "key": {
+    "B": "\"plateBrass\"",
+    "R": "ItemsTC.nuggets, 1, 10",
+    "H": "Blocks.field_150479_bC"
+   }
+  }
+ ],
+ "GrappleGunSpool": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1635,
+   "research": "GRAPPLEGUN",
+   "vis": "25",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.grappleGunSpool",
+   "pattern": [
+    "SHS",
+    "SGS",
+    "SSS"
+   ],
+   "key": {
+    "G": "ItemsTC.mechanismSimple",
+    "S": "\"string\"",
+    "H": "Blocks.field_150479_bC"
+   }
+  }
+ ],
+ "GrappleGun": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1654,
+   "research": "GRAPPLEGUN",
+   "vis": "75",
+   "aspects": [
+    [
+     "AIR",
+     "1"
+    ],
+    [
+     "FIRE",
+     "1"
+    ]
+   ],
+   "result": "ItemsTC.grappleGun",
+   "pattern": [
+    "  S",
+    "TII",
+    " BW"
+   ],
+   "key": {
+    "B": "\"plateBrass\"",
+    "I": "\"plateIron\"",
+    "T": "ItemsTC.grappleGunTip",
+    "W": "\"plankWood\"",
+    "S": "ItemsTC.grappleGunSpool"
+   }
+  }
+ ],
+ "VisBattery": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1677,
+   "research": "VISBATTERY",
+   "vis": "50",
+   "aspects": [
+    [
+     "AIR",
+     "2"
+    ],
+    [
+     "EARTH",
+     "2"
+    ],
+    [
+     "WATER",
+     "2"
+    ],
+    [
+     "FIRE",
+     "2"
+    ],
+    [
+     "ORDER",
+     "2"
+    ],
+    [
+     "ENTROPY",
+     "2"
+    ]
+   ],
+   "result": "BlocksTC.visBattery",
+   "pattern": [
+    "SSS",
+    "SRS",
+    "SSS"
+   ],
+   "key": {
+    "R": "ItemsTC.visResonator",
+    "S": "BlocksTC.slabArcaneStone"
+   }
+  }
+ ],
+ "VisGenerator": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1694,
+   "research": "VISGENERATOR",
+   "vis": "25",
+   "aspects": [
+    [
+     "FIRE",
+     "1"
+    ],
+    [
+     "ORDER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.visGenerator",
+   "pattern": [
+    "WSW",
+    "EPE",
+    "WRW"
+   ],
+   "key": {
+    "R": "ItemsTC.visResonator",
+    "E": "ItemsTC.nuggets, 1, 10",
+    "S": "\"dustRedstone\"",
+    "P": "Blocks.field_150331_J",
+    "W": "\"plankWood\""
+   }
+  }
+ ],
+ "Condenser": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1717,
+   "research": "FLUXCLEANUP",
+   "vis": "500",
+   "aspects": [
+    [
+     "AIR",
+     "5"
+    ],
+    [
+     "WATER",
+     "5"
+    ],
+    [
+     "ENTROPY",
+     "5"
+    ]
+   ],
+   "result": "BlocksTC.condenser",
+   "pattern": [
+    "BCB",
+    "WMW",
+    "BTB"
+   ],
+   "key": {
+    "T": "BlocksTC.tube",
+    "C": "ItemsTC.morphicResonator",
+    "W": "\"plankWood\"",
+    "M": "ItemsTC.mechanismComplex",
+    "B": "\"plateBrass\""
+   }
+  }
+ ],
+ "CondenserLattice": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1740,
+   "research": "FLUXCLEANUP",
+   "vis": "100",
+   "aspects": [
+    [
+     "EARTH",
+     "3"
+    ],
+    [
+     "AIR",
+     "3"
+    ]
+   ],
+   "result": "BlocksTC.condenserlattice",
+   "pattern": [
+    "QTQ",
+    "QFQ",
+    "QTQ"
+   ],
+   "key": {
+    "T": "\"plateThaumium\"",
+    "F": "ItemsTC.filter",
+    "Q": "\"gemQuartz\""
+   }
+  }
+ ],
+ "Stabilizer": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1759,
+   "research": "INFUSIONSTABLE",
+   "vis": "250",
+   "aspects": [
+    [
+     "EARTH",
+     "1"
+    ],
+    [
+     "WATER",
+     "1"
+    ],
+    [
+     "ENTROPY",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.stabilizer",
+   "pattern": [
+    "SRS",
+    "BVB",
+    "IMI"
+   ],
+   "key": {
+    "R": "\"blockRedstone\"",
+    "S": "BlocksTC.slabArcaneStone",
+    "B": "BlocksTC.stoneArcane",
+    "M": "ItemsTC.mechanismComplex",
+    "V": "ItemsTC.visResonator",
+    "I": "BlocksTC.inlay"
+   }
+  }
+ ],
+ "RedstoneInlay": [
+  {
+   "station": "arcane",
+   "kind": "addArcaneCraftingRecipe",
+   "line": 1784,
+   "research": "INFUSIONSTABLE",
+   "vis": "25",
+   "aspects": [
+    [
+     "WATER",
+     "1"
+    ]
+   ],
+   "result": "BlocksTC.inlay, 2",
+   "pattern": [],
+   "key": {}
+  }
+ ],
+ "SealHarvest": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1798,
+   "research": "SEALHARVEST",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:harvest\")",
+   "ingredient": "0",
+   "aspects": [
+    [
+     "PLANT",
+     "10"
+    ],
+    [
+     "SENSES",
+     "10"
+    ],
+    [
+     "MAN",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealButcher": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1814,
+   "research": "SEALBUTCHER",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:butcher\")",
+   "ingredient": "0",
+   "aspects": [
+    [
+     "BEAST",
+     "10"
+    ],
+    [
+     "SENSES",
+     "10"
+    ],
+    [
+     "MAN",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "SealBreak": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1830,
+   "research": "SEALBREAK",
+   "result": "GolemHelper.getSealStack(\"thaumcraft:breaker\")",
+   "ingredient": "1",
+   "aspects": [
+    [
+     "TOOL",
+     "10"
+    ],
+    [
+     "ENTROPY",
+     "10"
+    ],
+    [
+     "MAN",
+     "10"
+    ]
+   ]
+  }
+ ],
+ "CrystalClusterAir": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1843,
+   "research": "CRYSTALFARMER",
+   "result": "BlocksTC.crystalAir",
+   "ingredient": "0",
+   "aspects": [
+    [
+     "AIR",
+     "10"
+    ],
+    [
+     "CRYSTAL",
+     "10"
+    ],
+    [
+     "TRAP",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "CrystalClusterFire": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1855,
+   "research": "CRYSTALFARMER",
+   "result": "BlocksTC.crystalFire",
+   "ingredient": "0",
+   "aspects": [
+    [
+     "FIRE",
+     "10"
+    ],
+    [
+     "CRYSTAL",
+     "10"
+    ],
+    [
+     "TRAP",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "CrystalClusterWater": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1867,
+   "research": "CRYSTALFARMER",
+   "result": "BlocksTC.crystalWater",
+   "ingredient": "0",
+   "aspects": [
+    [
+     "WATER",
+     "10"
+    ],
+    [
+     "CRYSTAL",
+     "10"
+    ],
+    [
+     "TRAP",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "CrystalClusterEarth": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1879,
+   "research": "CRYSTALFARMER",
+   "result": "BlocksTC.crystalEarth",
+   "ingredient": "0",
+   "aspects": [
+    [
+     "EARTH",
+     "10"
+    ],
+    [
+     "CRYSTAL",
+     "10"
+    ],
+    [
+     "TRAP",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "CrystalClusterOrder": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1891,
+   "research": "CRYSTALFARMER",
+   "result": "BlocksTC.crystalOrder",
+   "ingredient": "0",
+   "aspects": [
+    [
+     "ORDER",
+     "10"
+    ],
+    [
+     "CRYSTAL",
+     "10"
+    ],
+    [
+     "TRAP",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "CrystalClusterEntropy": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1903,
+   "research": "CRYSTALFARMER",
+   "result": "BlocksTC.crystalEntropy",
+   "ingredient": "0",
+   "aspects": [
+    [
+     "ENTROPY",
+     "10"
+    ],
+    [
+     "CRYSTAL",
+     "10"
+    ],
+    [
+     "TRAP",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "CrystalClusterFlux": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1915,
+   "research": "CRYSTALFARMER",
+   "result": "BlocksTC.crystalTaint",
+   "ingredient": "4",
+   "aspects": [
+    [
+     "FLUX",
+     "10"
+    ],
+    [
+     "CRYSTAL",
+     "10"
+    ],
+    [
+     "TRAP",
+     "5"
+    ]
+   ]
+  }
+ ],
+ "focus_2": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1927,
+   "research": "FOCUSADVANCED@1",
+   "result": "ItemsTC.focus2",
+   "ingredient": "3",
+   "aspects": [
+    [
+     "MAGIC",
+     "25"
+    ],
+    [
+     "ORDER",
+     "50"
+    ]
+   ]
+  }
+ ],
+ "focus_3": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1941,
+   "research": "FOCUSGREATER@1",
+   "result": "ItemsTC.focus3",
+   "ingredient": "5",
+   "aspects": [
+    [
+     "MAGIC",
+     "25"
+    ],
+    [
+     "ORDER",
+     "50"
+    ],
+    [
+     "VOID",
+     "100"
+    ]
+   ]
+  }
+ ],
+ "JarBrain": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1955,
+   "research": "JARBRAIN",
+   "result": "BlocksTC.jarBrain",
+   "ingredient": "4",
+   "aspects": [
+    [
+     "MIND",
+     "25"
+    ],
+    [
+     "SENSES",
+     "25"
+    ],
+    [
+     "UNDEAD",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "VisAmulet": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1969,
+   "research": "VISAMULET",
+   "result": "ItemsTC.amuletVis, 1, 1",
+   "ingredient": "6",
+   "aspects": [
+    [
+     "AURA",
+     "50"
+    ],
+    [
+     "ENERGY",
+     "100"
+    ],
+    [
+     "VOID",
+     "50"
+    ]
+   ]
+  }
+ ],
+ "RunicArmor": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1986
+  }
+ ],
+ "RunicArmorFake\" + a": [
+  {
+   "station": "infusion",
+   "kind": "addFakeCraftingRecipe",
+   "line": 1994,
+   "raw": "new ResourceLocation(\"thaumcraft:RunicArmorFake\" + a) new InfusionRunicAugmentRecipe(in)"
+  }
+ ],
+ "Mirror": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 1997,
+   "research": "MIRROR",
+   "result": "BlocksTC.mirror",
+   "ingredient": "1",
+   "aspects": [
+    [
+     "MOTION",
+     "25"
+    ],
+    [
+     "DARKNESS",
+     "25"
+    ],
+    [
+     "EXCHANGE",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "MirrorHand": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2011,
+   "research": "MIRRORHAND",
+   "result": "ItemsTC.handMirror",
+   "ingredient": "5",
+   "aspects": [
+    [
+     "TOOL",
+     "50"
+    ],
+    [
+     "MOTION",
+     "50"
+    ]
+   ]
+  }
+ ],
+ "MirrorEssentia": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2024,
+   "research": "MIRRORESSENTIA",
+   "result": "BlocksTC.mirrorEssentia",
+   "ingredient": "2",
+   "aspects": [
+    [
+     "MOTION",
+     "25"
+    ],
+    [
+     "WATER",
+     "25"
+    ],
+    [
+     "EXCHANGE",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "ElementalAxe": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2041,
+   "research": "ELEMENTALTOOLS",
+   "result": "isEA",
+   "ingredient": "1",
+   "aspects": [
+    [
+     "WATER",
+     "60"
+    ],
+    [
+     "PLANT",
+     "30"
+    ]
+   ]
+  }
+ ],
+ "ElementalPick": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2058,
+   "research": "ELEMENTALTOOLS",
+   "result": "isEP",
+   "ingredient": "1",
+   "aspects": [
+    [
+     "FIRE",
+     "30"
+    ],
+    [
+     "METAL",
+     "30"
+    ],
+    [
+     "SENSES",
+     "30"
+    ]
+   ]
+  }
+ ],
+ "ElementalSword": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2074,
+   "research": "ELEMENTALTOOLS",
+   "result": "isESW",
+   "ingredient": "1",
+   "aspects": [
+    [
+     "AIR",
+     "30"
+    ],
+    [
+     "MOTION",
+     "30"
+    ],
+    [
+     "AVERSION",
+     "30"
+    ]
+   ]
+  }
+ ],
+ "ElementalShovel": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2090,
+   "research": "ELEMENTALTOOLS",
+   "result": "isES",
+   "ingredient": "1",
+   "aspects": [
+    [
+     "EARTH",
+     "60"
+    ],
+    [
+     "CRAFT",
+     "30"
+    ]
+   ]
+  }
+ ],
+ "ElementalHoe": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2104,
+   "research": "ELEMENTALTOOLS",
+   "result": "ItemsTC.elementalHoe",
+   "ingredient": "1",
+   "aspects": [
+    [
+     "ORDER",
+     "30"
+    ],
+    [
+     "PLANT",
+     "30"
+    ],
+    [
+     "ENTROPY",
+     "30"
+    ]
+   ]
+  }
+ ],
+ "IEBURROWING": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2124
+  }
+ ],
+ "IEBURROWINGFAKE": [
+  {
+   "station": "infusion",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2125,
+   "raw": "new ResourceLocation(\"thaumcraft:IEBURROWINGFAKE\") new InfusionEnchantmentRecipe(IEBURROWING, new ItemStack(Items.field_151039_o))"
+  }
+ ],
+ "IECOLLECTOR": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2134
+  }
+ ],
+ "IECOLLECTORFAKE": [
+  {
+   "station": "infusion",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2135,
+   "raw": "new ResourceLocation(\"thaumcraft:IECOLLECTORFAKE\") new InfusionEnchantmentRecipe(IECOLLECTOR, new ItemStack(Items.field_151049_t))"
+  }
+ ],
+ "IEDESTRUCTIVE": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2144
+  }
+ ],
+ "IEDESTRUCTIVEFAKE": [
+  {
+   "station": "infusion",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2145,
+   "raw": "new ResourceLocation(\"thaumcraft:IEDESTRUCTIVEFAKE\") new InfusionEnchantmentRecipe(IEDESTRUCTIVE, new ItemStack(Items.field_151050_s))"
+  }
+ ],
+ "IEREFINING": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2154
+  }
+ ],
+ "IEREFININGFAKE": [
+  {
+   "station": "infusion",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2155,
+   "raw": "new ResourceLocation(\"thaumcraft:IEREFININGFAKE\") new InfusionEnchantmentRecipe(IEREFINING, new ItemStack(Items.field_151035_b))"
+  }
+ ],
+ "IESOUNDING": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2164
+  }
+ ],
+ "IESOUNDINGFAKE": [
+  {
+   "station": "infusion",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2165,
+   "raw": "new ResourceLocation(\"thaumcraft:IESOUNDINGFAKE\") new InfusionEnchantmentRecipe(IESOUNDING, new ItemStack(Items.field_151005_D))"
+  }
+ ],
+ "IEARCING": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2174
+  }
+ ],
+ "IEARCINGFAKE": [
+  {
+   "station": "infusion",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2175,
+   "raw": "new ResourceLocation(\"thaumcraft:IEARCINGFAKE\") new InfusionEnchantmentRecipe(IEARCING, new ItemStack(Items.field_151041_m))"
+  }
+ ],
+ "IEESSENCE": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2184
+  }
+ ],
+ "IEESSENCEFAKE": [
+  {
+   "station": "infusion",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2185,
+   "raw": "new ResourceLocation(\"thaumcraft:IEESSENCEFAKE\") new InfusionEnchantmentRecipe(IEESSENCE, new ItemStack(Items.field_151052_q))"
+  }
+ ],
+ "IELAMPLIGHT": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2194
+  }
+ ],
+ "IELAMPLIGHTFAKE": [
+  {
+   "station": "infusion",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2195,
+   "raw": "new ResourceLocation(\"thaumcraft:IELAMPLIGHTFAKE\") new InfusionEnchantmentRecipe(IELAMPLIGHT, new ItemStack(Items.field_151005_D))"
+  }
+ ],
+ "BootsTraveller": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2198,
+   "research": "BOOTSTRAVELLER",
+   "result": "ItemsTC.travellerBoots",
+   "ingredient": "1",
+   "aspects": [
+    [
+     "FLIGHT",
+     "100"
+    ],
+    [
+     "MOTION",
+     "100"
+    ]
+   ]
+  }
+ ],
+ "MindBiothaumic": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2214,
+   "research": "MINDBIOTHAUMIC",
+   "result": "ItemsTC.mind, 1, 1",
+   "ingredient": "4",
+   "aspects": [
+    [
+     "MIND",
+     "50"
+    ],
+    [
+     "MECHANISM",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "ArcaneBore": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2226,
+   "research": "ARCANEBORE",
+   "result": "ItemsTC.turretPlacer, 1, 2",
+   "ingredient": "4",
+   "aspects": [
+    [
+     "ENERGY",
+     "25"
+    ],
+    [
+     "EARTH",
+     "25"
+    ],
+    [
+     "MECHANISM",
+     "100"
+    ],
+    [
+     "VOID",
+     "25"
+    ],
+    [
+     "MOTION",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "LampGrowth": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2244,
+   "research": "LAMPGROWTH",
+   "result": "BlocksTC.lampGrowth",
+   "ingredient": "4",
+   "aspects": [
+    [
+     "PLANT",
+     "20"
+    ],
+    [
+     "LIGHT",
+     "15"
+    ],
+    [
+     "LIFE",
+     "15"
+    ],
+    [
+     "TOOL",
+     "15"
+    ]
+   ]
+  }
+ ],
+ "LampFertility": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2260,
+   "research": "LAMPFERTILITY",
+   "result": "BlocksTC.lampFertility",
+   "ingredient": "4",
+   "aspects": [
+    [
+     "BEAST",
+     "20"
+    ],
+    [
+     "LIGHT",
+     "15"
+    ],
+    [
+     "LIFE",
+     "15"
+    ],
+    [
+     "DESIRE",
+     "15"
+    ]
+   ]
+  }
+ ],
+ "ThaumiumFortressHelm": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2276,
+   "research": "ARMORFORTRESS",
+   "result": "ItemsTC.fortressHelm",
+   "ingredient": "3",
+   "aspects": [
+    [
+     "METAL",
+     "50"
+    ],
+    [
+     "PROTECT",
+     "20"
+    ],
+    [
+     "ENERGY",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "ThaumiumFortressChest": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2291,
+   "research": "ARMORFORTRESS",
+   "result": "ItemsTC.fortressChest",
+   "ingredient": "3",
+   "aspects": [
+    [
+     "METAL",
+     "50"
+    ],
+    [
+     "PROTECT",
+     "30"
+    ],
+    [
+     "ENERGY",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "ThaumiumFortressLegs": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2307,
+   "research": "ARMORFORTRESS",
+   "result": "ItemsTC.fortressLegs",
+   "ingredient": "3",
+   "aspects": [
+    [
+     "METAL",
+     "50"
+    ],
+    [
+     "PROTECT",
+     "25"
+    ],
+    [
+     "ENERGY",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "VoidRobeHelm": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2322,
+   "research": "VOIDROBEARMOR",
+   "result": "ItemsTC.voidRobeHelm",
+   "ingredient": "6",
+   "aspects": [
+    [
+     "METAL",
+     "25"
+    ],
+    [
+     "SENSES",
+     "25"
+    ],
+    [
+     "PROTECT",
+     "25"
+    ],
+    [
+     "ENERGY",
+     "25"
+    ],
+    [
+     "ELDRITCH",
+     "25"
+    ],
+    [
+     "VOID",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "VoidRobeChest": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2344,
+   "research": "VOIDROBEARMOR",
+   "result": "ItemsTC.voidRobeChest",
+   "ingredient": "6",
+   "aspects": [
+    [
+     "METAL",
+     "35"
+    ],
+    [
+     "PROTECT",
+     "35"
+    ],
+    [
+     "ENERGY",
+     "25"
+    ],
+    [
+     "ELDRITCH",
+     "25"
+    ],
+    [
+     "VOID",
+     "35"
+    ]
+   ]
+  }
+ ],
+ "VoidRobeLegs": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2360,
+   "research": "VOIDROBEARMOR",
+   "result": "ItemsTC.voidRobeLegs",
+   "ingredient": "6",
+   "aspects": [
+    [
+     "METAL",
+     "30"
+    ],
+    [
+     "PROTECT",
+     "30"
+    ],
+    [
+     "ENERGY",
+     "25"
+    ],
+    [
+     "ELDRITCH",
+     "25"
+    ],
+    [
+     "VOID",
+     "30"
+    ]
+   ]
+  }
+ ],
+ "HelmGoggles": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2376,
+   "research": "FORTRESSMASK",
+   "result": "new Object[]{\"goggles\", new NBTTagByte((byte)1)}",
+   "ingredient": "5",
+   "aspects": [
+    [
+     "SENSES",
+     "40"
+    ],
+    [
+     "AURA",
+     "20"
+    ],
+    [
+     "PROTECT",
+     "20"
+    ]
+   ]
+  }
+ ],
+ "MaskGrinningDevil": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2388,
+   "research": "FORTRESSMASK",
+   "result": "new Object[]{\"mask\", new NBTTagInt(0)}",
+   "ingredient": "8",
+   "aspects": [
+    [
+     "MIND",
+     "80"
+    ],
+    [
+     "LIFE",
+     "80"
+    ],
+    [
+     "PROTECT",
+     "20"
+    ]
+   ]
+  }
+ ],
+ "MaskAngryGhost": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2404,
+   "research": "FORTRESSMASK",
+   "result": "new Object[]{\"mask\", new NBTTagInt(1)}",
+   "ingredient": "8",
+   "aspects": [
+    [
+     "ENTROPY",
+     "80"
+    ],
+    [
+     "DEATH",
+     "80"
+    ],
+    [
+     "PROTECT",
+     "20"
+    ]
+   ]
+  }
+ ],
+ "MaskSippingFiend": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2420,
+   "research": "FORTRESSMASK",
+   "result": "new Object[]{\"mask\", new NBTTagInt(2)}",
+   "ingredient": "8",
+   "aspects": [
+    [
+     "UNDEAD",
+     "80"
+    ],
+    [
+     "LIFE",
+     "80"
+    ],
+    [
+     "PROTECT",
+     "20"
+    ]
+   ]
+  }
+ ],
+ "PrimalCrusher": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2439,
+   "research": "PRIMALCRUSHER",
+   "result": "isPC",
+   "ingredient": "6",
+   "aspects": [
+    [
+     "EARTH",
+     "75"
+    ],
+    [
+     "TOOL",
+     "75"
+    ],
+    [
+     "ENTROPY",
+     "50"
+    ],
+    [
+     "VOID",
+     "50"
+    ],
+    [
+     "AVERSION",
+     "50"
+    ],
+    [
+     "ELDRITCH",
+     "50"
+    ],
+    [
+     "DESIRE",
+     "50"
+    ]
+   ]
+  }
+ ],
+ "VerdantHeart": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2460,
+   "research": "VERDANTCHARMS",
+   "result": "ItemsTC.charmVerdant",
+   "ingredient": "5",
+   "aspects": [
+    [
+     "LIFE",
+     "60"
+    ],
+    [
+     "ORDER",
+     "30"
+    ],
+    [
+     "PLANT",
+     "60"
+    ]
+   ]
+  }
+ ],
+ "VerdantHeartLife": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2476,
+   "research": "VERDANTCHARMS",
+   "result": "new Object[]{\"type\", new NBTTagByte((byte)1)}",
+   "ingredient": "5",
+   "aspects": [
+    [
+     "LIFE",
+     "80"
+    ],
+    [
+     "MAN",
+     "80"
+    ]
+   ]
+  }
+ ],
+ "VerdantHeartSustain": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2492,
+   "research": "VERDANTCHARMS",
+   "result": "new Object[]{\"type\", new NBTTagByte((byte)2)}",
+   "ingredient": "5",
+   "aspects": [
+    [
+     "DESIRE",
+     "80"
+    ],
+    [
+     "AIR",
+     "80"
+    ]
+   ]
+  }
+ ],
+ "CLOUDRING": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2506,
+   "research": "CLOUDRING",
+   "result": "ItemsTC.ringCloud",
+   "ingredient": "1",
+   "aspects": [
+    [
+     "AIR",
+     "50"
+    ]
+   ]
+  }
+ ],
+ "CuriosityBand": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2518,
+   "research": "CURIOSITYBAND",
+   "result": "ItemsTC.bandCuriosity",
+   "ingredient": "5",
+   "aspects": [
+    [
+     "MIND",
+     "150"
+    ],
+    [
+     "VOID",
+     "50"
+    ],
+    [
+     "TRAP",
+     "100"
+    ]
+   ]
+  }
+ ],
+ "CHARMUNDYING": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2536,
+   "research": "CHARMUNDYING",
+   "result": "ItemsTC.charmUndying",
+   "ingredient": "2",
+   "aspects": [
+    [
+     "LIFE",
+     "25"
+    ]
+   ]
+  }
+ ],
+ "CausalityCollapser": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2550,
+   "research": "RIFTCLOSER",
+   "result": "ItemsTC.causalityCollapser",
+   "ingredient": "8",
+   "aspects": [
+    [
+     "ELDRITCH",
+     "50"
+    ],
+    [
+     "FLUX",
+     "50"
+    ]
+   ]
+  }
+ ],
+ "VoidSiphon": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2568,
+   "research": "VOIDSIPHON",
+   "result": "BlocksTC.voidSiphon",
+   "ingredient": "7",
+   "aspects": [
+    [
+     "ELDRITCH",
+     "50"
+    ],
+    [
+     "ENTROPY",
+     "50"
+    ],
+    [
+     "VOID",
+     "100"
+    ],
+    [
+     "CRAFT",
+     "50"
+    ]
+   ]
+  }
+ ],
+ "VoidseerPearl": [
+  {
+   "station": "infusion",
+   "kind": "addInfusionCraftingRecipe",
+   "line": 2584,
+   "research": "VOIDSEERPEARL",
+   "result": "ItemsTC.charmVoidseer",
+   "ingredient": "8",
+   "aspects": [
+    [
+     "MIND",
+     "150"
+    ],
+    [
+     "VOID",
+     "150"
+    ],
+    [
+     "MAGIC",
+     "100"
+    ]
+   ]
+  }
+ ],
+ "ironnuggetconvert": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2607,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"ironnuggetconvert\") defaultGroup new ItemStack(Items.field_191525_da) new Object[]{\"#\", '#', new ItemStack(ItemsTC.nuggets, 1, 0)}"
+  }
+ ],
+ "thaumiumtonuggets": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2613,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"thaumiumtonuggets\") defaultGroup new ItemStack(ItemsTC.nuggets, 9, 6) new Object[]{\"#\", '#', new ItemStack(ItemsTC.ingots, 1, 0)}"
+  }
+ ],
+ "voidtonuggets": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2619,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"voidtonuggets\") defaultGroup new ItemStack(ItemsTC.nuggets, 9, 7) new Object[]{\"#\", '#', new ItemStack(ItemsTC.ingots, 1, 1)}"
+  }
+ ],
+ "brasstonuggets": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2625,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"brasstonuggets\") defaultGroup new ItemStack(ItemsTC.nuggets, 9, 8) new Object[]{\"#\", '#', new ItemStack(ItemsTC.ingots, 1, 2)}"
+  }
+ ],
+ "quartztonuggets": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2631,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"quartztonuggets\") defaultGroup new ItemStack(ItemsTC.nuggets, 9, 9) new Object[]{\"#\", '#', new ItemStack(Items.field_151128_bU)}"
+  }
+ ],
+ "quicksilvertonuggets": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2637,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"quicksilvertonuggets\") defaultGroup new ItemStack(ItemsTC.nuggets, 9, 5) new Object[]{\"#\", '#', new ItemStack(ItemsTC.quicksilver)}"
+  }
+ ],
+ "triplemeattreatfake": [
+  {
+   "station": "normal",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2717,
+   "raw": "new ResourceLocation(\"thaumcraft:triplemeattreatfake\") new ShapelessOreRecipe(\n            defaultGroup, new ItemStack(ItemsTC.tripleMeatTreat), new Object[]{\"nuggetMeat\", \"nuggetMeat\", \"nuggetMeat\", new ItemStack(Items.field_151102_aT)}\n         )"
+  }
+ ],
+ "salismundusfake": [
+  {
+   "station": "normal",
+   "kind": "addFakeCraftingRecipe",
+   "line": 2724,
+   "raw": "new ResourceLocation(\"thaumcraft:salismundusfake\") new ShapelessOreRecipe(\n            defaultGroup,\n            new ItemStack(ItemsTC.salisMundus),\n            new Object[]{\n               Items.field_151145_ak,\n               Items.field_151054_z,\n               Items.field_151137_ax,\n               new ItemStack(ItemsTC.crystalEssence, 1, 32767),\n               new ItemStack(ItemsTC.crystalEssence, 1, 32767),\n               new ItemStack(ItemsTC.crystalEssence, 1, 32767)\n            }\n         )"
+  }
+ ],
+ "shimmerleaftoquicksilver": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2739,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"shimmerleaftoquicksilver\") defaultGroup new ItemStack(ItemsTC.quicksilver) new Object[]{\"#\", '#', BlocksTC.shimmerleaf}"
+  }
+ ],
+ "cinderpearltoblazepowder": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2745,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"cinderpearltoblazepowder\") defaultGroup new ItemStack(Items.field_151065_br) new Object[]{\"#\", '#', BlocksTC.cinderpearl}"
+  }
+ ],
+ "PlankGreatwood": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2769,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"PlankGreatwood\") defaultGroup new ItemStack(BlocksTC.plankGreatwood, 4) new Object[]{\"W\", 'W', new ItemStack(BlocksTC.logGreatwood)}"
+  }
+ ],
+ "PlankSilverwood": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2775,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"PlankSilverwood\") defaultGroup new ItemStack(BlocksTC.plankSilverwood, 4) new Object[]{\"W\", 'W', new ItemStack(BlocksTC.logSilverwood)}"
+  }
+ ],
+ "StairsGreatwood": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2781,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"StairsGreatwood\") defaultGroup new ItemStack(BlocksTC.stairsGreatwood, 4, 0) new Object[]{\"K  \", \"KK \", \"KKK\", 'K', new ItemStack(BlocksTC.plankGreatwood)}"
+  }
+ ],
+ "StairsSilverwood": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2787,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"StairsSilverwood\") defaultGroup new ItemStack(BlocksTC.stairsSilverwood, 4, 0) new Object[]{\"K  \", \"KK \", \"KKK\", 'K', new ItemStack(BlocksTC.plankSilverwood)}"
+  }
+ ],
+ "StairsArcane": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2793,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"StairsArcane\") defaultGroup new ItemStack(BlocksTC.stairsArcane, 4, 0) new Object[]{\"K  \", \"KK \", \"KKK\", 'K', new ItemStack(BlocksTC.stoneArcane)}"
+  }
+ ],
+ "StairsArcaneBrick": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2799,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"StairsArcaneBrick\") defaultGroup new ItemStack(BlocksTC.stairsArcaneBrick, 4, 0) new Object[]{\"K  \", \"KK \", \"KKK\", 'K', new ItemStack(BlocksTC.stoneArcaneBrick)}"
+  }
+ ],
+ "StairsAncient": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2805,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"StairsAncient\") defaultGroup new ItemStack(BlocksTC.stairsAncient, 4, 0) new Object[]{\"K  \", \"KK \", \"KKK\", 'K', new ItemStack(BlocksTC.stoneAncient)}"
+  }
+ ],
+ "BrickArcane": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2817,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"BrickArcane\") defaultGroup new ItemStack(BlocksTC.stoneArcaneBrick, 4) new Object[]{\"KK\", \"KK\", 'K', new ItemStack(BlocksTC.stoneArcane)}"
+  }
+ ],
+ "SlabGreatwood": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2823,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"SlabGreatwood\") defaultGroup new ItemStack(BlocksTC.slabGreatwood, 6) new Object[]{\"KKK\", 'K', new ItemStack(BlocksTC.plankGreatwood)}"
+  }
+ ],
+ "SlabSilverwood": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2829,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"SlabSilverwood\") defaultGroup new ItemStack(BlocksTC.slabSilverwood, 6) new Object[]{\"KKK\", 'K', new ItemStack(BlocksTC.plankSilverwood)}"
+  }
+ ],
+ "SlabArcaneStone": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2835,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"SlabArcaneStone\") defaultGroup new ItemStack(BlocksTC.slabArcaneStone, 6) new Object[]{\"KKK\", 'K', new ItemStack(BlocksTC.stoneArcane)}"
+  }
+ ],
+ "SlabArcaneBrick": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2841,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"SlabArcaneBrick\") defaultGroup new ItemStack(BlocksTC.slabArcaneBrick, 6) new Object[]{\"KKK\", 'K', new ItemStack(BlocksTC.stoneArcaneBrick)}"
+  }
+ ],
+ "SlabAncient": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2847,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"SlabAncient\") defaultGroup new ItemStack(BlocksTC.slabAncient, 6) new Object[]{\"KKK\", 'K', new ItemStack(BlocksTC.stoneAncient)}"
+  }
+ ],
+ "SlabEldritch": [
+  {
+   "station": "normal",
+   "kind": "addShapedRecipe",
+   "line": 2853,
+   "raw": "new ResourceLocation(\"thaumcraft\", \"SlabEldritch\") defaultGroup new ItemStack(BlocksTC.slabEldritch, 6) new Object[]{\"KKK\", 'K', new ItemStack(BlocksTC.stoneEldritchTile)}"
+  }
+ ]
+}

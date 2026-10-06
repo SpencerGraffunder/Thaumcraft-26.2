@@ -8,8 +8,10 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -285,5 +287,76 @@ public class EntityUtils {
         }
         
         return false;
+    }
+
+    /**
+     * The entity an entity is pointing at along its look vector.
+     *
+     * <p>Faithful port of 1.12.2 {@code EntityUtils.getPointedEntity(World, Entity, minrange,
+     * range, padding, nonCollide)}. Candidates are collected from the viewer's bounding box
+     * expanded along the look vector and inflated by {@code padding}; each candidate box is
+     * inflated by {@code max(0.8, pickRadius)}; candidates nearer than {@code minrange} are
+     * skipped and any candidate the eye cannot see directly is rejected, so ground items
+     * (pickable but not collidable) are still found. The 1.12 sentinel {@code d2 == 0.0}
+     * means "no candidate yet", so the first hit always wins and later hits only replace it
+     * when they are closer.</p>
+     *
+     * @param minRange  ignore entities whose feet are closer to the viewer than this
+     * @param range     how far along the look vector to search
+     * @param padding   how much to inflate the search box (1.12: 5.0 for the thaumometer's
+     *                  held highlight, 0.0 for an actual scan)
+     * @param nonCollide accept entities that cannot be collided with (1.12's {@code nonCollide})
+     */
+    @Nullable
+    public static Entity getPointedEntity(Level level, Entity viewer, double minRange, double range,
+                                          float padding, boolean nonCollide) {
+        Vec3 eye = viewer.position().add(0, viewer.getEyeHeight(), 0);
+        Vec3 look = viewer.getLookAngle();
+        Vec3 end = eye.add(look.x * range, look.y * range, look.z * range);
+
+        AABB search = viewer.getBoundingBox()
+                .expandTowards(look.x * range, look.y * range, look.z * range)
+                .inflate(padding, padding, padding);
+
+        Entity pointed = null;
+        double best = 0.0; // 1.12 sentinel: 0.0 == no candidate found yet
+
+        for (Entity entity : level.getEntities(viewer, search, e -> e != viewer)) {
+            if (eye.distanceTo(entity.position()) < minRange) {
+                continue;
+            }
+            if (!(entity.isPickable() || nonCollide)) {
+                continue;
+            }
+            // 1.12: world.rayTraceBlocks(eye, entity centre + eyeHeight, liquids, stopOnLiquid, false) == null
+            Vec3 sight = new Vec3(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
+            if (level.clip(new ClipContext(eye, sight, ClipContext.Block.COLLIDER,
+                    ClipContext.Fluid.ANY, viewer)).getType() != HitResult.Type.MISS) {
+                continue;
+            }
+
+            float pad = Math.max(0.8F, entity.getPickRadius());
+            AABB box = entity.getBoundingBox().inflate(pad, pad, pad);
+
+            if (box.contains(eye)) {
+                // 1.12: "if (0.0 < d2 || d2 == 0.0)" is always true, so being inside the box
+                // always wins and resets the sentinel back to 0.0.
+                pointed = entity;
+                best = 0.0;
+                continue;
+            }
+
+            Vec3 hit = box.clip(eye, end).orElse(null);
+            if (hit == null) {
+                continue;
+            }
+            double dist = eye.distanceTo(hit);
+            if (dist < best || best == 0.0) {
+                pointed = entity;
+                best = dist;
+            }
+        }
+
+        return pointed;
     }
 }

@@ -318,11 +318,14 @@ public class ResearchBrowserScreen extends Screen {
     
     /**
      * Checks if a research entry should be visible to the player.
+     * 1.12 GuiResearchBrowser.isVisible: an entry is visible when it is already
+     * known, or when it is not hidden (or unlockable) and every one of its
+     * parent entries is itself <em>visible</em> - visibility recurses through the
+     * parent chain, it does NOT require the parent research to be complete.
+     * (Requiring completion hid every branch research until its parent was
+     * fully finished, so completing First Steps revealed nothing.)
      */
     private boolean isVisible(ResearchEntry res) {
-        // 1.12: entry is visible if it's known (started or complete), OR all
-        // parents are COMPLETE (not just visible). Children only appear after
-        // their parent research is fully finished, not merely opened.
         if (ThaumcraftCapabilities.isResearchKnown(player, res.getKey())) {
             return true;
         }
@@ -337,12 +340,10 @@ public class ResearchBrowserScreen extends Screen {
         }
         if (res.getParents() != null) {
             for (String r : res.getParents()) {
-                String cleanParent = r.startsWith("~") ? r.substring(1) : r;
-                if (cleanParent.contains("@")) {
-                    cleanParent = cleanParent.substring(0, cleanParent.indexOf("@"));
-                }
-                // 1.12: parent must be COMPLETE for child to be visible
-                if (!ThaumcraftCapabilities.isResearchComplete(player, cleanParent)) {
+                // 1.12 looks the parent up by its raw string, so stage-suffixed
+                // parents (e.g. "METALLURGY@2") resolve to null and are skipped.
+                ResearchEntry ri = ResearchCategories.getResearch(r);
+                if (ri != null && !isVisible(ri)) {
                     invisible.add(r);
                     return false;
                 }
