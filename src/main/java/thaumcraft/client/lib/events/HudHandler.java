@@ -56,23 +56,43 @@ public class HudHandler {
         Thaumcraft.LOGGER.info("Registered Thaumcraft HUD overlay");
     }
     
+    /** Throttled [TC-DIAG] render counter (only the 1st/101st/... render logs). */
+    private static int hudRenderCount = 0;
+
+    /**
+     * Dev-only verification hook: with {@code ~/.thaumcraft_hud_debug} present the gauge is
+     * drawn with a fake aura even when no thaumometer is held, so the draw path can be
+     * verified in a headless dev client. Inert in production (no one creates that file).
+     */
+    private static boolean debugHudForced() {
+        try {
+            return java.nio.file.Files.exists(java.nio.file.Path.of(System.getProperty("user.home"), ".thaumcraft_hud_debug"));
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
     /**
      * The main Thaumcraft HUD layer.
+     *
+     * 1.12 HudHandler.renderHud: the gauges stack from the top-left corner, caster dial
+     * first (then +33), thaumometer gauge at the running offset. Same here.
      */
     public static final GuiLayer THAUMCRAFT_HUD = (graphics, deltaTracker) -> {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        
+
         if (player == null) return;
-        
+
         int yOffset = 0;
-        
-        // Check main hand and off hand for Thaumcraft items
+        boolean drewThaumometer = false;
+
+        // Check main hand and off hand for Thaumcraft items (1.12 iterates both hands)
         for (int hand = 0; hand < 2; hand++) {
             ItemStack stack = hand == 0 ? player.getMainHandItem() : player.getOffhandItem();
-            
+
             if (stack.isEmpty()) continue;
-            
+
             if (stack.getItem() instanceof ICaster) {
                 renderCasterHud(graphics, mc, player, stack, yOffset, deltaTracker);
                 // 1.12: start += 33 (ModConfig.CONFIG_GRAPHICS.dialBottom is false by default)
@@ -80,32 +100,58 @@ public class HudHandler {
             } else if (stack.getItem() instanceof ItemThaumometer) {
                 renderThaumometerHud(graphics, mc, player, yOffset, deltaTracker);
                 yOffset += 80;
+                drewThaumometer = true;
             }
+        }
+
+        if (!drewThaumometer && debugHudForced()) {
+            renderThaumometerHud(graphics, mc, player, yOffset, deltaTracker,
+                    new AuraChunk(null, (short) 400, 250.0f, 30.0f));
+        }
+
+        hudRenderCount++;
+        if (hudRenderCount % 100 == 1) {
+            Thaumcraft.LOGGER.info("[TC-DIAG] hud layer rendered#{} holdingThaumometer={} auraBase={} auraVis={} auraFlux={}",
+                    hudRenderCount, drewThaumometer, currentAura.getBase(),
+                    (int) currentAura.getVis(), (int) currentAura.getFlux());
         }
     };
     
     /**
-     * Render the thaumometer aura gauge HUD.
+     * Render the thaumometer aura gauge HUD (reads {@link #currentAura}).
      */
-    private static void renderThaumometerHud(GuiGraphicsExtractor graphics, Minecraft mc, Player player, 
+    private static void renderThaumometerHud(GuiGraphicsExtractor graphics, Minecraft mc, Player player,
                                               int yOffset, DeltaTracker deltaTracker) {
-        
+        renderThaumometerHud(graphics, mc, player, yOffset, deltaTracker, currentAura);
+    }
+
+    /**
+     * Render the thaumometer aura gauge HUD from the given aura.
+     */
+    private static void renderThaumometerHud(GuiGraphicsExtractor graphics, Minecraft mc, Player player,
+                                              int yOffset, DeltaTracker deltaTracker, AuraChunk aura) {
+
         // ---- 1.12 HudHandler.renderThaumometerHud, 1:1 ----
-        // GL11.glTranslated(2.0, shifty, 0.0) wraps every quad below, so x = 2 + <quad x>.
+        // 1.12 inGame ortho is top-left origin (glOrtho(0, w, h, 0, ...): y=0 at the top of
+        // the screen, y growing down), exactly like this GuiLayer's space, so the 1.12
+        // offsets translate directly: glTranslated(2.0, shifty, 0.0) -> x = 2 + <quad x>,
+        // y = yOffset + <quad y>.
         final int x = 2;
         final int hudH = 64; // gauge travel is 64px in hud.png
         float count = mc.player.tickCount + deltaTracker.getGameTimeDeltaPartialTick(false);
         float count2 = mc.player.tickCount / 3.0f + deltaTracker.getGameTimeDeltaPartialTick(false);
 
-        float base = Mth.clamp(currentAura.getBase() / MAX_VIS, 0.0f, 1.0f);
-        float vis = Mth.clamp(currentAura.getVis() / MAX_VIS, 0.0f, 1.0f);
-        float flux = Mth.clamp(currentAura.getFlux() / MAX_VIS, 0.0f, 1.0f);
+        float base = Mth.clamp(aura.getBase() / MAX_VIS, 0.0f, 1.0f);
+        float vis = Mth.clamp(aura.getVis() / MAX_VIS, 0.0f, 1.0f);
+        float flux = Mth.clamp(aura.getFlux() / MAX_VIS, 0.0f, 1.0f);
         if (flux + vis > 1.0f) {
             float m = 1.0f / (flux + vis);
             base *= m;
             vis *= m;
             flux *= m;
         }
+        // 1.12 shows the numeric read-out in creative mode (player.isCreative())
+        boolean readout = player.isCreative();
 
         // Vis column: glTranslated(5, 10 + (1 - vis) * 64) then glScaled(1, vis) over an 8x64 quad
         float start = 10.0f + (1.0f - vis) * hudH;
@@ -115,8 +161,8 @@ public class HudHandler {
             // additive white shimmer, source row scrolls with the tick counter
             blitHud(graphics, x + 5, (int) (yOffset + start), 96, (int) (56 + count % 64.0f),
                     8, visH, 8, visH, 0x7FFFFFFF);
-            if (player.isShiftKeyDown()) {
-                drawSmallText(graphics, mc, DECIMAL_FORMAT.format(currentAura.getVis()),
+            if (readout) {
+                drawSmallText(graphics, mc, DECIMAL_FORMAT.format(aura.getVis()),
                         x + 16, (int) (yOffset + start), 0xFFEEAAFF);
             }
         }
@@ -128,8 +174,8 @@ public class HudHandler {
             blitHud(graphics, x + 5, (int) (yOffset + start), 88, 56, 8, hudH, 8, fluxH, 0xFF401A4C);
             blitHud(graphics, x + 5, (int) (yOffset + start), 104, (int) (120 - count2 % 64.0f),
                     8, fluxH, 8, fluxH, 0x7FB266FF);
-            if (player.isShiftKeyDown()) {
-                drawSmallText(graphics, mc, DECIMAL_FORMAT.format(currentAura.getFlux()),
+            if (readout) {
+                drawSmallText(graphics, mc, DECIMAL_FORMAT.format(aura.getFlux()),
                         x + 16, (int) (yOffset + start) - 4, 0xFFAA11BB);
             }
         }
@@ -199,7 +245,7 @@ public class HudHandler {
         // Gauge frame: quad(-8, -3, 72, 0, 16, 42) at half scale
         blitHud(graphics, gx - 4, gy - 1, 72, 0, 16, 42, 8, 21, 0xFFFFFFFF);
 
-        if (player.isShiftKeyDown()) {
+        if (player.isCreative()) {
             var pose = graphics.pose();
             // 1.12: glRotatef(-90, 0, 0, 1) then drawString(-32, -4) - the read-out runs upwards
             pose.pushMatrix();
