@@ -12,6 +12,7 @@ import thaumcraft.api.crafting.IDustTrigger;
 import thaumcraft.api.crafting.Part;
 import thaumcraft.common.lib.crafting.DustTriggerMultiblock;
 import thaumcraft.common.lib.crafting.DustTriggerSimple;
+import thaumcraft.common.lib.crafting.DustTriggerTag;
 import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModItems;
 
@@ -52,11 +53,24 @@ public class ConfigMultiblocks {
                 Blocks.BOOKSHELF, 
                 new ItemStack(ModItems.THAUMONOMICON.get())
         ));
+        // 1.12 also registers DustTriggerOre("!gotdream", "bookshelf", ...) so that modded
+        // bookshelves (anything in the oredict) convert too. 26.3 equivalent: block tag.
+        IDustTrigger.registerDustTrigger(new DustTriggerTag(
+                "!gotdream",
+                DustTriggerTag.commonTag("bookshelves"),
+                new ItemStack(ModItems.THAUMONOMICON.get())
+        ));
         
         // Crafting Table -> Arcane Workbench (after completing FIRSTSTEPS@1)
         IDustTrigger.registerDustTrigger(new DustTriggerSimple(
                 "FIRSTSTEPS@1", 
                 Blocks.CRAFTING_TABLE, 
+                new ItemStack(ModBlocks.ARCANE_WORKBENCH.get())
+        ));
+        // 1.12: DustTriggerOre("FIRSTSTEPS@1", "workbench", ...)
+        IDustTrigger.registerDustTrigger(new DustTriggerTag(
+                "FIRSTSTEPS@1",
+                DustTriggerTag.commonTag("player_workstations/crafting_tables"),
                 new ItemStack(ModBlocks.ARCANE_WORKBENCH.get())
         ));
         
