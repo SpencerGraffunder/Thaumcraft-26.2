@@ -6,6 +6,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.ServerStatsCounter;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -47,7 +49,6 @@ import thaumcraft.common.lib.research.ScanEnchantment;
 import thaumcraft.common.lib.research.ScanGeneric;
 import thaumcraft.common.lib.research.ScanPotion;
 import thaumcraft.common.lib.research.ScanSky;
-import thaumcraft.common.lib.research.StatDiscovery;
 import thaumcraft.common.lib.research.theorycraft.ResearchAid;
 import thaumcraft.common.lib.research.theorycraft.ResearchCard;
 import thaumcraft.common.lib.research.theorycraft.AidBookshelf;
@@ -82,9 +83,6 @@ public class ConfigResearch {
     public static final Map<String, ResearchAid> aids = new HashMap<>();
     /** Research card entries, keyed by card key. */
     public static final Map<String, ResearchCard> cards = new HashMap<>();
-    /** Stat-threshold based discoveries, keyed by research key. */
-    public static final Map<String, StatDiscovery> statBasedDiscoveries = new HashMap<>();
-
     /** Enchantment scanners need the data-driven enchantment registry, which is only
      *  resolvable with a live RegistryAccess - registered lazily on first player use. */
     private static boolean enchantmentScannersRegistered = false;
@@ -94,7 +92,7 @@ public class ConfigResearch {
             return;
         }
         // 1.12 registers a ScanEnchantment for every enchantment in the registry
-        access.lookupOrThrow(Registries.ENCHANTMENT).holders()
+        access.lookupOrThrow(Registries.ENCHANTMENT).listElements()
                 .forEach(e -> ScanningManager.addScannableThing(new ScanEnchantment(e)));
         enchantmentScannersRegistered = true;
     }
@@ -215,9 +213,8 @@ public class ConfigResearch {
         // because the enchantment registry is data-driven and needs a live RegistryAccess.
         
         // 1.12 registers a ScanPotion for every potion (mob effect) in the registry
-        for (Holder<MobEffect> effect : BuiltInRegistries.MOB_EFFECT.holders().toList()) {
-            ScanningManager.addScannableThing(new ScanPotion(effect));
-        }
+        BuiltInRegistries.MOB_EFFECT.listElements()
+                .forEach(effect -> ScanningManager.addScannableThing(new ScanPotion(effect)));
         
         // Thaumcraft entities
         ScanningManager.addScannableThing(new ScanEntity("!Wisp", EntityWisp.class, true));
@@ -430,11 +427,31 @@ public class ConfigResearch {
             }
         }
         
-        // Stat-based discoveries
-        // These are triggered by player movement stats
-        statBasedDiscoveries.put("stat_walking", new StatDiscovery("stat_walking", "Walking", 1000));
-        statBasedDiscoveries.put("stat_running", new StatDiscovery("stat_running", "Running", 500));
-        statBasedDiscoveries.put("stat_jumping", new StatDiscovery("stat_jumping", "Jumping", 200));
-        statBasedDiscoveries.put("stat_swimming", new StatDiscovery("stat_swimming", "Swimming", 300));
+        // Movement milestones (1.12 ConfigResearch.onPlayerTick): the four stat
+        // thresholds that gate the FOOTNOTE/traveller-boot research stage
+        // (infusion.json requires m_walker, m_runner, m_swimmer, m_jumper).
+        ServerStatsCounter sms = serverPlayer.getStats();
+        if (sms != null) {
+            if (!knowledge.isResearchKnown("m_walker")
+                    && sms.getValue(Stats.CUSTOM, Stats.WALK_ONE_CM) > 160000) {
+                knowledge.addResearch("m_walker");
+                knowledge.sync(serverPlayer);
+            }
+            if (!knowledge.isResearchKnown("m_runner")
+                    && sms.getValue(Stats.CUSTOM, Stats.SPRINT_ONE_CM) > 80000) {
+                knowledge.addResearch("m_runner");
+                knowledge.sync(serverPlayer);
+            }
+            if (!knowledge.isResearchKnown("m_jumper")
+                    && sms.getValue(Stats.CUSTOM, Stats.JUMP) > 500) {
+                knowledge.addResearch("m_jumper");
+                knowledge.sync(serverPlayer);
+            }
+            if (!knowledge.isResearchKnown("m_swimmer")
+                    && sms.getValue(Stats.CUSTOM, Stats.SWIM_ONE_CM) > 8000) {
+                knowledge.addResearch("m_swimmer");
+                knowledge.sync(serverPlayer);
+            }
+        }
     }
 }

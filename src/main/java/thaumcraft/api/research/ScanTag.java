@@ -28,7 +28,7 @@ public class ScanTag implements IScanThing {
 
     /** Convenience factory so call sites can name tags by path. */
     public static TagKey<Item> tag(String namespace, String path) {
-        return TagKey.create(Registries.ITEM, net.minecraft.resources.ResourceLocation.parse(namespace + ":" + path));
+        return TagKey.create(Registries.ITEM, net.minecraft.resources.Identifier.parse(namespace + ":" + path));
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ScanTag implements IScanThing {
             stack = itemEntity.getItem();
         } else if (obj instanceof BlockPos pos) {
             BlockState state = player.level().getBlockState(pos);
-            stack = state.getBlock().getAsItem();
+            stack = new ItemStack(state.getBlock());
         }
 
         if (stack.isEmpty()) return false;
