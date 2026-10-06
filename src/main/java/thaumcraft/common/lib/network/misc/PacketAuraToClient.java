@@ -67,7 +67,13 @@ public class PacketAuraToClient implements CustomPacketPayload {
         return msg;
     }
     
-    public static Consumer<PacketAuraToClient> CLIENT_HANDLER = msg -> {};
+    /**
+     * 1.12 PacketAuraToClient.onMessage: the client stores the pushed aura in
+     * HudHandler.currentAura, which is what the thaumometer and caster HUD gauges read.
+     */
+    public static Consumer<PacketAuraToClient> CLIENT_HANDLER = msg ->
+            thaumcraft.client.lib.events.HudHandler.currentAura =
+                    new AuraChunk((net.minecraft.world.level.chunk.LevelChunk) null, msg.base, msg.vis, msg.flux);
 
     public static void handle(PacketAuraToClient msg, IPayloadContext ctxSupplier) {
         IPayloadContext ctx = ctxSupplier;

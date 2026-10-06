@@ -319,18 +319,60 @@ public class ItemCaster extends Item implements ICaster {
     
     @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
-        // Sync aura information to client when holding caster
-        if (entity instanceof Player player && !level.isClientSide()) {
-            int vis = (int) thaumcraft.api.aura.AuraHelper.getVis(level, player.blockPosition());
-            float radius = thaumcraft.api.aura.AuraHelper.getAuraBase(level, player.blockPosition());
-            if (vis > 0 || radius > 0) {
-                if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-                    serverPlayer.sendSystemMessage(
-                        net.minecraft.network.chat.Component.literal(
-                            String.format("§5§oCaster aura: §7%d vis, §7r=%.1f", vis, radius)));
+        // 1.12 ItemCaster.onUpdate: every 10 ticks the server pushes the aura around the player
+        // to the client (PacketAuraToClient) so the caster HUD gauge has something to draw.
+        if (entity instanceof net.minecraft.server.level.ServerPlayer player
+                && entity.tickCount % 10 == 0) {
+            updateAura(stack, level, player);
+        }
+    }
+
+    /**
+     * 1.12 ItemCaster.updateAura: sum vis/flux/base over the chunks this wand's dial area
+     * covers (0 = current chunk, 1 = current chunk plus the four horizontal neighbours,
+     * 2 = the full 3x3) and send the result to the client.
+     */
+    private void updateAura(ItemStack stack, ServerLevel level,
+                            net.minecraft.server.level.ServerPlayer player) {
+        int cx = player.blockPosition().getX() >> 4;
+        int cz = player.blockPosition().getZ() >> 4;
+        thaumcraft.common.world.aura.AuraChunk ac =
+                thaumcraft.common.world.aura.AuraHandler.getAuraChunk(level.dimension(), cx, cz);
+        if (ac == null) return;
+
+        float cv = ac.getVis();
+        float cf = ac.getFlux();
+        short bv = ac.getBase();
+
+        if (auraArea == 1) {
+            for (Direction face : Direction.Plane.HORIZONTAL.stream().toList()) {
+                thaumcraft.common.world.aura.AuraChunk neighbour = thaumcraft.common.world.aura.AuraHandler
+                        .getAuraChunk(level.dimension(), cx + face.getStepX(), cz + face.getStepZ());
+                if (neighbour != null) {
+                    cv += neighbour.getVis();
+                    cf += neighbour.getFlux();
+                    bv += neighbour.getBase();
+                }
+            }
+        } else if (auraArea == 2) {
+            for (int xx = -1; xx <= 1; ++xx) {
+                for (int zz = -1; zz <= 1; ++zz) {
+                    thaumcraft.common.world.aura.AuraChunk neighbour = thaumcraft.common.world.aura.AuraHandler
+                            .getAuraChunk(level.dimension(), cx + xx, cz + zz);
+                    if (neighbour != null) {
+                        cv += neighbour.getVis();
+                        cf += neighbour.getFlux();
+                        bv += neighbour.getBase();
+                    }
                 }
             }
         }
+
+        thaumcraft.common.lib.network.PacketHandler.sendToPlayer(
+                new thaumcraft.common.lib.network.misc.PacketAuraToClient(
+                        new thaumcraft.common.world.aura.AuraChunk(
+                                (net.minecraft.world.level.chunk.LevelChunk) null, bv, cv, cf)),
+                player);
     }
     
     @Override

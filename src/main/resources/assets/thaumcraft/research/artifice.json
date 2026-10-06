@@ -163,7 +163,7 @@
                 },
                 {
                     "text": "research.MIRROR.stage.2",  
-                    "recipes": ["thaumcraft:mirror_item"]
+                    "recipes": ["thaumcraft:mirror"]
                 }
             ]
         },
@@ -215,7 +215,7 @@
                 },
                 {
                     "text": "research.ARCANELAMP.stage.2",  
-                    "recipes": ["thaumcraft:lamp_arcane"]
+                    "recipes": ["thaumcraft:arcane_lamp"]
                 }
             ]
         },
@@ -285,7 +285,7 @@
             },
             {
                 "text": "research.BASICTURRET.stage.2",  
-                "recipes": ["thaumcraft:turret_placer_basic","thaumcraft:activatorrail"]
+                "recipes": ["thaumcraft:turret_crossbow","thaumcraft:activatorrail"]
             }
             ]
         },
@@ -300,7 +300,7 @@
             },
             {
                 "text": "research.ADVANCEDTURRET.stage.2",  
-                "recipes": ["thaumcraft:turret_placer_advanced"]
+                "recipes": ["thaumcraft:turret_crossbow_advanced"]
             }
         ]
         },
@@ -315,7 +315,7 @@
             },
             {
                 "text": "research.ARCANEBORE.stage.2",  
-                "recipes": ["thaumcraft:turret_placer_bore"]
+                "recipes": ["thaumcraft:arcane_bore"]
             }
         ]
         },

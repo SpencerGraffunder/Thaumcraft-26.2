@@ -32,9 +32,8 @@ import java.text.DecimalFormat;
  * - Caster gauntlet vis gauge and focus info
  * - Sanity checker warp levels
  * 
- * Ported to the 26.2 NeoForge GuiLayer system (RegisterGuiLayersEvent).
- * NOTE: texture-based rendering was stubbed to plain colored bars for the 26.2
- * GUI render-state rewrite.
+ * Ported to the 26.3 NeoForge GuiLayer system (RegisterGuiLayersEvent); every quad is the
+ * 1.12 hud.png quad, same source rectangle and same drawn size.
  */
 @EventBusSubscriber(modid = Thaumcraft.MODID, value = net.neoforged.api.distmarker.Dist.CLIENT)
 public class HudHandler {
@@ -76,7 +75,8 @@ public class HudHandler {
             
             if (stack.getItem() instanceof ICaster) {
                 renderCasterHud(graphics, mc, player, stack, yOffset, deltaTracker);
-                yOffset += 36;
+                // 1.12: start += 33 (ModConfig.CONFIG_GRAPHICS.dialBottom is false by default)
+                yOffset += 33;
             } else if (stack.getItem() instanceof ItemThaumometer) {
                 renderThaumometerHud(graphics, mc, player, yOffset, deltaTracker);
                 yOffset += 80;
@@ -164,45 +164,61 @@ public class HudHandler {
     }
     
     /**
-     * Render the caster gauntlet HUD.
+     * Render the caster gauntlet HUD - 1.12 HudHandler.renderCastingWandHud, 1:1.
+     *
+     * 1.12 transforms, in order: translate(0, shifty), the 64x64 dial quad scaled 0.5,
+     * translate(16, 16) (dial centre), then translate(16, -10) + scale 0.5 for the vis gauge,
+     * and translate(-24, -24) for the 16x16 focus item. The absolute positions below are those
+     * transforms folded out.
      */
     private static void renderCasterHud(GuiGraphicsExtractor graphics, Minecraft mc, Player player,
                                          ItemStack casterStack, int yOffset, DeltaTracker deltaTracker) {
-        
+
         ICaster caster = (ICaster) casterStack.getItem();
-        
-        int x = 2;
-        int y = yOffset + 2;
-        
-        // Get aura vis for the gauge
-        float maxVis = currentAura != null ? currentAura.getBase() : 100;
-        float currentVis = currentAura != null ? currentAura.getVis() : 50;
-        
-        // Dial/focus rendering — see HUD note above: textured dial blit is skipped
-        // pending the 26.2 RenderPipeline texture wiring.
-        
-        // Draw vis gauge
-        int gaugeHeight = 30;
-        float visRatio = Mth.clamp(currentVis / Math.max(maxVis, 1), 0, 1);
-        int filledHeight = (int) (gaugeHeight * visRatio);
-        
-        // Vis bar position (to the right of the dial)
-        int barX = x + 34;
-        int barY = y + 2;
-        
-        // Draw gauge background
-        graphics.fill(barX, barY, barX + 8, barY + 42, 0x40000000);
-        
-        // Draw vis fill with aspect color
-        Color visColor = new Color(Aspect.ENERGY.getColor());
-        int fillY = barY + 3 + (int)((1 - visRatio) * 15);
-        graphics.fill(barX + 2, fillY, barX + 6, fillY + (int)(15 * visRatio), 
-                (visColor.getRed() << 16) | (visColor.getGreen() << 8) | visColor.getBlue() | 0xCC000000);
-        
-        // Show current vis amount if sneaking
+
+        int max = currentAura.getBase();
+        int amt = (int) currentAura.getVis();
+        ItemFocus focus = (ItemFocus) caster.getFocus(casterStack);
+        ItemStack focusStack = caster.getFocusStack(casterStack);
+
+        // Dial: glScaled(0.5) over quad(0, 0, 0, 0, 64, 64) -> 32x32 at the top-left corner
+        blitHud(graphics, 0, yOffset, 0, 0, 64, 64, 32, 32, 0xFFFFFFFF);
+
+        // Vis gauge group: translate(16, 16) then translate(16, -10) then glScaled(0.5)
+        final int gx = 32;
+        final int gy = 6;
+        int loc = max > 0 ? (int) (30.0f * amt / max) : 0;
+        loc = Mth.clamp(loc, 0, 30);
+
+        if (loc > 0) {
+            Color ac = new Color(Aspect.ENERGY.getColor());
+            int color = (0xCC << 24) | (ac.getRed() << 16) | (ac.getGreen() << 8) | ac.getBlue();
+            // quad(-4, 35 - loc, 104, 0, 8, loc) at half scale
+            blitHud(graphics, gx - 2, gy + (35 - loc) / 2, 104, 0, 8, loc, 4, loc / 2, color);
+        }
+        // Gauge frame: quad(-8, -3, 72, 0, 16, 42) at half scale
+        blitHud(graphics, gx - 4, gy - 1, 72, 0, 16, 42, 8, 21, 0xFFFFFFFF);
+
         if (player.isShiftKeyDown()) {
-            String visStr = DECIMAL_FORMAT.format(currentVis);
-            graphics.text(mc.font, visStr, barX - 8, barY + 22, 0xFFFFFFFF, false);
+            var pose = graphics.pose();
+            // 1.12: glRotatef(-90, 0, 0, 1) then drawString(-32, -4) - the read-out runs upwards
+            pose.pushMatrix();
+            pose.translate((float) gx, (float) gy);
+            // graphics.pose() is a JOML Matrix3x2fStack, so rotate() takes radians
+            pose.rotate(-Mth.HALF_PI);
+            graphics.text(mc.font, DECIMAL_FORMAT.format(amt), -32, -4, 0xFFFFFFFF, false);
+            pose.popMatrix();
+
+            if (focus != null && focus.getVisCost(focusStack) > 0.0f) {
+                String msg = DECIMAL_FORMAT.format(focus.getVisCost(focusStack)
+                        * caster.getConsumptionModifier(casterStack, player, false));
+                graphics.text(mc.font, msg, gx - 32 - mc.font.width(msg) / 2, gy + 32, 0xFFFFFFFF, false);
+            }
+        }
+
+        if (focus != null && !focusStack.isEmpty()) {
+            // translate(16,16) then translate(-24,-24) then renderItemAndEffectIntoGUI(.., 16, 16)
+            graphics.item(focusStack, 8, yOffset + 8);
         }
     }
     

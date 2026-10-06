@@ -129,7 +129,7 @@
                 },
                 {
                     "text": "research.PAVINGSTONES.stage.2",  
-                    "recipes": ["thaumcraft:paving_stone_barrier","thaumcraft:paving_stone_travel","thaumcraft:arcane_stone","thaumcraft:arcane_brick"]
+                    "recipes": ["thaumcraft:paving_barrier","thaumcraft:paving_travel","thaumcraft:arcane_stone","thaumcraft:arcane_brick"]
                 }
             ]
         },

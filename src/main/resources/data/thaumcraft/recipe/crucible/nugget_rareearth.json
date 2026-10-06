@@ -1,6 +1,5 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "NUGGETS_FROM_CRUCIBLE",
   "catalyst": "thaumcraft:cluster_cinnabar",
   "aspects": {
     "alkimia": 6,

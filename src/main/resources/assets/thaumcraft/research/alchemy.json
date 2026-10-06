@@ -69,8 +69,7 @@
                     "text": "research.METALPURIFICATION.stage.1", 
                     "required_knowledge":["THEORY;ALCHEMY;2"], 
                     "recipes": ["thaumcraft:metal_purification_iron","thaumcraft:metal_purification_gold","thaumcraft:metal_purification_cinnabar",
-                                "thaumcraft:metal_purification_copper","thaumcraft:metal_purification_tin","thaumcraft:metal_purification_silver",
-                                "thaumcraft:metal_purification_lead"]
+                                "thaumcraft:metal_purification_copper"]
                 }
             ]
         },
@@ -233,12 +232,12 @@
                 {
                     "text": "research.ESSENTIASMELTER.stage.3",
                     "required_knowledge":["OBSERVATION;ALCHEMY;1","THEORY;ALCHEMY;1"],  
-                    "recipes": ["thaumcraft:smelter"],
+                    "recipes": ["thaumcraft:smelter_basic"],
                     "required_craft":["thaumcraft:smelter"]
                 },
                 {
                     "text": "research.ESSENTIASMELTER.stage.4",
-                    "recipes": ["thaumcraft:smelter","thaumcraft:alembic"]
+                    "recipes": ["thaumcraft:smelter_basic","thaumcraft:alembic"]
                 }
             ],
             "addenda": [
@@ -278,7 +277,7 @@
                 },
                 {
                     "text": "research.TUBES.stage.2", 
-                    "recipes": ["thaumcraft:resonator","thaumcraft:tube_normal","thaumcraft:tube_valve",
+                    "recipes": ["thaumcraft:resonator","thaumcraft:tube","thaumcraft:tube_valve",
                                 "thaumcraft:tube_filter","thaumcraft:tube_restrict","thaumcraft:tube_oneway",
                                 "thaumcraft:tube_buffer","thaumcraft:metal_alchemical"]
                 }
