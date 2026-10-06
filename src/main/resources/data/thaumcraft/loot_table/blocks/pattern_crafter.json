@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:survives_explosion"
+          },
+          "name": "thaumcraft:pattern_crafter"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "thaumcraft:blocks/pattern_crafter"
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:survives_explosion"
+          },
+          "name": "thaumcraft:infusion_matrix"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "thaumcraft:blocks/infusion_matrix"
+}

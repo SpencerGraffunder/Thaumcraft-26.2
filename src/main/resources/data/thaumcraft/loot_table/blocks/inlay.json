@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:survives_explosion"
+          },
+          "name": "thaumcraft:inlay"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "thaumcraft:blocks/inlay"
+}

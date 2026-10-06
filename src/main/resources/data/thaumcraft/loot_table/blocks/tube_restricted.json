@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:survives_explosion"
+          },
+          "name": "thaumcraft:tube_restricted"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "thaumcraft:blocks/tube_restricted"
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:survives_explosion"
+          },
+          "name": "thaumcraft:greatwood_sapling"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "thaumcraft:blocks/greatwood_sapling"
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:survives_explosion"
+          },
+          "name": "thaumcraft:matrix_speed"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "thaumcraft:blocks/matrix_speed"
+}

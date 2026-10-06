@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:survives_explosion"
+          },
+          "name": "thaumcraft:ancient_stone"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "thaumcraft:blocks/ancient_stone"
+}

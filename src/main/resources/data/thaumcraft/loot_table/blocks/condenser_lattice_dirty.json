@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:survives_explosion"
+          },
+          "name": "thaumcraft:condenser_lattice_dirty"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "thaumcraft:blocks/condenser_lattice_dirty"
+}
