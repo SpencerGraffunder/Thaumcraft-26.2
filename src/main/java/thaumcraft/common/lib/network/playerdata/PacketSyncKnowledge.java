@@ -5,6 +5,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
@@ -64,7 +65,28 @@ public class PacketSyncKnowledge implements CustomPacketPayload {
         return msg;
     }
     
-    public static Consumer<PacketSyncKnowledge> CLIENT_HANDLER = msg -> {};
+    /**
+     * Apply the server's knowledge payload to the client player.
+     *
+     * This was a no-op, which meant the client player never held any research. Every
+     * client-side research gate therefore failed: the Salis Mundus dust trigger checks
+     * FIRSTSTEPS@1 in Item.onItemUseFirst BEFORE the crafting table's own useItemOn, so on
+     * the client the check failed, the item returned PASS and vanilla opened the crafting
+     * table GUI locally while the server converted the table 2.5s later behind it.
+     */
+    public static Consumer<PacketSyncKnowledge> CLIENT_HANDLER = msg -> {
+        if (msg.data == null) {
+            return;
+        }
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
+        IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
+        if (knowledge != null) {
+            knowledge.deserializeNBT(msg.data);
+        }
+    };
 
     public static void handle(PacketSyncKnowledge msg, IPayloadContext ctxSupplier) {
         IPayloadContext ctx = ctxSupplier;

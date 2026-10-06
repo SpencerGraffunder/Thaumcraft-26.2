@@ -295,10 +295,11 @@ public class PlayerEvents {
     // ==================== Utility Methods ====================
     
     /**
-     * Mark a player for knowledge sync on next tick
+     * Mark a player for knowledge sync (and push it to the client immediately).
      */
     public static void markForSync(Player player) {
         syncList.add(player.getName().getString());
+        ResearchManager.syncToClient(player);
     }
     
     /**

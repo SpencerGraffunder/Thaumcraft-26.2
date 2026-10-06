@@ -47,6 +47,26 @@ public class ResearchManager {
     // Players that need their knowledge synced (thread-safe)
     public static ConcurrentHashMap<String, Boolean> syncList = new ConcurrentHashMap<>();
     
+    /**
+     * Queue a knowledge sync for this player and push it to the client right away.
+     *
+     * The 20-tick drain in PlayerEvents.livingTick is kept (1.12 parity), but research
+     * changes are also pushed immediately: dust triggers such as the Salis Mundus
+     * crafting-table -> arcane workbench conversion gate on research client-side too
+     * (Item.onItemUseFirst runs on the client before the block's own useItemOn), so a
+     * client still holding the pre-change knowledge opens the crafting GUI locally while
+     * the server converts the table behind it.
+     */
+    public static void syncToClient(Player player) {
+        syncList.put(player.getName().getString(), true);
+        if (player instanceof ServerPlayer serverPlayer) {
+            IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
+            if (knowledge != null) {
+                knowledge.sync(serverPlayer);
+            }
+        }
+    }
+    
     // Flag to suppress popups during certain operations
     public static boolean noFlags = false;
     
@@ -118,7 +138,7 @@ public class ResearchManager {
         //     }
         // }
         
-        syncList.put(player.getName().getString(), true);
+        syncToClient(player);
         return true;
     }
     
@@ -204,7 +224,7 @@ public class ResearchManager {
         if (entry == null || entry.getStages() == null || entry.getStages().length == 0) {
             knowledge.setResearchStage(researchKey, 1);
             if (sync) {
-                syncList.put(player.getName().getString(), true);
+                syncToClient(player);
             }
             return false;
         }
@@ -299,7 +319,7 @@ public class ResearchManager {
         }
         
         if (sync) {
-            syncList.put(player.getName().getString(), true);
+            syncToClient(player);
             if (entry != null) {
                 player.giveExperiencePoints(5);
             }
