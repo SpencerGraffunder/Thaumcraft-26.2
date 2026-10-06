@@ -1,7 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "UNLOCKAUROMANCY",
-  "catalyst": "thaumcraft:crystal_order",
+  "catalyst": "thaumcraft:vis_crystal_order",
   "aspects": {
     "vitreus": 20,
     "praecantatio": 10,

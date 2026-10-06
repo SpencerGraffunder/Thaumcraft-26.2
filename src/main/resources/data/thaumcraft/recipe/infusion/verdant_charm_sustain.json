@@ -5,7 +5,7 @@
   "input": "thaumcraft:verdant_charm",
   "ingredients": [
     "thaumcraft:triple_meat_treat",
-    "thaumcraft:crystal_essence",
+    "thaumcraft:vis_crystal_desire",
     {
       "neoforge:ingredient_type": "neoforge:components",
       "items": "minecraft:potion",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "thaumcraft:crystal_essence"
+    "thaumcraft:vis_crystal_air"
   ],
   "aspects": {
     "desiderium": 80,

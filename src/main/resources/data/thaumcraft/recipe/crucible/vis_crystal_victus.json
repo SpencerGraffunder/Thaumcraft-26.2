@@ -1,0 +1,13 @@
+{
+  "type": "thaumcraft:crucible",
+  "research": "BASEALCHEMY",
+  "catalyst": "#c:gems/quartz",
+  "aspects": {
+    "victus": 2
+  },
+  "result": {
+    "id": "thaumcraft:vis_crystal_life",
+    "count": 1
+  },
+  "group": "thaumcraft:vis_crystal"
+}

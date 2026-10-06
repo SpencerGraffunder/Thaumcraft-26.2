@@ -5,7 +5,7 @@
   "input": "thaumcraft:verdant_charm",
   "ingredients": [
     "minecraft:golden_apple",
-    "thaumcraft:crystal_essence",
+    "thaumcraft:vis_crystal_life",
     {
       "neoforge:ingredient_type": "neoforge:components",
       "items": "minecraft:potion",
@@ -15,7 +15,7 @@
         }
       }
     },
-    "thaumcraft:crystal_essence"
+    "thaumcraft:vis_crystal_man"
   ],
   "aspects": {
     "victus": 80,

@@ -7,6 +7,10 @@
     "thaumcraft:vis_crystal_earth",
     "thaumcraft:vis_crystal_order",
     "thaumcraft:vis_crystal_entropy",
+    "thaumcraft:vis_crystal_life",
+    "thaumcraft:vis_crystal_plant",
+    "thaumcraft:vis_crystal_man",
+    "thaumcraft:vis_crystal_desire",
     "thaumcraft:flux_crystal"
   ]
 }

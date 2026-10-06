@@ -173,7 +173,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> SHARD_ENTROPY = registerItem("shard_entropy",
             ItemMaterial::basic);
 
-    // ==================== Vis Crystals (6 primal types) ====================
+    // ==================== Vis Crystals ====================
 
     public static final DeferredHolder<Item, Item> VIS_CRYSTAL_AIR = registerItem("vis_crystal_air",
             () -> new ItemVisCrystal(Aspect.AIR));
@@ -192,6 +192,22 @@ public class ModItems {
 
     public static final DeferredHolder<Item, Item> VIS_CRYSTAL_ENTROPY = registerItem("vis_crystal_entropy",
             () -> new ItemVisCrystal(Aspect.ENTROPY));
+
+    // 1.12 has a crystal for EVERY aspect (ConfigRecipes.java:131 loops all
+    // Aspects); these are the non-primal ones actually used as recipe
+    // ingredients in 1.12 (Verdant Heart: LIFE+PLANT, Verdant Heart Life:
+    // LIFE+MAN, Verdant Heart Sustain: DESIRE+AIR).
+    public static final DeferredHolder<Item, Item> VIS_CRYSTAL_LIFE = registerItem("vis_crystal_life",
+            () -> new ItemVisCrystal(Aspect.LIFE));
+
+    public static final DeferredHolder<Item, Item> VIS_CRYSTAL_PLANT = registerItem("vis_crystal_plant",
+            () -> new ItemVisCrystal(Aspect.PLANT));
+
+    public static final DeferredHolder<Item, Item> VIS_CRYSTAL_MAN = registerItem("vis_crystal_man",
+            () -> new ItemVisCrystal(Aspect.MAN));
+
+    public static final DeferredHolder<Item, Item> VIS_CRYSTAL_DESIRE = registerItem("vis_crystal_desire",
+            () -> new ItemVisCrystal(Aspect.DESIRE));
 
     // ==================== Crafting Components ====================
 
