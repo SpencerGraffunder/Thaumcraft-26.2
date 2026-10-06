@@ -136,7 +136,40 @@ def main():
     for leaf in sorted(bad_recipes):
         print(f"    {leaf:26s} {', '.join(sorted(bad_recipes[leaf]))}")
 
-    # 3. client item definitions
+    # 3. the same two checks, but against the data the client actually loads
+    if args.jar:
+        with zipfile.ZipFile(args.jar) as archive:
+            names = archive.namelist()
+            jar_recipes = {n: json.loads(archive.read(n)) for n in names
+                           if n.startswith("data/thaumcraft/recipe/") and n.endswith(".json")}
+            jar_keys = set()
+            for n in names:
+                if n.startswith("assets/thaumcraft/research/") and n.endswith(".json"):
+                    payload = json.loads(archive.read(n))
+                    for entry in payload.get("entries", payload):
+                        jar_keys.add(entry.get("key") if isinstance(entry, dict) else entry)
+        jar_keys = {k.split(":")[-1] for k in jar_keys if k}
+        jar_gates = collections.defaultdict(list)
+        for name, data in jar_recipes.items():
+            if data.get("research"):
+                jar_gates[data["research"]].append(name.split("recipe/")[-1])
+        jar_bad = {k: v for k, v in jar_gates.items() if k.split("@")[0] not in jar_keys}
+        print(f"\n[3] INSTALLED JAR: {len(jar_recipes)} recipe files,"
+              f" {len(jar_bad)} gate key(s) naming an unknown research key")
+        for key in sorted(jar_bad):
+            print(f"    {key:26s} {', '.join(jar_bad[key])}")
+        jar_bad_results = []
+        for name, data in jar_recipes.items():
+            result = data.get("result", "")
+            if isinstance(result, dict):
+                result = result.get("id", "")
+            if result.startswith("thaumcraft:") and result.split(":")[-1] not in registered:
+                jar_bad_results.append(f"{name.split('recipe/')[-1]} -> {result}")
+        print(f"    {len(jar_bad_results)} recipe(s) whose result is not a registered item")
+        for line in sorted(jar_bad_results):
+            print(f"    {line}")
+
+    # 4. client item definitions
     if args.jar:
         have = registered_items_from_jar(args.jar)
         mod_items = set()
@@ -144,7 +177,7 @@ def main():
             for match in REGISTER_RE.finditer(handle.read()):
                 mod_items.add(match.group(1))
         missing = sorted(mod_items - have)
-        print(f"\n[3] registered items: {len(mod_items)}   with client item definition: "
+        print(f"\n[4] registered items: {len(mod_items)}   with client item definition: "
               f"{len(mod_items) - len(missing)}   missing: {len(missing)}")
         if missing:
             print("    " + ", ".join(missing))

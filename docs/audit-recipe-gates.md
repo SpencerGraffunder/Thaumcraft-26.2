@@ -85,7 +85,34 @@ Already handled correctly (do not re-fix): `infusion_altar`, `infusion_altar_anc
   (the only hits are `hedge_duplication` / `hedge_transmutation` research keys and the
   `thaumcraft:vis_crystal` recipe **group** name).
 
+## 6. Why it still fails in-game: the installed jar predates the source fix
+
+Verified 2026-10-06 by unzipping the jar the client actually loads
+(`…/ModrinthApp/profiles/NeoForge 26.3/mods/thaumcraft-6.2.0+26.3.jar`,
+sha256 `c766ae16…`, mtime 10:10) and auditing **its own** `data/` tree:
+
+```
+recipes in the INSTALLED jar gated by a research key that does not exist: 8
+  arcane_workbench/label_filled.json                gate=JARS
+  crucible/crystal_essence_from_shard_{air,earth,entropy,fire,order,water}.json   gate=CRYSTAL_ESSENCE
+  crucible/nugget_rareearth.json                    gate=NUGGETS_FROM_CRUCIBLE
+recipe results in the jar that are not registered items: 0
+```
+
+The same audit run against `src/main/resources` returns **0** for both checks: the two
+bogus gates were deleted (`label_filled`, `nugget_rareearth` now have no `research` field
+at all — which is 1.12-faithful: 1.12 registers jar labels as ordinary `jarlabels`
+group recipes with no research gate) and the six invented
+`crucible/crystal_essence_from_shard_*.json` files were removed (1.12 has no such
+crucible recipe; its only crystal-nugget crucible recipe is `nuggetQuartz` gated on
+`BASEALCHEMY`).
+
+So the source tree is fixed but **no build has shipped those fixes** — the client is
+running the pre-fix data. Rebuilding and reinstalling the jar is what makes the fix
+visible in-game.
+
 ## Next actions (tracked in the todo)
 
-* #97 — repoint the 3 bogus gates to real research keys.
+* #97 — repoint the 3 bogus gates to real research keys. **Done in source** (gates
+  removed / invented recipes deleted); still needs a rebuild + install.
 * #91 — add aliases or recipe files for the 13 unresolvable `stage.recipes` ids.
