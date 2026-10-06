@@ -7,6 +7,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import thaumcraft.client.fx.FXDispatcher;
+import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -18,6 +21,10 @@ import thaumcraft.api.casters.Trajectory;
 import thaumcraft.common.blocks.misc.BlockHole;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
 
 /**
  * Rift Focus Effect - Creates a temporary void tunnel through blocks.
@@ -57,6 +64,15 @@ public class FocusEffectRift extends FocusEffect {
         }
         
         Level world = getPackage().world;
+
+        // Impact particles are rendered client-side: 1.12 sent PacketFXFocusPartImpact here,
+        // which re-ran renderParticleFX 15 times at the impact point on each client.
+        if (!world.isClientSide()) {
+            Vec3 impact = target.getLocation();
+            PacketHandler.sendToAllAround(
+                new PacketFXFocusPartImpact(impact.x, impact.y, impact.z, new String[] { getKey() }),
+                (ServerLevel) world, BlockPos.containing(impact), 64.0);
+        }
         
         // Check if in Outer Lands dimension and fail if so
         if (world.dimension().identifier().equals(
@@ -169,9 +185,20 @@ public class FocusEffectRift extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // Rift/void particle trail
-        level.addParticle(ParticleTypes.PORTAL, posX, posY, posZ, 0, 0.05, 0);
-        level.addParticle(ParticleTypes.SOUL, posX, posY, posZ, 0, 0.03, 0);
+        if (!(level instanceof ClientLevel)) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        // 1.12-faithful: FXGeneric rift sprite (sprite 0, 384+ frames)
+        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ, motionX, motionY, motionZ);
+        fb.setMaxAge(16 + random.nextInt(16));
+        fb.setParticles(384 + random.nextInt(16), 1, 1);
+        fb.setSlowDown(0.75);
+        fb.setAlphaKeyframes(1.0F, 0.0F);
+        fb.setScale((float) (0.7F + random.nextGaussian() * 0.3F) * 0.1F);
+        fb.setColor(0.25F, 0.25F, 1.0F);
+        fb.setRandomMovementScale(0.01F, 0.01F, 0.01F);
+        FXDispatcher.INSTANCE.addEffectWithDelay(fb, 0);
     }
 
     @Override

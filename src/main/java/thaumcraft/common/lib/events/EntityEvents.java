@@ -176,18 +176,6 @@ public class EntityEvents {
                 }
             }
         }
-        
-        // Runic shield effect visuals
-        float absorption = player.getAbsorptionAmount();
-        if (absorption > 0) {
-            if (player instanceof ServerPlayer sp) {
-                for (int i = 0; i < 10; i++) {
-                    sp.level().addParticle(ParticleTypes.ENCHANT,
-                            player.getX() + 0.5, player.getY() + 1.0, player.getZ() + 0.5,
-                            0.3, 0.5, 0.3);
-                }
-            }
-        }
     }
 
     /**

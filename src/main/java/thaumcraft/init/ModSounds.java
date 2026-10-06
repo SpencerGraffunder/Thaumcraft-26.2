@@ -116,7 +116,9 @@ public class ModSounds {
     // These must be initialized lazily since they reference RegistryObjects
     // Use ForgeSoundType which accepts suppliers
     
-    public static final SoundType GORE_TYPE = new DeferredSoundType(0.5f, 1.0f, 
+    // 1.12: BlockTaint/BlockTaintFibre/BlockFluxGoo call setSoundType(SoundsTC.GORE),
+    // which builds SoundType(1.0, 1.0, gore, gore, gore, gore, gore).
+    public static final SoundType GORE_TYPE = new DeferredSoundType(1.0f, 1.0f, 
             GORE::get, GORE::get, GORE::get, GORE::get, GORE::get);
     
     public static final SoundType CRYSTAL_TYPE = new DeferredSoundType(0.5f, 1.0f, 

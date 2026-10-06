@@ -32,6 +32,7 @@ import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModEntities;
 import thaumcraft.init.BlockRegistration;
+import thaumcraft.init.ModSounds;
 
 /**
  * BlockFluxGoo - A semi-fluid taint block that spreads vis exhaustion.
@@ -68,7 +69,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
                 .pushReaction(PushReaction.POPPED)
                 .randomTicks()
                 .noCollision()
-                .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK)));
+                .sound(thaumcraft.init.ModSounds.GORE_TYPE)));
         registerDefaultState(stateDefinition.any().setValue(LEVEL, 7));
     }
     
@@ -134,7 +135,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
             slime.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             slime.setSize(1, true);
             level.addFreshEntity(slime);
-            level.playSound(null, pos, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, pos, ModSounds.GORE.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
             return;
         }
         
@@ -145,7 +146,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
             slime.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             slime.setSize(2, true);
             level.addFreshEntity(slime);
-            level.playSound(null, pos, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, pos, ModSounds.GORE.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
             return;
         }
         

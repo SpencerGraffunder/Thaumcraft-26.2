@@ -6,7 +6,7 @@
     "cognitio": 50,
     "machina": 25
   },
-  "input": "thaumcraft:brain_clockwork",
+  "input": "thaumcraft:mind",
   "ingredients": [
     "thaumcraft:zombie_brain",
     "thaumcraft:mechanism_complex"

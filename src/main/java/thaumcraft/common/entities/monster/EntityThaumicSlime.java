@@ -25,6 +25,7 @@ import thaumcraft.init.ModEntities;
 import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
+import thaumcraft.init.ModSounds;
 
 /**
  * EntityThaumicSlime - A tainted slime that can spit smaller copies at players.
@@ -197,12 +198,9 @@ public class EntityThaumicSlime extends Slime {
                     EntityThaumicSlime spitSlime = new EntityThaumicSlime(level(), this, target);
                     level().addFreshEntity(spitSlime);
                     
-                    // Gore sound
-                    if (thaumcraft.init.ModSounds.GORE != null) {
-                        level().playSound(null, blockPosition(), thaumcraft.init.ModSounds.GORE.get(), net.minecraft.sounds.SoundSource.NEUTRAL, 0.5f, 1.0f);
-                    }
-                    playSound(SoundEvents.SLIME_SQUISH, 1.0f, 
-                            (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f * 0.8f);
+                    // 1.12: the goop spit plays the TC gore sound on the entity itself
+                    playSound(ModSounds.GORE.get(), 1.0f,
+                            ((random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f) * 0.8f);
                     
                     // Shrink after spitting
                     setSize(getSize() - 1, true);

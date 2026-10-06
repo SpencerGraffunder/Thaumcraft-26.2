@@ -1,6 +1,9 @@
 package thaumcraft.common.items.casters.foci;
 
-import net.minecraft.core.particles.ParticleTypes;
+import java.awt.Color;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -10,7 +13,11 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.casters.FocusEngine;
+import thaumcraft.api.casters.IFocusElement;
 import thaumcraft.api.casters.Trajectory;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXZap;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -74,21 +81,30 @@ public class FocusMediumBolt extends FocusMediumTouch {
             end = start.add(direction.scale(start.distanceTo(entityHit.getEntity().position())));
         }
         
-        // Send visual zap effect (particles along the bolt path)
+        // 1.12: average the colour of every effect in the package and broadcast a bolt beam
+        // (PacketFXZap -> FXDispatcher.arcBolt) so every nearby client draws the lightning arc.
         if (!getPackage().world.isClientSide()) {
-            int steps = 10;
-            for (int i = 0; i <= steps; i++) {
-                double t = (double) i / steps;
-                double x = start.x + (end.x - start.x) * t;
-                double y = start.y + (end.y - start.y) * t;
-                double z = start.z + (end.z - start.z) * t;
-                for (int i2 = 0; i2 < 2; i2++) {
-                    getPackage().world.addParticle(ParticleTypes.ELECTRIC_SPARK, x, y, z, 0.1, 0.1, 0.1);
-                }
-                getPackage().world.addParticle(ParticleTypes.ENCHANT, x, y, z, 0.05, 0.05, 0.05);
+            int r = 0;
+            int g = 0;
+            int b = 0;
+            int count = 0;
+            for (IFocusElement ef : getPackage().getEffects()) {
+                Color c = new Color(FocusEngine.getElementColor(ef.getKey()));
+                r += c.getRed();
+                g += c.getGreen();
+                b += c.getBlue();
+                count++;
+            }
+            if (count > 0) {
+                Color c = new Color(r / count, g / count, b / count);
+                PacketHandler.sendToAllAround(
+                        new PacketFXZap(start, end, c.getRGB(), getPackage().getPower() * 0.66f),
+                        (ServerLevel) getPackage().world,
+                        BlockPos.containing(start),
+                        64.0);
             }
         }
-        
+
         return true;
     }
     

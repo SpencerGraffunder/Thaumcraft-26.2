@@ -10,6 +10,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import thaumcraft.client.fx.FXDispatcher;
+import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import thaumcraft.api.aspects.Aspect;
@@ -20,6 +23,10 @@ import thaumcraft.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
 
 /**
  * Curse Focus Effect - Deals damage and applies multiple negative effects.
@@ -60,13 +67,13 @@ public class FocusEffectCurse extends FocusEffect {
         
         Level world = getPackage().world;
         
-        // Particle effect
-        if (world.isClientSide()) {
-            net.minecraft.world.phys.Vec3 hitPos = target.getLocation();
-            for (int i = 0; i < 6; i++) {
-                world.addParticle(ParticleTypes.SOUL,
-                    hitPos.x + Math.random() * 2 - 1, hitPos.y + Math.random() * 2 - 1, hitPos.z + Math.random() * 2 - 1, 0, 0.1, 0);
-            }
+        // Impact particles are rendered client-side: 1.12 sent PacketFXFocusPartImpact here,
+        // which re-ran renderParticleFX 15 times at the impact point on each client.
+        if (!world.isClientSide()) {
+            Vec3 impact = target.getLocation();
+            PacketHandler.sendToAllAround(
+                new PacketFXFocusPartImpact(impact.x, impact.y, impact.z, new String[] { getKey() }),
+                (ServerLevel) world, BlockPos.containing(impact), 64.0);
         }
         // PacketHandler.sendToAllAround(new PacketFXBlockBamf(...))
         
@@ -167,9 +174,23 @@ public class FocusEffectCurse extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // Cursed particle trail
-        level.addParticle(ParticleTypes.SOUL, posX, posY, posZ, 0, 0.03, 0);
-        level.addParticle(ParticleTypes.WITCH, posX, posY, posZ, 0, -0.02, 0);
+        if (!(level instanceof ClientLevel)) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        // 1.12-faithful: FXGeneric curse sprite (sprites 72..75)
+        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ, motionX, motionY, motionZ);
+        fb.setMaxAge(8);
+        fb.setColor(0.41F + random.nextFloat() * 0.2F, 0.0F, 0.019F + random.nextFloat() * 0.2F);
+        fb.setAlphaKeyframes(0.0F, random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.0F);
+        fb.setGridSize(16);
+        fb.setParticles(72 + random.nextInt(4), 1, 1);
+        fb.setScale((2.0F + random.nextFloat() * 4.0F) * 0.1F);
+        fb.setLoop(false);
+        fb.setSlowDown(0.9);
+        fb.setGravity(0.0F);
+        fb.setRotationSpeedWithStart(random.nextFloat(), 0.0F);
+        FXDispatcher.INSTANCE.addEffectWithDelay(fb, random.nextInt(4));
     }
 
     @Override

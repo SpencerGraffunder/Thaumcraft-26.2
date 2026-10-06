@@ -78,7 +78,7 @@
         {
         "key": "INFUSIONANCIENT",    
         "name": "research.INFUSIONANCIENT.title",
-        "icons": [ "thaumcraft:stone_ancient" ],
+        "icons": [ "thaumcraft:ancient_stone" ],
         "category": "INFUSION", "location": [ 0,6 ], 
         "parents": [ "INFUSIONBOOST","!ORBLOCK1" ],        
         "meta": [ "HIDDEN","REVERSE" ],       
@@ -86,7 +86,7 @@
                 {
                     "text": "research.INFUSIONANCIENT.stage.1",
                     "required_knowledge":["OBSERVATION;BASICS;1"],
-                    "required_item":["thaumcraft:stone_ancient"]
+                    "required_item":["thaumcraft:ancient_stone"]
                 },
                 {
                     "text": "research.INFUSIONANCIENT.stage.2",  
@@ -97,7 +97,7 @@
         {
         "key": "INFUSIONELDRITCH",    
         "name": "research.INFUSIONELDRITCH.title",
-        "icons": [ "thaumcraft:stone_eldritch_tile" ],
+        "icons": [ "thaumcraft:eldritch_stone_tile" ],
         "category": "INFUSION", "location": [ -2,6 ], 
         "parents": [ "INFUSIONBOOST","!ORBLOCK2" ],        
         "meta": [ "HIDDEN","REVERSE" ],       
@@ -105,7 +105,7 @@
                 {
                     "text": "research.INFUSIONELDRITCH.stage.1",
                     "required_knowledge":["OBSERVATION;ELDRITCH;1"],
-                    "required_item":["thaumcraft:stone_eldritch_tile"]
+                    "required_item":["thaumcraft:eldritch_stone_tile"]
                 },
                 {
                     "text": "research.INFUSIONELDRITCH.stage.2",  
@@ -117,7 +117,7 @@
         {
         "key": "PAVINGSTONES",    
         "name": "research.PAVINGSTONES.title",
-        "icons": [ "thaumcraft:paving_barrier", "thaumcraft:paving_travel" ],
+        "icons": [ "thaumcraft:paving_stone_barrier", "thaumcraft:paving_stone_travel" ],
         "category": "INFUSION", "location": [ 0,-2 ], 
         "parents": [ "BASEINFUSION" ],       
         "stages": [
@@ -129,7 +129,7 @@
                 },
                 {
                     "text": "research.PAVINGSTONES.stage.2",  
-                    "recipes": ["thaumcraft:paving_barrier","thaumcraft:paving_travel","thaumcraft:arcane_stone","thaumcraft:arcane_brick"]
+                    "recipes": ["thaumcraft:paving_stone_barrier","thaumcraft:paving_stone_travel","thaumcraft:arcane_stone","thaumcraft:arcane_brick"]
                 }
             ]
         },

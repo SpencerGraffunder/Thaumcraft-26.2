@@ -210,9 +210,6 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> SALISITE = registerItem("salisite",
             ItemMaterial::basic);
 
-    public static final DeferredHolder<Item, Item> BLANK_SEAL = registerItem("blank_seal",
-            ItemMaterial::basic);
-
     public static final DeferredHolder<Item, Item> MIRRORED_GLASS = registerItem("mirrored_glass",
             ItemMaterial::uncommon);
 
@@ -279,12 +276,6 @@ public class ModItems {
 
     // ==================== Golem Materials ====================
 
-    public static final DeferredHolder<Item, Item> BRAIN_NORMAL = registerItem("brain_normal",
-            ItemMaterial::basic);
-
-    public static final DeferredHolder<Item, Item> BRAIN_CLOCKWORK = registerItem("brain_clockwork",
-            ItemMaterial::uncommon);
-
     public static final DeferredHolder<Item, Item> BRAIN_CURIOUS = registerItem("brain_curious",
             ItemMaterial::uncommon);
 
@@ -297,9 +288,6 @@ public class ModItems {
             () -> new Item(ItemRegistration.id(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON))));
 
     // ==================== Curiosities ====================
-
-    public static final DeferredHolder<Item, Item> CURIOSITY = registerItem("curiosity",
-            ItemMaterial::basic);
 
     public static final DeferredHolder<Item, Item> PRIMORDIAL_PEARL = registerItem("primordial_pearl",
             ItemPrimordialPearl::new);
@@ -463,11 +451,14 @@ public class ModItems {
 
     // ==================== Focus Items ====================
 
-    public static final DeferredHolder<Item, Item> FOCUS_BLANK = registerItem("focus_blank",
-            ItemFocus::createBlank);
+    public static final DeferredHolder<Item, Item> FOCUS_1 = registerItem("focus_1",
+            ItemFocus::createLesser);
 
-    public static final DeferredHolder<Item, Item> FOCUS_ADVANCED = registerItem("focus_advanced",
+    public static final DeferredHolder<Item, Item> FOCUS_2 = registerItem("focus_2",
             ItemFocus::createAdvanced);
+
+    public static final DeferredHolder<Item, Item> FOCUS_3 = registerItem("focus_3",
+            ItemFocus::createGreater);
 
     // ==================== Special Armor ====================
 

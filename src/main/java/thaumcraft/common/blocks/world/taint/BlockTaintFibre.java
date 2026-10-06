@@ -77,7 +77,7 @@ public class BlockTaintFibre extends Block implements ITaintBlock {
                 .randomTicks()
                 .ignitedByLava()
                 .lightLevel(state -> state.getValue(HAS_CRYSTAL) ? 12 : 0)
-                .sound(net.minecraft.world.level.block.SoundType.SLIME_BLOCK)));
+                .sound(thaumcraft.init.ModSounds.GORE_TYPE)));
         
         registerDefaultState(stateDefinition.any()
                 .setValue(NORTH, false)

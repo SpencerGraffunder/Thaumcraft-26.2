@@ -37,6 +37,7 @@ import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
 import thaumcraft.init.BlockRegistration;
+import thaumcraft.init.ModSounds;
 
 /**
  * Redstone Relay block - converts redstone signal strength.
@@ -190,7 +191,7 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
             if (clickedOutput) {
                 if (!level.isClientSide()) {
                     relay.increaseOutput();
-                    level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.5f, 1.0f);
+                    level.playSound(null, pos, ModSounds.KEY.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
                     updateState(level, pos, state);
                     notifyNeighbors(level, pos, state);
                 }
@@ -198,7 +199,7 @@ public class BlockRedstoneRelay extends Block implements EntityBlock {
             } else if (clickedInput) {
                 if (!level.isClientSide()) {
                     relay.increaseInput();
-                    level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.5f, 1.0f);
+                    level.playSound(null, pos, ModSounds.KEY.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
                     updateState(level, pos, state);
                     notifyNeighbors(level, pos, state);
                 }

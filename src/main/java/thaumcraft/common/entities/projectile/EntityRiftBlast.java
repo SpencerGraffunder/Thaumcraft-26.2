@@ -21,6 +21,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import thaumcraft.init.ModEntities;
+import thaumcraft.init.ModSounds;
 
 /**
  * EntityRiftBlast - Homing blast projectile fired by flux rifts.
@@ -143,8 +144,8 @@ public class EntityRiftBlast extends ThrowableProjectile {
             onHitEntity((EntityHitResult) result);
         }
         
-        // Sound and visual burst
-        playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
+        // 1.12: the blast plays the TC shock sound when it hits
+        playSound(ModSounds.SHOCK.get(), 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
         
         if (level().isClientSide()) {
             // Large burst of particles
@@ -186,7 +187,7 @@ public class EntityRiftBlast extends ThrowableProjectile {
         if (attacker != null) {
             Vec3 look = attacker.getLookAngle();
             setDeltaMovement(look.scale(0.9));
-            playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
+            playSound(ModSounds.ZAP.get(), 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
             return true;
         }
         return false;

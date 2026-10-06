@@ -91,7 +91,7 @@
         {
             "key": "PLANTS",    
             "name": "research.PLANTS.title",
-            "icons": [ "thaumcraft:sapling_greatwood","thaumcraft:sapling_silverwood" ],
+            "icons": [ "thaumcraft:greatwood_sapling","thaumcraft:silverwood_sapling" ],
             "category": "BASICS", "location": [ -3,0 ], 
             "meta": [ "ROUND","HIDDEN" ],       
             "stages": [{"text": "research.PLANTS.stage.1"}],
@@ -106,7 +106,7 @@
         {
             "key": "CRYSTALFARMER",    
             "name": "research.CRYSTALFARMER.title",
-            "icons": [ "thaumcraft:crystal_aer","thaumcraft:crystal_ignis","thaumcraft:crystal_aqua","thaumcraft:crystal_terra","thaumcraft:crystal_ordo","thaumcraft:crystal_perditio" ],
+            "icons": [ "thaumcraft:vis_crystal_air","thaumcraft:vis_crystal_fire","thaumcraft:vis_crystal_water","thaumcraft:vis_crystal_earth","thaumcraft:vis_crystal_order","thaumcraft:vis_crystal_entropy" ],
             "category": "BASICS", "location": [ -5,1 ], 
             "parents": [ "ORE", "INFUSION", "!ORECRYSTAL"],
             "meta": [ "ROUND","HIDDEN" ],        

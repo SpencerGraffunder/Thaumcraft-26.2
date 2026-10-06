@@ -12,6 +12,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.init.ModBlockEntities;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
+import thaumcraft.init.ModSounds;
 
 /**
  * Valve tube - can be toggled open/closed with redstone.
@@ -59,7 +60,7 @@ public class TileTubeValve extends TileTube {
             // Rising edge - close valve
             if (!tile.wasPoweredLastTick && gettingPower && tile.allowFlow) {
                 tile.allowFlow = false;
-                level.playSound(null, pos, SoundEvents.WOODEN_TRAPDOOR_CLOSE, SoundSource.BLOCKS,
+                level.playSound(null, pos, ModSounds.SQUEEK.get(), SoundSource.BLOCKS,
                         0.7f, 0.9f + level.getRandom().nextFloat() * 0.2f);
                 tile.markDirtyAndSync();
             }
@@ -67,7 +68,7 @@ public class TileTubeValve extends TileTube {
             // Falling edge - open valve
             if (tile.wasPoweredLastTick && !gettingPower && !tile.allowFlow) {
                 tile.allowFlow = true;
-                level.playSound(null, pos, SoundEvents.WOODEN_TRAPDOOR_OPEN, SoundSource.BLOCKS,
+                level.playSound(null, pos, ModSounds.SQUEEK.get(), SoundSource.BLOCKS,
                         0.7f, 0.9f + level.getRandom().nextFloat() * 0.2f);
                 tile.markDirtyAndSync();
             }

@@ -661,8 +661,9 @@ public class ConfigAspects {
         
         // Caster and Focus
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CASTER_BASIC.get()), new AspectList().add(Aspect.MAGIC, 20).add(Aspect.AURA, 10).add(Aspect.TOOL, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.FOCUS_BLANK.get()), new AspectList().add(Aspect.MAGIC, 10).add(Aspect.AURA, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.FOCUS_ADVANCED.get()), new AspectList().add(Aspect.MAGIC, 20).add(Aspect.AURA, 10));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.FOCUS_1.get()), new AspectList().add(Aspect.MAGIC, 10).add(Aspect.AURA, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.FOCUS_2.get()), new AspectList().add(Aspect.MAGIC, 20).add(Aspect.AURA, 10));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.FOCUS_3.get()), new AspectList().add(Aspect.MAGIC, 30).add(Aspect.AURA, 15));
         
         // Baubles
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.AMULET_VIS_CRAFTED.get()), new AspectList().add(Aspect.AURA, 20).add(Aspect.METAL, 5).add(Aspect.MAGIC, 5));
@@ -715,8 +716,6 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.MECHANISM_COMPLEX.get()), new AspectList().add(Aspect.MECHANISM, 20).add(Aspect.METAL, 10));
         
         // Brains
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BRAIN_NORMAL.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.MIND, 20).add(Aspect.UNDEAD, 10));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BRAIN_CLOCKWORK.get()), new AspectList().add(Aspect.MECHANISM, 15).add(Aspect.MIND, 20).add(Aspect.ORDER, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BRAIN_CURIOUS.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.MIND, 25).add(Aspect.SENSES, 10));
         
         // Loot blocks (crates and urns)
@@ -760,7 +759,6 @@ public class ConfigAspects {
     private static void registerThaumcraftAspectAddendum() {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.AMBER_BEAD.get()), new AspectList().add(Aspect.CRYSTAL, 1).add(Aspect.EARTH, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BATH_SALTS.get()), new AspectList().add(Aspect.WATER, 1).add(Aspect.AURA, 2).add(Aspect.ALCHEMY, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BLANK_SEAL.get()), new AspectList().add(Aspect.CRAFT, 1).add(Aspect.FLUX, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BOTTLE_TAINT.get()), new AspectList().add(Aspect.FLUX, 4));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CAUSALITY_COLLAPSER.get()), new AspectList().add(Aspect.ENTROPY, 3).add(Aspect.VOID, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_1.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));

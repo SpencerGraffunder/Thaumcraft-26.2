@@ -18,6 +18,7 @@ import thaumcraft.common.tiles.devices.TileBellows;
 import thaumcraft.init.ModBlockEntities;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
+import thaumcraft.init.ModSounds;
 
 /**
  * TileCentrifuge - Separates compound aspects into their component primal aspects.
@@ -174,8 +175,7 @@ public class TileCentrifuge extends TileThaumcraft implements IAspectContainer, 
             }
 
             // Play sound
-            level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS,
-                    0.2f, 1.0f + (level.getRandom().nextFloat() - level.getRandom().nextFloat()) * 0.2f);
+            level.playSound(null, worldPosition, ModSounds.PUMP.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
 
             markDirtyAndSync();
         }

@@ -55,8 +55,6 @@ public class ItemCausalityCollapser extends Item {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("item.thaumcraft.causality_collapser.desc")
-                .withStyle(style -> style.withColor(0x8B0000)));
         builder.accept(Component.translatable("item.thaumcraft.causality_collapser.warning")
                 .withStyle(style -> style.withColor(0xFF0000)));
         super.appendHoverText(stack, context, display, builder, flag);

@@ -422,10 +422,18 @@ public class ResearchPageScreen extends Screen {
             hasItem = new boolean[stage.getObtain().length];
             for (int i = 0; i < stage.getObtain().length; i++) {
                 Object o = stage.getObtain()[i];
-                if (o instanceof ItemStack stack && !stack.isEmpty()) {
-                    hasItem[i] = playerHasItem(stack);
+                List<ItemStack> candidates = ResearchManager.resolveRequirementStacks(o);
+                if (candidates.isEmpty()) {
+                    hasItem[i] = false;
                 } else {
-                    hasItem[i] = false; // ore/tag requirement - not carried
+                    boolean carried = false;
+                    for (ItemStack candidate : candidates) {
+                        if (playerHasItem(candidate)) {
+                            carried = true;
+                            break;
+                        }
+                    }
+                    hasItem[i] = carried;
                 }
                 if (!hasItem[i]) hasAllRequisites = false;
             }
@@ -772,7 +780,9 @@ public class ResearchPageScreen extends Screen {
             }
             for (int i = 0; i < stage.getObtain().length; i++) {
                 int ix = x - 15 + shift;
-                if (stage.getObtain()[i] instanceof ItemStack s && !s.isEmpty()) {
+                List<ItemStack> candidates = ResearchManager.resolveRequirementStacks(stage.getObtain()[i]);
+                if (!candidates.isEmpty()) {
+                    ItemStack s = candidates.get(0);
                     RecipeRenderer.renderItem(graphics, s, ix, y);
                     if (noPopup && mouseInside(ix, y, 16, 16, mx, my)) {
                         setStackTip(graphics, s, ix, y, mx, my);

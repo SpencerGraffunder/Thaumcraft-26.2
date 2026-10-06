@@ -151,7 +151,7 @@
         {
         "key": "MIRROR",    
         "name": "research.MIRROR.title",
-        "icons": [ "thaumcraft:mirror" ],
+        "icons": [ "thaumcraft:mirror_item" ],
         "category": "ARTIFICE", "location": [ -6,0 ], 
         "parents": [ "ARCANELAMP", "INFUSION" ],       
         "stages": [
@@ -163,7 +163,7 @@
                 },
                 {
                     "text": "research.MIRROR.stage.2",  
-                    "recipes": ["thaumcraft:mirror"]
+                    "recipes": ["thaumcraft:mirror_item"]
                 }
             ]
         },
@@ -204,7 +204,7 @@
         {
         "key": "ARCANELAMP",    
         "name": "research.ARCANELAMP.title",
-        "icons": [ "thaumcraft:arcane_lamp" ],
+        "icons": [ "thaumcraft:lamp_arcane" ],
         "category": "ARTIFICE", "location": [ -3,0 ], 
         "parents": [ "BASEARTIFICE" ],       
         "stages": [
@@ -215,7 +215,7 @@
                 },
                 {
                     "text": "research.ARCANELAMP.stage.2",  
-                    "recipes": ["thaumcraft:arcane_lamp"]
+                    "recipes": ["thaumcraft:lamp_arcane"]
                 }
             ]
         },
@@ -275,7 +275,7 @@
         },
         {
         "key": "BASICTURRET", "name": "research.BASICTURRET.title",
-        "icons": [ "thaumcraft:turret_crossbow" ], "category": "ARTIFICE", "location": [ -2, -4 ], 
+        "icons": [ "thaumcraft:turret_placer_basic" ], "category": "ARTIFICE", "location": [ -2, -4 ], 
         "parents": [ "MINDCLOCKWORK","ARCANEEAR" ], 
         "stages": [  
             {
@@ -285,13 +285,13 @@
             },
             {
                 "text": "research.BASICTURRET.stage.2",  
-                "recipes": ["thaumcraft:turret_crossbow","thaumcraft:activatorrail"]
+                "recipes": ["thaumcraft:turret_placer_basic","thaumcraft:activatorrail"]
             }
             ]
         },
         {
         "key": "ADVANCEDTURRET", "name": "research.ADVANCEDTURRET.title",
-        "icons": [ "thaumcraft:turret_crossbow_advanced" ], "category": "ARTIFICE", "location": [ -4, -4 ], 
+        "icons": [ "thaumcraft:turret_placer_advanced" ], "category": "ARTIFICE", "location": [ -4, -4 ], 
         "parents": [ "MINDBIOTHAUMIC","BASICTURRET" ], 
         "stages": [            
             {
@@ -300,13 +300,13 @@
             },
             {
                 "text": "research.ADVANCEDTURRET.stage.2",  
-                "recipes": ["thaumcraft:turret_crossbow_advanced"]
+                "recipes": ["thaumcraft:turret_placer_advanced"]
             }
         ]
         },
         {
         "key": "ARCANEBORE", "name": "research.ARCANEBORE.title",
-        "icons": [ "thaumcraft:arcane_bore" ], "category": "ARTIFICE", "location": [ -3, -6 ], 
+        "icons": [ "thaumcraft:turret_placer_bore" ], "category": "ARTIFICE", "location": [ -3, -6 ], 
         "parents": [ "INFUSION", "BASICTURRET", "FOCUSBREAK" ], 
         "stages": [    
             {
@@ -315,7 +315,7 @@
             },
             {
                 "text": "research.ARCANEBORE.stage.2",  
-                "recipes": ["thaumcraft:arcane_bore"]
+                "recipes": ["thaumcraft:turret_placer_bore"]
             }
         ]
         },

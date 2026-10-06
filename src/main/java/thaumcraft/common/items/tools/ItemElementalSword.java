@@ -132,7 +132,6 @@ public class ItemElementalSword extends Item {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         builder.accept(Component.translatable("enchantment.thaumcraft.arcing").withStyle(style -> style.withColor(0x87CEEB)));
-        builder.accept(Component.translatable("item.thaumcraft.elemental_sword.desc").withStyle(style -> style.withColor(0x808080)));
         super.appendHoverText(stack, context, display, builder, flag);
     }
 }

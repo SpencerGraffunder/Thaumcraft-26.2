@@ -38,11 +38,6 @@ public class ItemThaumonomicon extends ItemTC {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("item.thaumcraft.thaumonomicon.desc"));
-    }
-
-    @Override
     public Component getName(ItemStack stack) {
         return Component.translatable("item.thaumcraft.thaumonomicon");
     }

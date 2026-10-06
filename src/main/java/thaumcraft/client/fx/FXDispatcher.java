@@ -87,6 +87,11 @@ public class FXDispatcher {
      * Add a custom particle to the particle engine
      */
     private void addParticle(net.minecraft.client.particle.Particle particle) {
+        addEffect(particle);
+    }
+
+    /** 1.12 ParticleEngine.addEffect equivalent. */
+    public void addEffect(net.minecraft.client.particle.Particle particle) {
         if (particle != null) {
             Minecraft.getInstance().particleEngine.add(particle);
         }
@@ -98,7 +103,7 @@ public class FXDispatcher {
     
     private record DelayedParticle(int ticks, Particle particle) {}
     
-    private void addEffectWithDelay(Particle particle, int delay) {
+    public void addEffectWithDelay(Particle particle, int delay) {
         if (particle == null) return;
         if (delay <= 0) {
             Minecraft.getInstance().particleEngine.add(particle);
@@ -1218,8 +1223,8 @@ public class FXDispatcher {
                     x, y, z,
                     (float) rand.nextGaussian() * 0.15f, (float) rand.nextDouble() * 0.2f, (float) rand.nextGaussian() * 0.15f);
         }
-        level.playLocalSound(x, y, z, SoundEvents.SPLASH_POTION_BREAK, SoundSource.NEUTRAL,
-                1.0f, rand.nextFloat() * 0.1f + 0.9f, false);
+        level.playLocalSound(x, y, z, ModSounds.POOF.get(), SoundSource.BLOCKS,
+                0.4f, 1.0f + (float) rand.nextGaussian() * 0.05f, false);
     }
     
     /** 1.12-faithful: white-to-red FXGeneric (sprite 160, 6 frames, layer 1). */

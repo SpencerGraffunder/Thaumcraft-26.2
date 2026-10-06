@@ -26,10 +26,4 @@ public class ItemElementalHoe extends Item {
         super(thaumcraft.init.ItemRegistration.id(new Item.Properties().rarity(Rarity.RARE).hoe(ThaumcraftMaterials.TOOLMAT_ELEMENTAL, -2, -1.0f)));
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("item.thaumcraft.elemental_hoe.desc").withStyle(style -> style.withColor(0x228B22)));
-        super.appendHoverText(stack, context, display, builder, flag);
-    }
 }

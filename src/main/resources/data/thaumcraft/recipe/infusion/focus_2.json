@@ -1,8 +1,8 @@
 {
   "type": "thaumcraft:infusion",
-  "research": "FOCUSADVANCED",
+  "research": "FOCUSADVANCED@1",
   "instability": 3,
-  "center": "thaumcraft:focus_blank",
+  "center": "thaumcraft:focus_1",
   "ingredients": [
     "thaumcraft:quicksilver",
     "#c:gems/diamond",
@@ -14,6 +14,6 @@
     "ordo": 50
   },
   "result": {
-    "id": "thaumcraft:focus_advanced"
+    "id": "thaumcraft:focus_2"
   }
 }

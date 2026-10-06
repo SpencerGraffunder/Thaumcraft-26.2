@@ -1,6 +1,7 @@
 package thaumcraft.common.items.casters.foci;
 
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -9,8 +10,11 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.casters.FocusEffect;
 import thaumcraft.api.casters.FocusMediumRoot;
 import thaumcraft.api.casters.Trajectory;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusEffect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,11 +178,26 @@ public class FocusMediumTouch extends FocusMediumRoot {
 
     @Override
     public boolean execute(Trajectory trajectory) {
-        // Touch medium doesn't need additional execution - targets are supplied directly
+        // Touch medium doesn't need additional execution - targets are supplied directly.
+        // 1.12 broadcast PacketFXFocusEffect so nearby clients drew each effect's particles
+        // drifting out of the caster along the aim direction.
         if (getPackage() != null && getPackage().world != null && !getPackage().world.isClientSide()) {
-            Vec3 hitPos = trajectory.source;
-            for (int i = 0; i < 5; i++) {
-                getPackage().world.addParticle(ParticleTypes.ENCHANT, hitPos.x, hitPos.y, hitPos.z, 0.02, 0.02, 0.02);
+            FocusEffect[] fe = getPackage().getEffects().toArray(new FocusEffect[0]);
+            if (fe.length > 0) {
+                String[] effects = new String[fe.length];
+                for (int i = 0; i < fe.length; i++) {
+                    effects[i] = fe[i].getKey();
+                }
+                Vec3 source = trajectory.source;
+                Vec3 dir = trajectory.direction;
+                PacketHandler.sendToAllAround(
+                        new PacketFXFocusEffect(
+                                (float) source.x, (float) source.y, (float) source.z,
+                                (float) dir.x / 2.0f, (float) dir.y / 2.0f, (float) dir.z / 2.0f,
+                                effects),
+                        (ServerLevel) getPackage().world,
+                        BlockPos.containing(source),
+                        64.0);
             }
         }
         return true;

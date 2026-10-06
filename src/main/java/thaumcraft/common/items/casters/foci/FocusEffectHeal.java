@@ -8,6 +8,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import thaumcraft.client.fx.FXDispatcher;
+import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import thaumcraft.api.aspects.Aspect;
@@ -16,6 +19,11 @@ import thaumcraft.api.casters.NodeSetting;
 import thaumcraft.api.casters.Trajectory;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
 
 /**
  * Heal Focus Effect - Heals living targets, damages undead.
@@ -56,15 +64,13 @@ public class FocusEffectHeal extends FocusEffect {
         
         Level world = getPackage().world;
         
-        // Particle effect at impact
-        if (!world.isClientSide() && target.getLocation() != null) {
-            net.minecraft.world.phys.Vec3 loc = target.getLocation();
-            for (int i = 0; i < 8; i++) {
-                world.addParticle(ParticleTypes.HEART, loc.x + Math.random() * 0.3, loc.y + Math.random() * 0.3, loc.z + Math.random() * 0.3, 0.0, 0.05, 0.0);
-            }
-            for (int i = 0; i < 12; i++) {
-                world.addParticle(ParticleTypes.ENCHANT, loc.x + Math.random() * 0.3, loc.y + Math.random() * 0.3, loc.z + Math.random() * 0.3, 0.0, 0.02, 0.0);
-            }
+        // Impact particles are rendered client-side: 1.12 sent PacketFXFocusPartImpact here,
+        // which re-ran renderParticleFX 15 times at the impact point on each client.
+        if (!world.isClientSide()) {
+            Vec3 impact = target.getLocation();
+            PacketHandler.sendToAllAround(
+                new PacketFXFocusPartImpact(impact.x, impact.y, impact.z, new String[] { getKey() }),
+                (ServerLevel) world, BlockPos.containing(impact), 64.0);
         }
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {
@@ -110,9 +116,26 @@ public class FocusEffectHeal extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // Healing particle trail
-        level.addParticle(ParticleTypes.HEART, posX, posY, posZ, 0, 0.05, 0);
-        level.addParticle(ParticleTypes.ENCHANT, posX, posY, posZ, 0, 0.03, 0);
+        if (!(level instanceof ClientLevel)) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        // 1.12-faithful: FXGeneric heal mote (white, alpha 0->0.7->0.7->0)
+        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ,
+                motionX + random.nextGaussian() * 0.01,
+                motionY + random.nextGaussian() * 0.01,
+                motionZ + random.nextGaussian() * 0.01);
+        fb.setMaxAge((int) (10.0F + 10.0F * random.nextFloat()));
+        fb.setColor(1.0F, 1.0F, 1.0F);
+        fb.setAlphaKeyframes(0.0F, 0.7F, 0.7F, 0.0F);
+        fb.setGridSize(64);
+        fb.setParticles(0, 1, 1);
+        fb.setScaleKeyframes(random.nextFloat() * 2.0F * 0.1F, random.nextFloat() * 0.1F);
+        fb.setSlowDown(0.8);
+        fb.setGravity((float) (random.nextGaussian() * 0.1F));
+        fb.setRandomMovementScale(0.0125F, 0.0125F, 0.0125F);
+        fb.setRotationSpeed((float) random.nextGaussian());
+        FXDispatcher.INSTANCE.addEffectWithDelay(fb, random.nextInt(4));
     }
 
     @Override

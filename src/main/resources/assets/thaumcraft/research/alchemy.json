@@ -198,7 +198,7 @@
         {
         "key": "ESSENTIASMELTER",    
         "name": "research.ESSENTIASMELTER.title",
-        "icons": [ "thaumcraft:smelter_basic" ],
+        "icons": [ "thaumcraft:smelter" ],
         "category": "ALCHEMY", "location": [ 4,0 ], 
         "parents": [ "ALUMENTUM", "METALLURGY@2" ],
         "siblings": [ "WARDEDJARS" ],
@@ -233,12 +233,12 @@
                 {
                     "text": "research.ESSENTIASMELTER.stage.3",
                     "required_knowledge":["OBSERVATION;ALCHEMY;1","THEORY;ALCHEMY;1"],  
-                    "recipes": ["thaumcraft:smelter_basic"],
-                    "required_craft":["thaumcraft:smelter_basic"]
+                    "recipes": ["thaumcraft:smelter"],
+                    "required_craft":["thaumcraft:smelter"]
                 },
                 {
                     "text": "research.ESSENTIASMELTER.stage.4",
-                    "recipes": ["thaumcraft:smelter_basic","thaumcraft:alembic"]
+                    "recipes": ["thaumcraft:smelter","thaumcraft:alembic"]
                 }
             ],
             "addenda": [
@@ -262,7 +262,7 @@
         {
         "key": "TUBES",    
         "name": "research.TUBES.title",
-        "icons": [ "thaumcraft:tube" ], 
+        "icons": [ "thaumcraft:tube_normal" ], 
         "parents": [ "WARDEDJARS"],
         "category": "ALCHEMY", "location": [ 6,-2 ],  
         "stages": [
@@ -278,7 +278,7 @@
                 },
                 {
                     "text": "research.TUBES.stage.2", 
-                    "recipes": ["thaumcraft:resonator","thaumcraft:tube","thaumcraft:tube_valve",
+                    "recipes": ["thaumcraft:resonator","thaumcraft:tube_normal","thaumcraft:tube_valve",
                                 "thaumcraft:tube_filter","thaumcraft:tube_restrict","thaumcraft:tube_oneway",
                                 "thaumcraft:tube_buffer","thaumcraft:metal_alchemical"]
                 }

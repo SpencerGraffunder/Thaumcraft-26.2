@@ -1,7 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "SEALGUARD",
-  "catalyst": "thaumcraft:blank_seal",
+  "catalyst": "thaumcraft:seal_blank",
   "aspects": {
     "aversio": 20,
     "praemunio": 20

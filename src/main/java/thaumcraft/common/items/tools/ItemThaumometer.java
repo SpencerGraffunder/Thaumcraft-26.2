@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,10 +38,24 @@ public class ItemThaumometer extends ItemTC {
                 .rarity(Rarity.UNCOMMON));
     }
 
+    /**
+     * 1.12 ItemThaumometer.onItemRightClick ran before block activation and returned SUCCESS, so
+     * pointing at a chest, fence, crop or sign scanned instead of opening/placing. In 26.3 Item.use()
+     * runs last, so the scan has to be intercepted here or every block swallows the scan.
+     */
+    @Override
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+        Player player = context.getPlayer();
+        if (player == null) return InteractionResult.PASS;
+        return scanInteraction(context.getLevel(), player, context.getHand());
+    }
+
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
+        return scanInteraction(level, player, hand);
+    }
 
+    private InteractionResult scanInteraction(Level level, Player player, InteractionHand hand) {
         // Play scan sound (works on both sides, but server broadcasts to nearby players)
         level.playSound(player, player.getX(), player.getY(), player.getZ(), 
                 ModSounds.SCAN.get(), SoundSource.PLAYERS, 0.5f, 1.0f);

@@ -33,6 +33,7 @@ import thaumcraft.init.ModEntities;
 import thaumcraft.init.ModItems;
 
 import java.util.List;
+import thaumcraft.init.ModSounds;
 
 /**
  * EntityCultistPortalGreater - A larger, more powerful cultist portal.
@@ -158,7 +159,7 @@ public class EntityCultistPortalGreater extends Monster {
                         level().setBlock(blockPosition(), thaumcraft.init.ModBlocks.BANNER_CRIMSON_CULT.get().defaultBlockState(), 3);
                     }
                     // For now just play sound
-                    playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0f, 1.0f);
+                    playSound(ModSounds.WAND_FAIL.get(), 1.0f, 1.0f);
                 }
                 
                 // Stage 0 setup - spawn loot crates between ticks 20-150
@@ -172,7 +173,7 @@ public class EntityCultistPortalGreater extends Monster {
                         // Place loot crates
                         level().addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(level(), blockPosition().getX() + 0.5, blockPosition().getY() + 0.5, blockPosition().getZ() + 0.5, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ENDER_CHEST)));
                         // For now, drop a chest as placeholder
-                        playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0f, 1.0f);
+                        playSound(ModSounds.WAND_FAIL.get(), 1.0f, 1.0f);
                     }
                 }
             } else if (level().getNearestPlayer(this, 48.0) != null) {
@@ -274,7 +275,7 @@ public class EntityCultistPortalGreater extends Monster {
         cultist.setHomePos(blockPosition(), 32);
         level().addFreshEntity(cultist);
         cultist.spawnExplosionParticle();
-        cultist.playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0f, 1.0f);
+        cultist.playSound(ModSounds.WAND_FAIL.get(), 1.0f, 1.0f);
         
         // After stage 12, portal takes damage when spawning
         if (stage > 12) {
@@ -301,7 +302,7 @@ public class EntityCultistPortalGreater extends Monster {
         leader.setHomePos(blockPosition(), 32);
         level().addFreshEntity(leader);
         leader.spawnExplosionParticle();
-        leader.playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0f, 1.0f);
+        leader.playSound(ModSounds.WAND_FAIL.get(), 1.0f, 1.0f);
     }
     
     // ==================== Interaction ====================
@@ -310,7 +311,7 @@ public class EntityCultistPortalGreater extends Monster {
     public void playerTouch(Player player) {
         if (distanceToSqr(player) < 3.0 && !level().isClientSide()) {
             if (player.hurtServer((ServerLevel) level(), damageSources().indirectMagic(this, this), 8.0f)) {
-                playSound(SoundEvents.GENERIC_BURN, 1.0f, (random.nextFloat() - random.nextFloat()) * 0.1f + 1.0f);
+                playSound(ModSounds.ZAP.get(), 1.0f, (random.nextFloat() - random.nextFloat()) * 0.1f + 1.0f);
             }
         }
     }
@@ -329,17 +330,17 @@ public class EntityCultistPortalGreater extends Monster {
     
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.AMBIENT_CAVE.value();
+        return ModSounds.MONOLITH.get();
     }
     
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.GENERIC_BURN;
+        return ModSounds.ZAP.get();
     }
     
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.GENERIC_EXPLODE.value();
+        return ModSounds.SHOCK.get();
     }
     
     // ==================== Loot ====================

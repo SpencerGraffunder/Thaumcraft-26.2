@@ -10,44 +10,44 @@
         "stages": [
                 {
                     "text": "research.BASEAUROMANCY.stage.1",
-                    "recipes":["thaumcraft:vis_resonator","thaumcraft:caster_basic","thaumcraft:focus_basic"],
-                    "required_craft":["thaumcraft:focus_basic"]
+                    "recipes":["thaumcraft:vis_resonator","thaumcraft:caster_basic","thaumcraft:focus_1"],
+                    "required_craft":["thaumcraft:focus_1"]
                 },
                 {
                     "text": "research.BASEAUROMANCY.stage.2",
-                    "recipes":["thaumcraft:vis_resonator","thaumcraft:caster_basic","thaumcraft:focus_basic","thaumcraft:table_stone","thaumcraft:wand_workbench"],
+                    "recipes":["thaumcraft:vis_resonator","thaumcraft:caster_basic","thaumcraft:focus_1","thaumcraft:table_stone","thaumcraft:wand_workbench"],
                     "required_research":["f_onfire"],
                     "required_craft":["thaumcraft:wand_workbench"]
                 },
                 {
                     "text": "research.BASEAUROMANCY.stage.3",
-                    "recipes":["thaumcraft:vis_resonator","thaumcraft:caster_basic","thaumcraft:focus_basic","thaumcraft:table_stone","thaumcraft:wand_workbench"]
+                    "recipes":["thaumcraft:vis_resonator","thaumcraft:caster_basic","thaumcraft:focus_1","thaumcraft:table_stone","thaumcraft:wand_workbench"]
                 }
             ]
         },
         {
         "key": "FOCUSADVANCED",    
         "name": "research.FOCUSADVANCED.title",
-        "icons": [ "thaumcraft:focus_advanced" ],
+        "icons": [ "thaumcraft:focus_2" ],
         "category": "AUROMANCY", "location": [ 0,-2 ], 
         "parents": [ "BASEAUROMANCY", "INFUSION" ],       
         "stages": [
                 {
                     "text": "research.FOCUSADVANCED.stage.1",
                     "required_knowledge":["THEORY;AUROMANCY;1"],
-                    "recipes":["thaumcraft:focus_advanced"],
-                    "required_craft":["thaumcraft:focus_advanced"]
+                    "recipes":["thaumcraft:focus_2"],
+                    "required_craft":["thaumcraft:focus_2"]
                 },
                 {
                     "text": "research.FOCUSADVANCED.stage.2",
-                    "recipes":["thaumcraft:focus_advanced"]
+                    "recipes":["thaumcraft:focus_2"]
                 }
             ]
         },
         {
         "key": "FOCUSGREATER",    
         "name": "research.FOCUSGREATER.title",
-        "icons": [ "thaumcraft:focus_greater" ],
+        "icons": [ "thaumcraft:focus_3" ],
         "category": "AUROMANCY", "location": [ 0,-4 ], 
         "parents": [ "FOCUSADVANCED", "PRIMPEARL" ],       
         "stages": [
@@ -55,12 +55,12 @@
                     "text": "research.FOCUSGREATER.stage.1",
                     "required_knowledge":["THEORY;AUROMANCY;1"],
                     "required_research":["f_onfire"],
-                    "recipes":["thaumcraft:focus_greater"],
-                    "required_craft":["thaumcraft:focus_greater"]
+                    "recipes":["thaumcraft:focus_3"],
+                    "required_craft":["thaumcraft:focus_3"]
                 },
                 {
                     "text": "research.FOCUSGREATER.stage.2",
-                    "recipes":["thaumcraft:focus_greater"]
+                    "recipes":["thaumcraft:focus_3"]
                 }
             ]
         },
@@ -348,7 +348,7 @@
         {
         "key": "VISAMULET",    
         "name": "research.VISAMULET.title",
-        "icons": [ "thaumcraft:amulet_vis" ],
+        "icons": [ "thaumcraft:amulet_vis_crafted" ],
         "category": "AUROMANCY", "location": [ -5,4 ], 
         "parents": [ "RECHARGEPEDESTAL", "INFUSION" ],        
         "stages": [

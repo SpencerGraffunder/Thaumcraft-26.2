@@ -1,7 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "SEALCOLLECT",
-  "catalyst": "thaumcraft:blank_seal",
+  "catalyst": "thaumcraft:seal_blank",
   "aspects": {
     "desiderium": 10
   },

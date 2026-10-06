@@ -70,7 +70,5 @@ public class ItemVoidseerCharm extends Item implements IVisDiscountGear, IWarpin
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         builder.accept(Component.translatable("item.thaumcraft.voidseer_charm.text")
                 .withStyle(ChatFormatting.DARK_BLUE, ChatFormatting.ITALIC));
-        builder.accept(Component.translatable("item.thaumcraft.voidseer_charm.desc")
-                .withStyle(ChatFormatting.GRAY));
     }
 }

@@ -115,7 +115,6 @@ public class ItemGrappleGun extends Item implements IRechargable {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("item.thaumcraft.grapple_gun.desc").withStyle(style -> style.withColor(0x808080)));
         if (isLoaded(stack)) {
             builder.accept(Component.translatable("item.thaumcraft.grapple_gun.loaded").withStyle(style -> style.withColor(0x00FF00)));
         }

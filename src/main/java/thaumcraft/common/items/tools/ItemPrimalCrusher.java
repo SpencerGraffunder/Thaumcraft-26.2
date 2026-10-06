@@ -89,7 +89,6 @@ public class ItemPrimalCrusher extends Item implements IWarpingGear {
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         builder.accept(Component.translatable("enchantment.thaumcraft.destructive").withStyle(style -> style.withColor(0x8B4513)));
         builder.accept(Component.translatable("enchantment.thaumcraft.refining").withStyle(style -> style.withColor(0xFFD700)));
-        builder.accept(Component.translatable("item.thaumcraft.primal_crusher.desc").withStyle(style -> style.withColor(0x808080)));
         builder.accept(Component.translatable("item.thaumcraft.self_repair").withStyle(style -> style.withColor(0x9400D3)));
         super.appendHoverText(stack, context, display, builder, flag);
     }

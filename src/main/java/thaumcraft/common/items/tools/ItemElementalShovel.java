@@ -15,6 +15,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -23,6 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import thaumcraft.api.ThaumcraftMaterials;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXBlockBamf;
 import thaumcraft.init.ModItems;
 
 import javax.annotation.Nullable;
@@ -135,9 +138,9 @@ public class ItemElementalShovel extends Item {
                         stack.hurtAndBreak(1, player, context.getHand());
                         placedCount++;
 
-                        // Visual effect
-                        level.addParticle(net.minecraft.core.particles.ParticleTypes.POOF, player.getX(), player.getY() + 0.5, player.getZ(), 0, 0.1, 0);
-                        
+                        // 1.12: FXDispatcher.drawBamf(targetPos, 8401408, false, false, side)
+                        sendPlaceBamf(level, targetPos, side);
+
                         if (stack.isEmpty()) {
                             return InteractionResult.SUCCESS;
                         }
@@ -150,6 +153,7 @@ public class ItemElementalShovel extends Item {
                             level.setBlock(targetPos, Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
                             stack.hurtAndBreak(1, player, context.getHand());
                             placedCount++;
+                            sendPlaceBamf(level, targetPos, side);
                         }
                     }
                 }
@@ -162,6 +166,17 @@ public class ItemElementalShovel extends Item {
         }
 
         return InteractionResult.FAIL;
+    }
+
+    /**
+     * 1.12 drew the bamf locally because its item code ran on the client too. In 26.3 this
+     * method only runs on the server, so broadcast the same bamf to nearby clients.
+     */
+    private void sendPlaceBamf(Level level, BlockPos pos, Direction side) {
+        if (!level.isClientSide()) {
+            PacketHandler.sendToAllTrackingChunk(
+                    new PacketFXBlockBamf(pos, 8401408, false, false, side), (ServerLevel) level, pos);
+        }
     }
 
     /**
@@ -216,7 +231,6 @@ public class ItemElementalShovel extends Item {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         builder.accept(Component.translatable("enchantment.thaumcraft.destructive").withStyle(style -> style.withColor(0x8B4513)));
-        builder.accept(Component.translatable("item.thaumcraft.elemental_shovel.desc").withStyle(style -> style.withColor(0x808080)));
         
         byte orientation = getOrientation(stack);
         String orientationKey = switch (orientation) {

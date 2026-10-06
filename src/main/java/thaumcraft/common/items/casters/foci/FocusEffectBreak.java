@@ -11,6 +11,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import thaumcraft.client.fx.FXDispatcher;
+import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,6 +25,9 @@ import thaumcraft.api.casters.NodeSetting;
 import thaumcraft.api.casters.Trajectory;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.phys.Vec3;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
 
 /**
  * Break Focus Effect - Breaks blocks with configurable silk touch and fortune.
@@ -65,17 +71,13 @@ public class FocusEffectBreak extends FocusEffect {
         BlockPos pos = blockHit.getBlockPos();
         BlockState state = world.getBlockState(pos);
         
-        // Particle effect at impact
-        if (!world.isClientSide() && target.getLocation() != null) {
-            net.minecraft.world.phys.Vec3 loc = target.getLocation();
-            for (int i = 0; i < 15; i++) {
-                world.addParticle(ParticleTypes.CRIT, loc.x, loc.y, loc.z,
-                    (Math.random() * 2 - 1) * 0.4, (Math.random() * 2 - 1) * 0.4, (Math.random() * 2 - 1) * 0.4);
-            }
-            for (int i = 0; i < 10; i++) {
-                world.addParticle(ParticleTypes.SMOKE, loc.x, loc.y, loc.z,
-                    (Math.random() * 2 - 1) * 0.3, (Math.random() * 2 - 1) * 0.3, (Math.random() * 2 - 1) * 0.3);
-            }
+        // Impact particles are rendered client-side: 1.12 sent PacketFXFocusPartImpact here,
+        // which re-ran renderParticleFX 15 times at the impact point on each client.
+        if (!world.isClientSide()) {
+            Vec3 impact = target.getLocation();
+            PacketHandler.sendToAllAround(
+                new PacketFXFocusPartImpact(impact.x, impact.y, impact.z, new String[] { getKey() }),
+                (ServerLevel) world, BlockPos.containing(impact), 64.0);
         }
         
         Entity caster = getCaster();
@@ -180,9 +182,18 @@ public class FocusEffectBreak extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // Breaking particle trail
-        level.addParticle(ParticleTypes.CRIT, posX, posY, posZ, 0, 0.04, 0);
-        level.addParticle(ParticleTypes.SMOKE, posX, posY, posZ, 0, -0.03, 0);
+        if (!(level instanceof ClientLevel)) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        // 1.12-faithful: FXGeneric breaking sprite (sprites 704..713)
+        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ, motionX, motionY, motionZ);
+        fb.setMaxAge(6 + random.nextInt(6));
+        int q = random.nextInt(4);
+        fb.setParticles(704 + q * 3, 3, 1);
+        fb.setSlowDown(0.8);
+        fb.setScale((float) (1.7F + random.nextGaussian() * 0.3F) * 0.1F);
+        FXDispatcher.INSTANCE.addEffect(fb);
     }
 
     @Override

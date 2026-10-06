@@ -1,9 +1,12 @@
 package thaumcraft.common.config;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.entity.ambient.Bat;
@@ -13,6 +16,9 @@ import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.LlamaSpit;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -27,6 +33,7 @@ import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ScanBlock;
 import thaumcraft.api.research.ScanEntity;
 import thaumcraft.api.research.ScanItem;
+import thaumcraft.api.research.ScanTag;
 import thaumcraft.api.research.ScanningManager;
 import thaumcraft.api.research.theorycraft.TheorycraftManager;
 import thaumcraft.common.entities.EntityFluxRift;
@@ -86,12 +93,9 @@ public class ConfigResearch {
         if (enchantmentScannersRegistered) {
             return;
         }
-        var ench = access.lookupOrThrow(Registries.ENCHANTMENT);
-        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.SHARPNESS)));
-        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.PROTECTION)));
-        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.EFFICIENCY)));
-        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.UNBREAKING)));
-        ScanningManager.addScannableThing(new ScanEnchantment(ench.getOrThrow(Enchantments.LOOTING)));
+        // 1.12 registers a ScanEnchantment for every enchantment in the registry
+        access.lookupOrThrow(Registries.ENCHANTMENT).holders()
+                .forEach(e -> ScanningManager.addScannableThing(new ScanEnchantment(e)));
         enchantmentScannersRegistered = true;
     }
     
@@ -210,13 +214,10 @@ public class ConfigResearch {
         // Enchantment scanners: registered lazily via registerEnchantmentScanners()
         // because the enchantment registry is data-driven and needs a live RegistryAccess.
         
-        // Potion effect scanners (static mob effect holders)
-        ScanningManager.addScannableThing(new ScanPotion(MobEffects.SPEED));
-        ScanningManager.addScannableThing(new ScanPotion(MobEffects.SLOWNESS));
-        ScanningManager.addScannableThing(new ScanPotion(MobEffects.STRENGTH));
-        ScanningManager.addScannableThing(new ScanPotion(MobEffects.REGENERATION));
-        ScanningManager.addScannableThing(new ScanPotion(MobEffects.POISON));
-        ScanningManager.addScannableThing(new ScanPotion(MobEffects.INVISIBILITY));
+        // 1.12 registers a ScanPotion for every potion (mob effect) in the registry
+        for (Holder<MobEffect> effect : BuiltInRegistries.MOB_EFFECT.holders().toList()) {
+            ScanningManager.addScannableThing(new ScanPotion(effect));
+        }
         
         // Thaumcraft entities
         ScanningManager.addScannableThing(new ScanEntity("!Wisp", EntityWisp.class, true));
@@ -251,6 +252,9 @@ public class ConfigResearch {
         ScanningManager.addScannableThing(new ScanEntity("!ORBOSS", EntityThaumcraftBoss.class, true));
         ScanningManager.addScannableThing(new ScanEntity("f_TELEPORT", Enderman.class, true));
         ScanningManager.addScannableThing(new ScanEntity("f_BRAIN", EntityBrainyZombie.class, true));
+        ScanningManager.addScannableThing(new ScanEntity("f_arrow", AbstractArrow.class, true));
+        ScanningManager.addScannableThing(new ScanEntity("f_fireball", Fireball.class, true));
+        ScanningManager.addScannableThing(new ScanEntity("f_spit", LlamaSpit.class, true));
         
         // Thaumcraft blocks - use block registry objects
         ScanningManager.addScannableThing(new ScanBlock("!ORBLOCK1", 
@@ -291,10 +295,26 @@ public class ConfigResearch {
         ScanningManager.addScannableThing(new ScanItem("!DRAGONBREATH", new ItemStack(Items.DRAGON_BREATH)));
         ScanningManager.addScannableThing(new ScanItem("!TOTEMUNDYING", new ItemStack(Items.TOTEM_OF_UNDYING)));
         ScanningManager.addScannableThing(new ScanItem("f_TELEPORT", new ItemStack(Items.ENDER_PEARL)));
-        ScanningManager.addScannableThing(new ScanItem("f_BRAIN", new ItemStack(ModItems.BRAIN_NORMAL.get())));
+        ScanningManager.addScannableThing(new ScanItem("f_BRAIN", new ItemStack(ModItems.ZOMBIE_BRAIN.get())));
         ScanningManager.addScannableThing(new ScanItem("f_arrow", new ItemStack(Items.ARROW)));
         ScanningManager.addScannableThing(new ScanItem("f_VOIDSEED", new ItemStack(ModItems.VOID_SEED.get())));
         ScanningManager.addScannableThing(new ScanItem("f_MATCLAY", new ItemStack(Items.CLAY_BALL)));
+        ScanningManager.addScannableThing(new ScanBlock("f_MATCLAY", Blocks.CLAY, Blocks.TERRACOTTA));
+        ScanningManager.addScannableThing(new ScanItem("!Pechwand", new ItemStack(ModItems.PECH_WAND.get())));
+
+        // Material scans - 1.12 ScanOreDictionary entries become item tags in 26.3
+        ScanningManager.addScannableThing(new ScanTag("f_MATIRON",
+                ScanTag.tag("c", "ores/iron"), ScanTag.tag("c", "ingots/iron"),
+                ScanTag.tag("c", "storage_blocks/iron"), ScanTag.tag("thaumcraft", "plates/iron")));
+        ScanningManager.addScannableThing(new ScanTag("f_MATBRASS",
+                ScanTag.tag("c", "ingots/brass"), ScanTag.tag("c", "storage_blocks/brass"),
+                ScanTag.tag("thaumcraft", "plates/brass")));
+        ScanningManager.addScannableThing(new ScanTag("f_MATTHAUMIUM",
+                ScanTag.tag("c", "ingots/thaumium"), ScanTag.tag("c", "storage_blocks/thaumium"),
+                ScanTag.tag("thaumcraft", "plates/thaumium")));
+        ScanningManager.addScannableThing(new ScanTag("f_MATVOID",
+                ScanTag.tag("c", "ingots/void_metal"), ScanTag.tag("c", "storage_blocks/void_metal"),
+                ScanTag.tag("thaumcraft", "plates/void")));
         
         // Portals
         ScanningManager.addScannableThing(new ScanBlock("f_TELEPORT", 

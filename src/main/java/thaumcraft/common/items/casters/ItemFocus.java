@@ -170,16 +170,23 @@ public class ItemFocus extends Item {
     }
     
     /**
-     * Create a focus with default blank configuration.
+     * Create a lesser focus (1.12 focus_1, complexity cap 15).
      */
-    public static ItemFocus createBlank() {
-        return new ItemFocus(25); // Standard complexity cap
+    public static ItemFocus createLesser() {
+        return new ItemFocus(15);
     }
     
     /**
-     * Create an advanced focus with higher complexity cap.
+     * Create an advanced focus (1.12 focus_2, complexity cap 25).
      */
     public static ItemFocus createAdvanced() {
-        return new ItemFocus(50); // Advanced complexity cap
+        return new ItemFocus(25);
+    }
+    
+    /**
+     * Create a greater focus (1.12 focus_3, complexity cap 50).
+     */
+    public static ItemFocus createGreater() {
+        return new ItemFocus(50);
     }
 }

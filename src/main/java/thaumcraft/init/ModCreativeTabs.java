@@ -235,7 +235,6 @@ public class ModCreativeTabs {
                         output.accept(ModItems.ENCHANTED_FABRIC.get());
                         output.accept(ModItems.PRIMAL_CHARM.get());
                         output.accept(ModItems.SALISITE.get());
-                        output.accept(ModItems.BLANK_SEAL.get());
                         output.accept(ModItems.MIRRORED_GLASS.get());
                         output.accept(ModItems.FILTER.get());
                         output.accept(ModItems.MORPHIC_RESONATOR.get());
@@ -256,8 +255,6 @@ public class ModCreativeTabs {
                         output.accept(ModItems.CLUSTER_CINNABAR.get());
 
                         // === Golem Materials ===
-                        output.accept(ModItems.BRAIN_NORMAL.get());
-                        output.accept(ModItems.BRAIN_CLOCKWORK.get());
                         output.accept(ModItems.BRAIN_CURIOUS.get());
 
                         // === Research ===
@@ -265,7 +262,6 @@ public class ModCreativeTabs {
                         output.accept(ModItems.COMPLETE_NOTES.get());
 
                         // === Curiosities ===
-                        output.accept(ModItems.CURIOSITY.get());
                         output.accept(ModItems.PRIMORDIAL_PEARL.get());
                         output.accept(ModItems.TAINT_SLIME.get());
                         output.accept(ModItems.TAINT_TENDRIL.get());
@@ -333,8 +329,9 @@ public class ModCreativeTabs {
                         output.accept(ModItems.CASTER_MASTER.get());
 
                         // === Focus Items ===
-                        output.accept(ModItems.FOCUS_BLANK.get());
-                        output.accept(ModItems.FOCUS_ADVANCED.get());
+                        output.accept(ModItems.FOCUS_1.get());
+                        output.accept(ModItems.FOCUS_2.get());
+                        output.accept(ModItems.FOCUS_3.get());
 
                         // === Special Armor ===
                         output.accept(ModItems.TRAVELLER_BOOTS.get());

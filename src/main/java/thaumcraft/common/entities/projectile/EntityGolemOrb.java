@@ -22,6 +22,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import thaumcraft.init.ModEntities;
+import thaumcraft.init.ModSounds;
 
 /**
  * EntityGolemOrb - Homing magic orb projectile fired by golems.
@@ -128,8 +129,8 @@ public class EntityGolemOrb extends ThrowableProjectile {
             onHitEntity((EntityHitResult) result);
         }
         
-        // Play sound and burst particles
-        playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
+        // 1.12: the orb plays the TC shock sound when it hits
+        playSound(ModSounds.SHOCK.get(), 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
         
         if (level().isClientSide()) {
             for (int i = 0; i < 8; i++) {
@@ -170,7 +171,7 @@ public class EntityGolemOrb extends ThrowableProjectile {
         if (attacker != null) {
             Vec3 look = attacker.getLookAngle();
             setDeltaMovement(look.scale(0.9));
-            playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
+            playSound(ModSounds.ZAP.get(), 1.0f, 1.0f + (random.nextFloat() - random.nextFloat()) * 0.2f);
             return true;
         }
         return false;

@@ -11,6 +11,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import thaumcraft.client.fx.FXDispatcher;
+import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,6 +25,9 @@ import thaumcraft.api.casters.NodeSetting;
 import thaumcraft.api.casters.Trajectory;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.phys.Vec3;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
 
 /**
  * Exchange Focus Effect - Replaces blocks with a selected block type.
@@ -63,6 +69,15 @@ public class FocusEffectExchange extends FocusEffect {
         }
         
         Level world = getPackage().world;
+
+        // Impact particles are rendered client-side: 1.12 sent PacketFXFocusPartImpact here,
+        // which re-ran renderParticleFX 15 times at the impact point on each client.
+        if (!world.isClientSide()) {
+            Vec3 impact = target.getLocation();
+            PacketHandler.sendToAllAround(
+                new PacketFXFocusPartImpact(impact.x, impact.y, impact.z, new String[] { getKey() }),
+                (ServerLevel) world, BlockPos.containing(impact), 64.0);
+        }
         Entity caster = getCaster();
         
         if (!(caster instanceof ServerPlayer player)) {
@@ -170,9 +185,25 @@ public class FocusEffectExchange extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // Exchange/swap particle trail
-        level.addParticle(ParticleTypes.ENCHANT, posX, posY, posZ, 0, 0.05, 0);
-        level.addParticle(ParticleTypes.WITCH, posX, posY, posZ, 0, -0.03, 0);
+        if (!(level instanceof ClientLevel)) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        // 1.12-faithful: FXGeneric exchange sprite (sprite 448, 9 frames)
+        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ,
+                motionX + random.nextGaussian() * 0.01,
+                motionY + random.nextGaussian() * 0.01,
+                motionZ + random.nextGaussian() * 0.01);
+        fb.setMaxAge(9);
+        fb.setColor(0.25F + random.nextFloat() * 0.25F, 0.25F + random.nextFloat() * 0.25F,
+                0.25F + random.nextFloat() * 0.25F);
+        fb.setAlphaKeyframes(0.0F, 0.6F, 0.6F, 0.0F);
+        fb.setGridSize(64);
+        fb.setParticles(448, 9, 1);
+        fb.setScaleKeyframes(0.5F * 0.1F, 0.25F * 0.1F);
+        fb.setGravity((float) (random.nextGaussian() * 0.01F));
+        fb.setRandomMovementScale(0.0025F, 0.0025F, 0.0025F);
+        FXDispatcher.INSTANCE.addEffect(fb);
     }
 
     @Override

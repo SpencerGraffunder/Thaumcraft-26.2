@@ -15,6 +15,7 @@ import thaumcraft.api.research.ResearchEntry;
 import thaumcraft.api.research.ResearchStage;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
 import thaumcraft.common.lib.research.ResearchManager;
+import java.util.List;
 
 
 /**
@@ -129,25 +130,32 @@ public class PacketSyncProgressToServer implements CustomPacketPayload {
         Object[] obtain = stage.getObtain();
         if (obtain != null) {
             for (Object o : obtain) {
-                ItemStack required = ItemStack.EMPTY;
-                if (o instanceof ItemStack) {
-                    required = (ItemStack) o;
-                } else if (o instanceof String) {
-                    // Tag-based requirement - simplified check
-                    // In 1.20.1, ore dictionary is replaced with tags
-                    // For now, skip tag checking - would need proper tag lookup
+                // A requirement may be a concrete stack or a tag (1.12 ore-dictionary entry).
+                // Any stack belonging to the tag satisfies it.
+                List<ItemStack> candidates = ResearchManager.resolveRequirementStacks(o);
+                if (candidates.isEmpty()) {
                     continue;
                 }
-                
-                if (!required.isEmpty() && !isPlayerCarryingAmount(player, required)) {
+                boolean satisfied = false;
+                for (ItemStack required : candidates) {
+                    if (isPlayerCarryingAmount(player, required)) {
+                        satisfied = true;
+                        break;
+                    }
+                }
+                if (!satisfied) {
                     return false;
                 }
             }
             
             // Consume items if all checks pass
             for (Object o : obtain) {
-                if (o instanceof ItemStack required) {
-                    consumePlayerItem(player, required);
+                List<ItemStack> candidates = ResearchManager.resolveRequirementStacks(o);
+                for (ItemStack required : candidates) {
+                    if (isPlayerCarryingAmount(player, required)) {
+                        consumePlayerItem(player, required);
+                        break;
+                    }
                 }
             }
         }

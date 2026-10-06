@@ -8,6 +8,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.text.WordUtils;
 import thaumcraft.Thaumcraft;
+import thaumcraft.api.research.ScanAspect;
+import thaumcraft.api.research.ScanningManager;
 
 /**
  * Aspect - Represents a single aspect type in Thaumcraft.
@@ -55,9 +57,11 @@ public class Aspect {
         this.image = image;
         this.blend = blend;
         aspects.put(tag, this);
-        
-        // Register for scanning
-        // ScanningManager.addScannableThing(new ScanAspect("!" + tag, this));
+
+        // 1.12 Aspect.java:71 - every aspect is scannable with the Thaumometer and
+        // grants the hidden "!<tag>" research flag (!aer, !lux, !sensus, ...).
+        // Those flags gate most of the auromancy/artifice/golemancy research lines.
+        ScanningManager.addScannableThing(new ScanAspect("!" + tag, this));
         
         if (components != null && components.length >= 2) {
             int h = (components[0].getTag() + components[1].getTag()).hashCode();

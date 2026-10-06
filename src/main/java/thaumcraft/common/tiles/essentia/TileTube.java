@@ -20,6 +20,7 @@ import thaumcraft.common.tiles.TileThaumcraft;
 import thaumcraft.init.ModBlockEntities;
 
 import java.util.Random;
+import thaumcraft.init.ModSounds;
 
 /**
  * Essentia tube tile entity - transports essentia between containers.
@@ -365,8 +366,8 @@ public class TileTube extends TileThaumcraft implements IEssentiaTransport {
                 if (venting <= 0) {
                     level.playLocalSound(
                             worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
-                            SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS,
-                            0.1f, 1.0f + level.getRandom().nextFloat() * 0.1f, false
+                            ModSounds.CREAK.get(), SoundSource.AMBIENT,
+                            1.0f, 1.3f + level.getRandom().nextFloat() * 0.2f, false
                     );
                 }
                 venting = 50;

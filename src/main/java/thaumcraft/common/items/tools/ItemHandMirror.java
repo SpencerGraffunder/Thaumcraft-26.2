@@ -211,7 +211,7 @@ public class ItemHandMirror extends Item {
         // Try to transport the item
         if (tileMirror.transportDirect(items)) {
             items.setCount(0);
-            player.playSound(SoundEvents.ENDERMAN_TELEPORT, 0.1f, 1.0f);
+            player.playSound(ModSounds.ZAP.get(), 1.0f, 0.8f);
             return true;
         }
 

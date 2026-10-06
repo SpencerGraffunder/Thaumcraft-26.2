@@ -61,6 +61,7 @@ import thaumcraft.init.ModEffects;
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.util.*;
+import thaumcraft.init.ModSounds;
 
 /**
  * Infusion altar matrix tile entity - the central block of the infusion altar.
@@ -267,10 +268,14 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
 
         // Handle crafting animation
         if (crafting) {
-            if (craftCount == 0 || craftCount % 65 == 0) {
-                // Play infusion loop sound
+            if (craftCount == 0) {
+                // 1.12: first tick plays the infuserstart sound
                 level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(),
-                        SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 0.5f, 1.0f, false);
+                        ModSounds.INFUSER_START.get(), SoundSource.BLOCKS, 0.5f, 1.0f, false);
+            } else if (craftCount % 65 == 0) {
+                // 1.12: looping infuser sound while crafting
+                level.playLocalSound(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(),
+                        ModSounds.INFUSER.get(), SoundSource.BLOCKS, 0.5f, 1.0f, false);
             }
             craftCount++;
             // Runes flowing up the base column while crafting
@@ -454,7 +459,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
             recipePlayer = player.getName().getString();
             crafting = true;
             
-            level.playSound(null, worldPosition, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 0.5f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.CRAFT_START.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
             syncTile(false);
             setChanged();
         }
@@ -575,7 +580,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         crafting = false;
         recipeEssentia = new AspectList();
         recipeInstability = 0;
-        level.playSound(null, worldPosition, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1.0f, 0.6f);
+        level.playSound(null, worldPosition, ModSounds.CRAFT_FAIL.get(), SoundSource.BLOCKS, 1.0f, 0.6f);
         syncTile(false);
     }
 
@@ -633,7 +638,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
             syncTile(false);
             setChanged();
             
-            level.playSound(null, worldPosition, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 0.5f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.WAND.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
         }
     }
 
@@ -976,7 +981,7 @@ public class TileInfusionMatrix extends TileThaumcraft implements IAspectContain
         }
         
         if (!level.isClientSide() && !active && validLocation()) {
-            level.playSound(null, worldPosition, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 0.5f, 1.0f);
+            level.playSound(null, worldPosition, ModSounds.CRAFT_START.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
             active = true;
             syncTile(false);
             setChanged();

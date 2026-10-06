@@ -104,7 +104,6 @@ public class ItemElementalAxe extends Item {
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         builder.accept(Component.translatable("enchantment.thaumcraft.burrowing").withStyle(style -> style.withColor(0x4169E1)));
         builder.accept(Component.translatable("enchantment.thaumcraft.collector").withStyle(style -> style.withColor(0x4169E1)));
-        builder.accept(Component.translatable("item.thaumcraft.elemental_axe.desc").withStyle(style -> style.withColor(0x808080)));
         super.appendHoverText(stack, context, display, builder, flag);
     }
 }

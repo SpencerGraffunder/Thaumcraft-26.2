@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
 
 /**
  * ResearchManager - Manages all research-related operations.
@@ -708,15 +709,25 @@ public class ResearchManager {
         return items.isEmpty() ? null : items.toArray(new ItemStack[0]);
     }
     
+    /**
+     * 1.12 ore dictionary names to the tags that replace them in this port.
+     * Research JSON keeps the 1.12 "oredict:name" spelling; it is resolved here.
+     */
+    private static final Map<String, String> OREDICT_TAG_MAPPINGS = new HashMap<>();
+    static {
+        OREDICT_TAG_MAPPINGS.put("chest", "thaumcraft:chests");
+    }
+    
     private static Object[] parseJsonOreList(String[] strings) {
         if (strings == null || strings.length == 0) return null;
         List<Object> items = new ArrayList<>();
         for (String s : strings) {
             s = s.replace("'", "\"");
             if (s.startsWith("tag:") || s.startsWith("oredict:")) {
-                // Tag reference - in 1.20.1 we use tags instead of ore dictionary
+                // Tag reference - the ore dictionary is replaced by item tags
                 String tagName = s.contains(":") ? s.substring(s.indexOf(":") + 1) : s;
-                items.add(tagName);
+                String mapped = OREDICT_TAG_MAPPINGS.get(tagName);
+                items.add(mapped != null ? mapped : tagName);
             } else {
                 ItemStack stack = parseJSONtoItemStack(s);
                 if (!stack.isEmpty()) {
@@ -725,6 +736,33 @@ public class ResearchManager {
             }
         }
         return items.isEmpty() ? null : items.toArray();
+    }
+    
+    /**
+     * Resolve a research stage requirement entry (an ItemStack, or a tag name that
+     * replaces a 1.12 ore-dictionary entry) to the item stacks that can satisfy it.
+     */
+    public static List<ItemStack> resolveRequirementStacks(Object requirement) {
+        if (requirement instanceof ItemStack stack && !stack.isEmpty()) {
+            return List.of(stack);
+        }
+        if (requirement instanceof String tagName) {
+            List<ItemStack> stacks = new ArrayList<>();
+            try {
+                TagKey<Item> tag = TagKey.create(Registries.ITEM,
+                        Identifier.parse(tagName));
+                for (net.minecraft.core.Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
+                    Item item = holder.value();
+                    if (item != null && item != net.minecraft.world.item.Items.AIR) {
+                        stacks.add(new ItemStack(item));
+                    }
+                }
+            } catch (Exception e) {
+                Thaumcraft.LOGGER.debug("Failed to resolve requirement tag {}: {}", tagName, e.getMessage());
+            }
+            return stacks;
+        }
+        return List.of();
     }
     
     /**
@@ -821,7 +859,6 @@ public class ResearchManager {
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:plate", "thaumcraft:plate_brass");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:nugget", "thaumcraft:brass_nugget");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:metal", "thaumcraft:thaumium_ingot");
-        LEGACY_ITEM_MAPPINGS.put("thaumcraft:mind", "thaumcraft:brain_clockwork");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:turret", "thaumcraft:turret_placer_basic");
         
         // Block/item name variations - old crystal names to new specific crystal items
@@ -834,15 +871,26 @@ public class ResearchManager {
         // Old generic vis_crystal mappings (default to air)
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:vis_crystal", "thaumcraft:vis_crystal_air");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:amulet_vis", "thaumcraft:amulet_vis_crafted");
-        LEGACY_ITEM_MAPPINGS.put("thaumcraft:seal", "thaumcraft:blank_seal");
-        LEGACY_ITEM_MAPPINGS.put("thaumcraft:focus_basic", "thaumcraft:focus_blank");
-        LEGACY_ITEM_MAPPINGS.put("thaumcraft:focus_greater", "thaumcraft:focus_advanced");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:seal", "thaumcraft:seal_blank");
+        // 1.12-faithful consolidation: duplicate items removed, old ids resolve to the kept one
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:blank_seal", "thaumcraft:seal_blank");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:brain_normal", "thaumcraft:zombie_brain");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:brain_clockwork", "thaumcraft:mind");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:curiosity", "thaumcraft:curiosity_band");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:focus_basic", "thaumcraft:focus_1");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:focus_1", "thaumcraft:focus_1");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:focus_advanced", "thaumcraft:focus_2");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:focus_greater", "thaumcraft:focus_3");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:biothaumic_mind", "thaumcraft:brain_curious");
-        LEGACY_ITEM_MAPPINGS.put("thaumcraft:clockwork_mind", "thaumcraft:brain_clockwork");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:clockwork_mind", "thaumcraft:mind");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:crimson_rites", "thaumcraft:thaumonomicon");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:module", "thaumcraft:golem_module_vision");
-        LEGACY_ITEM_MAPPINGS.put("thaumcraft:brain", "thaumcraft:brain_normal");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:brain", "thaumcraft:zombie_brain");
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:leather", "minecraft:leather");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:smelter_basic", "thaumcraft:smelter");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:stone_ancient", "thaumcraft:ancient_stone");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:stone_eldritch_tile", "thaumcraft:eldritch_stone_tile");
+        LEGACY_ITEM_MAPPINGS.put("thaumcraft:enchanted_placeholder", "minecraft:enchanted_book");
         
         // Block name variations
         LEGACY_ITEM_MAPPINGS.put("thaumcraft:sapling_greatwood", "thaumcraft:greatwood_sapling");

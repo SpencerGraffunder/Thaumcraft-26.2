@@ -28,7 +28,8 @@ import thaumcraft.common.entities.monster.cult.EntityCultistPortalLesser;
 import thaumcraft.common.items.armor.ItemFortressArmor;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModEntities;
-import net.minecraft.core.particles.ParticleTypes;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.misc.PacketMiscEvent;
 
 import java.util.List;
 
@@ -97,13 +98,9 @@ public class WarpEvents {
                 }
             }
             
-            // Send warp event visual distortion on client
+            // 1.12 sent PacketMiscEvent(0) to the player; the client drew the warp distortion.
             if (player instanceof ServerPlayer sp) {
-                for (int i = 0; i < 15; i++) {
-                    sp.level().addParticle(net.minecraft.core.particles.ParticleTypes.PORTAL,
-                            player.getX(), player.getY() + 1.0, player.getZ(),
-                            0.0, 0.0, 0.0);
-                }
+                PacketHandler.sendToPlayer(new PacketMiscEvent(PacketMiscEvent.WARP_EVENT), sp);
             }
             
             if (eff > 0) {
@@ -261,15 +258,9 @@ public class WarpEvents {
      * Spawn mist effect and optional eldritch guardians.
      */
     private static void spawnMist(Player player, int warp, int guardian) {
-        // Send mist particles to client
+        // 1.12 sent PacketMiscEvent(1); the client ran its own mist tick loop from there.
         if (player instanceof ServerPlayer sp) {
-            for (int i = 0; i < 30; i++) {
-                double rx = player.getX() + (sp.level().getRandom().nextFloat() - 0.5f) * 10.0;
-                double ry = player.getY() + sp.level().getRandom().nextFloat() * 3.0;
-                double rz = player.getZ() + (sp.level().getRandom().nextFloat() - 0.5f) * 10.0;
-                sp.level().addParticle(ParticleTypes.SMOKE,
-                        rx, ry, rz, 0.025, 0.025, 0.025);
-            }
+            PacketHandler.sendToPlayer(new PacketMiscEvent(PacketMiscEvent.MIST_EVENT), sp);
         }
         
         if (guardian > 0) {

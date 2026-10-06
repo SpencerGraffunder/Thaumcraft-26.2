@@ -2,7 +2,6 @@ package thaumcraft.common.lib.events;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -35,6 +34,9 @@ import thaumcraft.api.aspects.AspectHelper;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.entities.EntityFollowingItem;
 import thaumcraft.common.lib.enchantment.EnumInfusionEnchantment;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXScanSource;
+import thaumcraft.common.lib.network.fx.PacketFXSlash;
 import thaumcraft.common.lib.utils.BlockUtils;
 import thaumcraft.common.lib.utils.EntityUtils;
 import thaumcraft.init.ModBlocks;
@@ -129,19 +131,13 @@ public class ToolEvents {
                             );
                             
                             ++count;
-                            
-                            // Slash effect particles
-                            if (!player.level().isClientSide()) {
-                                for (int i = 0; i < 10; i++) {
-                                    player.level().addParticle(ParticleTypes.ELECTRIC_SPARK,
-                                            target.getX(), target.getY() + 0.5, target.getZ(),
-                                            0.3, 0.3, 0.3);
-                                }
-                                for (int i = 0; i < 5; i++) {
-                                    player.level().addParticle(ParticleTypes.ENCHANT,
-                                            target.getX(), target.getY() + 0.5, target.getZ(),
-                                            0.2, 0.2, 0.2);
-                                }
+
+                            // 1.12 broadcast PacketFXSlash so clients drew the slash arc between
+                            // the original target and each extra entity caught by the sweep.
+                            if (player.level() instanceof ServerLevel serverLevel) {
+                                PacketHandler.sendToAllAround(
+                                        new PacketFXSlash(event.getTarget().getId(), target.getId()),
+                                        serverLevel, player.blockPosition(), 64.0);
                             }
                         }
                     }
@@ -154,6 +150,12 @@ public class ToolEvents {
                     player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                             ModSounds.WIND.get(), SoundSource.PLAYERS,
                             1.0f, 0.9f + player.level().getRandom().nextFloat() * 0.2f);
+                    // 1.12 also drew the slash arc from the player to the original target
+                    if (player.level() instanceof ServerLevel serverLevel) {
+                        PacketHandler.sendToAllAround(
+                                new PacketFXSlash(player.getId(), event.getTarget().getId()),
+                                serverLevel, player.blockPosition(), 64.0);
+                    }
                 }
             }
         }
@@ -184,25 +186,11 @@ public class ToolEvents {
                     ModSounds.WAND_FAIL.get(), SoundSource.BLOCKS,
                     0.2f, 0.2f + event.getLevel().getRandom().nextFloat() * 0.2f);
             
-            // Scan effect particles to reveal ores
+            // 1.12 sent PacketFXScanSource to the clicking player only; the client ran the
+            // reveal sweep (drawGenericParticles) from there.
             int scanLevel = EnumInfusionEnchantment.getInfusionEnchantmentLevel(heldItem, EnumInfusionEnchantment.SOUNDING);
             if (player instanceof ServerPlayer serverPlayer) {
-                double range = 4.0 + scanLevel * 2.0;
-                for (int ox = -1; ox <= 1; ox += 2) {
-                    for (int oy = -1; oy <= 1; oy += 2) {
-                        for (int oz = -1; oz <= 1; oz += 2) {
-                            BlockPos checkPos = pos.offset(ox * (int)range, oy * (int)range, oz * (int)range);
-                            BlockState checkState = serverPlayer.level().getBlockState(checkPos);
-                            if (BlockUtils.isOre(serverPlayer.level(), checkPos)) {
-                                for (int i = 0; i < 15; i++) {
-                                    serverPlayer.level().addParticle(ParticleTypes.ENCHANT,
-                                            checkPos.getX() + 0.5, checkPos.getY() + 0.5, checkPos.getZ() + 0.5,
-                                            0.3, 0.3, 0.3);
-                                }
-                            }
-                        }
-                    }
-                }
+                PacketHandler.sendToPlayer(new PacketFXScanSource(pos, scanLevel), serverPlayer);
             }
         }
     }

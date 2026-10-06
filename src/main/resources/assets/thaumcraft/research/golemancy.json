@@ -34,7 +34,7 @@
         },
         {
         "key": "MATSTUDWOOD", "name": "research.MATSTUDWOOD.title",  
-        "icons": [ "thaumcraft:log_greatwood" ], "category": "GOLEMANCY", "location": [ -2, 0 ], 
+        "icons": [ "thaumcraft:greatwood_log" ], "category": "GOLEMANCY", "location": [ -2, 0 ], 
         "meta": [ "HIDDEN", "REVERSE","ROUND" ], "stages": [ { "text": "research.MATSTUDWOOD.stage.1" } ]
         },
         {
@@ -51,7 +51,7 @@
         },
         {
         "key": "MATSTUDBRASS", "name": "research.MATSTUDBRASS.title",
-        "icons": [ "thaumcraft:plate" ], "category": "GOLEMANCY", "location": [ -4, -2 ], 
+        "icons": [ "thaumcraft:plate_brass" ], "category": "GOLEMANCY", "location": [ -4, -2 ], 
         "parents": [ "MATSTUDIRON", "METALLURGY@2" ], "meta": [ "REVERSE", "ROUND","HIDDEN" ],     
         "stages": [ { "text": "research.MATSTUDBRASS.stage.1", "required_research":["f_MATBRASS"] } ]
         },
@@ -92,7 +92,7 @@
         },
         {
         "key": "CONTROLSEALS", "name": "research.CONTROLSEALS.title",
-        "icons": [ "thaumcraft:seal" ], "category": "GOLEMANCY", "location": [ -2, 5 ], 
+        "icons": [ "thaumcraft:seal_blank" ], "category": "GOLEMANCY", "location": [ -2, 5 ], 
         "parents": [ "MINDCLOCKWORK" ],  "siblings": [ "SEALCOLLECT" ],
         "meta": [ "ROUND","HIDDEN" ],
         "stages": [
@@ -133,7 +133,7 @@
         },
         {
         "key": "MINDBIOTHAUMIC", "name": "research.MINDBIOTHAUMIC.title",
-        "icons": [ "thaumcraft:biothaumic_mind" ], "category": "GOLEMANCY", "location": [ 0, 7 ], 
+        "icons": [ "thaumcraft:mind" ], "category": "GOLEMANCY", "location": [ 0, 7 ], 
         "parents": [ "MINDCLOCKWORK","INFUSION" ],  "meta": [ "HIDDEN" ],
         "stages": [
                  {
@@ -143,7 +143,7 @@
                  },
                  {
                     "text": "research.MINDBIOTHAUMIC.stage.2", 
-                    "recipes":["thaumcraft:biothaumic_mind"],
+                    "recipes":["thaumcraft:mind"],
                     "warp": 3
                  }
             ]
@@ -332,7 +332,7 @@
         },
         {
         "key": "GOLEMVISION", "name": "research.GOLEMVISION.title",
-        "icons": [ "thaumcraft:module" ], "category": "GOLEMANCY", "location": [ -2, 2 ], 
+        "icons": [ "thaumcraft:golem_module_vision" ], "category": "GOLEMANCY", "location": [ -2, 2 ], 
         "parents": [ "MINDCLOCKWORK" ], 
         "stages": [            
                 {

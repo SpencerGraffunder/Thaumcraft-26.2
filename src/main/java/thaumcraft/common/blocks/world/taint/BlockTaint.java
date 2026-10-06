@@ -26,6 +26,7 @@ import thaumcraft.common.lib.utils.EntityUtils;
 import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModItems;
+import thaumcraft.init.ModSounds;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +57,7 @@ public class BlockTaint extends Block implements ITaintBlock {
         super(BlockRegistration.id(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_PURPLE)
                 .strength(10.0f, 100.0f)
-                .sound(SoundType.SLIME_BLOCK) // Gore-like sound
+                .sound(ModSounds.GORE_TYPE) // 1.12: setSoundType(SoundsTC.GORE)
                 .randomTicks()
                 .requiresCorrectToolForDrops()));
         this.type = type;

@@ -1,7 +1,7 @@
 {
   "type": "thaumcraft:crucible",
   "research": "SEALUSE",
-  "catalyst": "thaumcraft:blank_seal",
+  "catalyst": "thaumcraft:seal_blank",
   "aspects": {
     "fabrico": 20,
     "sensus": 10,

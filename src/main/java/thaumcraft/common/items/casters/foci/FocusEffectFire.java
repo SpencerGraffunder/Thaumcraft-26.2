@@ -9,6 +9,8 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import thaumcraft.client.fx.FXDispatcher;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -19,6 +21,10 @@ import thaumcraft.api.casters.NodeSetting;
 import thaumcraft.api.casters.Trajectory;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
 
 /**
  * Fire Focus Effect - Deals fire damage and sets targets ablaze.
@@ -59,22 +65,13 @@ public class FocusEffectFire extends FocusEffect {
         
         Level world = getPackage().world;
         
-        // Particle effect at impact
-        if (!world.isClientSide() && target.getLocation() != null) {
-            for (int i = 0; i < 15; i++) {
-                world.addParticle(ParticleTypes.FLAME,
-                        target.getLocation().x + (world.getRandom().nextDouble() - 0.5) * 0.8,
-                        target.getLocation().y + (world.getRandom().nextDouble() - 0.5) * 0.8,
-                        target.getLocation().z + (world.getRandom().nextDouble() - 0.5) * 0.8,
-                        0, 0, 0);
-            }
-            for (int i = 0; i < 10; i++) {
-                world.addParticle(ParticleTypes.SMOKE,
-                        target.getLocation().x + (world.getRandom().nextDouble() - 0.5) * 0.6,
-                        target.getLocation().y + (world.getRandom().nextDouble() - 0.5) * 0.6,
-                        target.getLocation().z + (world.getRandom().nextDouble() - 0.5) * 0.6,
-                        0, 0, 0);
-            }
+        // Impact particles are rendered client-side: 1.12 sent PacketFXFocusPartImpact here,
+        // which re-ran renderParticleFX 15 times at the impact point on each client.
+        if (!world.isClientSide()) {
+            Vec3 impact = target.getLocation();
+            PacketHandler.sendToAllAround(
+                new PacketFXFocusPartImpact(impact.x, impact.y, impact.z, new String[] { getKey() }),
+                (ServerLevel) world, BlockPos.containing(impact), 64.0);
         }
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {
@@ -136,9 +133,21 @@ public class FocusEffectFire extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // Fire particle trail
-        level.addParticle(ParticleTypes.FLAME, posX, posY, posZ, 0, 0.05, 0);
-        level.addParticle(ParticleTypes.SMOKE, posX, posY, posZ, 0, -0.03, 0);
+        if (!(level instanceof ClientLevel)) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        // 1.12-faithful: FXDispatcher.GenPart flame mote (sprites 640..649)
+        FXDispatcher.GenPart pp = new FXDispatcher.GenPart();
+        pp.grav = -0.2F;
+        pp.age = 10;
+        pp.alpha = new float[] { 0.7F };
+        pp.partStart = 640;
+        pp.partInc = 1;
+        pp.partNum = 10;
+        pp.slowDown = 0.75;
+        pp.scale = new float[] { (float) (1.5 + random.nextGaussian() * 0.2F) };
+        FXDispatcher.INSTANCE.drawGenericParticles(posX, posY, posZ, motionX, motionY, motionZ, pp);
     }
 
     @Override

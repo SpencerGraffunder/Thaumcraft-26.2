@@ -67,10 +67,4 @@ public class ItemSanityChecker extends Item {
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("item.thaumcraft.sanity_checker.desc").withStyle(style -> style.withColor(0x808080)));
-        super.appendHoverText(stack, context, display, builder, flag);
-    }
 }

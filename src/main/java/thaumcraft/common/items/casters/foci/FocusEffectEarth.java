@@ -11,6 +11,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import thaumcraft.client.fx.FXDispatcher;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,6 +26,9 @@ import thaumcraft.api.casters.Trajectory;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import net.minecraft.world.phys.Vec3;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
 
 /**
  * Earth Focus Effect - Deals damage to entities and can break blocks.
@@ -63,15 +68,14 @@ public class FocusEffectEarth extends FocusEffect {
         
         Level world = getPackage().world;
         
-        // Particle effect
-        if (world.isClientSide()) {
-            net.minecraft.world.phys.Vec3 impactPos = target.getLocation();
-            for (int i = 0; i < 12; i++) {
-                world.addParticle(net.minecraft.core.particles.ParticleTypes.CRIT,
-                    impactPos.x + Math.random() * 2 - 1, impactPos.y + Math.random() * 2 - 1, impactPos.z + Math.random() * 2 - 1, 0, 0.1, 0);
-            }
+        // Impact particles are rendered client-side: 1.12 sent PacketFXFocusPartImpact here,
+        // which re-ran renderParticleFX 15 times at the impact point on each client.
+        if (!world.isClientSide()) {
+            Vec3 impact = target.getLocation();
+            PacketHandler.sendToAllAround(
+                new PacketFXFocusPartImpact(impact.x, impact.y, impact.z, new String[] { getKey() }),
+                (ServerLevel) world, BlockPos.containing(impact), 64.0);
         }
-        // PacketHandler.sendToAllAround(new PacketFXFocusPartImpact(...))
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {
             Entity hitEntity = entityHit.getEntity();
@@ -170,9 +174,24 @@ public class FocusEffectEarth extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // Earth/ground particle trail
-        level.addParticle(ParticleTypes.LANDING_OBSIDIAN_TEAR, posX, posY, posZ, 0, 0.03, 0);
-        level.addParticle(ParticleTypes.CRIT, posX, posY, posZ, 0, -0.02, 0);
+        if (!(level instanceof ClientLevel)) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        // 1.12-faithful: FXDispatcher.GenPart dirt mote (sprites 75..78)
+        FXDispatcher.GenPart pp = new FXDispatcher.GenPart();
+        pp.grav = 0.4F;
+        pp.layer = 1;
+        pp.age = 20 + random.nextInt(10);
+        pp.alpha = new float[] { 1.0F, 0.0F };
+        pp.partStart = 75 + random.nextInt(4);
+        pp.partInc = 1;
+        pp.partNum = 1;
+        pp.slowDown = 0.9;
+        pp.rot = (float) random.nextGaussian();
+        float s = (float) (1.0 + random.nextGaussian() * 0.2F);
+        pp.scale = new float[] { s, s / 2.0F };
+        FXDispatcher.INSTANCE.drawGenericParticles(posX, posY, posZ, motionX, motionY, motionZ, pp);
     }
 
     @Override

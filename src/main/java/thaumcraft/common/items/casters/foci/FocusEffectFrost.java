@@ -12,6 +12,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import thaumcraft.client.fx.FXDispatcher;
+import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,6 +29,9 @@ import thaumcraft.api.casters.NodeSetting;
 import thaumcraft.api.casters.Trajectory;
 
 import javax.annotation.Nullable;
+import net.minecraft.server.level.ServerLevel;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
 
 /**
  * Frost Focus Effect - Deals cold damage, applies slowness, and freezes water.
@@ -65,14 +71,13 @@ public class FocusEffectFrost extends FocusEffect {
         
         Level world = getPackage().world;
         
-        // Particle effect at impact
-        if (!world.isClientSide() && target.getLocation() != null) {
-            for (int i = 0; i < 15; i++) {
-                world.addParticle(ParticleTypes.SNOWFLAKE, target.getLocation().x, target.getLocation().y, target.getLocation().z, 0.02, 0.02, 0.02);
-            }
-            for (int i = 0; i < 10; i++) {
-                world.addParticle(ParticleTypes.SMOKE, target.getLocation().x, target.getLocation().y, target.getLocation().z, 0.009, 0.009, 0.009);
-            }
+        // Impact particles are rendered client-side: 1.12 sent PacketFXFocusPartImpact here,
+        // which re-ran renderParticleFX 15 times at the impact point on each client.
+        if (!world.isClientSide()) {
+            Vec3 impact = target.getLocation();
+            PacketHandler.sendToAllAround(
+                new PacketFXFocusPartImpact(impact.x, impact.y, impact.z, new String[] { getKey() }),
+                (ServerLevel) world, BlockPos.containing(impact), 64.0);
         }
         
         if (target.getType() == HitResult.Type.ENTITY && target instanceof EntityHitResult entityHit) {
@@ -152,9 +157,21 @@ public class FocusEffectFrost extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // Frost particle trail
-        level.addParticle(ParticleTypes.SNOWFLAKE, posX, posY, posZ, 0, 0.03, 0);
-        level.addParticle(ParticleTypes.SMOKE, posX, posY, posZ, 0, -0.02, 0);
+        if (!(level instanceof ClientLevel)) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        // 1.12-faithful: FXGeneric frost sprite (sprite 8)
+        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ, motionX, motionY, motionZ);
+        fb.setMaxAge(40 + random.nextInt(40));
+        fb.setAlphaKeyframes(1.0F, 0.0F);
+        fb.setParticles(8, 1, 1);
+        fb.setGravity(0.033F);
+        fb.setSlowDown(0.8);
+        fb.setRandomMovementScale(0.0025F, 1.0E-4F, 0.0025F);
+        fb.setScale((float) (0.7F + random.nextGaussian() * 0.3F) * 0.1F);
+        fb.setRotationSpeedWithStart(random.nextFloat() * 3.0F, (float) random.nextGaussian() / 4.0F);
+        FXDispatcher.INSTANCE.addEffectWithDelay(fb, 0);
     }
 
     @Override

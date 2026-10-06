@@ -14,6 +14,7 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -289,8 +290,15 @@ public class TilePatternCrafter extends TileThaumcraft {
             }
         }
         
-        // Find matching recipe
-        Optional<CraftingRecipe> recipe = level.getServer().getRecipeManager()
+        // Find matching recipe.
+        // 26.3: recipe access is reached through Level.recipeAccess() so the lookup works on
+        // either side; level.getServer() is null on the client and would NPE if this ever ran
+        // client-side (audit D: client/server context misuse).
+        RecipeManager recipeManager = level.recipeAccess() instanceof RecipeManager rm ? rm : null;
+        if (recipeManager == null) {
+            return false;
+        }
+        Optional<CraftingRecipe> recipe = recipeManager
                 .getRecipeFor(RecipeType.CRAFTING, craftMatrix.asCraftInput(), level)
                 .map(net.minecraft.world.item.crafting.RecipeHolder::value);
         

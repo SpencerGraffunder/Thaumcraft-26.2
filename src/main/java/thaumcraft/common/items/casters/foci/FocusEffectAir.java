@@ -9,6 +9,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import thaumcraft.client.fx.FXDispatcher;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -18,6 +20,10 @@ import thaumcraft.api.casters.NodeSetting;
 import thaumcraft.api.casters.Trajectory;
 
 import javax.annotation.Nullable;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.fx.PacketFXFocusPartImpact;
 
 /**
  * Air Focus Effect - Deals damage and applies knockback to targets.
@@ -58,14 +64,13 @@ public class FocusEffectAir extends FocusEffect {
         Level world = getPackage().world;
         Vec3 hitPos = target.getLocation();
         
-        // Particle effect at impact
+        // Impact particles are rendered client-side: 1.12 sent PacketFXFocusPartImpact here,
+        // which re-ran renderParticleFX 15 times at the impact point on each client.
         if (!world.isClientSide()) {
-            for (int p = 0; p < 15; p++) {
-                world.addParticle(ParticleTypes.SMOKE, hitPos.x + (world.getRandom().nextFloat() - 0.5f) * 0.5, hitPos.y + world.getRandom().nextFloat() * 0.3, hitPos.z + (world.getRandom().nextFloat() - 0.5f) * 0.5, 0.5, 0.3, 0.5);
-            }
-            for (int p = 0; p < 10; p++) {
-                world.addParticle(ParticleTypes.ELECTRIC_SPARK, hitPos.x + (world.getRandom().nextFloat() - 0.5f) * 0.3, hitPos.y + world.getRandom().nextFloat() * 0.3, hitPos.z + (world.getRandom().nextFloat() - 0.5f) * 0.3, 0.3, 0.3, 0.3);
-            }
+            Vec3 impact = target.getLocation();
+            PacketHandler.sendToAllAround(
+                new PacketFXFocusPartImpact(impact.x, impact.y, impact.z, new String[] { getKey() }),
+                (ServerLevel) world, BlockPos.containing(impact), 64.0);
         }
         
         // Play wind sound at impact
@@ -129,9 +134,24 @@ public class FocusEffectAir extends FocusEffect {
     @Override
     public void renderParticleFX(Level level, double posX, double posY, double posZ,
                                   double motionX, double motionY, double motionZ) {
-        // Wind/air particle trail
-        level.addParticle(ParticleTypes.SMOKE, posX, posY, posZ, motionX, motionY, motionZ);
-        level.addParticle(ParticleTypes.ELECTRIC_SPARK, posX, posY, posZ, motionX * 0.5, motionY * 0.5, motionZ * 0.5);
+        if (!(level instanceof ClientLevel)) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        // 1.12-faithful: FXDispatcher.GenPart wind mote (grid 32, sprites 337..341)
+        FXDispatcher.GenPart pp = new FXDispatcher.GenPart();
+        pp.grav = -0.1F;
+        pp.age = 20 + random.nextInt(10);
+        pp.alpha = new float[] { 0.5F, 0.0F };
+        pp.grid = 32;
+        pp.partStart = 337;
+        pp.partInc = 1;
+        pp.partNum = 5;
+        pp.slowDown = 0.75;
+        pp.rot = (float) random.nextGaussian() / 2.0F;
+        float s = (float) (2.0 + random.nextGaussian() * 0.5);
+        pp.scale = new float[] { s, s * 2.0F };
+        FXDispatcher.INSTANCE.drawGenericParticles(posX, posY, posZ, motionX, motionY, motionZ, pp);
     }
 
     @Override
