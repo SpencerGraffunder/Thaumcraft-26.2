@@ -729,7 +729,7 @@ public class ResearchPageScreen extends Screen {
             for (int a = 0; a < stage.getResearch().length; a++) {
                 int ix = x - 15 + shift;
                 String key = stage.getResearch()[a];
-                String text = key != null ? Component.translatable("research." + key + ".text").getString() : "";
+                String text = key != null ? researchDescription(key) : "";
                 boolean found = false;
                 if (key != null && key.startsWith("!")) {
                     Aspect as = Aspect.aspects.get(key.substring(1));
@@ -939,6 +939,20 @@ public class ResearchPageScreen extends Screen {
         if (!tip.isEmpty()) {
             tipText = tip;
         }
+    }
+
+    /**
+     * Description shown when hovering a required-research icon.
+     * 1.12 kept research text in lang (research.&lt;key&gt;.text); this port keeps it in the research JSON,
+     * so read the entry's first stage text and only fall back to the lang key.
+     */
+    private static String researchDescription(String key) {
+        ResearchEntry re = key == null ? null : ResearchCategories.getResearch(key);
+        if (re != null && re.getStages() != null && re.getStages().length > 0) {
+            String t = re.getStages()[0].getText();
+            if (t != null && !t.isBlank()) return Component.translatable(t).getString();
+        }
+        return Component.translatable("research." + key + ".text").getString();
     }
 
     private void setTip(String text) {

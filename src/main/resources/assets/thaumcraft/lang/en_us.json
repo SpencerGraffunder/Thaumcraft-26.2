@@ -639,6 +639,8 @@
   "golem.addon.text.fighter": "Allows the golem to engage in combat.",
   "golem.addon.hauler": "Carry Frame",
   "golem.addon.text.hauler": "Allows the golem to carry two stack of items instead of one.",
+  "golem.addon.none": "None",
+  "golem.addon.text.none": "No addon installed.",
   "golem.follow": "I'm coming, Master!",
   "golem.stay": "I will stay here, Master.",
   "fluid_type.thaumcraft.flux_goo": "Flux Goo",
