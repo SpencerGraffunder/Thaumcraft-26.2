@@ -4,6 +4,36 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-06 — Arcane stone uncraftable: stone tag + crystal matching (commits 6121e55, d69fac95)
+
+User: "making arcane stone with diorite surrounding an ordo crystal doesn't
+work" (twice). Two stacked bugs:
+
+1. **Stone tag**: recipe used `#c:stone` — that tag does not exist in NeoForge
+   26.3. The real common tag is **`c:stones`** (verified in the
+   neoforge-26.3.0.33 universal jar, `data/c/tags/item/stones.json`):
+   andesite, diorite, granite, stone, deepslate, tuff. (The 2026-10-03 audit
+   had the backwards conclusion that `c:stones` was invalid — it was checking
+   the wrong path; `data/neoforge/tags/...` vs `data/c/tags/...`.)
+2. **Crystal matching**: 1.12's `new ItemStack(ItemsTC.crystalEssence)`
+   ingredient matched ANY aspect crystal (aspects were NBT on one item). In
+   the port, aspect crystals are separate items (`vis_crystal_*`), so a plain
+   `crystal_essence` ingredient only matches plain crystals — which the user
+   can't even get. The arcane stone recipe now takes an `items` list:
+   crystal_essence + all 6 vis_crystal_* + flux_crystal (1.12-faithful: any
+   crystal worked).
+
+Same-class fixes (1.12 required SPECIFIC crystals; port asked for plain):
+- `vis_amulet`: 5× plain → air/fire/water/earth/order vis crystals (1.12
+  ConfigRecipes:281).
+- `cloud_ring`: plain → air crystal (1.12 ConfigRecipes:359, AIR_CRYSTAL).
+
+Known gap (NOT fixed — port lacks non-primal crystal items): 1.12
+`VerdantHeartLife` needs LIFE+MAN crystals, `VerdantHeartSustain` needs
+DESIRE+AIR; the port's `verdant_charm_life`/`_sustain` use plain
+`crystal_essence` because only the 6 primals + flux exist as items.
+`label_filled` is port-invented (no 1.12 counterpart) — left as-is.
+
 ## 2026-10-06 — 3D in-hand Thaumometer model (commit 92b0ecd)
 
 User (3×): "still need the correct model in hand" — the port rendered the

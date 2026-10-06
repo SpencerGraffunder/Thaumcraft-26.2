@@ -5,11 +5,11 @@
   "center": "minecraft:gold_ingot",
   "ingredients": [
     "thaumcraft:vis_resonator",
-    "thaumcraft:crystal_essence",
-    "thaumcraft:crystal_essence",
-    "thaumcraft:crystal_essence",
-    "thaumcraft:crystal_essence",
-    "thaumcraft:crystal_essence"
+    "thaumcraft:vis_crystal_air",
+    "thaumcraft:vis_crystal_fire",
+    "thaumcraft:vis_crystal_water",
+    "thaumcraft:vis_crystal_earth",
+    "thaumcraft:vis_crystal_order"
   ],
   "aspects": {
     "auram": 50,

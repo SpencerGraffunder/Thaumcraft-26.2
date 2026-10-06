@@ -4,7 +4,7 @@
   "instability": 1,
   "center": "minecraft:gold_ingot",
   "ingredients": [
-    "thaumcraft:crystal_essence",
+    "thaumcraft:vis_crystal_air",
     "minecraft:feather"
   ],
   "aspects": {
