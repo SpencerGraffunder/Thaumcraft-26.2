@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.particle.Particle;
@@ -516,8 +517,14 @@ public class FXDispatcher {
     public void scanHighlight(BlockPos p) {
         Level level = getWorld();
         if (level == null) return;
-        
-        AABB bb = level.getBlockState(p).getShape(level, p).bounds().move(p);
+
+        // 1.12 used getBoundingBox (never empty). The outline shape of fluids
+        // (nitor, flux goo, pure water) and some other blocks is empty, and
+        // VoxelShape.bounds() throws on it — fall back like 1.12 did.
+        BlockState state = level.getBlockState(p);
+        VoxelShape shape = state.getShape(level, p);
+        if (shape.isEmpty()) shape = state.getCollisionShape(level, p);
+        AABB bb = shape.isEmpty() ? new AABB(p) : shape.bounds().move(p);
         scanHighlight(bb);
     }
     

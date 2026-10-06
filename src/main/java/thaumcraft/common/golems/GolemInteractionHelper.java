@@ -11,8 +11,10 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import thaumcraft.api.golems.IGolemAPI;
@@ -133,9 +135,11 @@ public class GolemInteractionHelper {
             return false;
         }
         
-        // Check for entity collision
-        return level.getEntities(null, 
-                blockItem.getBlock().defaultBlockState().getShape(level, pos).bounds().move(pos)).isEmpty();
+        // Check for entity collision (empty outline shapes throw on bounds();
+        // fall back to the full block like 1.12's getBoundingBox did)
+        VoxelShape shape = blockItem.getBlock().defaultBlockState().getShape(level, pos);
+        AABB box = shape.isEmpty() ? new AABB(pos) : shape.bounds().move(pos);
+        return level.getEntities(null, box).isEmpty();
     }
     
     /**
