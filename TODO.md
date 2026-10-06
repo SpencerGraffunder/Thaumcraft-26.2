@@ -4,6 +4,41 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-06 — Thaumometer HUD 1.12 parity + research sync + audit K2 (commits b904dda, 2b6f668, b68dacb, eb0c875)
+
+User: "not showing the correct thing" on the thaumometer HUD. Root causes:
+
+1. **Stale jar** — the installed jar (10:10 build) predated the 11:02
+   client-side aura-sync fix, so the gauge was always empty.
+2. **Dead scan highlight** — `ItemThaumometer.highlightScannables()` was never
+   called. Now driven every 5 client ticks while held (1.12
+   `ItemThaumometer.onUpdate` client half).
+3. **1.12 fidelity pass** (line-by-line vs `reference/java_old-1.12`):
+   numeric read-outs gated on **sneaking** (1.12 `isSneaking()`, not shift/
+   creative); caster gauge frame full 16×42 (was half-size 8×21); focus-cost
+   text on the correct side of the dial; gauges hidden while a screen is open
+   (1.12 `isGuiEnabled`); 1.12 per-type hand stacking guards; knowledge icons
+   still draw over an open GUI (1.12 `renderHudsInGUI`).
+4. **Missing 1.12 HUD pieces ported:** sanity-checker warp gauge (temporary/
+   normal/permanent bands, jittering warning at 100+) and the knowledge-gain
+   book animation (icons pop in, drift into the book, flash on arrival).
+   Required wiring the dormant `PacketKnowledgeGain` — server sends one packet
+   per point gained; removed the "Knowledge gained!" chat line (1.12 never
+   had it).
+5. **Research → knowledge sync pushed immediately on change** — fixes
+   client-side prediction opening the crafting GUI before the Salis Mundus
+   conversion lands (client was holding pre-change knowledge when
+   `onItemUseFirst` ran).
+6. **Audit K2** — 6 invented crucible recipes dropped (1.12 has none), 3 bogus
+   research gates removed (8 recipes unblock); `tools/audit_k2_resources.py`
+   can now diff the installed jar vs source (`--jar`).
+7. **Cleanup** — the temporary `[TC-DIAG]` trace (added to diagnose the Salis
+   chain) is removed from all 7 files; the `~/.thaumcraft_hud_debug` dev
+   marker is gone. Definition of Done: build green, 86/86 tests, 0 TODOs, jar
+   installed + hash-verified.
+
+---
+
 ## 2026-10-02 — Nomicon icon sizes: badge + knowledge-grid follow-up (commit d17981c)
 
 The earlier know-icon / knowledge-popup fixes left three size bugs (the 1.12 code

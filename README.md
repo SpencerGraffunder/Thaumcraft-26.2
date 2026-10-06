@@ -116,6 +116,18 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   completion was dead, so flags/toasts never reached the client; added the
   missing category-sidebar stars).
   All 253 book recipe references resolve; see [`TODO.md`](./TODO.md).
+- **Thaumometer HUD + research sync (2026-10-06, 1.12 parity):** the in-hand
+  thaumometer HUD was rebuilt against the 1.12 `HudHandler` — aura gauge from
+  `hud.png` (full 16x42 caster frame), scan highlight driven every 5 client
+  ticks (was dead code), numeric read-outs gated on sneaking, gauges hidden
+  while a screen is open, plus the sanity-checker warp gauge and the
+  knowledge-gain book animation (server now sends `PacketKnowledgeGain` per
+  point; the 1.12-absent "Knowledge gained!" chat spam is gone). Research
+  knowledge is pushed to the client immediately on change (fixes client-side
+  prediction opening the crafting GUI before the Salis Mundus conversion
+  lands). Audit K2: 6 invented crucible recipes dropped and 3 bogus research
+  gates removed. The temporary `[TC-DIAG]` trace used to diagnose the Salis
+  chain was removed once the chain was fixed.
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a
   plain (integrated / Modrinth) client never sees — so opening the creative
