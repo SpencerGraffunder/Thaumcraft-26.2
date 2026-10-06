@@ -106,9 +106,6 @@ public class HudHandler {
         Thaumcraft.LOGGER.info("Registered Thaumcraft HUD overlay");
     }
 
-    /** Throttled [TC-DIAG] render counter (only the 1st/101st/... render logs). */
-    private static int hudRenderCount = 0;
-
     /**
      * Dev-only verification hook: with {@code ~/.thaumcraft_hud_debug} present the gauge is
      * drawn with a fake aura even when no thaumometer is held, so the draw path can be
@@ -179,12 +176,6 @@ public class HudHandler {
                     new AuraChunk(null, (short) 400, 250.0f, 30.0f));
         }
 
-        hudRenderCount++;
-        if (hudRenderCount % 100 == 1) {
-            Thaumcraft.LOGGER.info("[TC-DIAG] hud layer rendered#{} holdingThaumometer={} auraBase={} auraVis={} auraFlux={}",
-                    hudRenderCount, anyThaumometer, currentAura.getBase(),
-                    (int) currentAura.getVis(), (int) currentAura.getFlux());
-        }
     };
 
     /**

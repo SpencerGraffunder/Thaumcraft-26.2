@@ -72,12 +72,6 @@ public class Thaumcraft {
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    /**
-     * Temporary end-to-end trace of the research -> knowledge-sync -> dust-trigger chain.
-     * Flip to false (or delete the [TC-DIAG] blocks) once the Salis Mundus chain is diagnosed.
-     */
-    public static final boolean DIAG_LOGGING = true;
-    
     // Singleton instance
     private static Thaumcraft instance;
     

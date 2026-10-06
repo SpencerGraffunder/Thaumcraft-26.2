@@ -51,16 +51,6 @@ public class ItemMagicDust extends ItemTCBase {
 
         player.swingAndResetAttackStrength(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 
-        if (thaumcraft.Thaumcraft.DIAG_LOGGING) {
-            thaumcraft.Thaumcraft.LOGGER.info(
-                    "[TC-DIAG] salis useOnFirst side={} block={} player={} triggers={} crouching={}",
-                    level.isClientSide() ? "client" : "server",
-                    level.getBlockState(pos).getBlock().toString(),
-                    player.getName().getString(),
-                    IDustTrigger.triggers.size(),
-                    player.isCrouching());
-        }
-
         for (IDustTrigger trigger : IDustTrigger.triggers) {
             IDustTrigger.Placement place = trigger.getValidFace(level, player, pos, face);
             if (place != null) {
