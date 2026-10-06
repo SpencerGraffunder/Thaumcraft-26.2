@@ -9,6 +9,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import thaumcraft.Thaumcraft;
 import thaumcraft.client.ThaumometerHUD;
 import thaumcraft.client.fx.FXDispatcher;
+import thaumcraft.client.lib.events.HudHandler;
 import thaumcraft.client.lib.network.misc.PacketMiscEventClient;
 import thaumcraft.common.items.tools.ItemThaumometer;
 
@@ -27,6 +28,7 @@ public class ClientTickHandler {
         PacketMiscEventClient.tickMist();
         FXDispatcher.tickDelayed();
         tickThaumometerHighlight();
+        HudHandler.tickKnowledgeFade();
     }
 
     /**

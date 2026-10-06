@@ -16,6 +16,7 @@ import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchCategory;
 import thaumcraft.init.ModSounds;
 
+import thaumcraft.client.lib.events.HudHandler;
 import thaumcraft.common.lib.network.misc.PacketKnowledgeGain;
 
 /** Client-side handler for {@link PacketKnowledgeGain}. */
@@ -30,10 +31,9 @@ public class PacketKnowledgeGainClient {
             ? ResearchCategories.getResearchCategory(msg.category) 
             : null;
         
-        // HUD integration
-        // RenderEventHandler.hudHandler.knowledgeGainTrackers.add(
-        //     new HudHandler.KnowledgeGainTracker(type, cat, 40 + rand.nextInt(20), rand.nextLong())
-        // );
+        // 1.12 PacketKnowledgeGain.processMessage: enqueue the knowledge-gain icon animation
+        // (HudHandler.knowledgeGainTrackers), which the HUD layer renders into the book.
+        HudHandler.onKnowledgeGain(type, cat);
         
         // Play knowledge gain sound
         if (ModSounds.LEARN.get() != null) {

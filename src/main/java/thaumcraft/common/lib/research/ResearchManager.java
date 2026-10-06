@@ -23,6 +23,8 @@ import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.internal.CommonInternals;
 import thaumcraft.api.research.*;
 import thaumcraft.common.lib.events.PlayerEvents;
+import thaumcraft.common.lib.network.PacketHandler;
+import thaumcraft.common.lib.network.misc.PacketKnowledgeGain;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -135,15 +137,13 @@ public class ResearchManager {
         knowledge.addKnowledge(type, catKey, amount);
         int gained = knowledge.getKnowledge(type, catKey) - before;
         
-        // Send knowledge gain packet for visual feedback
-        if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
-            sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("§e§oKnowledge gained!"));
+        // 1.12 ResearchManager.addKnowledge: one knowledge-gain packet per point actually
+        // gained, so the client plays the learn sound and animates an icon into the book.
+        if (amount > 0 && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            for (int a = 0; a < gained; a++) {
+                PacketHandler.sendToPlayer(new PacketKnowledgeGain(type, catKey), serverPlayer);
+            }
         }
-        // if (amount > 0 && player instanceof ServerPlayer serverPlayer) {
-        //     for (int a = 0; a < gained; a++) {
-        //         PacketHandler.sendToPlayer(new PacketKnowledgeGain(...), serverPlayer);
-        //     }
-        // }
         
         syncToClient(player);
         return true;
