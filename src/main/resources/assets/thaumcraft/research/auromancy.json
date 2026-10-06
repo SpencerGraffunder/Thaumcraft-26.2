@@ -140,8 +140,8 @@
                     "text": "research.FOCUSBREAK.stage.1",
                     "required_knowledge":["THEORY;AUROMANCY;1"],
                     "required_research":["!perditio"],
-                    "required_item":["thaumcraft:enchanted_placeholder;1;{ench:[{id:33s,lvl:1s}]}",
-                                     "thaumcraft:enchanted_placeholder;1;{ench:[{id:35s,lvl:1s}]}"]
+                    "required_item":["minecraft:enchanted_book",
+                                     "minecraft:enchanted_book"]
                 },
                 {
                     "text": "research.FOCUSBREAK.stage.2"

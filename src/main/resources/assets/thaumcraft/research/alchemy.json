@@ -84,20 +84,20 @@
                 {
                     "text": "research.HEDGEALCHEMY.stage.1", 
                     "required_knowledge":["OBSERVATION;ALCHEMY;1"], 
-                    "required_craft":["thaumcraft:tallow","thaumcraft:leather"],
+                    "required_craft":["thaumcraft:tallow","minecraft:leather"],
                     "recipes": ["thaumcraft:tallow", "thaumcraft:leather"]
                 },
                 {
                     "text": "research.HEDGEALCHEMY.stage.2", 
                     "required_knowledge":["OBSERVATION;ALCHEMY;1"], 
-                    "required_craft":["minecraft:gunpowder","minecraft:slime_ball","minecraft:dye","minecraft:glowstone_dust"],
+                    "required_craft":["minecraft:gunpowder","minecraft:slime_ball","minecraft:red_dye","minecraft:glowstone_dust"],
                     "recipes": ["thaumcraft:tallow","thaumcraft:tallow_candles", "thaumcraft:leather",
                                 "thaumcraft:hedge_gunpowder","thaumcraft:hedge_slime","thaumcraft:hedge_dye","thaumcraft:hedge_glowstone"]
                 },
                 {
                     "text": "research.HEDGEALCHEMY.stage.3", 
                     "required_knowledge":["OBSERVATION;ALCHEMY;1"], 
-                    "required_craft":["minecraft:clay_ball","minecraft:string","minecraft:web","minecraft:lava_bucket"],
+                    "required_craft":["minecraft:clay_ball","minecraft:string","minecraft:cobweb","minecraft:lava_bucket"],
                     "recipes": ["thaumcraft:tallow","thaumcraft:tallow_candles", "thaumcraft:leather",
                                 "thaumcraft:hedge_gunpowder","thaumcraft:hedge_slime","thaumcraft:hedge_dye","thaumcraft:hedge_glowstone",
                                 "thaumcraft:hedge_clay","thaumcraft:hedge_string","thaumcraft:hedge_cobweb","thaumcraft:hedge_lava"]

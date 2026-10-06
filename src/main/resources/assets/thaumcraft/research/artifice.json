@@ -121,7 +121,7 @@
                     "text": "research.ARCANEEAR.stage.1",
                     "required_knowledgeauram":["OBSERVATION;ARTIFICE;1"],
                     "required_research":["!sensus"],
-                    "required_item":["minecraft:noteblock"]
+                    "required_item":["minecraft:note_block"]
                 },
                 {
                     "text": "research.ARCANEEAR.stage.2",  

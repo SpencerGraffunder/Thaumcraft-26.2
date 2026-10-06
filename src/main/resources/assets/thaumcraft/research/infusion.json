@@ -179,7 +179,7 @@
                 {
                     "text": "research.INFUSIONENCHANTMENT.stage.1",
                     "required_knowledge":["THEORY;INFUSION;2"],
-                    "required_item":["thaumcraft:enchanted_placeholder;1;{ench:[{id:16s,lvl:1s}]}"]
+                    "required_item":["minecraft:enchanted_book"]
                 },
                 {
                     "text": "research.INFUSIONENCHANTMENT.stage.2",  
@@ -198,7 +198,7 @@
                 {
                     "text": "research.RUNICSHIELDING.stage.1",
                     "required_knowledge":["THEORY;INFUSION;1"],
-                    "required_item":["thaumcraft:enchanted_placeholder;1;{ench:[{id:0s,lvl:1s}]}","thaumcraft:amber"]
+                    "required_item":["minecraft:enchanted_book","thaumcraft:amber"]
                 },
                 {
                     "text": "research.RUNICSHIELDING.stage.2",  
