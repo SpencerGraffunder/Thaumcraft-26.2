@@ -28,6 +28,14 @@ public class PacketSyncKnowledgeClient {
         IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
         if (knowledge != null && msg.data != null) {
             knowledge.deserializeNBT(msg.data);
+
+            if (thaumcraft.Thaumcraft.DIAG_LOGGING) {
+                thaumcraft.Thaumcraft.LOGGER.info(
+                        "[TC-DIAG] knowledge sync applied client research={} FIRSTSTEPS_stage={} payloadBytes={}",
+                        knowledge.getResearchList().size(),
+                        knowledge.getResearchStage("FIRSTSTEPS"),
+                        msg.data.size());
+            }
             
             // Show popup toasts for newly unlocked research
             for (String key : knowledge.getResearchList()) {

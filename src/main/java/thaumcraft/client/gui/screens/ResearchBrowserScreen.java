@@ -549,6 +549,13 @@ public class ResearchBrowserScreen extends Screen {
             // satisfied, and the entry kept blinking forever).
             String key = currentHighlight.getKey();
             boolean known = ThaumcraftCapabilities.isResearchKnown(player, key);
+            if (thaumcraft.Thaumcraft.DIAG_LOGGING) {
+                thaumcraft.Thaumcraft.LOGGER.info(
+                        "[TC-DIAG] nomicon click key={} known={} canUnlock={} clientStage={}",
+                        key, known, canUnlockResearch(currentHighlight),
+                        ThaumcraftCapabilities.getKnowledge(player)
+                                .map(k -> k.getResearchStage(key)).orElse(-99));
+            }
             if (!known && canUnlockResearch(currentHighlight)) {
                 updateResearch();
                 PacketHandler.sendToServer(new PacketSyncProgressToServer(key, true));

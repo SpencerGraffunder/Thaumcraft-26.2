@@ -52,7 +52,28 @@ public class DustTriggerSimple implements IDustTrigger {
         
         // Check research requirement
         if (research != null && !ThaumcraftCapabilities.knowsResearch(player, research)) {
+            if (thaumcraft.Thaumcraft.DIAG_LOGGING) {
+                thaumcraft.api.capabilities.IPlayerKnowledge k =
+                        ThaumcraftCapabilities.getKnowledge(player);
+                thaumcraft.Thaumcraft.LOGGER.info(
+                        "[TC-DIAG] dust-trigger BLOCKED side={} block={} player={} need={} stage={} knowledgeObj={}",
+                        level.isClientSide() ? "client" : "server",
+                        state.getBlock().toString(),
+                        player.getName().getString(),
+                        research,
+                        k == null ? "NULL" : k.getResearchStage(research.split("@")[0]),
+                        k == null ? "null" : (k.getResearchList().size() + " research known"));
+            }
             return null;
+        }
+        
+        if (thaumcraft.Thaumcraft.DIAG_LOGGING) {
+            thaumcraft.Thaumcraft.LOGGER.info(
+                    "[TC-DIAG] dust-trigger MATCH side={} block={} player={} need={}",
+                    level.isClientSide() ? "client" : "server",
+                    state.getBlock().toString(),
+                    player.getName().getString(),
+                    research);
         }
         
         return new Placement(0, 0, 0, null);

@@ -62,6 +62,13 @@ public class ResearchManager {
         if (player instanceof ServerPlayer serverPlayer) {
             IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
             if (knowledge != null) {
+                if (thaumcraft.Thaumcraft.DIAG_LOGGING) {
+                    thaumcraft.Thaumcraft.LOGGER.info(
+                            "[TC-DIAG] server pushing knowledge sync player={} research={} FIRSTSTEPS_stage={}",
+                            player.getName().getString(),
+                            knowledge.getResearchList().size(),
+                            knowledge.getResearchStage("FIRSTSTEPS"));
+                }
                 knowledge.sync(serverPlayer);
             }
         }
@@ -197,6 +204,14 @@ public class ResearchManager {
         
         // Already complete or missing prerequisites
         if (knowledge.isResearchComplete(researchKey) || !doesPlayerHaveRequisites(player, researchKey)) {
+            if (thaumcraft.Thaumcraft.DIAG_LOGGING) {
+                thaumcraft.Thaumcraft.LOGGER.info(
+                        "[TC-DIAG] progressResearch REFUSED key={} complete={} requisitesMet={} serverStage={}",
+                        researchKey,
+                        knowledge.isResearchComplete(researchKey),
+                        doesPlayerHaveRequisites(player, researchKey),
+                        knowledge.getResearchStage(researchKey));
+            }
             return false;
         }
         
@@ -249,6 +264,12 @@ public class ResearchManager {
                 }
                 
                 knowledge.setResearchStage(researchKey, Math.min(entry.getStages().length + 1, currentStage + 1));
+                if (thaumcraft.Thaumcraft.DIAG_LOGGING) {
+                    thaumcraft.Thaumcraft.LOGGER.info(
+                            "[TC-DIAG] progressResearch ADVANCED key={} stages={} newStage={}",
+                            researchKey, entry.getStages().length,
+                            knowledge.getResearchStage(researchKey));
+                }
                 showPopups = (currentStage >= entry.getStages().length);
                 
                 // Handle warp from research
