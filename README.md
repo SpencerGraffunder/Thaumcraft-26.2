@@ -139,6 +139,19 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   the window at the player like 1.12. The original `scanner.obj`/`mtl`/`png`
   remain in the jar as reference assets. `runClient` bakes it with 0 model/
   texture errors.
+- **1.12 recipe-parity fixes (2026-10-06, commits 6121e55…eaffaee):** arcane
+  stone used the non-existent `#c:stone` tag (real tag: `c:stones`) and a
+  plain-crystal ingredient that could never match — in 1.12 aspect crystals
+  were NBT on ONE item, so the plain ingredient matched every aspect; the
+  port split them into separate `vis_crystal_*` items. Arcane stone now
+  accepts any crystal; vis amulet/cloud ring use their specific 1.12
+  crystals; the missing non-primal crystals (life/plant/man/desire) were
+  added 1:1 (items + retinted textures + crucible recipes, incl. the
+  flux crystal which had no recipe at all); focus_1's catalyst was the
+  crystal *block* instead of the crystal *item*; verdant charms rebuilt to
+  the 1.12 ingredient sets (base: rareearth nugget + LIFE/PLANT crystals +
+  milk; life: LIFE+MAN; sustain: DESIRE+AIR). Headless `runClient` loads
+  all recipes with 0 errors.
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a
   plain (integrated / Modrinth) client never sees — so opening the creative
