@@ -23,7 +23,7 @@
                 {
                     "text": "research.JARBRAIN.stage.1",  
                     "required_knowledge":["OBSERVATION;GOLEMANCY;1","THEORY;GOLEMANCY;1"],  
-                    "required_research":["f_BRAIN"], "required_item":["thaumcraft:brain"]
+                    "required_research":["f_BRAIN"], "required_item":["thaumcraft:zombie_brain"]
                 },
                 {
                     "text": "research.JARBRAIN.stage.2",  

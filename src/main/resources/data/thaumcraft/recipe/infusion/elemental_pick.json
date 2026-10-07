@@ -10,6 +10,7 @@
     "thaumcraft:greatwood_planks"
   ],
   "aspects": {
+    "ignis": 30,
     "metallum": 30,
     "sensus": 30
   },

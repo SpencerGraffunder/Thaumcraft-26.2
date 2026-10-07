@@ -164,9 +164,29 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   golem-seal crucible recipes now carry 1.12's compound gates
   (`SEALX&&MINDBIOTHAUMIC`) — the recipe-gate check gained 1.12's
   `&&`/`||` semantics (previously a compound gate could never match).
-  Deliberate deviation: nitor's gate stays `BASEALCHEMY` — 1.12's
-  `UNLOCKALCHEMY@3` gate is circular with its own stage-3 requirement
-  ("craft nitor"), verified in the BETA26 jar.
+  (Round 2 also kept nitor's gate at `BASEALCHEMY` believing 1.12's
+  `UNLOCKALCHEMY@3` gate was circular — **overturned in round 3** after
+  bytecode verification, see below.)
+- **1.12 recipe-parity round 3 (2026-10-07):** nitor system made 1:1 — the
+  one crucible recipe now produces the **yellow** nitor with the real 1.12
+  gate `UNLOCKALCHEMY@3` (the earlier "circular gate" concern was wrong:
+  `progressResearch` checks only PARENTS server-side and the client Complete
+  button gates on the *current* stage's requisites, so stage 3's "craft
+  nitor" requirement gates nothing); 16 shapeless dye recipes added
+  (any nitor + dye → colored nitor — 15 colors were previously
+  unobtainable); levitator accepts any nitor (`#thaumcraft:nitor`, 1.12
+  oredict). Phantom ids fixed: voidseer charm's `brain_normal` (unregistered,
+  recipe could never match) and the golemancy JARBRAIN display item →
+  `zombie_brain` (1.12's `ItemsTC.brain`); dead `brain.json` model removed.
+  Recipe data aligned to 1.12: gate stage suffixes (brass/leather/tallow/
+  thaumium ingots), inlay aspect ordo→aqua, sanitizing soap aspects
+  (MIND 75 / ALIENIS 50 / ORDER 75 / LIFE 50), void metal (void_seed
+  catalyst, METALLUM 10 + VITIUM 5, BASEELDRITCH gate), the five elemental
+  tools' missing aspects, and primal crusher + voidseer charm rewritten to
+  the 1.12 ingredient/aspect/instability sets (voidseer input is
+  `golden_carrot` — documented stand-in for the baubles item the port does
+  not model). Full static audit: all 344 recipes + research refs resolve —
+  ALL CLEAN.
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a
   plain (integrated / Modrinth) client never sees — so opening the creative

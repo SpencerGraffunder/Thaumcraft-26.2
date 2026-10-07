@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "BASEALCHEMY",
+  "research": "UNLOCKALCHEMY@3",
   "catalyst": "minecraft:glowstone_dust",
   "aspects": {
     "lux": 10,
@@ -8,7 +8,6 @@
     "potentia": 10
   },
   "result": {
-    "id": "thaumcraft:nitor",
-    "count": 1
+    "id": "thaumcraft:nitor_yellow"
   }
 }

@@ -14,7 +14,7 @@
     "W": "#minecraft:planks",
     "I": "thaumcraft:plate_thaumium",
     "B": "thaumcraft:plate_iron",
-    "N": "thaumcraft:nitor_yellow",
+    "N": "#thaumcraft:nitor",
     "G": "thaumcraft:mechanism_simple"
   },
   "result": {

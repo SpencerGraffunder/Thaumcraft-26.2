@@ -10,6 +10,7 @@
     "thaumcraft:greatwood_planks"
   ],
   "aspects": {
+    "terra": 60,
     "fabrico": 30
   },
   "result": {

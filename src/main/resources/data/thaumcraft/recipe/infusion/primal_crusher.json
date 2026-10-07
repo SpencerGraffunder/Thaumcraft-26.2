@@ -1,21 +1,22 @@
 {
   "type": "thaumcraft:infusion",
   "research": "PRIMALCRUSHER",
-  "instability": 5,
-  "input": "thaumcraft:elemental_pick",
+  "instability": 6,
+  "input": "thaumcraft:primordial_pearl",
   "ingredients": [
-    "thaumcraft:primordial_pearl",
-    "thaumcraft:balanced_shard",
-    "thaumcraft:balanced_shard",
-    "thaumcraft:void_metal_ingot",
-    "thaumcraft:void_metal_ingot",
-    "minecraft:nether_star"
+    "thaumcraft:void_pick",
+    "thaumcraft:void_shovel",
+    "thaumcraft:elemental_pick",
+    "thaumcraft:elemental_shovel"
   ],
   "aspects": {
-    "instrumentum": 100,
-    "praecantatio": 50,
+    "terra": 75,
+    "instrumentum": 75,
+    "perditio": 50,
+    "vacuos": 50,
+    "aversio": 50,
     "alienis": 50,
-    "terra": 50
+    "desiderium": 50
   },
   "result": {
     "id": "thaumcraft:primal_crusher"

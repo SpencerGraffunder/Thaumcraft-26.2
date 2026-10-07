@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "HEDGEALCHEMY",
+  "research": "HEDGEALCHEMY@1",
   "catalyst": "minecraft:rotten_flesh",
   "aspects": {
     "aer": 3,

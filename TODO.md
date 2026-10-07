@@ -4,19 +4,79 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-07 — 1.12 parity round 3: nitor system, phantom brain ids, remaining recipe data
+
+Continuation of the "find the difference and fix it" sweep. Every change below
+was checked line-by-line against the 1.12 reference source
+(`reference/java_old-1.12/common/config/ConfigRecipes.java`) and re-validated
+with a full static audit (all 344 recipes + all research item/craft refs
+resolve against registered ids, tags, and the registered aspect set —
+**ALL CLEAN**).
+
+1. **Nitor system made 1:1 with 1.12** — 1.12 has ONE crucible recipe that
+   produces the **yellow** nitor block (L134: glowstone_dust catalyst,
+   potentia 10 + ignis 10 + lux 10, gate UNLOCKALCHEMY@3) plus **16 shapeless
+   dye recipes** (any nitor + dye → colored nitor). The port had two crucible
+   recipes (plain nitor @ BASEALCHEMY, yellow @ UNLOCKALCHEMY) and no dye
+   recipes, so 15 of the 16 nitor colors were unobtainable.
+   - `crucible/nitor.json` → now produces `nitor_yellow` with gate
+     `UNLOCKALCHEMY@3` (byte-matches 1.12 L134); deleted the now-duplicate
+     `crucible/nitor_yellow.json`.
+   - Added 16 `crafting/nitor_dye_<color>.json` shapeless recipes
+     (`<color>_dye` + `#thaumcraft:nitor` → `nitor_<color>`).
+   - `basics.json` UNLOCKALCHEMY stage 3 display id → `thaumcraft:nitorcolor`
+     (1.12's own dangling reference — kept dangling, same as 1.12).
+2. **Levitator** — nitor ingredient `nitor_yellow` → `#thaumcraft:nitor`
+   (1.12's oredict "nitor" accepts any color).
+3. **Phantom brain ids** — `voidseer_charm.json` used `thaumcraft:brain_normal`
+   (unregistered item, recipe could never match) ×2 → `zombie_brain` (the
+   port's 1.12 `ItemsTC.brain` / ItemZombieBrain equivalent); `golemancy.json`
+   JARBRAIN stage `required_item` `thaumcraft:brain` → `zombie_brain` (was a
+   missing icon); removed the dead `models/item/brain.json` model.
+4. **Recipe-data fixes to 1.12 values** (gates/aspects/catalysts):
+   - Stage suffixes: brass_ingot `METALLURGY`→`METALLURGY@1`;
+     leather/leather_from_flesh/tallow `HEDGEALCHEMY`→`HEDGEALCHEMY@1`;
+     thaumium_ingot `METALLURGY`→`METALLURGY@2`.
+   - `inlay`: aspect `ordo`→`aqua` (1.12 WATER 1).
+   - `sanitizing_soap`: aspects → cognitio 75 / alienis 50 / ordo 75 /
+     victus 50 (1.12 SANESOAP).
+   - `void_metal_ingot`: catalyst `thaumium_ingot`→`void_seed`, aspects
+     metallum 10 + vitium 5, gate `VOIDROBEARMOR`→`BASEELDRITCH`
+     (1.12 VOIDMETAL).
+   - Elemental tools: restored missing 1.12 aspects — axe +aqua 60,
+     hoe +ordo 30, pick +ignis 30, shovel +terra 60, sword +aer 30.
+   - `primal_crusher`: rewritten to 1.12 — input `primordial_pearl`,
+     ingredients [void_pick, void_shovel, elemental_pick, elemental_shovel],
+     instability 6, aspects terra 75 / instrumentum 75 / perditio 50 /
+     vacuos 50 / aversio 50 / alienis 50 / desiderium 50.
+   - `voidseer_charm`: rewritten to 1.12 — instability 8, input
+     `minecraft:golden_carrot` (documented stand-in for the baubles item the
+     port doesn't model), ingredients [zombie_brain, void_seed, zombie_brain,
+     primordial_pearl], aspects cognitio 150 / vacuos 150 / praecantatio 100.
+
+Verified: `gradlew build` green (86 tests), 0 TODOs in src, static audit
+ALL CLEAN (344 recipes: 101 arcane, 105 crafting, 61 crucible, 61 infusion,
+8 IE, 8 smelting), headless runClient at the same clean baseline as prior
+rounds (only the pre-existing @OnlyIn loader warnings, 0 missing models),
+jar sha 395b99cb installed in the Modrinth NeoForge 26.3 profile.
+
 ## 2026-10-07 — 1.12 parity round 2: five more differences fixed
 
 User: "find 5 more things that are different from 1.12 version and fix them
 to be like 1.12." All five verified against the 1.12.2 BETA26 jar (user's
 own 1.12 pack) + reference source.
 
-1. **Nitor crucible aspect cost** — potentia 5 → **10** (1.12 ConfigRecipes
-   L134: `ENERGY 10 + FIRE 10 + LIGHT 10`). Gate deliberately stays
-   `BASEALCHEMY`: 1.12's `UNLOCKALCHEMY@3` gate is CIRCULAR — verified in
-   the BETA26 jar that the gate is enforced (knowsResearchStrict) AND that
-   the Alchemy-unlock stage 3 requires "craft nitor;1;4" (yellow nitor),
-   which is exactly what the gated recipe produces. Copying 1.12's gate
-   would make nitor permanently uncraftable.
+1. **Nitor crucible recipe** — aspect cost potentia 5 → **10** (1.12
+   ConfigRecipes L134: `ENERGY 10 + FIRE 10 + LIGHT 10`), and the gate
+   `BASEALCHEMY` → **`UNLOCKALCHEMY@3`** (1.12 L134). Initially I believed
+   the @3 gate was circular (stage 3 requires "craft nitor"), but that was
+   WRONG — verified in the BETA26 bytecode: `progressResearch` checks only
+   PARENTS server-side and advances exactly one stage per nomicon
+   interaction, and the client's Complete button gates on the CURRENT
+   stage's requisites (`stages[stage-1]`), never the next one. Stage 3 is
+   the final stage, so its "craft nitor" requisite gates nothing: the
+   1.12 flow is read page → stage 1 → Complete → stage 2 → craft crucible
+   → Complete → stage 3 (complete) → nitor craftable. No circularity.
 2. **Goggles of Revealing** — port had TWO recipes: the correct 1.12
    arcane-workbench one (`arcane_workbench/goggles.json`, LGL/L L/TGT,
    50 vis, UNLOCKARTIFICE — byte-matches 1.12 L198) AND an invented

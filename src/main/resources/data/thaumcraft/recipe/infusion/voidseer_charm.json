@@ -1,20 +1,18 @@
 {
   "type": "thaumcraft:infusion",
   "research": "VOIDSEERPEARL",
-  "instability": 4,
-  "input": "minecraft:ender_eye",
+  "instability": 8,
+  "input": "minecraft:golden_carrot",
   "ingredients": [
+    "thaumcraft:zombie_brain",
     "thaumcraft:void_seed",
-    "thaumcraft:void_seed",
-    "thaumcraft:shard_entropy",
-    "thaumcraft:shard_entropy",
-    "minecraft:chorus_fruit",
-    "minecraft:chorus_fruit"
+    "thaumcraft:zombie_brain",
+    "thaumcraft:primordial_pearl"
   ],
   "aspects": {
-    "alienis": 50,
-    "vacuos": 30,
-    "sensus": 30
+    "cognitio": 150,
+    "vacuos": 150,
+    "praecantatio": 100
   },
   "result": {
     "id": "thaumcraft:voidseer_charm"
