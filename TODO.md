@@ -41,7 +41,8 @@ own 1.12 pack) + reference source.
 Verified: `gradlew build` green, 0 TODOs, audit K2 = 0 bad gates / 0
 unresolved display ids, headless runClient at the same clean baseline as
 prior rounds (only the pre-existing @OnlyIn loader warnings), jar
-sha dd8df8a8 installed in the Modrinth NeoForge 26.3 profile.
+sha 94ec6abf installed in the Modrinth NeoForge 26.3 profile.
+(commit 529df5c)
 
 Known remaining gaps (NOT 1:1-representable, documented not fixed):
 1.12 NBT-variant items the port models as single items (e.g. the
