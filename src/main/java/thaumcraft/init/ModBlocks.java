@@ -145,6 +145,14 @@ public class ModBlocks {
                     .sound(SoundType.STONE)
                     .requiresCorrectToolForDrops());
 
+    public static final DeferredHolder<Block, Block> ELDRITCH_SLAB = registerBlock("eldritch_slab",
+            p -> new SlabBlock(p),
+            () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.STONE)
+                    .strength(2.0f, 10.0f)
+                    .sound(SoundType.STONE)
+                    .requiresCorrectToolForDrops());
+
     // ==================== Pillars ====================
 
     public static final DeferredHolder<Block, Block> ARCANE_PILLAR = registerBlock("arcane_pillar",

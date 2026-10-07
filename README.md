@@ -185,8 +185,11 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   tools' missing aspects, and primal crusher + voidseer charm rewritten to
   the 1.12 ingredient/aspect/instability sets (voidseer input is
   `golden_carrot` — documented stand-in for the baubles item the port does
-  not model). Full static audit: all 344 recipes + research refs resolve —
-  ALL CLEAN.
+  not model). The missing 1.12 `slab_eldritch` block was restored (block +
+  1.12 blockstate textures + 3-tile→6-slab recipe + creative tab) and the
+  Eldritch Pedestal recipe now uses slab + tile like 1.12; the other slabs'
+  face textures were corrected to the 1.12 blockstates. Full static audit:
+  all 345 recipes + research refs resolve — ALL CLEAN.
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a
   plain (integrated / Modrinth) client never sees — so opening the creative

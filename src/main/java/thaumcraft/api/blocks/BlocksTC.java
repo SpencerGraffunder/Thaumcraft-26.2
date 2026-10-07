@@ -32,6 +32,7 @@ public class BlocksTC {
     public static final DeferredHolder<Block, Block> slabArcaneStone = ModBlocks.ARCANE_STONE_SLAB;
     public static final DeferredHolder<Block, Block> slabArcaneBrick = ModBlocks.ARCANE_STONE_BRICK_SLAB;
     public static final DeferredHolder<Block, Block> slabAncient = ModBlocks.ANCIENT_STONE_SLAB;
+    public static final DeferredHolder<Block, Block> slabEldritch = ModBlocks.ELDRITCH_SLAB;
 
     // Pillars
     public static final DeferredHolder<Block, Block> pillarArcane = ModBlocks.ARCANE_PILLAR;

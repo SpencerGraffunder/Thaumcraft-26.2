@@ -53,12 +53,25 @@ resolve against registered ids, tags, and the registered aspect set —
      `minecraft:golden_carrot` (documented stand-in for the baubles item the
      port doesn't model), ingredients [zombie_brain, void_seed, zombie_brain,
      primordial_pearl], aspects cognitio 150 / vacuos 150 / praecantatio 100.
+5. **Eldritch slab block restored (1.12 `slab_eldritch`)** — 1.12 has an
+   eldritch slab (3× eldritch tile → 6 slabs, L459) and the Eldritch
+   Pedestal recipe uses it (S=slab, B=tile, L232). The port was missing the
+   block entirely (the pedestal recipe used the tile for both, and the lang
+   key `slab_eldritch` existed with no block behind it). Added:
+   registration (`ELDRITCH_SLAB` + `BlocksTC.slabEldritch` + creative tab),
+   blockstate/models (1.12 BETA26 blockstate textures: bottom=stone_1,
+   top=stone_2, side=stone_3; double → the existing `eldritch_stone` model,
+   byte-identical to 1.12's double-slab model), item model + client item
+   def, crafting recipe (3 tile → 6 slab). Also fixed the other slabs' face
+   textures to the 1.12 blockstates (ancient: 1/2/3, arcane stone: 1/2/3 —
+   the port had used one texture on all faces).
 
 Verified: `gradlew build` green (86 tests), 0 TODOs in src, static audit
-ALL CLEAN (344 recipes: 101 arcane, 105 crafting, 61 crucible, 61 infusion,
-8 IE, 8 smelting), headless runClient at the same clean baseline as prior
-rounds (only the pre-existing @OnlyIn loader warnings, 0 missing models),
-jar sha 395b99cb installed in the Modrinth NeoForge 26.3 profile.
+ALL CLEAN (345 recipes: 101 arcane, 106 crafting, 61 crucible, 61 infusion,
+8 IE, 8 smelting; all block/item models + blockstate refs resolve), two
+headless runClient soaks at the same clean baseline as prior rounds (only
+the pre-existing @OnlyIn loader warnings, 0 missing models), jar sha
+b208e028 installed in the Modrinth NeoForge 26.3 profile.
 
 ## 2026-10-07 — 1.12 parity round 2: five more differences fixed
 

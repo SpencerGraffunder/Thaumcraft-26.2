@@ -50,6 +50,7 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.ARCANE_STONE_SLAB.get());
                         output.accept(ModBlocks.ARCANE_STONE_BRICK_SLAB.get());
                         output.accept(ModBlocks.ANCIENT_STONE_SLAB.get());
+                        output.accept(ModBlocks.ELDRITCH_SLAB.get());
 
                         // === Pillars ===
                         output.accept(ModBlocks.ARCANE_PILLAR.get());
