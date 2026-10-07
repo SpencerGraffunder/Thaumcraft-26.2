@@ -113,7 +113,13 @@ def main():
             gate = json.load(handle).get("research")
         if gate:
             gates[gate].append(os.path.relpath(path, RECIPE_GLOB))
-    bad_gates = {k: v for k, v in gates.items() if k.split("@")[0] not in keys}
+    # Gates may be compound: "A&&B" (all required) or "A||B" (any required),
+    # with optional "@stage" suffixes - same semantics as the in-game check
+    # (1.12 ThaumcraftCapabilities.knowsResearch).
+    def gate_parts(gate):
+        return [part.split("@")[0] for part in re.split("&&|\\|\\|", gate)]
+    bad_gates = {k: v for k, v in gates.items()
+                 if any(p not in keys for p in gate_parts(k))}
     print(f"\n[1] recipe research gates: {len(gates)} distinct,"
           f" {len(bad_gates)} naming an unknown research key")
     for key in sorted(bad_gates):

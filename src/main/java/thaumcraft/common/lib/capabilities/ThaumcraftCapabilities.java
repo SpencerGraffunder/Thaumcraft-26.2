@@ -51,11 +51,32 @@ public class ThaumcraftCapabilities {
     /**
      * Check if research is known by a player
      * Convenience method
+     *
+     * <p>1:1 with 1.12 {@code ThaumcraftCapabilities.knowsResearch}: supports compound
+     * gates joined by {@code &&} (every part must be known) and {@code ||} (any part
+     * may be known), as used by the 1.12 advanced-seal crucible recipes
+     * (e.g. {@code "SEALCOLLECT&&MINDBIOTHAUMIC"}).
      */
     public static boolean isResearchKnown(Player player, String research) {
         return getKnowledge(player)
-                .map(k -> k.isResearchKnown(research))
+                .map(k -> isKnown(k, research))
                 .orElse(false);
+    }
+
+    private static boolean isKnown(IPlayerKnowledge k, String research) {
+        if (research == null) return false;
+        if (research.contains("&&")) {
+            for (String s : research.split("&&")) {
+                if (!isKnown(k, s)) return false;
+            }
+            return true;
+        } else if (research.contains("||")) {
+            for (String s : research.split("\\|\\|")) {
+                if (isKnown(k, s)) return true;
+            }
+            return false;
+        }
+        return k.isResearchKnown(research);
     }
     
     /**

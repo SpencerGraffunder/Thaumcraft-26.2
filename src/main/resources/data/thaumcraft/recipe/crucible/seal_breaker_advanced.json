@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "SEALBREAK",
+  "research": "SEALBREAK&&MINDBIOTHAUMIC",
   "catalyst": "thaumcraft:seal_breaker",
   "aspects": {
     "sensus": 10,

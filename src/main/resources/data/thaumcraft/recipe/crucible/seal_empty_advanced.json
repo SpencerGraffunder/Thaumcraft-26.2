@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "SEALEMPTY",
+  "research": "SEALEMPTY&&MINDBIOTHAUMIC",
   "catalyst": "thaumcraft:seal_empty",
   "aspects": {
     "sensus": 10,

@@ -237,7 +237,7 @@
                 },
                 {
                     "text": "research.FORTRESSMASK.stage.2",  
-                    "recipes": ["thaumcraft:goggles_revealing","thaumcraft:mask_grinning_devil","thaumcraft:mask_angry_ghost","thaumcraft:mask_sipping_fiend"],
+                    "recipes": ["thaumcraft:mask_grinning_devil","thaumcraft:mask_angry_ghost","thaumcraft:mask_sipping_fiend"],
                     "warp": 2
                 }
             ]

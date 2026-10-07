@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "SEALCOLLECT",
+  "research": "SEALCOLLECT&&MINDBIOTHAUMIC",
   "catalyst": "thaumcraft:seal_pickup",
   "aspects": {
     "sensus": 10,

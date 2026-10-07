@@ -152,6 +152,21 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   the 1.12 ingredient sets (base: rareearth nugget + LIFE/PLANT crystals +
   milk; life: LIFE+MAN; sustain: DESIRE+AIR). Headless `runClient` loads
   all recipes with 0 errors.
+- **1.12 recipe-parity round 2 (2026-10-07):** five more 1:1 fixes against the
+  1.12.2 BETA26 source/jar — (1) nitor crucible aspect cost potentia 5→10
+  (1.12: ENERGY 10 + FIRE 10 + LIGHT 10); (2) goggles: the port had an
+  *invented* infusion recipe (thaumometer/diamond/salis) alongside the
+  correct 1.12 arcane-workbench recipe (LGL/L L/TGT, 50 vis, UNLOCKARTIFICE)
+  — the duplicate was deleted; (3) enchanted fabric: same story — invented
+  crucible recipe deleted, the 1.12 arcane-workbench recipe (" S/SCS/ S",
+  5 vis, UNLOCKINFUSION) kept; (4) bath salts aspect sensus→cognitio
+  (1.12: MIND 40 + AIR 40 + ORDER 40 + LIFE 40); (5) the five advanced
+  golem-seal crucible recipes now carry 1.12's compound gates
+  (`SEALX&&MINDBIOTHAUMIC`) — the recipe-gate check gained 1.12's
+  `&&`/`||` semantics (previously a compound gate could never match).
+  Deliberate deviation: nitor's gate stays `BASEALCHEMY` — 1.12's
+  `UNLOCKALCHEMY@3` gate is circular with its own stage-3 requirement
+  ("craft nitor"), verified in the BETA26 jar.
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a
   plain (integrated / Modrinth) client never sees — so opening the creative

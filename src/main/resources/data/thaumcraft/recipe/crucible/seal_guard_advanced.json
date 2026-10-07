@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "SEALGUARD",
+  "research": "SEALGUARD&&MINDBIOTHAUMIC",
   "catalyst": "thaumcraft:seal_guard",
   "aspects": {
     "sensus": 20,

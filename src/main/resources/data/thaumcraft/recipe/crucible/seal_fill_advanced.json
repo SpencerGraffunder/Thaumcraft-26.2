@@ -1,6 +1,6 @@
 {
   "type": "thaumcraft:crucible",
-  "research": "SEALSTORE",
+  "research": "SEALSTORE&&MINDBIOTHAUMIC",
   "catalyst": "thaumcraft:seal_fill",
   "aspects": {
     "sensus": 10,

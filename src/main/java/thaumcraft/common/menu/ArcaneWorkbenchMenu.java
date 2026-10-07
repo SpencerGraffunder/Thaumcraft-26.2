@@ -196,10 +196,9 @@ public class ArcaneWorkbenchMenu extends AbstractContainerMenu {
                 }
             }
             
-            // Check research requirement
-            boolean hasResearch = ThaumcraftCapabilities.getKnowledge(player)
-                    .map(k -> k.isResearchKnown(arcaneRecipe.getResearch()))
-                    .orElse(false);
+            // Check research requirement (same && / ||-capable gate semantics
+            // as the server-side recipe matching)
+            boolean hasResearch = ThaumcraftCapabilities.isResearchKnown(player, arcaneRecipe.getResearch());
 
             // [WORKBENCH] diagnostic log (2026-10-02) — throttled, shows exactly what gates the craft
             if (System.currentTimeMillis() - lastWorkbenchLog > 2000L) {

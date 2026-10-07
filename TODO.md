@@ -4,6 +4,49 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-07 — 1.12 parity round 2: five more differences fixed
+
+User: "find 5 more things that are different from 1.12 version and fix them
+to be like 1.12." All five verified against the 1.12.2 BETA26 jar (user's
+own 1.12 pack) + reference source.
+
+1. **Nitor crucible aspect cost** — potentia 5 → **10** (1.12 ConfigRecipes
+   L134: `ENERGY 10 + FIRE 10 + LIGHT 10`). Gate deliberately stays
+   `BASEALCHEMY`: 1.12's `UNLOCKALCHEMY@3` gate is CIRCULAR — verified in
+   the BETA26 jar that the gate is enforced (knowsResearchStrict) AND that
+   the Alchemy-unlock stage 3 requires "craft nitor;1;4" (yellow nitor),
+   which is exactly what the gated recipe produces. Copying 1.12's gate
+   would make nitor permanently uncraftable.
+2. **Goggles of Revealing** — port had TWO recipes: the correct 1.12
+   arcane-workbench one (`arcane_workbench/goggles.json`, LGL/L L/TGT,
+   50 vis, UNLOCKARTIFICE — byte-matches 1.12 L198) AND an invented
+   infusion one (thaumometer/diamond/salis_mundus, FORTRESSMASK). Deleted
+   the invented one; also removed its display id from the FORTRESSMASK@2
+   research page. (1.12's second, infusion-based `HelmGoggles` recipe
+   produces an NBT-byte variant of goggles — not representable in the
+   port's item model; see NBT-variant gaps below.)
+3. **Enchanted fabric** — same pattern: invented crucible recipe deleted,
+   1.12 arcane-workbench recipe kept (`" S"/"SCS"/" S"`, 5 vis,
+   UNLOCKINFUSION — byte-matches 1.12 L194).
+4. **Bath salts** — aspect `sensus 40` → **`cognitio 40`** (1.12 L165:
+   MIND 40 + AIR 40 + ORDER 40 + LIFE 40).
+5. **Advanced golem seals** — 1.12 gates all five on `X&&MINDBIOTHAUMIC`
+   (L168-179); the port's recipe-gate check (common.lib
+   `ThaumcraftCapabilities.isResearchKnown`) had no `&&`/`||` support, so
+   the gate could never match. Added 1.12's `knowsResearch` compound
+   semantics (&&=all, ||=any) to that method and set the five gates
+   (`SEALCOLLECT/SEALSTORE/SEALEMPTY/SEALGUARD/SEALBREAK&&MINDBIOTHAUMIC`).
+   `tools/audit_k2_resources.py` now splits compound gates when resolving.
+
+Verified: `gradlew build` green, 0 TODOs, audit K2 = 0 bad gates / 0
+unresolved display ids, headless runClient at the same clean baseline as
+prior rounds (only the pre-existing @OnlyIn loader warnings), jar
+sha dd8df8a8 installed in the Modrinth NeoForge 26.3 profile.
+
+Known remaining gaps (NOT 1:1-representable, documented not fixed):
+1.12 NBT-variant items the port models as single items (e.g. the
+HelmGoggles infusion result, dyed-banner-style metas).
+
 ## 2026-10-06 — Missing non-primal vis crystals added 1:1 (commit after 0b117bf)
 
 User: "if we're missing something in this port, fix it. Add them like they
