@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import thaumcraft.api.crafting.IArcaneWorkbench;
 import thaumcraft.common.tiles.crafting.TileArcaneWorkbench;
 
@@ -57,6 +58,25 @@ public class ArcaneWorkbenchCraftingContainer implements CraftingContainer, IArc
     @Override
     public int size() {
         return getContainerSize();
+    }
+
+    /**
+     * Vanilla-recipe view of this matrix: ONLY the 3x3 crafting grid (slots 0-8).
+     * The 6 crystal slots (9-14) are Thaumcraft-specific and must not count as
+     * grid ingredients. The default implementation feeds all 15 items to
+     * CraftingInput, whose ingredientCount() would then include the crystals —
+     * and shaped matching rejects any recipe while the crystal slots are
+     * populated (e.g. the 8-stone + 1-crystal arcane stone ring: 15 != 9).
+     * Positioned left/top coordinates from this input map 1:1 onto container
+     * slots 0-8, so ingredient consumption stays correct.
+     */
+    @Override
+    public CraftingInput.Positioned asPositionedCraftInput() {
+        NonNullList<ItemStack> grid = NonNullList.withSize(9, ItemStack.EMPTY);
+        for (int i = 0; i < 9; i++) {
+            grid.set(i, getItem(i));
+        }
+        return CraftingInput.ofPositioned(getWidth(), getHeight(), grid);
     }
     
     @Override
