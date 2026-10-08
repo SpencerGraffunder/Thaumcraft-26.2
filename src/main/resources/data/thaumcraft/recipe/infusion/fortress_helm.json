@@ -6,8 +6,8 @@
   "ingredients": [
     "thaumcraft:plate_thaumium",
     "thaumcraft:plate_thaumium",
-    "#c:ingots/gold",
-    "#c:ingots/gold",
+    "#c:nuggets/gold",
+    "#c:nuggets/gold",
     "#c:gems/emerald"
   ],
   "aspects": {

@@ -4,12 +4,12 @@
   "instability": 4,
   "center": "thaumcraft:lamp_arcane",
   "ingredients": [
-    "minecraft:gold_ingot",
+    "minecraft:gold_nugget",
     "minecraft:wheat",
-    "thaumcraft:crystal_fire",
-    "minecraft:gold_ingot",
+    "thaumcraft:vis_crystal_fire",
+    "minecraft:gold_nugget",
     "minecraft:carrot",
-    "thaumcraft:crystal_fire"
+    "thaumcraft:vis_crystal_fire"
   ],
   "aspects": {
     "bestia": 20,

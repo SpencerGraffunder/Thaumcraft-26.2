@@ -4,8 +4,8 @@
   "instability": 1,
   "input": "thaumcraft:thaumium_hoe",
   "ingredients": [
-    "thaumcraft:crystal_order",
-    "thaumcraft:crystal_entropy",
+    "thaumcraft:vis_crystal_order",
+    "thaumcraft:vis_crystal_entropy",
     "thaumcraft:nugget_rareearth",
     "thaumcraft:greatwood_planks"
   ],

@@ -4,8 +4,8 @@
   "instability": 1,
   "input": "thaumcraft:thaumium_pick",
   "ingredients": [
-    "thaumcraft:crystal_fire",
-    "thaumcraft:crystal_fire",
+    "thaumcraft:vis_crystal_fire",
+    "thaumcraft:vis_crystal_fire",
     "thaumcraft:nugget_rareearth",
     "thaumcraft:greatwood_planks"
   ],

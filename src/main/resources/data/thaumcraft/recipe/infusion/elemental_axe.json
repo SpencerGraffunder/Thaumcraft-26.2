@@ -4,8 +4,8 @@
   "instability": 1,
   "input": "thaumcraft:thaumium_axe",
   "ingredients": [
-    "thaumcraft:crystal_water",
-    "thaumcraft:crystal_water",
+    "thaumcraft:vis_crystal_water",
+    "thaumcraft:vis_crystal_water",
     "thaumcraft:nugget_rareearth",
     "thaumcraft:greatwood_planks"
   ],

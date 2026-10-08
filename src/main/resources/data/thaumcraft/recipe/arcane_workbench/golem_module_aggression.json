@@ -11,7 +11,7 @@
     "PGP"
   ],
   "key": {
-    "R": "minecraft:glass_pane",
+    "R": "#c:glass_panes",
     "T": "minecraft:blaze_powder",
     "P": "thaumcraft:plate_brass",
     "G": "thaumcraft:mechanism_simple"

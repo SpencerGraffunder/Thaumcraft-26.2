@@ -368,6 +368,8 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DETECTOR_RAIL), new AspectList().add(Aspect.MOTION, 10).add(Aspect.METAL, 5).add(Aspect.SENSES, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.ACTIVATOR_RAIL), new AspectList().add(Aspect.MOTION, 10).add(Aspect.METAL, 5).add(Aspect.MECHANISM, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MINECART), new AspectList().add(Aspect.MOTION, 15).add(Aspect.METAL, 10));
+        // Thaumcraft arcane activator rail (1.12: MECHANISM 5)
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ACTIVATOR_RAIL.get()), new AspectList().add(Aspect.MECHANISM, 5));
         
         // Crafting stations
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.CRAFTING_TABLE), new AspectList().add(Aspect.CRAFT, 20).add(Aspect.PLANT, 5));

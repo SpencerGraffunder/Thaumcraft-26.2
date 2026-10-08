@@ -1,8 +1,8 @@
 {
   "type": "thaumcraft:arcane_workbench_shapeless",
-  "research": "BASEARTIFICE",
+  "research": "BASEARTIFICE@1",
   "vis": 50,
-  "crystals": {
+  "aspects": {
     "aqua": 1,
     "ordo": 1
   },

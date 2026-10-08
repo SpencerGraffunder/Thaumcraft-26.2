@@ -6,9 +6,9 @@
     "aer": 1
   },
   "ingredients": [
-    "minecraft:clay",
+    "minecraft:clay_ball",
     "thaumcraft:tallow",
-    "minecraft:poppy",
+    "minecraft:red_dye",
     "thaumcraft:nitor"
   ],
   "result": {

@@ -4,8 +4,8 @@
   "instability": 1,
   "input": "thaumcraft:thaumium_sword",
   "ingredients": [
-    "thaumcraft:crystal_air",
-    "thaumcraft:crystal_air",
+    "thaumcraft:vis_crystal_air",
+    "thaumcraft:vis_crystal_air",
     "thaumcraft:nugget_rareearth",
     "thaumcraft:greatwood_planks"
   ],

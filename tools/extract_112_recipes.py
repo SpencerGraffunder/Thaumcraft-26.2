@@ -120,13 +120,22 @@ for a, b, station in SECTIONS:
             if mm:
                 inner2, _ = balanced(body, mm.end() - 1)
                 a2 = split_args(inner2)
-                entry["research"] = a2[0].strip('"') if a2 else ""
-                entry["result"] = strip_itemstack(a2[1]) if len(a2) > 1 else ""
-                entry["ingredient"] = strip_itemstack(a2[2]) if len(a2) > 2 else ""
-                entry["aspects"] = re.findall(r"Aspect\.(\w+),\s*(\d+)", a2[3]) if len(a2) > 3 else []
-                tail = " ".join(a2[4:])
-                for extra in re.findall(r"\.(setMatchingItems|setInstability|setVis|setResearch)\(([^)]*)\)", tail):
-                    entry.setdefault("extra", []).append(list(extra))
+                if "InfusionRecipe" in mm.group(0):
+                    # (research, result, instability, aspects, center, *surrounding)
+                    entry["research"] = a2[0].strip('"') if a2 else ""
+                    entry["result"] = strip_itemstack(a2[1]) if len(a2) > 1 else ""
+                    entry["instability"] = a2[2].strip() if len(a2) > 2 else ""
+                    entry["aspects"] = re.findall(r"Aspect\.(\w+),\s*(\d+)", a2[3]) if len(a2) > 3 else []
+                    entry["center"] = strip_itemstack(a2[4]) if len(a2) > 4 else ""
+                    entry["ingredients"] = [strip_itemstack(x) for x in a2[5:]]
+                else:
+                    entry["research"] = a2[0].strip('"') if a2 else ""
+                    entry["result"] = strip_itemstack(a2[1]) if len(a2) > 1 else ""
+                    entry["ingredient"] = strip_itemstack(a2[2]) if len(a2) > 2 else ""
+                    entry["aspects"] = re.findall(r"Aspect\.(\w+),\s*(\d+)", a2[3]) if len(a2) > 3 else []
+                    tail = " ".join(a2[4:])
+                    for extra in re.findall(r"\.(setMatchingItems|setInstability|setVis|setResearch)\(([^)]*)\)", tail):
+                        entry.setdefault("extra", []).append(list(extra))
         else:
             entry["raw"] = " ".join(args)[:600]
         out.setdefault(rid, []).append(entry)

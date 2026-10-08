@@ -9,7 +9,7 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
 > historical — the build now targets 26.3 end-to-end (gradle.properties,
 > mods.toml template, decompiled-source pipeline, CI).
 
-## Status: 26.3 migration — build green, installed, pending in-game verification
+## Status: 26.3 migration — complete (build green, 1.12 recipe parity audited, verified in-game, installed)
 
 - `./gradlew build` — **SUCCESS** → `build/libs/thaumcraft-6.2.0+26.3.jar`
   (86/86 tests green, 0 TODOs left in source).
@@ -190,6 +190,28 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   Eldritch Pedestal recipe now uses slab + tile like 1.12; the other slabs'
   face textures were corrected to the 1.12 blockstates. Full static audit:
   all 345 recipes + research refs resolve — ALL CLEAN.
+- **1.12 recipe-parity round 4 (2026-10-07/08, final audit pass):** new
+  static audit tool `tools/recipe_parity.py` (checks every port recipe 1:1
+  against the 1.12.2 BETA26 reference; `reference/recipes_112.json` expanded
+  with improved extraction, +393 lines) — final result: **152 matched pairs,
+  2 documented deviations**. Fixes this round: gold **nuggets** (1.12) in
+  filter, focus pouch and the three fortress armor pieces (port had ingots);
+  golem aggression module uses the alchemical **block** (1.12
+  `BlocksTC.metalAlchemical`); inlay = shapeless redstone + gold ingot (1.12
+  RedstoneInlay); mirrored glass recipe restored (quicksilver + glass panes,
+  BASEARTIFICE@1); seal blank uses the clay **ball**; tube uses full
+  quicksilver; advanced crossbow uses the base `mind` brain; crucible metal
+  purification for tin/silver/lead restored (1.12 recipes, with new
+  `#thaumcraft:ores/{tin,silver,lead}` catalyst tags — 26.3 has no common
+  tags for these ores); invented `sanitizing_soap`/`void_ingot` duplicates
+  deleted (1.12 names `sanity_soap`/`void_metal_ingot` kept); elemental tools,
+  fertility/growth lamps, masks and traveller boots aligned to 1.12
+  ingredients/aspects; iron/gold ore **and** cluster smelting bonus is the
+  **ingot** (1.12 `field_191525_da`/`field_151074_bl` — the port had nuggets);
+  cluster smelts yield 2 nuggets; the arcane activator rail gets its 1.12
+  aspect tag (MECHANISM 5). Build green (86/86 tests), headless `runClient`
+  clean, jar `8f06e7522ea6676c9e9892d93813fef14fefe33bd8f69ce248ab4fc5f28d19d4`
+  installed in the Modrinth `NeoForge 26.3` profile.
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a
   plain (integrated / Modrinth) client never sees — so opening the creative
@@ -199,7 +221,7 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   inventory opens clean, all 15 golem items render with real art, log shows
   `Registered golem parts` … `Thaumcraft runtime registration complete`.
 
-Detailed task tracking lives in [`todo.md`](./todo.md)[`todo.md`](./todo.md] — 
+Detailed task tracking lives in [`todo.md`](./todo.md) — 
 checklists and remaining runtime-testing items are maintained there, not here.
 This README covers build/run/deploy status only.
 

@@ -4,7 +4,7 @@
   "instability": 8,
   "input": "thaumcraft:fortress_helm",
   "ingredients": [
-    "minecraft:ink_sac",
+    "minecraft:white_dye",
     "thaumcraft:plate_iron",
     "minecraft:leather",
     "thaumcraft:shimmerleaf",

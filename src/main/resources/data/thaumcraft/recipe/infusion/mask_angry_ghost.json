@@ -4,7 +4,7 @@
   "instability": 8,
   "input": "thaumcraft:fortress_helm",
   "ingredients": [
-    "minecraft:bone_meal",
+    "minecraft:black_dye",
     "thaumcraft:plate_iron",
     "minecraft:leather",
     "minecraft:poisonous_potato",

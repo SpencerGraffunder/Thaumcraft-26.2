@@ -9,7 +9,7 @@
   ],
   "key": {
     "L": "#c:leathers",
-    "G": "#c:ingots/gold",
+    "G": "#c:nuggets/gold",
     "B": "minecraft:gold_ingot"
   },
   "result": {

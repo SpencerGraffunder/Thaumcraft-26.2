@@ -292,12 +292,12 @@ public class CommonInternals {
      * nuggets stand in for 1.12's iron/gold nuggets.
      */
     public static void initSmeltingBonuses() {
-        // Ores -> nuggets (1.12 oreIron/oreGold/oreCinnabar/oreQuartz)
+        // Ores -> 1.12 oreIron/oreGold -> INgot bonus (field_191525_da / field_151074_bl), oreCinnabar/oreQuartz -> nugget
         for (ItemStack ironOre : new ItemStack[] { new ItemStack(Items.IRON_ORE), new ItemStack(Items.RAW_IRON), new ItemStack(Items.DEEPSLATE_IRON_ORE) }) {
-            ThaumcraftApi.addSmeltingBonus(ironOre, new ItemStack(Items.IRON_NUGGET));
+            ThaumcraftApi.addSmeltingBonus(ironOre, new ItemStack(Items.IRON_INGOT));
         }
         for (ItemStack goldOre : new ItemStack[] { new ItemStack(Items.GOLD_ORE), new ItemStack(Items.RAW_GOLD), new ItemStack(Items.DEEPSLATE_GOLD_ORE) }) {
-            ThaumcraftApi.addSmeltingBonus(goldOre, new ItemStack(Items.GOLD_NUGGET));
+            ThaumcraftApi.addSmeltingBonus(goldOre, new ItemStack(Items.GOLD_INGOT));
         }
         for (ItemStack cinnabarOre : new ItemStack[] { new ItemStack(ModBlocks.CINNABAR_ORE.get()), new ItemStack(ModBlocks.DEEPSLATE_CINNABAR_ORE.get()) }) {
             ThaumcraftApi.addSmeltingBonus(cinnabarOre, new ItemStack(ModItems.QUICKSILVER_NUGGET.get()));
@@ -306,9 +306,9 @@ public class CommonInternals {
             ThaumcraftApi.addSmeltingBonus(quartzOre, new ItemStack(ModItems.QUARTZ_NUGGET.get()));
         }
 
-        // Clusters -> nuggets (1.12 cluster metas 0/1/6)
-        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_IRON.get()), new ItemStack(Items.IRON_NUGGET));
-        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_GOLD.get()), new ItemStack(Items.GOLD_NUGGET));
+        // Clusters -> 1.12: cluster meta 0/1 (iron/gold) bonus is the INGOT, meta 6 (cinnabar) is a quicksilver nugget
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_IRON.get()), new ItemStack(Items.IRON_INGOT));
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_GOLD.get()), new ItemStack(Items.GOLD_INGOT));
         ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_CINNABAR.get()), new ItemStack(ModItems.QUICKSILVER_NUGGET.get()));
 
         // Meat -> meat chunks (1.12 ItemsTC.chunks metas 0-5)

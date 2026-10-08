@@ -2703,7 +2703,7 @@
    "line": 1798,
    "research": "SEALHARVEST",
    "result": "GolemHelper.getSealStack(\"thaumcraft:harvest\")",
-   "ingredient": "0",
+   "instability": "0",
    "aspects": [
     [
      "PLANT",
@@ -2717,6 +2717,15 @@
      "MAN",
      "10"
     ]
+   ],
+   "center": "ItemsTC.seals",
+   "ingredients": [
+    "Items.field_151014_N",
+    "Items.field_151080_bb",
+    "Items.field_151081_bc",
+    "Items.field_185163_cU",
+    "Items.field_151120_aE",
+    "Blocks.field_150434_aF"
    ]
   }
  ],
@@ -2727,7 +2736,7 @@
    "line": 1814,
    "research": "SEALBUTCHER",
    "result": "GolemHelper.getSealStack(\"thaumcraft:butcher\")",
-   "ingredient": "0",
+   "instability": "0",
    "aspects": [
     [
      "BEAST",
@@ -2741,6 +2750,15 @@
      "MAN",
      "10"
     ]
+   ],
+   "center": "GolemHelper.getSealStack(\"thaumcraft:guard\")",
+   "ingredients": [
+    "\"leather\"",
+    "Blocks.field_150325_L, 1, 32767",
+    "Items.field_179555_bs",
+    "Items.field_151147_al",
+    "Items.field_179561_bm",
+    "Items.field_151082_bd"
    ]
   }
  ],
@@ -2751,7 +2769,7 @@
    "line": 1830,
    "research": "SEALBREAK",
    "result": "GolemHelper.getSealStack(\"thaumcraft:breaker\")",
-   "ingredient": "1",
+   "instability": "1",
    "aspects": [
     [
      "TOOL",
@@ -2765,6 +2783,12 @@
      "MAN",
      "10"
     ]
+   ],
+   "center": "ItemsTC.seals",
+   "ingredients": [
+    "Ingredient.func_193367_a(Items.field_151006_E)",
+    "Ingredient.func_193367_a(Items.field_151005_D)",
+    "Ingredient.func_193367_a(Items.field_151011_C)"
    ]
   }
  ],
@@ -2775,7 +2799,7 @@
    "line": 1843,
    "research": "CRYSTALFARMER",
    "result": "BlocksTC.crystalAir",
-   "ingredient": "0",
+   "instability": "0",
    "aspects": [
     [
      "AIR",
@@ -2789,6 +2813,11 @@
      "TRAP",
      "5"
     ]
+   ],
+   "center": "ThaumcraftApiHelper.makeCrystal(Aspect.AIR)",
+   "ingredients": [
+    "Items.field_151014_N",
+    "ItemsTC.salisMundus"
    ]
   }
  ],
@@ -2799,7 +2828,7 @@
    "line": 1855,
    "research": "CRYSTALFARMER",
    "result": "BlocksTC.crystalFire",
-   "ingredient": "0",
+   "instability": "0",
    "aspects": [
     [
      "FIRE",
@@ -2813,6 +2842,11 @@
      "TRAP",
      "5"
     ]
+   ],
+   "center": "ThaumcraftApiHelper.makeCrystal(Aspect.FIRE)",
+   "ingredients": [
+    "Items.field_151014_N",
+    "ItemsTC.salisMundus"
    ]
   }
  ],
@@ -2823,7 +2857,7 @@
    "line": 1867,
    "research": "CRYSTALFARMER",
    "result": "BlocksTC.crystalWater",
-   "ingredient": "0",
+   "instability": "0",
    "aspects": [
     [
      "WATER",
@@ -2837,6 +2871,11 @@
      "TRAP",
      "5"
     ]
+   ],
+   "center": "ThaumcraftApiHelper.makeCrystal(Aspect.WATER)",
+   "ingredients": [
+    "Items.field_151014_N",
+    "ItemsTC.salisMundus"
    ]
   }
  ],
@@ -2847,7 +2886,7 @@
    "line": 1879,
    "research": "CRYSTALFARMER",
    "result": "BlocksTC.crystalEarth",
-   "ingredient": "0",
+   "instability": "0",
    "aspects": [
     [
      "EARTH",
@@ -2861,6 +2900,11 @@
      "TRAP",
      "5"
     ]
+   ],
+   "center": "ThaumcraftApiHelper.makeCrystal(Aspect.EARTH)",
+   "ingredients": [
+    "Items.field_151014_N",
+    "ItemsTC.salisMundus"
    ]
   }
  ],
@@ -2871,7 +2915,7 @@
    "line": 1891,
    "research": "CRYSTALFARMER",
    "result": "BlocksTC.crystalOrder",
-   "ingredient": "0",
+   "instability": "0",
    "aspects": [
     [
      "ORDER",
@@ -2885,6 +2929,11 @@
      "TRAP",
      "5"
     ]
+   ],
+   "center": "ThaumcraftApiHelper.makeCrystal(Aspect.ORDER)",
+   "ingredients": [
+    "Items.field_151014_N",
+    "ItemsTC.salisMundus"
    ]
   }
  ],
@@ -2895,7 +2944,7 @@
    "line": 1903,
    "research": "CRYSTALFARMER",
    "result": "BlocksTC.crystalEntropy",
-   "ingredient": "0",
+   "instability": "0",
    "aspects": [
     [
      "ENTROPY",
@@ -2909,6 +2958,11 @@
      "TRAP",
      "5"
     ]
+   ],
+   "center": "ThaumcraftApiHelper.makeCrystal(Aspect.ENTROPY)",
+   "ingredients": [
+    "Items.field_151014_N",
+    "ItemsTC.salisMundus"
    ]
   }
  ],
@@ -2919,7 +2973,7 @@
    "line": 1915,
    "research": "CRYSTALFARMER",
    "result": "BlocksTC.crystalTaint",
-   "ingredient": "4",
+   "instability": "4",
    "aspects": [
     [
      "FLUX",
@@ -2933,6 +2987,11 @@
      "TRAP",
      "5"
     ]
+   ],
+   "center": "ThaumcraftApiHelper.makeCrystal(Aspect.FLUX)",
+   "ingredients": [
+    "Items.field_151014_N",
+    "ItemsTC.salisMundus"
    ]
   }
  ],
@@ -2943,7 +3002,7 @@
    "line": 1927,
    "research": "FOCUSADVANCED@1",
    "result": "ItemsTC.focus2",
-   "ingredient": "3",
+   "instability": "3",
    "aspects": [
     [
      "MAGIC",
@@ -2953,6 +3012,13 @@
      "ORDER",
      "50"
     ]
+   ],
+   "center": "ItemsTC.focus1",
+   "ingredients": [
+    "ItemsTC.quicksilver",
+    "\"gemDiamond\"",
+    "ItemsTC.quicksilver",
+    "Items.field_151079_bi"
    ]
   }
  ],
@@ -2963,7 +3029,7 @@
    "line": 1941,
    "research": "FOCUSGREATER@1",
    "result": "ItemsTC.focus3",
-   "ingredient": "5",
+   "instability": "5",
    "aspects": [
     [
      "MAGIC",
@@ -2977,6 +3043,13 @@
      "VOID",
      "100"
     ]
+   ],
+   "center": "ItemsTC.focus2",
+   "ingredients": [
+    "ItemsTC.quicksilver",
+    "Ingredient.func_193367_a(ItemsTC.primordialPearl)",
+    "ItemsTC.quicksilver",
+    "Items.field_151156_bN"
    ]
   }
  ],
@@ -2987,7 +3060,7 @@
    "line": 1955,
    "research": "JARBRAIN",
    "result": "BlocksTC.jarBrain",
-   "ingredient": "4",
+   "instability": "4",
    "aspects": [
     [
      "MIND",
@@ -3001,6 +3074,13 @@
      "UNDEAD",
      "25"
     ]
+   ],
+   "center": "BlocksTC.jarNormal",
+   "ingredients": [
+    "ItemsTC.brain",
+    "Items.field_151070_bp",
+    "Items.field_151131_as",
+    "Items.field_151070_bp"
    ]
   }
  ],
@@ -3011,7 +3091,7 @@
    "line": 1969,
    "research": "VISAMULET",
    "result": "ItemsTC.amuletVis, 1, 1",
-   "ingredient": "6",
+   "instability": "6",
    "aspects": [
     [
      "AURA",
@@ -3025,6 +3105,15 @@
      "VOID",
      "50"
     ]
+   ],
+   "center": "ItemsTC.baubles, 1, 0",
+   "ingredients": [
+    "ItemsTC.visResonator",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.AIR)",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.FIRE)",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.WATER)",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.EARTH)",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.ORDER)"
    ]
   }
  ],
@@ -3050,7 +3139,7 @@
    "line": 1997,
    "research": "MIRROR",
    "result": "BlocksTC.mirror",
-   "ingredient": "1",
+   "instability": "1",
    "aspects": [
     [
      "MOTION",
@@ -3064,6 +3153,13 @@
      "EXCHANGE",
      "25"
     ]
+   ],
+   "center": "ItemsTC.mirroredGlass",
+   "ingredients": [
+    "\"ingotGold\"",
+    "\"ingotGold\"",
+    "\"ingotGold\"",
+    "Items.field_151079_bi"
    ]
   }
  ],
@@ -3074,7 +3170,7 @@
    "line": 2011,
    "research": "MIRRORHAND",
    "result": "ItemsTC.handMirror",
-   "ingredient": "5",
+   "instability": "5",
    "aspects": [
     [
      "TOOL",
@@ -3084,6 +3180,12 @@
      "MOTION",
      "50"
     ]
+   ],
+   "center": "BlocksTC.mirror",
+   "ingredients": [
+    "\"stickWood\"",
+    "Items.field_151111_aL",
+    "Items.field_151148_bJ"
    ]
   }
  ],
@@ -3094,7 +3196,7 @@
    "line": 2024,
    "research": "MIRRORESSENTIA",
    "result": "BlocksTC.mirrorEssentia",
-   "ingredient": "2",
+   "instability": "2",
    "aspects": [
     [
      "MOTION",
@@ -3108,6 +3210,13 @@
      "EXCHANGE",
      "25"
     ]
+   ],
+   "center": "ItemsTC.mirroredGlass",
+   "ingredients": [
+    "\"ingotIron\"",
+    "\"ingotIron\"",
+    "\"ingotIron\"",
+    "Items.field_151079_bi"
    ]
   }
  ],
@@ -3118,7 +3227,7 @@
    "line": 2041,
    "research": "ELEMENTALTOOLS",
    "result": "isEA",
-   "ingredient": "1",
+   "instability": "1",
    "aspects": [
     [
      "WATER",
@@ -3128,6 +3237,13 @@
      "PLANT",
      "30"
     ]
+   ],
+   "center": "ItemsTC.thaumiumAxe, 1, 32767",
+   "ingredients": [
+    "ConfigItems.WATER_CRYSTAL",
+    "ConfigItems.WATER_CRYSTAL",
+    "ItemsTC.nuggets, 1, 10",
+    "BlocksTC.plankGreatwood"
    ]
   }
  ],
@@ -3138,7 +3254,7 @@
    "line": 2058,
    "research": "ELEMENTALTOOLS",
    "result": "isEP",
-   "ingredient": "1",
+   "instability": "1",
    "aspects": [
     [
      "FIRE",
@@ -3152,6 +3268,13 @@
      "SENSES",
      "30"
     ]
+   ],
+   "center": "ItemsTC.thaumiumPick, 1, 32767",
+   "ingredients": [
+    "ConfigItems.FIRE_CRYSTAL",
+    "ConfigItems.FIRE_CRYSTAL",
+    "ItemsTC.nuggets, 1, 10",
+    "BlocksTC.plankGreatwood"
    ]
   }
  ],
@@ -3162,7 +3285,7 @@
    "line": 2074,
    "research": "ELEMENTALTOOLS",
    "result": "isESW",
-   "ingredient": "1",
+   "instability": "1",
    "aspects": [
     [
      "AIR",
@@ -3176,6 +3299,13 @@
      "AVERSION",
      "30"
     ]
+   ],
+   "center": "ItemsTC.thaumiumSword, 1, 32767",
+   "ingredients": [
+    "ConfigItems.AIR_CRYSTAL",
+    "ConfigItems.AIR_CRYSTAL",
+    "ItemsTC.nuggets, 1, 10",
+    "BlocksTC.plankGreatwood"
    ]
   }
  ],
@@ -3186,7 +3316,7 @@
    "line": 2090,
    "research": "ELEMENTALTOOLS",
    "result": "isES",
-   "ingredient": "1",
+   "instability": "1",
    "aspects": [
     [
      "EARTH",
@@ -3196,6 +3326,13 @@
      "CRAFT",
      "30"
     ]
+   ],
+   "center": "ItemsTC.thaumiumShovel, 1, 32767",
+   "ingredients": [
+    "ConfigItems.EARTH_CRYSTAL",
+    "ConfigItems.EARTH_CRYSTAL",
+    "ItemsTC.nuggets, 1, 10",
+    "BlocksTC.plankGreatwood"
    ]
   }
  ],
@@ -3206,7 +3343,7 @@
    "line": 2104,
    "research": "ELEMENTALTOOLS",
    "result": "ItemsTC.elementalHoe",
-   "ingredient": "1",
+   "instability": "1",
    "aspects": [
     [
      "ORDER",
@@ -3220,6 +3357,13 @@
      "ENTROPY",
      "30"
     ]
+   ],
+   "center": "ItemsTC.thaumiumHoe, 1, 32767",
+   "ingredients": [
+    "ConfigItems.ORDER_CRYSTAL",
+    "ConfigItems.ENTROPY_CRYSTAL",
+    "ItemsTC.nuggets, 1, 10",
+    "BlocksTC.plankGreatwood"
    ]
   }
  ],
@@ -3350,7 +3494,7 @@
    "line": 2198,
    "research": "BOOTSTRAVELLER",
    "result": "ItemsTC.travellerBoots",
-   "ingredient": "1",
+   "instability": "1",
    "aspects": [
     [
      "FLIGHT",
@@ -3360,6 +3504,15 @@
      "MOTION",
      "100"
     ]
+   ],
+   "center": "Items.field_151021_T, 1, 32767",
+   "ingredients": [
+    "ConfigItems.AIR_CRYSTAL",
+    "ConfigItems.AIR_CRYSTAL",
+    "ItemsTC.fabric",
+    "ItemsTC.fabric",
+    "Items.field_151008_G",
+    "Items.field_151115_aP, 1, 32767"
    ]
   }
  ],
@@ -3370,7 +3523,7 @@
    "line": 2214,
    "research": "MINDBIOTHAUMIC",
    "result": "ItemsTC.mind, 1, 1",
-   "ingredient": "4",
+   "instability": "4",
    "aspects": [
     [
      "MIND",
@@ -3380,6 +3533,11 @@
      "MECHANISM",
      "25"
     ]
+   ],
+   "center": "ItemsTC.mind, 1, 0",
+   "ingredients": [
+    "ItemsTC.brain",
+    "ItemsTC.mechanismComplex"
    ]
   }
  ],
@@ -3390,7 +3548,7 @@
    "line": 2226,
    "research": "ARCANEBORE",
    "result": "ItemsTC.turretPlacer, 1, 2",
-   "ingredient": "4",
+   "instability": "4",
    "aspects": [
     [
      "ENERGY",
@@ -3412,6 +3570,17 @@
      "MOTION",
      "25"
     ]
+   ],
+   "center": "ItemsTC.turretPlacer",
+   "ingredients": [
+    "BlocksTC.plankGreatwood",
+    "BlocksTC.plankGreatwood",
+    "ItemsTC.mechanismComplex",
+    "\"plateBrass\"",
+    "Ingredient.func_193367_a(Items.field_151046_w)",
+    "Ingredient.func_193367_a(Items.field_151047_v)",
+    "ItemsTC.morphicResonator",
+    "ItemsTC.nuggets, 1, 10"
    ]
   }
  ],
@@ -3422,7 +3591,7 @@
    "line": 2244,
    "research": "LAMPGROWTH",
    "result": "BlocksTC.lampGrowth",
-   "ingredient": "4",
+   "instability": "4",
    "aspects": [
     [
      "PLANT",
@@ -3440,6 +3609,15 @@
      "TOOL",
      "15"
     ]
+   ],
+   "center": "BlocksTC.lampArcane",
+   "ingredients": [
+    "Items.field_151043_k",
+    "Items.field_151100_aR, 1, 15",
+    "ConfigItems.EARTH_CRYSTAL",
+    "Items.field_151043_k",
+    "Items.field_151100_aR, 1, 15",
+    "ConfigItems.EARTH_CRYSTAL"
    ]
   }
  ],
@@ -3450,7 +3628,7 @@
    "line": 2260,
    "research": "LAMPFERTILITY",
    "result": "BlocksTC.lampFertility",
-   "ingredient": "4",
+   "instability": "4",
    "aspects": [
     [
      "BEAST",
@@ -3468,6 +3646,15 @@
      "DESIRE",
      "15"
     ]
+   ],
+   "center": "BlocksTC.lampArcane",
+   "ingredients": [
+    "Items.field_151043_k",
+    "Items.field_151015_O",
+    "ConfigItems.FIRE_CRYSTAL",
+    "Items.field_151043_k",
+    "Items.field_151172_bF",
+    "ConfigItems.FIRE_CRYSTAL"
    ]
   }
  ],
@@ -3478,7 +3665,7 @@
    "line": 2276,
    "research": "ARMORFORTRESS",
    "result": "ItemsTC.fortressHelm",
-   "ingredient": "3",
+   "instability": "3",
    "aspects": [
     [
      "METAL",
@@ -3492,6 +3679,14 @@
      "ENERGY",
      "25"
     ]
+   ],
+   "center": "ItemsTC.thaumiumHelm, 1, 32767",
+   "ingredients": [
+    "\"plateThaumium\"",
+    "\"plateThaumium\"",
+    "Items.field_151043_k",
+    "Items.field_151043_k",
+    "Items.field_151166_bC"
    ]
   }
  ],
@@ -3502,7 +3697,7 @@
    "line": 2291,
    "research": "ARMORFORTRESS",
    "result": "ItemsTC.fortressChest",
-   "ingredient": "3",
+   "instability": "3",
    "aspects": [
     [
      "METAL",
@@ -3516,6 +3711,15 @@
      "ENERGY",
      "25"
     ]
+   ],
+   "center": "ItemsTC.thaumiumChest, 1, 32767",
+   "ingredients": [
+    "\"plateThaumium\"",
+    "\"plateThaumium\"",
+    "\"plateThaumium\"",
+    "\"plateThaumium\"",
+    "Items.field_151043_k",
+    "\"leather\""
    ]
   }
  ],
@@ -3526,7 +3730,7 @@
    "line": 2307,
    "research": "ARMORFORTRESS",
    "result": "ItemsTC.fortressLegs",
-   "ingredient": "3",
+   "instability": "3",
    "aspects": [
     [
      "METAL",
@@ -3540,6 +3744,14 @@
      "ENERGY",
      "25"
     ]
+   ],
+   "center": "ItemsTC.thaumiumLegs, 1, 32767",
+   "ingredients": [
+    "\"plateThaumium\"",
+    "\"plateThaumium\"",
+    "\"plateThaumium\"",
+    "Items.field_151043_k",
+    "\"leather\""
    ]
   }
  ],
@@ -3550,7 +3762,7 @@
    "line": 2322,
    "research": "VOIDROBEARMOR",
    "result": "ItemsTC.voidRobeHelm",
-   "ingredient": "6",
+   "instability": "6",
    "aspects": [
     [
      "METAL",
@@ -3576,6 +3788,15 @@
      "VOID",
      "25"
     ]
+   ],
+   "center": "ItemsTC.voidHelm",
+   "ingredients": [
+    "ItemsTC.goggles, 1, 32767",
+    "ItemsTC.fabric",
+    "ItemsTC.fabric",
+    "ItemsTC.salisMundus",
+    "ItemsTC.fabric",
+    "ItemsTC.fabric"
    ]
   }
  ],
@@ -3586,7 +3807,7 @@
    "line": 2344,
    "research": "VOIDROBEARMOR",
    "result": "ItemsTC.voidRobeChest",
-   "ingredient": "6",
+   "instability": "6",
    "aspects": [
     [
      "METAL",
@@ -3608,6 +3829,15 @@
      "VOID",
      "35"
     ]
+   ],
+   "center": "ItemsTC.voidChest",
+   "ingredients": [
+    "ItemsTC.clothChest",
+    "\"plateVoid\"",
+    "\"plateVoid\"",
+    "ItemsTC.salisMundus",
+    "ItemsTC.fabric",
+    "\"leather\""
    ]
   }
  ],
@@ -3618,7 +3848,7 @@
    "line": 2360,
    "research": "VOIDROBEARMOR",
    "result": "ItemsTC.voidRobeLegs",
-   "ingredient": "6",
+   "instability": "6",
    "aspects": [
     [
      "METAL",
@@ -3640,6 +3870,15 @@
      "VOID",
      "30"
     ]
+   ],
+   "center": "ItemsTC.voidLegs",
+   "ingredients": [
+    "ItemsTC.clothLegs",
+    "\"plateVoid\"",
+    "\"plateVoid\"",
+    "ItemsTC.salisMundus",
+    "ItemsTC.fabric",
+    "\"leather\""
    ]
   }
  ],
@@ -3650,7 +3889,7 @@
    "line": 2376,
    "research": "FORTRESSMASK",
    "result": "new Object[]{\"goggles\", new NBTTagByte((byte)1)}",
-   "ingredient": "5",
+   "instability": "5",
    "aspects": [
     [
      "SENSES",
@@ -3664,6 +3903,11 @@
      "PROTECT",
      "20"
     ]
+   ],
+   "center": "ItemsTC.fortressHelm, 1, 32767",
+   "ingredients": [
+    "Items.field_151123_aH",
+    "ItemsTC.goggles, 1, 32767"
    ]
   }
  ],
@@ -3674,7 +3918,7 @@
    "line": 2388,
    "research": "FORTRESSMASK",
    "result": "new Object[]{\"mask\", new NBTTagInt(0)}",
-   "ingredient": "8",
+   "instability": "8",
    "aspects": [
     [
      "MIND",
@@ -3688,6 +3932,15 @@
      "PROTECT",
      "20"
     ]
+   ],
+   "center": "ItemsTC.fortressHelm, 1, 32767",
+   "ingredients": [
+    "Items.field_151100_aR, 1, 0",
+    "\"plateIron\"",
+    "\"leather\"",
+    "BlocksTC.shimmerleaf",
+    "ItemsTC.brain",
+    "\"plateIron\""
    ]
   }
  ],
@@ -3698,7 +3951,7 @@
    "line": 2404,
    "research": "FORTRESSMASK",
    "result": "new Object[]{\"mask\", new NBTTagInt(1)}",
-   "ingredient": "8",
+   "instability": "8",
    "aspects": [
     [
      "ENTROPY",
@@ -3712,6 +3965,15 @@
      "PROTECT",
      "20"
     ]
+   ],
+   "center": "ItemsTC.fortressHelm, 1, 32767",
+   "ingredients": [
+    "Items.field_151100_aR, 1, 15",
+    "\"plateIron\"",
+    "\"leather\"",
+    "Items.field_151170_bI",
+    "Items.field_151144_bL, 1, 1",
+    "\"plateIron\""
    ]
   }
  ],
@@ -3722,7 +3984,7 @@
    "line": 2420,
    "research": "FORTRESSMASK",
    "result": "new Object[]{\"mask\", new NBTTagInt(2)}",
-   "ingredient": "8",
+   "instability": "8",
    "aspects": [
     [
      "UNDEAD",
@@ -3736,6 +3998,15 @@
      "PROTECT",
      "20"
     ]
+   ],
+   "center": "ItemsTC.fortressHelm, 1, 32767",
+   "ingredients": [
+    "Items.field_151100_aR, 1, 1",
+    "\"plateIron\"",
+    "\"leather\"",
+    "Items.field_151073_bk",
+    "Items.field_151117_aB",
+    "\"plateIron\""
    ]
   }
  ],
@@ -3746,7 +4017,7 @@
    "line": 2439,
    "research": "PRIMALCRUSHER",
    "result": "isPC",
-   "ingredient": "6",
+   "instability": "6",
    "aspects": [
     [
      "EARTH",
@@ -3776,6 +4047,13 @@
      "DESIRE",
      "50"
     ]
+   ],
+   "center": "Ingredient.func_193367_a(ItemsTC.primordialPearl)",
+   "ingredients": [
+    "Ingredient.func_193367_a(ItemsTC.voidPick)",
+    "Ingredient.func_193367_a(ItemsTC.voidShovel)",
+    "Ingredient.func_193367_a(ItemsTC.elementalPick)",
+    "Ingredient.func_193367_a(ItemsTC.elementalShovel)"
    ]
   }
  ],
@@ -3786,7 +4064,7 @@
    "line": 2460,
    "research": "VERDANTCHARMS",
    "result": "ItemsTC.charmVerdant",
-   "ingredient": "5",
+   "instability": "5",
    "aspects": [
     [
      "LIFE",
@@ -3800,6 +4078,13 @@
      "PLANT",
      "60"
     ]
+   ],
+   "center": "ItemsTC.baubles, 1, 4",
+   "ingredients": [
+    "ItemsTC.nuggets, 1, 10",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.LIFE)",
+    "Items.field_151117_aB",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.PLANT)"
    ]
   }
  ],
@@ -3810,7 +4095,7 @@
    "line": 2476,
    "research": "VERDANTCHARMS",
    "result": "new Object[]{\"type\", new NBTTagByte((byte)1)}",
-   "ingredient": "5",
+   "instability": "5",
    "aspects": [
     [
      "LIFE",
@@ -3820,6 +4105,13 @@
      "MAN",
      "80"
     ]
+   ],
+   "center": "ItemsTC.charmVerdant",
+   "ingredients": [
+    "Items.field_151153_ao",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.LIFE)",
+    "pis1",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.MAN)"
    ]
   }
  ],
@@ -3830,7 +4122,7 @@
    "line": 2492,
    "research": "VERDANTCHARMS",
    "result": "new Object[]{\"type\", new NBTTagByte((byte)2)}",
-   "ingredient": "5",
+   "instability": "5",
    "aspects": [
     [
      "DESIRE",
@@ -3840,6 +4132,13 @@
      "AIR",
      "80"
     ]
+   ],
+   "center": "ItemsTC.charmVerdant",
+   "ingredients": [
+    "ItemsTC.tripleMeatTreat",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.DESIRE)",
+    "pis2",
+    "ThaumcraftApiHelper.makeCrystal(Aspect.AIR)"
    ]
   }
  ],
@@ -3850,12 +4149,17 @@
    "line": 2506,
    "research": "CLOUDRING",
    "result": "ItemsTC.ringCloud",
-   "ingredient": "1",
+   "instability": "1",
    "aspects": [
     [
      "AIR",
      "50"
     ]
+   ],
+   "center": "ItemsTC.baubles, 1, 1",
+   "ingredients": [
+    "ConfigItems.AIR_CRYSTAL",
+    "Items.field_151008_G"
    ]
   }
  ],
@@ -3866,7 +4170,7 @@
    "line": 2518,
    "research": "CURIOSITYBAND",
    "result": "ItemsTC.bandCuriosity",
-   "ingredient": "5",
+   "instability": "5",
    "aspects": [
     [
      "MIND",
@@ -3880,6 +4184,17 @@
      "TRAP",
      "100"
     ]
+   ],
+   "center": "ItemsTC.baubles, 1, 6",
+   "ingredients": [
+    "Items.field_151166_bC",
+    "Items.field_151099_bA",
+    "Items.field_151166_bC",
+    "Items.field_151099_bA",
+    "Items.field_151166_bC",
+    "Items.field_151099_bA",
+    "Items.field_151166_bC",
+    "Items.field_151099_bA"
    ]
   }
  ],
@@ -3890,12 +4205,16 @@
    "line": 2536,
    "research": "CHARMUNDYING",
    "result": "ItemsTC.charmUndying",
-   "ingredient": "2",
+   "instability": "2",
    "aspects": [
     [
      "LIFE",
      "25"
     ]
+   ],
+   "center": "Items.field_190929_cY",
+   "ingredients": [
+    "\"plateBrass\""
    ]
   }
  ],
@@ -3906,7 +4225,7 @@
    "line": 2550,
    "research": "RIFTCLOSER",
    "result": "ItemsTC.causalityCollapser",
-   "ingredient": "8",
+   "instability": "8",
    "aspects": [
     [
      "ELDRITCH",
@@ -3916,6 +4235,17 @@
      "FLUX",
      "50"
     ]
+   ],
+   "center": "Blocks.field_150335_W",
+   "ingredients": [
+    "ItemsTC.morphicResonator",
+    "Blocks.field_150451_bX",
+    "ItemsTC.alumentum",
+    "Ingredient.func_193369_a(nitorStacks)",
+    "ItemsTC.visResonator",
+    "Blocks.field_150451_bX",
+    "ItemsTC.alumentum",
+    "Ingredient.func_193369_a(nitorStacks)"
    ]
   }
  ],
@@ -3926,7 +4256,7 @@
    "line": 2568,
    "research": "VOIDSIPHON",
    "result": "BlocksTC.voidSiphon",
-   "ingredient": "7",
+   "instability": "7",
    "aspects": [
     [
      "ELDRITCH",
@@ -3944,6 +4274,15 @@
      "CRAFT",
      "50"
     ]
+   ],
+   "center": "BlocksTC.metalBlockVoid",
+   "ingredients": [
+    "BlocksTC.stoneArcane",
+    "BlocksTC.stoneArcane",
+    "ItemsTC.mechanismComplex",
+    "\"plateBrass\"",
+    "\"plateBrass\"",
+    "Items.field_151156_bN"
    ]
   }
  ],
@@ -3954,7 +4293,7 @@
    "line": 2584,
    "research": "VOIDSEERPEARL",
    "result": "ItemsTC.charmVoidseer",
-   "ingredient": "8",
+   "instability": "8",
    "aspects": [
     [
      "MIND",
@@ -3968,6 +4307,13 @@
      "MAGIC",
      "100"
     ]
+   ],
+   "center": "ItemsTC.baubles, 1, 4",
+   "ingredients": [
+    "ItemsTC.brain",
+    "ItemsTC.voidSeed",
+    "ItemsTC.brain",
+    "Ingredient.func_193367_a(ItemsTC.primordialPearl)"
    ]
   }
  ],

@@ -4,8 +4,8 @@
   "instability": 1,
   "input": "thaumcraft:thaumium_shovel",
   "ingredients": [
-    "thaumcraft:crystal_earth",
-    "thaumcraft:crystal_earth",
+    "thaumcraft:vis_crystal_earth",
+    "thaumcraft:vis_crystal_earth",
     "thaumcraft:nugget_rareearth",
     "thaumcraft:greatwood_planks"
   ],

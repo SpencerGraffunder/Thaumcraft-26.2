@@ -4,12 +4,12 @@
   "instability": 1,
   "center": "minecraft:leather_boots",
   "ingredients": [
-    "thaumcraft:crystal_air",
-    "thaumcraft:crystal_air",
+    "thaumcraft:vis_crystal_air",
+    "thaumcraft:vis_crystal_air",
     "thaumcraft:enchanted_fabric",
     "thaumcraft:enchanted_fabric",
     "minecraft:feather",
-    "minecraft:cod"
+    "#c:foods/raw_fish"
   ],
   "aspects": {
     "volatus": 100,
