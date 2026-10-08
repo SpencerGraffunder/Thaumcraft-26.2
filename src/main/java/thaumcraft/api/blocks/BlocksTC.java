@@ -34,6 +34,9 @@ public class BlocksTC {
     public static final DeferredHolder<Block, Block> slabAncient = ModBlocks.ANCIENT_STONE_SLAB;
     public static final DeferredHolder<Block, Block> slabEldritch = ModBlocks.ELDRITCH_SLAB;
 
+    // Transport
+    public static final DeferredHolder<Block, Block> activatorRail = ModBlocks.ACTIVATOR_RAIL;
+
     // Pillars
     public static final DeferredHolder<Block, Block> pillarArcane = ModBlocks.ARCANE_PILLAR;
     public static final DeferredHolder<Block, Block> pillarAncient = ModBlocks.ANCIENT_PILLAR;

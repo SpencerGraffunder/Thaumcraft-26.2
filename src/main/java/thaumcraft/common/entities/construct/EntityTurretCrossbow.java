@@ -36,9 +36,10 @@ import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.PoweredRailBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -270,14 +271,16 @@ public class EntityTurretCrossbow extends EntityOwnedConstruct implements Ranged
                 heal(1.0f);
             }
             
-            // Check for activator rail (disable AI when powered)
-            // Activator rail check
-            // For now, check vanilla powered rail
+            // Arcane Activator Rail (1.12 EntityTurretCrossbow): an active
+            // (powered) rail disables the turret, an inactive one re-enables it
             BlockPos pos = blockPosition();
+            if (level().getBlockState(pos.below()).getBlock() instanceof BaseRailBlock) {
+                pos = pos.below();
+            }
             BlockState state = level().getBlockState(pos);
-            if (state.is(Blocks.ACTIVATOR_RAIL)) {
-                boolean powered = state.getValue(net.minecraft.world.level.block.PoweredRailBlock.POWERED);
-                setNoAi(powered);
+            if (state.getBlock() instanceof BaseRailBlock && state.is(ModBlocks.ACTIVATOR_RAIL.get())) {
+                boolean ac = state.getValue(PoweredRailBlock.POWERED);
+                setNoAi(ac);
             }
         } else {
             updateSwingProgress();

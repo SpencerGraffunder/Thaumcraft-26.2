@@ -1,6 +1,6 @@
 {
-    "parent": "minecraft:block/rail_raised_sw",
-    "textures": {
-        "rail": "thaumcraft:block/rail_activator"
-    }
+  "parent": "minecraft:block/template_rail_raised_sw",
+  "textures": {
+    "rail": "thaumcraft:block/rail_activator"
+  }
 }

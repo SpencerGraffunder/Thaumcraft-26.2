@@ -772,8 +772,10 @@
     ]
    ],
    "result": "ItemsTC.visResonator",
-   "pattern": [],
-   "key": {}
+   "ingredients": [
+    "\"plateIron\"",
+    "\"gemQuartz\""
+   ]
   }
  ],
  "activatorrail": [
@@ -785,8 +787,9 @@
    "vis": "10",
    "aspects": [],
    "result": "BlocksTC.activatorRail",
-   "pattern": [],
-   "key": {}
+   "ingredients": [
+    "Blocks.field_150408_cc"
+   ]
   }
  ],
  "thaumometer": [
@@ -1116,8 +1119,9 @@
     ]
    ],
    "result": "ItemsTC.seals, 3",
-   "pattern": [],
-   "key": {}
+   "ingredients": [
+    "new Object[]{new ItemStack(Items.field_151119_aD), new ItemStack(ItemsTC.tallow), \"dyeRed\", \"nitor\"}"
+   ]
   }
  ],
  "modvision": [
@@ -1192,8 +1196,9 @@
     ]
    ],
    "result": "ItemsTC.mirroredGlass",
-   "pattern": [],
-   "key": {}
+   "ingredients": [
+    "new Object[]{new ItemStack(ItemsTC.quicksilver), \"paneGlass\"}"
+   ]
   }
  ],
  "ArcaneSpa": [
@@ -1276,8 +1281,9 @@
    "vis": "10",
    "aspects": [],
    "result": "BlocksTC.tubeValve",
-   "pattern": [],
-   "key": {}
+   "ingredients": [
+    "new Object[]{new ItemStack(BlocksTC.tube), new ItemStack(Blocks.field_150442_at)}"
+   ]
   }
  ],
  "TubeFilter": [
@@ -1289,8 +1295,9 @@
    "vis": "10",
    "aspects": [],
    "result": "BlocksTC.tubeFilter",
-   "pattern": [],
-   "key": {}
+   "ingredients": [
+    "new Object[]{new ItemStack(BlocksTC.tube, 1, 0), new ItemStack(ItemsTC.filter)}"
+   ]
   }
  ],
  "TubeRestrict": [
@@ -1307,8 +1314,9 @@
     ]
    ],
    "result": "BlocksTC.tubeRestrict",
-   "pattern": [],
-   "key": {}
+   "ingredients": [
+    "new Object[]{new ItemStack(BlocksTC.tube)}"
+   ]
   }
  ],
  "TubeOneway": [
@@ -1325,8 +1333,9 @@
     ]
    ],
    "result": "BlocksTC.tubeOneway",
-   "pattern": [],
-   "key": {}
+   "ingredients": [
+    "new Object[]{new ItemStack(BlocksTC.tube)}"
+   ]
   }
  ],
  "TubeBuffer": [
@@ -2682,8 +2691,9 @@
     ]
    ],
    "result": "BlocksTC.inlay, 2",
-   "pattern": [],
-   "key": {}
+   "ingredients": [
+    "new Object[]{\"dustRedstone\", \"ingotGold\"}"
+   ]
   }
  ],
  "SealHarvest": [

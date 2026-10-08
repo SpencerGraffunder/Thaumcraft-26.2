@@ -1,20 +1,11 @@
 {
-  "type": "thaumcraft:arcane_workbench_shaped",
+  "type": "thaumcraft:arcane_workbench_shapeless",
   "research": "FIRSTSTEPS",
-  "vis": 50,
-  "aspects": {
-    "potentia": 1
-  },
-  "pattern": [
-    "RTR",
-    " S "
+  "vis": 10,
+  "ingredients": [
+    "minecraft:activator_rail"
   ],
-  "key": {
-    "R": "minecraft:redstone",
-    "T": "#thaumcraft:plates/iron",
-    "S": "#c:rods/wooden"
-  },
   "result": {
-    "id": "minecraft:activator_rail"
+    "id": "thaumcraft:activator_rail"
   }
 }

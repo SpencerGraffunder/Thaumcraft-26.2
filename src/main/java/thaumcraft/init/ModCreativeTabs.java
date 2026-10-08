@@ -52,6 +52,9 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.ANCIENT_STONE_SLAB.get());
                         output.accept(ModBlocks.ELDRITCH_SLAB.get());
 
+                        // === Transport ===
+                        output.accept(ModBlocks.ACTIVATOR_RAIL.get());
+
                         // === Pillars ===
                         output.accept(ModBlocks.ARCANE_PILLAR.get());
                         output.accept(ModBlocks.ANCIENT_PILLAR.get());

@@ -29,6 +29,8 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseRailBlock;
+import net.minecraft.world.level.block.PoweredRailBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -42,6 +44,7 @@ import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.fx.PacketFXBoreDig;
 import thaumcraft.common.world.aura.AuraHandler;
+import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModSounds;
 
 import java.util.ArrayList;
@@ -144,8 +147,19 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
                 rechargeVis();
             }
             
-            // Check for redstone activation
-            if (!isPassenger()) {
+            // Check for Arcane Activator Rail / redstone activation
+            // (1.12 EntityArcaneBore): an active rail deactivates the bore, an
+            // inactive one activates it; otherwise a redstone signal below.
+            BlockPos pos = blockPosition();
+            if (level().getBlockState(pos.below()).getBlock() instanceof BaseRailBlock) {
+                pos = pos.below();
+            }
+            BlockState state = level().getBlockState(pos);
+            if (state.getBlock() instanceof BaseRailBlock) {
+                if (state.is(ModBlocks.ACTIVATOR_RAIL.get())) {
+                    setActive(!state.getValue(PoweredRailBlock.POWERED));
+                }
+            } else if (!isPassenger()) {
                 setActive(level().hasNeighborSignal(blockPosition().below()));
             }
             

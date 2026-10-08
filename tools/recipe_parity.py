@@ -271,6 +271,14 @@ def load_aspects():
 ASPECT_MAP, VALID_ASPECTS = load_aspects()
 
 
+VANILLA_SRG = {  # 1.12.2 SRG field names -> modern names (rail fields, derived from the 1.12 ConfigAspects redstone entries)
+    "Blocks.field_150408_cc": "minecraft:activator_rail",
+    "Blocks.field_150448_aq": "minecraft:rail",
+    "Blocks.field_150318_D": "minecraft:golden_rail",
+    "Blocks.field_150319_E": "minecraft:detector_rail",
+}
+
+
 def snake(sym):
     s = re.sub(r"\.get\(.*", "", sym)
     s = re.sub(r"func_\d+\w*", "", s)
@@ -285,6 +293,8 @@ def map_token(tok):
     for k, v in TC_META.items():
         if tok.startswith(k):
             return v
+    if tok in VANILLA_SRG:
+        return VANILLA_SRG[tok]
     m = re.match(r"^(ItemsTC|BlocksTC)\.([A-Za-z0-9_]+)", tok)
     if m:
         return "thaumcraft:" + snake(m.group(2))

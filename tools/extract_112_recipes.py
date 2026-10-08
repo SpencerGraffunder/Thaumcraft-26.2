@@ -99,7 +99,7 @@ for a, b, station in SECTIONS:
                 entry["aspects"] = re.findall(r"Aspect\.(\w+),\s*(\d+)", a2[3]) if len(a2) > 3 else []
                 entry["result"] = strip_itemstack(a2[4]) if len(a2) > 4 else ""
                 rest = a2[5:]
-                if "Shapeless" in kind:
+                if "Shapeless" in mm.group(0):
                     entry["ingredients"] = [strip_itemstack(x) for x in rest]
                 else:
                     pats = [x.strip().strip('"') for x in rest if x.strip().startswith('"') and x.strip().endswith('"') and len(x.strip()) <= 6]

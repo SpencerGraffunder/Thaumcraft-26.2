@@ -36,6 +36,7 @@ import thaumcraft.common.blocks.essentia.BlockJar;
 import thaumcraft.common.blocks.essentia.BlockSmelter;
 import thaumcraft.common.blocks.essentia.BlockTube;
 import thaumcraft.common.blocks.essentia.BlockEssentiaTransport;
+import thaumcraft.common.blocks.misc.BlockArcaneActivatorRail;
 import thaumcraft.common.blocks.misc.BlockBarrier;
 import thaumcraft.common.blocks.misc.BlockEffect;
 import thaumcraft.common.blocks.misc.BlockFluidDeath;
@@ -722,6 +723,17 @@ public class ModBlocks {
             BlockBannerTC::createBlack);
     public static final DeferredHolder<Block, Block> BANNER_CRIMSON_CULT = registerBlock("banner_crimson_cult",
             BlockBannerTC::createCrimsonCult);
+
+    // ==================== Transport ====================
+
+    // The Arcane Activator Rail (1.12 BlocksTC.activatorRail): vanilla powered-rail
+    // behaviour, TC texture. Turrets/bores on minecarts toggle when crossing it.
+    public static final DeferredHolder<Block, Block> ACTIVATOR_RAIL = registerBlock("activator_rail",
+            p -> new BlockArcaneActivatorRail(p),
+            () -> BlockBehaviour.Properties.of()
+                    .noCollision()
+                    .strength(0.7f)
+                    .sound(SoundType.METAL));
 
     // ==================== Helper Methods ====================
 
