@@ -212,6 +212,24 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   aspect tag (MECHANISM 5). Build green (86/86 tests), headless `runClient`
   clean, jar `8f06e7522ea6676c9e9892d93813fef14fefe33bd8f69ce248ab4fc5f28d19d4`
   installed in the Modrinth `NeoForge 26.3` profile.
+- **1.12 aspect-value parity audited & completed (2026-10-08, `tools/audit_aspects.py`):**
+  every `ConfigAspects.java` registration in 1.12.2 BETA26 is now compared
+  against the port (blocks, items, per-meta, oreDicts via the `ORE112` map,
+  potions, curios) — **242 pairs compared, 0 divergent values**. Added to the
+  port: taint fibre/crust/rock/crystal + flux crystal block values, 6 eldritch
+  blocks, 3 pedestal variants, ancient stone doorways/glyphs, 7 damage-value
+  curio variants (26.3: `DataComponents.DAMAGE`), cinnabar/iron/gold/copper
+  clusters (new `cluster_tin`/`cluster_silver`/`cluster_lead` items + crucible
+  recipes), quicksilver/amber, 24 vanilla item tags (dirt, cobblestone,
+  granite/diorite/andesite, obsidian, sand/gravel, netherrack, saplings, golden
+  dandelion, wither rose, spawners, potions, …), 22 common tags
+  (`c:stones`, `c:sands`, tin/silver/lead/brass/bronze/uranium ores-ingots-
+  dusts-nuggets, …) and 6 new `thaumcraft:ores|ingots|dusts|nuggets` tag files.
+  Documented 1.12→26.3 deviations: dyes are one `DataComponents`-based item in
+  26.3 (no per-color registration possible); `treeLeaves`/`logWood` oreDicts
+  have no 26.3 equivalent. Build green (86/86 tests), headless `runClient`
+  clean, jar `2a1fe09f8065f9668a9c4377fb61937795ebc4b004bd28242a424b78755ed6f8`
+  installed in the Modrinth `NeoForge 26.3` profile.
 - **Golem-parts client crash fixed & verified (macOS, 2026-09-07):** golem
   parts/seals/research were registered only on `ServerStartingEvent`, which a
   plain (integrated / Modrinth) client never sees — so opening the creative

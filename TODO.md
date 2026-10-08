@@ -4,6 +4,35 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-08 — 1.12 aspect-value parity audit — DONE (commit below)
+
+`tools/audit_aspects.py` compares every `ConfigAspects.java` registration in the
+1.12.2 BETA26 reference against the port (blocks/items, per-meta variants,
+oreDicts via the ORE112 map, potions, curios). After this round:
+**242 pairs compared, 0 divergent values**.
+
+- New port registrations (ConfigAspects.java): taint fibre/crust/rock/crystal +
+  flux crystal block (1.12 values), 6 eldritch blocks, 3 pedestal variants,
+  ancient stone doorways/glyphs, quicksilver/amber, cinnabar/iron/gold/copper
+  clusters (+ new `cluster_tin`/`cluster_silver`/`cluster_lead` items and
+  crucible recipes), 7 damage-value curio variants (26.3:
+  `DataComponents.DAMAGE` via `curioVariant(int)`), 24 vanilla item tags
+  (dirt, cobblestone, granite/diorite/andesite, obsidian, sand/gravel,
+  netherrack, saplings, golden dandelion, wither rose, spawners, potions, …)
+  and 22 common tags (`c:stones`, `c:sands`, tin/silver/lead/brass/bronze/
+  uranium ore|ingot|dust|nugget, …).
+- New tag files: `thaumcraft:ores/{tin,silver,lead}`, `thaumcraft:ingots/brass`,
+  `thaumcraft:dusts/{brass,bronze}`, `thaumcraft:nuggets/{brass,bronze}`.
+- Tool fixes along the way: `registerBlockNoItem` regex, per-meta DOUBLE_PLANT
+  handling, `DyeColor`/`pick(...)` parsing, alias application at all
+  `normalize_ref` returns, `tc:` prefix on oredict values, `ingotCopper` key.
+- Documented 1.12→26.3 deviations (tool skips these): dyes are a single
+  `DataComponents`-based item in 26.3 (no per-color registration possible);
+  `treeLeaves`/`logWood` oreDicts have no 26.3 equivalent.
+- DoD: build green (86/86 tests), 0 TODOs, headless runClient clean (only the
+  pre-existing @OnlyIn loader warnings), jar `2a1fe09f…ed6f8` installed in the
+  Modrinth `NeoForge 26.3` profile.
+
 ## 2026-10-07 — 1.12 parity round 3: nitor system, phantom brain ids, remaining recipe data
 
 Continuation of the "find the difference and fix it" sweep. Every change below

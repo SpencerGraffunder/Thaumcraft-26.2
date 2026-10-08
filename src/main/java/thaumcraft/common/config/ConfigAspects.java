@@ -2,6 +2,7 @@ package thaumcraft.common.config;
 
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForge;
@@ -135,11 +136,10 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag("c:stone", new AspectList().add(Aspect.EARTH, 5));
         ThaumcraftApi.registerObjectTag("c:cobblestones", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.BEDROCK), new AspectList().add(Aspect.VOID, 25).add(Aspect.ENTROPY, 25).add(Aspect.EARTH, 25).add(Aspect.DARKNESS, 25));
-        ThaumcraftApi.registerObjectTag("c:dirt", new AspectList().add(Aspect.EARTH, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DIRT), new AspectList().add(Aspect.EARTH, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.PODZOL), new AspectList().add(Aspect.EARTH, 5).add(Aspect.PLANT, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.FARMLAND), new AspectList().add(Aspect.EARTH, 5).add(Aspect.WATER, 2).add(Aspect.ORDER, 2));
         ThaumcraftApi.registerObjectTag("c:sands", new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 5));
-        ThaumcraftApi.registerObjectTag("minecraft:grass", new AspectList().add(Aspect.EARTH, 5).add(Aspect.PLANT, 2)); // Not sure if this tag exists
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GRASS_BLOCK), new AspectList().add(Aspect.EARTH, 5).add(Aspect.PLANT, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DIRT_PATH), new AspectList().add(Aspect.EARTH, 5).add(Aspect.PLANT, 2).add(Aspect.ORDER, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_STONE), new AspectList().add(Aspect.EARTH, 5).add(Aspect.DARKNESS, 5));
@@ -169,6 +169,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag("c:leathers", new AspectList().add(Aspect.BEAST, 5).add(Aspect.PROTECT, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.ROTTEN_FLESH), new AspectList().add(Aspect.MAN, 5).add(Aspect.LIFE, 5).add(Aspect.ENTROPY, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.FEATHER), new AspectList().add(Aspect.FLIGHT, 5).add(Aspect.AIR, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.LEATHER), new AspectList().add(Aspect.BEAST, 5).add(Aspect.PROTECT, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BONE), new AspectList().add(Aspect.DEATH, 5).add(Aspect.LIFE, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.EGG), new AspectList().add(Aspect.LIFE, 5).add(Aspect.BEAST, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.GUNPOWDER), new AspectList().add(Aspect.FIRE, 10).add(Aspect.ENTROPY, 10).add(Aspect.ALCHEMY, 5));
@@ -270,7 +271,8 @@ public class ConfigAspects {
         
         // Heads/skulls
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.SKELETON_SKULL), new AspectList().add(Aspect.DEATH, 10).add(Aspect.SOUL, 10).add(Aspect.UNDEAD, 10));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.WITHER_SKELETON_SKULL), new AspectList().add(Aspect.DEATH, 10).add(Aspect.SOUL, 10).add(Aspect.UNDEAD, 10).add(Aspect.ENTROPY, 10));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.WITHER_SKELETON_SKULL), new AspectList().add(Aspect.DEATH, 10).add(Aspect.SOUL, 10).add(Aspect.UNDEAD, 10));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.PIGLIN_HEAD), new AspectList().add(Aspect.DEATH, 10).add(Aspect.SOUL, 10).add(Aspect.ENTROPY, 5).add(Aspect.FIRE, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.ZOMBIE_HEAD), new AspectList().add(Aspect.DEATH, 10).add(Aspect.SOUL, 10).add(Aspect.MAN, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.PLAYER_HEAD), new AspectList().add(Aspect.DEATH, 10).add(Aspect.SOUL, 10).add(Aspect.MAN, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.CREEPER_HEAD), new AspectList().add(Aspect.DEATH, 10).add(Aspect.SOUL, 10).add(Aspect.ENTROPY, 5).add(Aspect.FIRE, 5));
@@ -313,10 +315,11 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.DIAMOND_HORSE_ARMOR), new AspectList().add(Aspect.CRYSTAL, 15).add(Aspect.PROTECT, 20).add(Aspect.BEAST, 5));
         
         // Chainmail armor
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHAINMAIL_HELMET), new AspectList().add(Aspect.METAL, 42).add(Aspect.PROTECT, 10));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHAINMAIL_CHESTPLATE), new AspectList().add(Aspect.METAL, 67).add(Aspect.PROTECT, 15));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHAINMAIL_LEGGINGS), new AspectList().add(Aspect.METAL, 58).add(Aspect.PROTECT, 12));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHAINMAIL_BOOTS), new AspectList().add(Aspect.METAL, 33).add(Aspect.PROTECT, 8));
+        // 1.12: chainmail has METAL only (no PROTECT)
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHAINMAIL_HELMET), new AspectList().add(Aspect.METAL, 42));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHAINMAIL_CHESTPLATE), new AspectList().add(Aspect.METAL, 67));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHAINMAIL_LEGGINGS), new AspectList().add(Aspect.METAL, 58));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHAINMAIL_BOOTS), new AspectList().add(Aspect.METAL, 33));
         
         // Tools and mechanism
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.FLINT), new AspectList().add(Aspect.EARTH, 5).add(Aspect.TOOL, 5));
@@ -341,6 +344,65 @@ public class ConfigAspects {
         
         // Books and paper
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.PAPER), new AspectList().add(Aspect.MIND, 2).add(Aspect.PLANT, 1));
+
+        // ---- 1.12 parity: aspect values from 1.12 ConfigAspects that the port was missing ----
+        // Metals & alloys (1.12 oredicts; apply once a mod provides the items)
+        ThaumcraftApi.registerObjectTag("c:ingots/tin", new AspectList().add(Aspect.METAL, 10).add(Aspect.CRYSTAL, 5));
+        ThaumcraftApi.registerObjectTag("c:dusts/tin", new AspectList().add(Aspect.METAL, 10).add(Aspect.ENTROPY, 1).add(Aspect.CRYSTAL, 5));
+        ThaumcraftApi.registerObjectTag("thaumcraft:ores/tin", new AspectList().add(Aspect.METAL, 10).add(Aspect.EARTH, 5).add(Aspect.CRYSTAL, 5));
+        ThaumcraftApi.registerObjectTag("c:ingots/silver", new AspectList().add(Aspect.METAL, 10).add(Aspect.DESIRE, 5));
+        ThaumcraftApi.registerObjectTag("c:dusts/silver", new AspectList().add(Aspect.METAL, 10).add(Aspect.ENTROPY, 1).add(Aspect.DESIRE, 5));
+        ThaumcraftApi.registerObjectTag("thaumcraft:ores/silver", new AspectList().add(Aspect.METAL, 10).add(Aspect.EARTH, 5).add(Aspect.DESIRE, 5));
+        ThaumcraftApi.registerObjectTag("c:ingots/lead", new AspectList().add(Aspect.METAL, 10).add(Aspect.ORDER, 5));
+        ThaumcraftApi.registerObjectTag("c:dusts/lead", new AspectList().add(Aspect.METAL, 10).add(Aspect.ENTROPY, 1).add(Aspect.ORDER, 5));
+        ThaumcraftApi.registerObjectTag("thaumcraft:ores/lead", new AspectList().add(Aspect.METAL, 10).add(Aspect.EARTH, 5).add(Aspect.ORDER, 5));
+        ThaumcraftApi.registerObjectTag("c:ingots/brass", new AspectList().add(Aspect.METAL, 10).add(Aspect.TOOL, 5));
+        ThaumcraftApi.registerObjectTag("c:dusts/brass", new AspectList().add(Aspect.METAL, 10).add(Aspect.ENTROPY, 1).add(Aspect.TOOL, 5));
+        ThaumcraftApi.registerObjectTag("c:ingots/bronze", new AspectList().add(Aspect.METAL, 10).add(Aspect.TOOL, 5));
+        ThaumcraftApi.registerObjectTag("c:dusts/bronze", new AspectList().add(Aspect.METAL, 10).add(Aspect.ENTROPY, 1).add(Aspect.TOOL, 5));
+        ThaumcraftApi.registerObjectTag("c:ores/uranium", new AspectList().add(Aspect.METAL, 10).add(Aspect.DEATH, 5).add(Aspect.ENERGY, 10));
+        ThaumcraftApi.registerObjectTag("c:raw/uranium", new AspectList().add(Aspect.METAL, 10).add(Aspect.DEATH, 5).add(Aspect.ENERGY, 10));
+        ThaumcraftApi.registerObjectTag("c:ingots/uranium", new AspectList().add(Aspect.METAL, 10).add(Aspect.DEATH, 5).add(Aspect.ENERGY, 10));
+        ThaumcraftApi.registerObjectTag("c:gems/ruby", new AspectList().add(Aspect.CRYSTAL, 10).add(Aspect.DESIRE, 10));
+        ThaumcraftApi.registerObjectTag("c:gems/green_sapphire", new AspectList().add(Aspect.CRYSTAL, 10).add(Aspect.DESIRE, 10));
+        ThaumcraftApi.registerObjectTag("c:gems/sapphire", new AspectList().add(Aspect.CRYSTAL, 10).add(Aspect.DESIRE, 10));
+        ThaumcraftApi.registerObjectTag("c:ingots/steel", new AspectList().add(Aspect.METAL, 15).add(Aspect.ORDER, 5));
+        ThaumcraftApi.registerObjectTag("c:rubber", new AspectList().add(Aspect.MOTION, 5).add(Aspect.TOOL, 5));
+        // Natural blocks (1.12 oredicts / direct registrations)
+        ThaumcraftApi.registerObjectTag("c:stones", new AspectList().add(Aspect.EARTH, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GRANITE), new AspectList().add(Aspect.EARTH, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.DIORITE), new AspectList().add(Aspect.EARTH, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.ANDESITE), new AspectList().add(Aspect.EARTH, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.COBBLESTONE), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.GRAVEL), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ENTROPY, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.NETHERRACK), new AspectList().add(Aspect.EARTH, 5).add(Aspect.FIRE, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.OBSIDIAN), new AspectList().add(Aspect.EARTH, 5).add(Aspect.FIRE, 5).add(Aspect.DARKNESS, 5));
+        // Plants (1.12 oredicts / direct registrations)
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.OAK_SAPLING), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.SPRUCE_SAPLING), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.BIRCH_SAPLING), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.JUNGLE_SAPLING), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.ACACIA_SAPLING), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.DARK_OAK_SAPLING), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.CHERRY_SAPLING), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.PALE_OAK_SAPLING), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.SUNFLOWER), new AspectList().add(Aspect.AIR, 1).add(Aspect.LIFE, 1).add(Aspect.PLANT, 5).add(Aspect.SENSES, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.ROSE_BUSH), new AspectList().add(Aspect.AIR, 1).add(Aspect.LIFE, 1).add(Aspect.PLANT, 5).add(Aspect.SENSES, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.PEONY), new AspectList().add(Aspect.AIR, 1).add(Aspect.PLANT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.WITHER_ROSE), new AspectList().add(Aspect.AIR, 1).add(Aspect.LIFE, 1).add(Aspect.PLANT, 5).add(Aspect.SENSES, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.GOLDEN_DANDELION), new AspectList().add(Aspect.AIR, 1).add(Aspect.LIFE, 1).add(Aspect.PLANT, 5).add(Aspect.SENSES, 5)); // 1.12 dandelion meta 4 (double dandelion)
+        ThaumcraftApi.registerObjectTag("c:plantable", new AspectList().add(Aspect.AVERSION, 1).add(Aspect.PLANT, 5).add(Aspect.WATER, 5));
+        // Structure blocks & misc (1.12)
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.FIRE), new AspectList().add(Aspect.FIRE, 20));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.MAGMA_BLOCK), new AspectList().add(Aspect.EARTH, 5).add(Aspect.FIRE, 10));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.POTION), new AspectList().add(Aspect.CRYSTAL, 5).add(Aspect.WATER, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.NETHER_PORTAL), new AspectList().add(Aspect.FIRE, 10).add(Aspect.MAGIC, 10).add(Aspect.MOTION, 20));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.END_PORTAL), new AspectList().add(Aspect.ELDRITCH, 10).add(Aspect.MAGIC, 10).add(Aspect.MOTION, 20));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.SPAWNER), new AspectList().add(Aspect.BEAST, 20).add(Aspect.MAGIC, 20).add(Aspect.MOTION, 20).add(Aspect.UNDEAD, 20));
+        // Clusters (1.12 oredict values; tin/silver/lead clusters had no port values)
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLUSTER_TIN.get()), new AspectList().add(Aspect.ORDER, 5).add(Aspect.METAL, 15).add(Aspect.EARTH, 5).add(Aspect.CRYSTAL, 10));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLUSTER_SILVER.get()), new AspectList().add(Aspect.ORDER, 5).add(Aspect.METAL, 15).add(Aspect.EARTH, 5).add(Aspect.DESIRE, 10));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLUSTER_LEAD.get()), new AspectList().add(Aspect.ORDER, 5).add(Aspect.METAL, 15).add(Aspect.EARTH, 5).add(Aspect.ORDER, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.BOOK), new AspectList().add(Aspect.MIND, 8).add(Aspect.BEAST, 5).add(Aspect.PLANT, 3));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.ENCHANTED_BOOK), new AspectList().add(Aspect.MIND, 8).add(Aspect.MAGIC, 15).add(Aspect.AURA, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.BOOKSHELF), new AspectList().add(Aspect.MIND, 20).add(Aspect.PLANT, 10));
@@ -390,7 +452,7 @@ public class ConfigAspects {
         // Music
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.JUKEBOX), new AspectList().add(Aspect.SENSES, 20).add(Aspect.MECHANISM, 10).add(Aspect.AIR, 15));
         ThaumcraftApi.registerObjectTag(new ItemStack(Blocks.NOTE_BLOCK), new AspectList().add(Aspect.SENSES, 20).add(Aspect.MECHANISM, 10).add(Aspect.AIR, 15));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_13), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.DESIRE, 15));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_13), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.WATER, 5).add(Aspect.DESIRE, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_CAT), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.BEAST, 5).add(Aspect.DESIRE, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_BLOCKS), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.TOOL, 5).add(Aspect.DESIRE, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_CHIRP), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.EARTH, 5).add(Aspect.DESIRE, 10));
@@ -400,7 +462,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_STAL), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.DARKNESS, 5).add(Aspect.DESIRE, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_STRAD), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.ENERGY, 5).add(Aspect.DESIRE, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_WARD), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.LIFE, 5).add(Aspect.DESIRE, 10));
-        ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_11), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.DESIRE, 15).add(Aspect.ENTROPY, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_11), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.DESIRE, 15));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_WAIT), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.TRAP, 5).add(Aspect.DESIRE, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(Items.MUSIC_DISC_PIGSTEP), new AspectList().add(Aspect.SENSES, 15).add(Aspect.AIR, 5).add(Aspect.FIRE, 5).add(Aspect.DESIRE, 10));
         
@@ -558,7 +620,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.THAUMIUM_NUGGET.get()), new AspectList().add(Aspect.METAL, 1).add(Aspect.MAGIC, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.VOID_METAL_NUGGET.get()), new AspectList().add(Aspect.METAL, 1).add(Aspect.VOID, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BRASS_NUGGET.get()), new AspectList().add(Aspect.METAL, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), new AspectList().add(Aspect.METAL, 2).add(Aspect.DEATH, 2).add(Aspect.ALCHEMY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ORDER, 5).add(Aspect.METAL, 5));
         
         // Magic items
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.THAUMONOMICON.get()), new AspectList().add(Aspect.MIND, 20).add(Aspect.MAGIC, 10).add(Aspect.PLANT, 5));
@@ -566,7 +628,8 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.SCRIBING_TOOLS.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.CRAFT, 5));
         
         // Phials
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.PHIAL_EMPTY.get()), new AspectList().add(Aspect.VOID, 3).add(Aspect.CRYSTAL, 3));
+        // 1.12: empty phial is VOID 3 only
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.PHIAL_EMPTY.get()), new AspectList().add(Aspect.VOID, 3));
         // Filled phials have variable aspects based on contents
         
         // Loot bags
@@ -578,7 +641,8 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.PRIMORDIAL_PEARL.get()), new AspectList()
                 .add(Aspect.AIR, 10).add(Aspect.FIRE, 10).add(Aspect.WATER, 10)
                 .add(Aspect.EARTH, 10).add(Aspect.ORDER, 10).add(Aspect.ENTROPY, 10));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_SUN.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 10));
+        // 1.12: all celestial notes are MIND 5 DARKNESS 5 LIGHT 5
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_SUN.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
         
         // Food
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.TRIPLE_MEAT_TREAT.get()), new AspectList().add(Aspect.LIFE, 10).add(Aspect.DESIRE, 10));
@@ -604,7 +668,10 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_STONE.get()), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ELDRITCH, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_STONE_TILE.get()), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ELDRITCH, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_STONE_ROCK.get()), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ELDRITCH, 5));
+        // 1.12 stoneEldritchTile value (EARTH 5 ELDRITCH 5); 1.12's separate 8-meta 'eldritch' block (VOID 10 ELDRITCH 10) is not modeled in the port
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ELDRITCH_STONE_TILE.get()), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ELDRITCH, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ELDRITCH_SLAB.get()), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ELDRITCH, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ELDRITCH_PILLAR.get()), new AspectList().add(Aspect.EARTH, 5).add(Aspect.ELDRITCH, 5));
         
         // Arcane stone
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ARCANE_STONE.get()), new AspectList().add(Aspect.EARTH, 5).add(Aspect.MAGIC, 3));
@@ -625,9 +692,9 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.INFUSION_MATRIX.get()), new AspectList().add(Aspect.MAGIC, 20).add(Aspect.CRAFT, 15).add(Aspect.ELDRITCH, 10));
         
         // Pedestals
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.PEDESTAL_ARCANE.get()), new AspectList().add(Aspect.MAGIC, 3).add(Aspect.AIR, 3).add(Aspect.EARTH, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.PEDESTAL_ANCIENT.get()), new AspectList().add(Aspect.MAGIC, 3).add(Aspect.ELDRITCH, 3).add(Aspect.EARTH, 3));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.PEDESTAL_ELDRITCH.get()), new AspectList().add(Aspect.MAGIC, 3).add(Aspect.ELDRITCH, 5).add(Aspect.VOID, 3));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.PEDESTAL_ARCANE.get()), new AspectList().add(Aspect.MAGIC, 3).add(Aspect.AIR, 3));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.PEDESTAL_ANCIENT.get()), new AspectList().add(Aspect.MAGIC, 3).add(Aspect.ELDRITCH, 3));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.PEDESTAL_ELDRITCH.get()), new AspectList().add(Aspect.MAGIC, 3).add(Aspect.ELDRITCH, 3));
         
         // Goggles
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.GOGGLES.get()), new AspectList().add(Aspect.SENSES, 10).add(Aspect.AURA, 10).add(Aspect.PROTECT, 5));
@@ -670,6 +737,13 @@ public class ConfigAspects {
         // Baubles
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.AMULET_VIS_CRAFTED.get()), new AspectList().add(Aspect.AURA, 20).add(Aspect.METAL, 5).add(Aspect.MAGIC, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CURIOSITY_BAND.get()), new AspectList().add(Aspect.MIND, 20).add(Aspect.METAL, 5));
+        ThaumcraftApi.registerObjectTag(curioVariant(0), new AspectList().add(Aspect.MAGIC, 15).add(Aspect.MIND, 15));
+        ThaumcraftApi.registerObjectTag(curioVariant(1), new AspectList().add(Aspect.BEAST, 15).add(Aspect.MIND, 15));
+        ThaumcraftApi.registerObjectTag(curioVariant(2), new AspectList().add(Aspect.DEATH, 15).add(Aspect.MIND, 15));
+        ThaumcraftApi.registerObjectTag(curioVariant(3), new AspectList().add(Aspect.ELDRITCH, 15).add(Aspect.MIND, 15));
+        ThaumcraftApi.registerObjectTag(curioVariant(4), new AspectList().add(Aspect.MIND, 30));
+        ThaumcraftApi.registerObjectTag(curioVariant(5), new AspectList().add(Aspect.FLUX, 15).add(Aspect.MIND, 15));
+        ThaumcraftApi.registerObjectTag(curioVariant(6), new AspectList().add(Aspect.MIND, 15).add(Aspect.ELDRITCH, 5).add(Aspect.SOUL, 5).add(Aspect.MAGIC, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLOUD_RING.get()), new AspectList().add(Aspect.FLIGHT, 15).add(Aspect.AIR, 15).add(Aspect.METAL, 5));
         
         // Jars
@@ -702,7 +776,7 @@ public class ConfigAspects {
         // Clusters
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLUSTER_IRON.get()), new AspectList().add(Aspect.ORDER, 5).add(Aspect.METAL, 15).add(Aspect.EARTH, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLUSTER_GOLD.get()), new AspectList().add(Aspect.ORDER, 5).add(Aspect.METAL, 15).add(Aspect.EARTH, 5).add(Aspect.DESIRE, 10));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLUSTER_COPPER.get()), new AspectList().add(Aspect.ORDER, 5).add(Aspect.METAL, 15).add(Aspect.EARTH, 5).add(Aspect.EXCHANGE, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLUSTER_COPPER.get()), new AspectList().add(Aspect.ORDER, 5).add(Aspect.METAL, 15).add(Aspect.EARTH, 5).add(Aspect.EXCHANGE, 10));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLUSTER_CINNABAR.get()), new AspectList().add(Aspect.ORDER, 5).add(Aspect.METAL, 15).add(Aspect.EARTH, 5).add(Aspect.ALCHEMY, 5).add(Aspect.DEATH, 5));
         
         // Misc resources
@@ -721,12 +795,12 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BRAIN_CURIOUS.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.MIND, 25).add(Aspect.SENSES, 10));
         
         // Loot blocks (crates and urns)
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_CRATE_COMMON.get()), new AspectList().add(Aspect.DESIRE, 10).add(Aspect.PLANT, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_CRATE_UNCOMMON.get()), new AspectList().add(Aspect.DESIRE, 20).add(Aspect.PLANT, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_CRATE_RARE.get()), new AspectList().add(Aspect.DESIRE, 30).add(Aspect.PLANT, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_URN_COMMON.get()), new AspectList().add(Aspect.DESIRE, 10).add(Aspect.EARTH, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_URN_UNCOMMON.get()), new AspectList().add(Aspect.DESIRE, 20).add(Aspect.EARTH, 5));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_URN_RARE.get()), new AspectList().add(Aspect.DESIRE, 30).add(Aspect.EARTH, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_CRATE_COMMON.get()), new AspectList().add(Aspect.DESIRE, 10).add(Aspect.PLANT, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_CRATE_UNCOMMON.get()), new AspectList().add(Aspect.DESIRE, 20).add(Aspect.PLANT, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_CRATE_RARE.get()), new AspectList().add(Aspect.DESIRE, 30).add(Aspect.PLANT, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_URN_COMMON.get()), new AspectList().add(Aspect.DESIRE, 10).add(Aspect.EARTH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_URN_UNCOMMON.get()), new AspectList().add(Aspect.DESIRE, 20).add(Aspect.EARTH, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LOOT_URN_RARE.get()), new AspectList().add(Aspect.DESIRE, 30).add(Aspect.EARTH, 2));
         
         // Liquid blocks (no item form, but useful for scanning)
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.LIQUID_DEATH.get()), new AspectList().add(Aspect.DEATH, 20).add(Aspect.WATER, 10).add(Aspect.ALCHEMY, 10));
@@ -763,23 +837,26 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BATH_SALTS.get()), new AspectList().add(Aspect.WATER, 1).add(Aspect.AURA, 2).add(Aspect.ALCHEMY, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.BOTTLE_TAINT.get()), new AspectList().add(Aspect.FLUX, 4));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CAUSALITY_COLLAPSER.get()), new AspectList().add(Aspect.ENTROPY, 3).add(Aspect.VOID, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_1.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_2.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_3.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_4.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_5.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_6.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_7.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_8.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_STARS_1.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_STARS_2.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_STARS_3.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_STARS_4.get()), new AspectList().add(Aspect.LIGHT, 3).add(Aspect.SENSES, 3).add(Aspect.MIND, 2));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_1.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_2.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_3.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_4.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_5.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_6.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_7.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_MOON_8.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_STARS_1.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_STARS_2.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_STARS_3.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CELESTIAL_NOTES_STARS_4.get()), new AspectList().add(Aspect.MIND, 5).add(Aspect.DARKNESS, 5).add(Aspect.LIGHT, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHARM_UNDYING.get()), new AspectList().add(Aspect.DEATH, 6).add(Aspect.PROTECT, 8).add(Aspect.FLUX, 4));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_BEEF.get()), new AspectList().add(Aspect.LIFE, 3).add(Aspect.BEAST, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_CHICKEN.get()), new AspectList().add(Aspect.LIFE, 3).add(Aspect.BEAST, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_FISH.get()), new AspectList().add(Aspect.LIFE, 3).add(Aspect.BEAST, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_PORK.get()), new AspectList().add(Aspect.LIFE, 3).add(Aspect.BEAST, 1));
+        // 1.12: all meat chunks are LIFE 5 ENTROPY 1
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_BEEF.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_CHICKEN.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_FISH.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_PORK.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_RABBIT.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.ENTROPY, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CHUNKS_MUTTON.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.ENTROPY, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLOTH_BOOTS.get()), new AspectList().add(Aspect.MAN, 1).add(Aspect.EARTH, 1).add(Aspect.CRAFT, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLOTH_CHEST.get()), new AspectList().add(Aspect.MAN, 1).add(Aspect.EARTH, 1).add(Aspect.CRAFT, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CLOTH_LEGS.get()), new AspectList().add(Aspect.MAN, 1).add(Aspect.EARTH, 1).add(Aspect.CRAFT, 1));
@@ -839,9 +916,9 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ALCHEMICAL_BRASS_BLOCK.get()), new AspectList().add(Aspect.METAL, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.AMBER_BLOCK.get()), new AspectList().add(Aspect.CRYSTAL, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.AMBER_BRICK.get()), new AspectList().add(Aspect.EARTH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_STONE_DOORWAY.get()), new AspectList().add(Aspect.MAGIC, 1).add(Aspect.EARTH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_STONE_DOORWAY.get()), new AspectList().add(Aspect.METAL, 5).add(Aspect.ELDRITCH, 5).add(Aspect.TRAP, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_PILLAR.get()), new AspectList().add(Aspect.MAGIC, 1).add(Aspect.EARTH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_STONE_GLYPHED.get()), new AspectList().add(Aspect.MAGIC, 1).add(Aspect.EARTH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_STONE_GLYPHED.get()), new AspectList().add(Aspect.METAL, 5).add(Aspect.ELDRITCH, 5).add(Aspect.MIND, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_STONE_SLAB.get()), new AspectList().add(Aspect.MAGIC, 1).add(Aspect.EARTH, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ANCIENT_STONE_STAIRS.get()), new AspectList().add(Aspect.MAGIC, 1).add(Aspect.EARTH, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.ARCANE_EAR_TOGGLE.get()), new AspectList().add(Aspect.MAGIC, 1).add(Aspect.EARTH, 1));
@@ -898,7 +975,7 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.SILVERWOOD_SLAB.get()), new AspectList().add(Aspect.EARTH, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.SILVERWOOD_STAIRS.get()), new AspectList().add(Aspect.EARTH, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TABLE_WOOD.get()), new AspectList().add(Aspect.EARTH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_ROCK.get()), new AspectList().add(Aspect.EARTH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_ROCK.get()), new AspectList().add(Aspect.EARTH, 10).add(Aspect.FLUX, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.CASTER_ADVANCED.get()), new AspectList().add(Aspect.TOOL, 2).add(Aspect.MAGIC, 4).add(Aspect.AURA, 4));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.FOCUS_POUCH.get()), new AspectList().add(Aspect.VOID, 3).add(Aspect.MAGIC, 3));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.SEAL_PICKUP_ADVANCED.get()), new AspectList().add(Aspect.CRAFT, 1).add(Aspect.FLUX, 1));
@@ -952,11 +1029,11 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.SPA.get()), new AspectList().add(Aspect.WATER, 3).add(Aspect.LIFE, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.STABILIZER.get()), new AspectList().add(Aspect.MECHANISM, 2).add(Aspect.ORDER, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TABLE_STONE.get()), new AspectList().add(Aspect.EARTH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_CRUST.get()), new AspectList().add(Aspect.FLUX, 3).add(Aspect.ENTROPY, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_FEATURE.get()), new AspectList().add(Aspect.FLUX, 3).add(Aspect.PLANT, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_GEYSER.get()), new AspectList().add(Aspect.FLUX, 4));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_LOG.get()), new AspectList().add(Aspect.FLUX, 3).add(Aspect.EARTH, 1));
-        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_SOIL.get()), new AspectList().add(Aspect.FLUX, 2).add(Aspect.EARTH, 1));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_CRUST.get()), new AspectList().add(Aspect.LIFE, 5).add(Aspect.FLUX, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_FEATURE.get()), new AspectList().add(Aspect.AURA, 5).add(Aspect.BEAST, 5).add(Aspect.FLUX, 10));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_GEYSER.get()), new AspectList().add(Aspect.AURA, 5).add(Aspect.WATER, 5).add(Aspect.FLUX, 10));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_LOG.get()), new AspectList().add(Aspect.PLANT, 5).add(Aspect.FLUX, 5));
+        ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.TAINT_SOIL.get()), new AspectList().add(Aspect.EARTH, 5).add(Aspect.FLUX, 5));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.THAUMATORIUM.get()), new AspectList().add(Aspect.MECHANISM, 3).add(Aspect.ALCHEMY, 3));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.THAUMATORIUM_TOP.get()), new AspectList().add(Aspect.MECHANISM, 2).add(Aspect.ALCHEMY, 2));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModItems.TRAVELLER_BOOTS.get()), new AspectList().add(Aspect.MOTION, 3).add(Aspect.METAL, 1).add(Aspect.PROTECT, 1));
@@ -974,4 +1051,14 @@ public class ConfigAspects {
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.VIS_RELAY.get()), new AspectList().add(Aspect.AURA, 2).add(Aspect.MECHANISM, 1));
         ThaumcraftApi.registerObjectTag(new ItemStack(ModBlocks.VOID_SIPHON.get()), new AspectList().add(Aspect.VOID, 3).add(Aspect.AURA, 2));
     }
+
+    /**
+     * Curio variant stack (26.3: damage is a data component, not a constructor arg).
+     */
+    private static ItemStack curioVariant(int damage) {
+        ItemStack stack = new ItemStack(ModItems.CURIO.get());
+        stack.set(DataComponents.DAMAGE, damage);
+        return stack;
+    }
+
 }
