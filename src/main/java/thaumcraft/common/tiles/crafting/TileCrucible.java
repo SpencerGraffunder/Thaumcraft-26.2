@@ -15,6 +15,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
@@ -194,7 +196,16 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
                 
                 // 1.12-faithful: block event 99 (bamf above the crucible + spill sound)
                 sendCrucibleFX(99, 0);
-                
+
+                // 1.12: FMLCommonHandler.firePlayerCraftingEvent(player, out, InventoryFake)
+                // - sets the "[#]" research craft flags (e.g. crafting the yellow nitor
+                //   completes UNLOCKALCHEMY stage 3)
+                // - applies item warp (CraftingEvents.onCrafting, wuss-mode aware)
+                // - feeds advancements / recipe-used tracking
+                if (player != null && !level.isClientSide()) {
+                    NeoForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(player, result.copy(), null));
+                }
+
                 remaining--;
                 itemChanged = true;
                 markDirtyAndSync();

@@ -156,7 +156,11 @@ public class ThaumcraftCraftingManager {
         if (recipeManager == null) {
             return null;
         }
-        
+
+        // 1.12 parity (ThaumcraftCraftingManager.findMatchingCrucibleRecipe): among all
+        // recipes that match, the one with the HIGHEST total aspect cost wins.
+        int highest = 0;
+        CrucibleRecipeType out = null;
         for (RecipeHolder<?> recipe : recipeManager.recipeMap().byType(ModRecipeTypes.CRUCIBLE.get())) {
             if (recipe.value() instanceof CrucibleRecipeType crucibleRecipe) {
                 // Check if the recipe matches
@@ -168,12 +172,16 @@ public class ThaumcraftCraftingManager {
                             continue;
                         }
                     }
-                    return crucibleRecipe;
+                    int result = crucibleRecipe.getAspects().visSize();
+                    if (result > highest) {
+                        highest = result;
+                        out = crucibleRecipe;
+                    }
                 }
             }
         }
-        
-        return null;
+
+        return out;
     }
     
     /**
