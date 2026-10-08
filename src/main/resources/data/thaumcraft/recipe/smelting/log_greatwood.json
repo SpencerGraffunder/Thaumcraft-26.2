@@ -2,7 +2,7 @@
   "type": "minecraft:smelting",
   "ingredient": "thaumcraft:greatwood_log",
   "result": {
-    "id": "minecraft:charcoal"
+    "id": "minecraft:blaze_powder"
   },
   "experience": 0.5,
   "cookingtime": 200

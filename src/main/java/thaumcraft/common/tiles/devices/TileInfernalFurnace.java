@@ -3,11 +3,15 @@ package thaumcraft.common.tiles.devices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -20,7 +24,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import thaumcraft.api.aura.AuraHelper;
-import thaumcraft.common.lib.CommonInternals;
 import thaumcraft.common.tiles.TileThaumcraftInventory;
 import thaumcraft.init.ModBlockEntities;
 
@@ -29,6 +32,8 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.core.registries.Registries;
+import thaumcraft.api.ThaumcraftApi;
 
 /**
  * TileInfernalFurnace - A magical furnace that smelts items using aura.
@@ -319,8 +324,41 @@ public class TileInfernalFurnace extends TileThaumcraftInventory {
         }
     }
     
-    private ItemStack[] getSmeltingBonus(ItemStack input) {
-        return CommonInternals.getSmeltingBonus(input);
+    /**
+     * 1.12-faithful bellows bonus lookup: every registered bonus entry
+     * matching the input (item or item tag) is rolled independently at its
+     * chance, mirroring 1.12's TileInfernalFurnace.getSmeltingBonus.
+     */
+    private ItemStack[] getSmeltingBonus(ItemStack in) {
+        ArrayList<ItemStack> out = new ArrayList<>();
+        if (level == null) {
+            return out.toArray(new ItemStack[0]);
+        }
+        for (ThaumcraftApi.SmeltBonus bonus : thaumcraft.api.internal.CommonInternals.smeltingBonus) {
+            boolean match;
+            if (bonus.in instanceof ItemStack inStack) {
+                match = in.getItem() == inStack.getItem();
+            } else if (bonus.in instanceof String tagId) {
+                match = false;
+                for (Holder<Item> h : level.registryAccess().lookupOrThrow(Registries.ITEM)
+                        .getTagOrEmpty(TagKey.create(Registries.ITEM, Identifier.parse(tagId)))) {
+                    if (h.value() == in.getItem()) {
+                        match = true;
+                        break;
+                    }
+                }
+            } else {
+                match = false;
+            }
+            if (match && level.getRandom().nextFloat() <= bonus.chance) {
+                ItemStack is = bonus.out.copy();
+                if (is.getCount() < 1) {
+                    is.setCount(1);
+                }
+                out.add(is);
+            }
+        }
+        return out.toArray(new ItemStack[0]);
     }
     
     // ==================== Facing ====================

@@ -3,12 +3,13 @@ package thaumcraft.common.lib;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectHelper;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.init.ModBlocks;
+import thaumcraft.init.ModItems;
 
-import java.util.HashMap;
-import java.util.Map;
 import net.minecraft.core.registries.Registries;
 
 /**
@@ -22,13 +23,6 @@ import net.minecraft.core.registries.Registries;
  * Ported from 1.12.2
  */
 public class CommonInternals {
-
-    /**
-     * Smelting bonus map - items that give bonus drops when smelted in infernal furnace.
-     * Key: Input item Identifier
-     * Value: Array of possible bonus ItemStacks with weights
-     */
-    public static Map<String, ItemStack[]> smeltingBonus = new HashMap<>();
 
     /**
      * Initialize all aspect tags for vanilla items.
@@ -288,66 +282,71 @@ public class CommonInternals {
     }
 
     /**
-     * Register smelting bonus for an item.
-     * 
-     * @param input Identifier of the input item
-     * @param bonuses Array of possible bonus items
-     */
-    public static void registerSmeltingBonus(Identifier input, ItemStack... bonuses) {
-        if (input != null && bonuses != null && bonuses.length > 0) {
-            smeltingBonus.put(input.toString(), bonuses);
-        }
-    }
-
-    /**
-     * Get smelting bonus for an item.
-     * 
-     * @param input The input item
-     * @return Array of bonus items, or null if none
-     */
-    public static ItemStack[] getSmeltingBonus(ItemStack input) {
-        if (input == null || input.isEmpty()) {
-            return null;
-        }
-        Identifier itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(input.getItem());
-        if (itemId == null) {
-            return null;
-        }
-        return smeltingBonus.get(itemId.toString());
-    }
-
-    /**
-     * Initialize smelting bonuses (bonus drops from infernal furnace).
+     * Initialize smelting bonuses (infernal furnace bellows bonus drops).
+     *
+     * 1.12-faithful (ConfigRecipes L497-531): every bonus entry is rolled
+     * independently per bellows at its chance (the 2-arg API overload uses
+     * 1.12's default 0.33). 1.12's oredict ore entries map to the concrete
+     * ore items of this version; 1.12's TC nugget variants with no port item
+     * (copper/tin/silver/lead) simply have no bonus, and vanilla iron/gold
+     * nuggets stand in for 1.12's iron/gold nuggets.
      */
     public static void initSmeltingBonuses() {
-        // Iron ore gives nuggets as bonus
-        registerSmeltingBonus(Identifier.parse("minecraft:raw_iron"),
-                new ItemStack(Items.IRON_NUGGET, 1));
-        registerSmeltingBonus(Identifier.parse("minecraft:iron_ore"),
-                new ItemStack(Items.IRON_NUGGET, 1));
-        
-        // Gold ore gives nuggets as bonus
-        registerSmeltingBonus(Identifier.parse("minecraft:raw_gold"),
-                new ItemStack(Items.GOLD_NUGGET, 1));
-        registerSmeltingBonus(Identifier.parse("minecraft:gold_ore"),
-                new ItemStack(Items.GOLD_NUGGET, 1));
-        
-        // Copper ore gives extra copper
-        registerSmeltingBonus(Identifier.parse("minecraft:raw_copper"),
-                new ItemStack(Items.COPPER_INGOT, 1));
-        
-        // Wood gives charcoal and ash
-        registerSmeltingBonus(Identifier.parse("minecraft:oak_log"),
-                new ItemStack(Items.CHARCOAL, 1));
-        registerSmeltingBonus(Identifier.parse("minecraft:spruce_log"),
-                new ItemStack(Items.CHARCOAL, 1));
-        registerSmeltingBonus(Identifier.parse("minecraft:birch_log"),
-                new ItemStack(Items.CHARCOAL, 1));
-        registerSmeltingBonus(Identifier.parse("minecraft:dark_oak_log"),
-                new ItemStack(Items.CHARCOAL, 1));
-        registerSmeltingBonus(Identifier.parse("minecraft:cherry_log"),
-                new ItemStack(Items.CHARCOAL, 1));
-        registerSmeltingBonus(Identifier.parse("minecraft:mangrove_log"),
-                new ItemStack(Items.CHARCOAL, 1));
+        // Ores -> nuggets (1.12 oreIron/oreGold/oreCinnabar/oreQuartz)
+        for (ItemStack ironOre : new ItemStack[] { new ItemStack(Items.IRON_ORE), new ItemStack(Items.RAW_IRON), new ItemStack(Items.DEEPSLATE_IRON_ORE) }) {
+            ThaumcraftApi.addSmeltingBonus(ironOre, new ItemStack(Items.IRON_NUGGET));
+        }
+        for (ItemStack goldOre : new ItemStack[] { new ItemStack(Items.GOLD_ORE), new ItemStack(Items.RAW_GOLD), new ItemStack(Items.DEEPSLATE_GOLD_ORE) }) {
+            ThaumcraftApi.addSmeltingBonus(goldOre, new ItemStack(Items.GOLD_NUGGET));
+        }
+        for (ItemStack cinnabarOre : new ItemStack[] { new ItemStack(ModBlocks.CINNABAR_ORE.get()), new ItemStack(ModBlocks.DEEPSLATE_CINNABAR_ORE.get()) }) {
+            ThaumcraftApi.addSmeltingBonus(cinnabarOre, new ItemStack(ModItems.QUICKSILVER_NUGGET.get()));
+        }
+        for (ItemStack quartzOre : new ItemStack[] { new ItemStack(ModBlocks.QUARTZ_ORE.get()), new ItemStack(ModBlocks.DEEPSLATE_QUARTZ_ORE.get()) }) {
+            ThaumcraftApi.addSmeltingBonus(quartzOre, new ItemStack(ModItems.QUARTZ_NUGGET.get()));
+        }
+
+        // Clusters -> nuggets (1.12 cluster metas 0/1/6)
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_IRON.get()), new ItemStack(Items.IRON_NUGGET));
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_GOLD.get()), new ItemStack(Items.GOLD_NUGGET));
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_CINNABAR.get()), new ItemStack(ModItems.QUICKSILVER_NUGGET.get()));
+
+        // Meat -> meat chunks (1.12 ItemsTC.chunks metas 0-5)
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(Items.BEEF), new ItemStack(ModItems.CHUNKS_BEEF.get()));
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(Items.CHICKEN), new ItemStack(ModItems.CHUNKS_CHICKEN.get()));
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(Items.PORKCHOP), new ItemStack(ModItems.CHUNKS_PORK.get()));
+        for (ItemStack fish : new ItemStack[] { new ItemStack(Items.COD), new ItemStack(Items.SALMON), new ItemStack(Items.TROPICAL_FISH), new ItemStack(Items.PUFFERFISH) }) {
+            ThaumcraftApi.addSmeltingBonus(fish, new ItemStack(ModItems.CHUNKS_FISH.get()));
+        }
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(Items.RABBIT), new ItemStack(ModItems.CHUNKS_RABBIT.get()));
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(Items.MUTTON), new ItemStack(ModItems.CHUNKS_MUTTON.get()));
+
+        // Rare-earth nugget chances (1.12 L519-531)
+        for (ItemStack ore : new ItemStack[] { new ItemStack(Items.DIAMOND_ORE), new ItemStack(Items.DEEPSLATE_DIAMOND_ORE), new ItemStack(Items.EMERALD_ORE), new ItemStack(Items.DEEPSLATE_EMERALD_ORE) }) {
+            ThaumcraftApi.addSmeltingBonus(ore, new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.025f);
+        }
+        for (ItemStack ore : new ItemStack[] { new ItemStack(Items.REDSTONE_ORE), new ItemStack(Items.DEEPSLATE_REDSTONE_ORE), new ItemStack(Items.LAPIS_ORE), new ItemStack(Items.DEEPSLATE_LAPIS_ORE) }) {
+            ThaumcraftApi.addSmeltingBonus(ore, new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.01f);
+        }
+        for (ItemStack ore : new ItemStack[] { new ItemStack(Items.GOLD_ORE), new ItemStack(Items.RAW_GOLD), new ItemStack(Items.DEEPSLATE_GOLD_ORE) }) {
+            ThaumcraftApi.addSmeltingBonus(ore, new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.02f);
+        }
+        for (ItemStack ore : new ItemStack[] { new ItemStack(Items.IRON_ORE), new ItemStack(Items.RAW_IRON), new ItemStack(Items.DEEPSLATE_IRON_ORE) }) {
+            ThaumcraftApi.addSmeltingBonus(ore, new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.01f);
+        }
+        for (ItemStack ore : new ItemStack[] { new ItemStack(ModBlocks.CINNABAR_ORE.get()), new ItemStack(ModBlocks.DEEPSLATE_CINNABAR_ORE.get()) }) {
+            ThaumcraftApi.addSmeltingBonus(ore, new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.025f);
+        }
+        for (ItemStack ore : new ItemStack[] { new ItemStack(Items.COPPER_ORE), new ItemStack(Items.RAW_COPPER), new ItemStack(Items.DEEPSLATE_COPPER_ORE), new ItemStack(ModBlocks.QUARTZ_ORE.get()), new ItemStack(ModBlocks.DEEPSLATE_QUARTZ_ORE.get()) }) {
+            ThaumcraftApi.addSmeltingBonus(ore, new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.01f);
+        }
+        // 1.12's "any cluster" rare-earth chance
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_IRON.get()), new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.02f);
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_GOLD.get()), new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.02f);
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_COPPER.get()), new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.02f);
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_CINNABAR.get()), new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.02f);
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_TIN.get()), new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.02f);
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_SILVER.get()), new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.02f);
+        ThaumcraftApi.addSmeltingBonus(new ItemStack(ModItems.CLUSTER_LEAD.get()), new ItemStack(ModItems.NUGGET_RARE_EARTH.get()), 0.02f);
     }
 }
