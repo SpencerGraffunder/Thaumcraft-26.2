@@ -13,8 +13,24 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
 > historical — the build now targets 26.3 end-to-end (gradle.properties,
 > mods.toml template, decompiled-source pipeline, CI).
 
-## Status: 26.3 migration — complete (build green, 1.12 recipe parity audited, verified in-game, installed)
+## Status: 26.3 migration — complete (audit gate GREEN, build green, verified in-game, installed)
 
+- **Verification layer (2026-10-09): `tools/run_all_audits.sh` — GATE GREEN.**
+  One command runs all 8 static 1.12-vs-port oracles (aspects 242/242,
+  recipe pairs 152/152, research refs, recipe<->research cross-refs,
+  client item defs, models/textures, Java→resource refs, inventory
+  read-while-write loops) **plus a headless in-game smoke** — a real
+  dedicated server boots in a fresh world with `TC_SMOKE=1` and runs a
+  12-check assertion battery at `ServerStartedEvent` (registrations,
+  recipe load, research gates, enchantments, loot modifiers, aspects,
+  lang coverage); exits non-zero on any red row. The gate caught and
+  fixed: dedicated-server client-class leaks (focus FX moved to
+  `@OnlyIn(CLIENT)` `FocusFX`), 5 recipe JSONs with invalid 26.3
+  ingredient formats (fatal on data load), the DeferredRegister
+  enchantment collision (now 9 data-driven `data/thaumcraft/enchantment/*`
+  files), the 1.12 `nitorcolor` research-page display recipe, 3 stale
+  texture refs, 3 live-inventory read-while-write loops, and a missing
+  `cluster_quartz` client item definition.
 - `./gradlew build` — **SUCCESS** → `build/libs/thaumcraft-6.2.0+26.3.jar`
   (86/86 tests green, 0 TODOs left in source).
 - Full neoForm decompile→patch→recompile pipeline runs inside the build
