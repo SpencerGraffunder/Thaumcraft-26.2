@@ -1,6 +1,5 @@
 package thaumcraft.common.items.casters.foci;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -10,9 +9,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.client.multiplayer.ClientLevel;
-import thaumcraft.client.fx.FXDispatcher;
-import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import thaumcraft.api.aspects.Aspect;
@@ -171,27 +167,6 @@ public class FocusEffectCurse extends FocusEffect {
         };
     }
 
-    @Override
-    public void renderParticleFX(Level level, double posX, double posY, double posZ,
-                                  double motionX, double motionY, double motionZ) {
-        if (!(level instanceof ClientLevel)) {
-            return;
-        }
-        net.minecraft.util.RandomSource random = level.getRandom();
-        // 1.12-faithful: FXGeneric curse sprite (sprites 72..75)
-        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ, motionX, motionY, motionZ);
-        fb.setMaxAge(8);
-        fb.setColor(0.41F + random.nextFloat() * 0.2F, 0.0F, 0.019F + random.nextFloat() * 0.2F);
-        fb.setAlphaKeyframes(0.0F, random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.0F);
-        fb.setGridSize(16);
-        fb.setParticles(72 + random.nextInt(4), 1, 1);
-        fb.setScale((2.0F + random.nextFloat() * 4.0F) * 0.1F);
-        fb.setLoop(false);
-        fb.setSlowDown(0.9);
-        fb.setGravity(0.0F);
-        fb.setRotationSpeedWithStart(random.nextFloat(), 0.0F);
-        FXDispatcher.INSTANCE.addEffectWithDelay(fb, random.nextInt(4));
-    }
 
     @Override
     public void onCast(Entity caster) {

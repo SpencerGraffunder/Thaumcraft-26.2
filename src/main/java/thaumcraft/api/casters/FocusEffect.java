@@ -49,10 +49,14 @@ public abstract class FocusEffect extends FocusNode {
     
     /**
      * Render particle effects for this focus effect.
-     * Called on the client side.
+     * No-op in common code: client rendering is dispatched by
+     * {@code thaumcraft.client.fx.FocusFX} (NeoForge 26.3 has no @OnlyIn
+     * member-stripping, so client FX code cannot live in common classes —
+     * the dedicated server would fail to load them).
      */
-    public abstract void renderParticleFX(Level level, double posX, double posY, double posZ, 
-                                          double motionX, double motionY, double motionZ);
+    public void renderParticleFX(Level level, double posX, double posY, double posZ,
+                                 double motionX, double motionY, double motionZ) {
+    }
 
     /**
      * Called when the spell is first cast, before effects are applied.

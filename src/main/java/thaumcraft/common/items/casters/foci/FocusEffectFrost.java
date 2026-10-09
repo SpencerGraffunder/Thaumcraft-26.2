@@ -1,7 +1,6 @@
 package thaumcraft.common.items.casters.foci;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -12,9 +11,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.client.multiplayer.ClientLevel;
-import thaumcraft.client.fx.FXDispatcher;
-import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -154,25 +150,6 @@ public class FocusEffectFrost extends FocusEffect {
         };
     }
 
-    @Override
-    public void renderParticleFX(Level level, double posX, double posY, double posZ,
-                                  double motionX, double motionY, double motionZ) {
-        if (!(level instanceof ClientLevel)) {
-            return;
-        }
-        net.minecraft.util.RandomSource random = level.getRandom();
-        // 1.12-faithful: FXGeneric frost sprite (sprite 8)
-        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ, motionX, motionY, motionZ);
-        fb.setMaxAge(40 + random.nextInt(40));
-        fb.setAlphaKeyframes(1.0F, 0.0F);
-        fb.setParticles(8, 1, 1);
-        fb.setGravity(0.033F);
-        fb.setSlowDown(0.8);
-        fb.setRandomMovementScale(0.0025F, 1.0E-4F, 0.0025F);
-        fb.setScale((float) (0.7F + random.nextGaussian() * 0.3F) * 0.1F);
-        fb.setRotationSpeedWithStart(random.nextFloat() * 3.0F, (float) random.nextGaussian() / 4.0F);
-        FXDispatcher.INSTANCE.addEffectWithDelay(fb, 0);
-    }
 
     @Override
     public void onCast(Entity caster) {

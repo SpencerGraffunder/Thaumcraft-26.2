@@ -1,7 +1,6 @@
 package thaumcraft.common.items.casters.foci;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -11,9 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.client.multiplayer.ClientLevel;
-import thaumcraft.client.fx.FXDispatcher;
-import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -179,22 +175,6 @@ public class FocusEffectBreak extends FocusEffect {
         };
     }
 
-    @Override
-    public void renderParticleFX(Level level, double posX, double posY, double posZ,
-                                  double motionX, double motionY, double motionZ) {
-        if (!(level instanceof ClientLevel)) {
-            return;
-        }
-        net.minecraft.util.RandomSource random = level.getRandom();
-        // 1.12-faithful: FXGeneric breaking sprite (sprites 704..713)
-        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ, motionX, motionY, motionZ);
-        fb.setMaxAge(6 + random.nextInt(6));
-        int q = random.nextInt(4);
-        fb.setParticles(704 + q * 3, 3, 1);
-        fb.setSlowDown(0.8);
-        fb.setScale((float) (1.7F + random.nextGaussian() * 0.3F) * 0.1F);
-        FXDispatcher.INSTANCE.addEffect(fb);
-    }
 
     @Override
     public void onCast(Entity caster) {

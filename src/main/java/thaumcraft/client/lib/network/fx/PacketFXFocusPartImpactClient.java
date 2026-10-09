@@ -37,7 +37,7 @@ public class PacketFXFocusPartImpactClient {
                     double my = rand.nextGaussian() * 0.15;
                     double mz = rand.nextGaussian() * 0.15;
                     
-                    effect.renderParticleFX(level, msg.x, msg.y, msg.z, mx, my, mz);
+                    thaumcraft.client.fx.FocusFX.render(effect, level, msg.x, msg.y, msg.z, mx, my, mz);
                 }
             }
         }

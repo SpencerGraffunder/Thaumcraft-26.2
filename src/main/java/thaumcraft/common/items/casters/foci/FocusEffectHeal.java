@@ -1,6 +1,5 @@
 package thaumcraft.common.items.casters.foci;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -8,9 +7,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.client.multiplayer.ClientLevel;
-import thaumcraft.client.fx.FXDispatcher;
-import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import thaumcraft.api.aspects.Aspect;
@@ -113,30 +109,6 @@ public class FocusEffectHeal extends FocusEffect {
         };
     }
 
-    @Override
-    public void renderParticleFX(Level level, double posX, double posY, double posZ,
-                                  double motionX, double motionY, double motionZ) {
-        if (!(level instanceof ClientLevel)) {
-            return;
-        }
-        net.minecraft.util.RandomSource random = level.getRandom();
-        // 1.12-faithful: FXGeneric heal mote (white, alpha 0->0.7->0.7->0)
-        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ,
-                motionX + random.nextGaussian() * 0.01,
-                motionY + random.nextGaussian() * 0.01,
-                motionZ + random.nextGaussian() * 0.01);
-        fb.setMaxAge((int) (10.0F + 10.0F * random.nextFloat()));
-        fb.setColor(1.0F, 1.0F, 1.0F);
-        fb.setAlphaKeyframes(0.0F, 0.7F, 0.7F, 0.0F);
-        fb.setGridSize(64);
-        fb.setParticles(0, 1, 1);
-        fb.setScaleKeyframes(random.nextFloat() * 2.0F * 0.1F, random.nextFloat() * 0.1F);
-        fb.setSlowDown(0.8);
-        fb.setGravity((float) (random.nextGaussian() * 0.1F));
-        fb.setRandomMovementScale(0.0125F, 0.0125F, 0.0125F);
-        fb.setRotationSpeed((float) random.nextGaussian());
-        FXDispatcher.INSTANCE.addEffectWithDelay(fb, random.nextInt(4));
-    }
 
     @Override
     public void onCast(Entity caster) {

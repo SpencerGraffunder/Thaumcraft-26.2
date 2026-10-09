@@ -1,7 +1,6 @@
 package thaumcraft.common.items.casters.foci;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -9,8 +8,6 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.client.multiplayer.ClientLevel;
-import thaumcraft.client.fx.FXDispatcher;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -130,25 +127,6 @@ public class FocusEffectFire extends FocusEffect {
         };
     }
 
-    @Override
-    public void renderParticleFX(Level level, double posX, double posY, double posZ,
-                                  double motionX, double motionY, double motionZ) {
-        if (!(level instanceof ClientLevel)) {
-            return;
-        }
-        net.minecraft.util.RandomSource random = level.getRandom();
-        // 1.12-faithful: FXDispatcher.GenPart flame mote (sprites 640..649)
-        FXDispatcher.GenPart pp = new FXDispatcher.GenPart();
-        pp.grav = -0.2F;
-        pp.age = 10;
-        pp.alpha = new float[] { 0.7F };
-        pp.partStart = 640;
-        pp.partInc = 1;
-        pp.partNum = 10;
-        pp.slowDown = 0.75;
-        pp.scale = new float[] { (float) (1.5 + random.nextGaussian() * 0.2F) };
-        FXDispatcher.INSTANCE.drawGenericParticles(posX, posY, posZ, motionX, motionY, motionZ, pp);
-    }
 
     @Override
     public void onCast(Entity caster) {

@@ -1,7 +1,6 @@
 package thaumcraft.common.items.casters.foci;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -11,8 +10,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.client.multiplayer.ClientLevel;
-import thaumcraft.client.fx.FXDispatcher;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -171,28 +168,6 @@ public class FocusEffectEarth extends FocusEffect {
         };
     }
 
-    @Override
-    public void renderParticleFX(Level level, double posX, double posY, double posZ,
-                                  double motionX, double motionY, double motionZ) {
-        if (!(level instanceof ClientLevel)) {
-            return;
-        }
-        net.minecraft.util.RandomSource random = level.getRandom();
-        // 1.12-faithful: FXDispatcher.GenPart dirt mote (sprites 75..78)
-        FXDispatcher.GenPart pp = new FXDispatcher.GenPart();
-        pp.grav = 0.4F;
-        pp.layer = 1;
-        pp.age = 20 + random.nextInt(10);
-        pp.alpha = new float[] { 1.0F, 0.0F };
-        pp.partStart = 75 + random.nextInt(4);
-        pp.partInc = 1;
-        pp.partNum = 1;
-        pp.slowDown = 0.9;
-        pp.rot = (float) random.nextGaussian();
-        float s = (float) (1.0 + random.nextGaussian() * 0.2F);
-        pp.scale = new float[] { s, s / 2.0F };
-        FXDispatcher.INSTANCE.drawGenericParticles(posX, posY, posZ, motionX, motionY, motionZ, pp);
-    }
 
     @Override
     public void onCast(Entity caster) {

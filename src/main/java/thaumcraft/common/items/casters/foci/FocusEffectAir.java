@@ -1,6 +1,5 @@
 package thaumcraft.common.items.casters.foci;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -9,8 +8,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.client.multiplayer.ClientLevel;
-import thaumcraft.client.fx.FXDispatcher;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -131,28 +128,6 @@ public class FocusEffectAir extends FocusEffect {
         };
     }
 
-    @Override
-    public void renderParticleFX(Level level, double posX, double posY, double posZ,
-                                  double motionX, double motionY, double motionZ) {
-        if (!(level instanceof ClientLevel)) {
-            return;
-        }
-        net.minecraft.util.RandomSource random = level.getRandom();
-        // 1.12-faithful: FXDispatcher.GenPart wind mote (grid 32, sprites 337..341)
-        FXDispatcher.GenPart pp = new FXDispatcher.GenPart();
-        pp.grav = -0.1F;
-        pp.age = 20 + random.nextInt(10);
-        pp.alpha = new float[] { 0.5F, 0.0F };
-        pp.grid = 32;
-        pp.partStart = 337;
-        pp.partInc = 1;
-        pp.partNum = 5;
-        pp.slowDown = 0.75;
-        pp.rot = (float) random.nextGaussian() / 2.0F;
-        float s = (float) (2.0 + random.nextGaussian() * 0.5);
-        pp.scale = new float[] { s, s * 2.0F };
-        FXDispatcher.INSTANCE.drawGenericParticles(posX, posY, posZ, motionX, motionY, motionZ, pp);
-    }
 
     @Override
     public void onCast(Entity caster) {

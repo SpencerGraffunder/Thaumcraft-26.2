@@ -5,7 +5,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
@@ -74,19 +73,13 @@ public class PacketSyncKnowledge implements CustomPacketPayload {
      * the client the check failed, the item returned PASS and vanilla opened the crafting
      * table GUI locally while the server converted the table 2.5s later behind it.
      */
-    public static Consumer<PacketSyncKnowledge> CLIENT_HANDLER = msg -> {
-        if (msg.data == null) {
-            return;
-        }
-        Player player = Minecraft.getInstance().player;
-        if (player == null) {
-            return;
-        }
-        IPlayerKnowledge knowledge = ThaumcraftCapabilities.getKnowledge(player);
-        if (knowledge != null) {
-            knowledge.deserializeNBT(msg.data);
-        }
-    };
+    /**
+     * The real handler is wired in by PacketClientWiring (client init):
+     * PacketSyncKnowledgeClient.handle (deserialize research + popup toasts).
+     * The common default must stay a no-op — client classes are not loadable on
+     * the dedicated server (NeoForge 26.3 has no @OnlyIn member-stripping).
+     */
+    public static Consumer<PacketSyncKnowledge> CLIENT_HANDLER = msg -> {};
 
     public static void handle(PacketSyncKnowledge msg, IPayloadContext ctxSupplier) {
         IPayloadContext ctx = ctxSupplier;

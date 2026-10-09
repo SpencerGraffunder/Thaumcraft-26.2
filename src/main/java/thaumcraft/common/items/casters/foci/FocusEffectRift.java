@@ -2,14 +2,10 @@ package thaumcraft.common.items.casters.foci;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraft.client.multiplayer.ClientLevel;
-import thaumcraft.client.fx.FXDispatcher;
-import thaumcraft.client.fx.particles.FXGeneric;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -182,24 +178,6 @@ public class FocusEffectRift extends FocusEffect {
         };
     }
 
-    @Override
-    public void renderParticleFX(Level level, double posX, double posY, double posZ,
-                                  double motionX, double motionY, double motionZ) {
-        if (!(level instanceof ClientLevel)) {
-            return;
-        }
-        net.minecraft.util.RandomSource random = level.getRandom();
-        // 1.12-faithful: FXGeneric rift sprite (sprite 0, 384+ frames)
-        FXGeneric fb = new FXGeneric((ClientLevel) level, posX, posY, posZ, motionX, motionY, motionZ);
-        fb.setMaxAge(16 + random.nextInt(16));
-        fb.setParticles(384 + random.nextInt(16), 1, 1);
-        fb.setSlowDown(0.75);
-        fb.setAlphaKeyframes(1.0F, 0.0F);
-        fb.setScale((float) (0.7F + random.nextGaussian() * 0.3F) * 0.1F);
-        fb.setColor(0.25F, 0.25F, 1.0F);
-        fb.setRandomMovementScale(0.01F, 0.01F, 0.01F);
-        FXDispatcher.INSTANCE.addEffectWithDelay(fb, 0);
-    }
 
     @Override
     public void onCast(Entity caster) {

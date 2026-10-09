@@ -35,7 +35,7 @@ public class PacketFXFocusEffectClient {
                     double my = msg.motionY + level.getRandom().nextGaussian() / 20.0;
                     double mz = msg.motionZ + level.getRandom().nextGaussian() / 20.0;
                     
-                    effect.renderParticleFX(level, msg.x, msg.y, msg.z, mx, my, mz);
+                    thaumcraft.client.fx.FocusFX.render(effect, level, msg.x, msg.y, msg.z, mx, my, mz);
                 }
             }
         }
