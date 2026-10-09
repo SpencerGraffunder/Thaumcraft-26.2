@@ -281,10 +281,18 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
     private ItemStack extractFromInventory(ResourceHandler<ItemResource> handler, ItemStack match, int amount) {
         ItemStack result = ItemStack.EMPTY;
         int remaining = amount;
-        
-        for (int slot = 0; slot < ItemHandlers.getSlots(handler) && remaining > 0; slot++) {
-            ItemStack slotStack = ItemHandlers.getStackInSlot(handler, slot);
-            if (ItemStack.isSameItemSameComponents(slotStack, match)) {
+
+        // Two-pass: snapshot every slot first (read-only pass), then extract.
+        // Never read and mutate the same live handler in one loop — an
+        // extractItem on a Container-backed handler can replace the backing
+        // store mid-iteration (out-of-bounds slot reads).
+        int slots = ItemHandlers.getSlots(handler);
+        ItemStack[] snapshot = new ItemStack[slots];
+        for (int slot = 0; slot < slots; slot++) {
+            snapshot[slot] = ItemHandlers.getStackInSlot(handler, slot);
+        }
+        for (int slot = 0; slot < slots && remaining > 0; slot++) {
+            if (ItemStack.isSameItemSameComponents(snapshot[slot], match)) {
                 ItemStack extracted = ItemHandlers.extractItem(handler, slot, remaining, false);
                 if (!extracted.isEmpty()) {
                     if (result.isEmpty()) {
@@ -296,7 +304,7 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
                 }
             }
         }
-        
+
         return result;
     }
     

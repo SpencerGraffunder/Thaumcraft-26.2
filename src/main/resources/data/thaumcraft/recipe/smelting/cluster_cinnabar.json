@@ -1,8 +1,6 @@
 {
   "type": "minecraft:smelting",
-  "ingredient": {
-    "id": "thaumcraft:cluster_cinnabar"
-  },
+  "ingredient": "thaumcraft:cluster_cinnabar",
   "result": {
     "id": "thaumcraft:quicksilver",
     "count": 2

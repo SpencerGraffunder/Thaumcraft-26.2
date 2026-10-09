@@ -58,7 +58,7 @@ public class BookPopupRenderer {
     private static final Identifier BOOK = Identifier.fromNamespaceAndPath(
             Thaumcraft.MODID, "textures/gui/gui_researchbook.png");
     private static final Identifier ASPECT_BACK = Identifier.fromNamespaceAndPath(
-            Thaumcraft.MODID, "textures/gui/aspects/_back.png");
+            Thaumcraft.MODID, "textures/aspects/_back.png"); // 1.12 path
 
     private static final int PANEL = 255; // 1.12 paper panel size
     private static final int TEXT_DARK = 0xFF505050;   // 1.12 5263440

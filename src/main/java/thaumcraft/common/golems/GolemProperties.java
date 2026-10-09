@@ -346,8 +346,8 @@ public class GolemProperties implements IGolemProperties {
         GolemArm.register(new GolemArm("DARTS", 
                 new String[]{"GOLEMRANGED"}, 
                 Identifier.fromNamespaceAndPath("thaumcraft", "textures/misc/golem/arms_darts.png"), 
-                new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_arms_darts.obj"), 
-                             Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/golem_arms_darts.png"), 
+                new PartModel(Identifier.fromNamespaceAndPath("thaumcraft", "models/obj/golem_arms_darter.obj"), // 1.12: darter
+                             Identifier.fromNamespaceAndPath("thaumcraft", "textures/entity/golems/golem_arms_darter.png"),
                              PartModel.EnumAttachPoint.ARMS), 
                 new Object[]{new ItemStack(ModItems.GOLEM_MODULE_AGGRESSION.get()), new ItemStack(Items.ARROW, 4), "base"}, 
                 new thaumcraft.common.golems.parts.GolemArmDart(),

@@ -15,9 +15,6 @@ public class ThaumcraftClient {
     /** HUD gauge frame texture (gui/hud.png). Null until the texture pipeline is wired. */
     public static Identifier HUD_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/hud.png");
 
-    /** Caster dial texture (gui/dial.png). Null until the texture pipeline is wired. */
-    public static Identifier DIAL_TEXTURE = Identifier.fromNamespaceAndPath("thaumcraft", "textures/gui/dial.png");
-
     private ThaumcraftClient() {
     }
 }

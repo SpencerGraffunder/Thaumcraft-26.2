@@ -10,7 +10,7 @@
   "key": {
     "L": "#c:leathers",
     "G": "#c:nuggets/gold",
-    "B": "minecraft:gold_ingot"
+    "B": "thaumcraft:girdle_mundane"
   },
   "result": {
     "id": "thaumcraft:focus_pouch"

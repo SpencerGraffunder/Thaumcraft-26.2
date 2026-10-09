@@ -49,7 +49,23 @@ public class FakeRecipes {
                 new FakeRecipe("GOLEMANCY", "Golem Press",
                         new ItemStack(ModItems.GOLEM_PLACER.get())));
 
-        Thaumcraft.LOGGER.info("Registered 5 multiblock/display book recipes");
+        // Nitor color palette (1.12 UNLOCKALCHEMY page display entry, recipe id
+        // "nitorcolor" in research/basics.json). The real recipes are the 16
+        // shapeless dye+nitor crafting recipes; this display row shows the
+        // palette (FakeRecipe renders up to 8 items).
+        ThaumcraftApi.addFakeCraftingRecipe(
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, "nitorcolor"),
+                new FakeRecipe("UNLOCKALCHEMY", "Nitor Colors",
+                        new ItemStack(thaumcraft.init.ModBlocks.NITOR_WHITE.get()),
+                        new ItemStack(thaumcraft.init.ModBlocks.NITOR_ORANGE.get()),
+                        new ItemStack(thaumcraft.init.ModBlocks.NITOR_MAGENTA.get()),
+                        new ItemStack(thaumcraft.init.ModBlocks.NITOR_LIGHT_BLUE.get()),
+                        new ItemStack(thaumcraft.init.ModBlocks.NITOR_YELLOW.get()),
+                        new ItemStack(thaumcraft.init.ModBlocks.NITOR_LIME.get()),
+                        new ItemStack(thaumcraft.init.ModBlocks.NITOR_PINK.get()),
+                        new ItemStack(thaumcraft.init.ModBlocks.NITOR_GRAY.get())));
+
+        Thaumcraft.LOGGER.info("Registered 6 multiblock/display book recipes");
     }
 
     /**

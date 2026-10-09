@@ -182,10 +182,18 @@ public class InventoryUtils {
         int removed = 0;
         
         if (inventory != null) {
-            for (int slot = 0; slot < ItemHandlers.getSlots(inventory); slot++) {
-                ItemStack slotStack = ItemHandlers.getStackInSlot(inventory, slot);
-                if (areItemStacksEqual(stack, slotStack, filter)) {
-                    int toExtract = Math.min(amount - removed, slotStack.getCount());
+            // Two-pass: snapshot every slot first (read-only pass), then extract.
+            // Never read and mutate the same live handler in one loop — an
+            // extractItem on a Container-backed handler can replace the backing
+            // store mid-iteration (out-of-bounds slot reads).
+            int slots = ItemHandlers.getSlots(inventory);
+            ItemStack[] snapshot = new ItemStack[slots];
+            for (int slot = 0; slot < slots; slot++) {
+                snapshot[slot] = ItemHandlers.getStackInSlot(inventory, slot);
+            }
+            for (int slot = 0; slot < slots; slot++) {
+                if (areItemStacksEqual(stack, snapshot[slot], filter)) {
+                    int toExtract = Math.min(amount - removed, snapshot[slot].getCount());
                     ItemStack extracted = ItemHandlers.extractItem(inventory, slot, toExtract, simulate);
                     if (!extracted.isEmpty()) {
                         removed += extracted.getCount();

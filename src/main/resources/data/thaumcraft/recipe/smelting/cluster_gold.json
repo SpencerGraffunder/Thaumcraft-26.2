@@ -1,8 +1,6 @@
 {
   "type": "minecraft:smelting",
-  "ingredient": {
-    "id": "thaumcraft:cluster_gold"
-  },
+  "ingredient": "thaumcraft:cluster_gold",
   "result": {
     "id": "minecraft:gold_nugget",
     "count": 2
