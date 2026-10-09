@@ -148,7 +148,11 @@ public class ThaumcraftCraftingManager {
                                                                   ItemStack catalyst, 
                                                                   Player player, 
                                                                   Level level) {
-        if (catalyst.isEmpty() || level == null) {
+        // 1.12 parity (ThaumcraftCraftingManager.findMatchingCrucibleRecipe):
+        // matching REQUIRES a live player thrower — the whole 1.12 condition is
+        //   player != null && knowsResearchStrict(player, recipe.research) && recipe.matches(...)
+        // so an item dropped by a machine (no thrower) never crafts, it only dissolves.
+        if (catalyst.isEmpty() || level == null || player == null) {
             return null;
         }
         
@@ -157,20 +161,20 @@ public class ThaumcraftCraftingManager {
             return null;
         }
 
-        // 1.12 parity (ThaumcraftCraftingManager.findMatchingCrucibleRecipe): among all
-        // recipes that match, the one with the HIGHEST total aspect cost wins.
+        // 1.12 parity: among all recipes that match, the one with the HIGHEST
+        // total aspect cost wins. Research gate is the STRICT 1.12 check
+        // (knowsResearchStrict: plain key = fully complete, "@n" = stage, &&/||).
         int highest = 0;
         CrucibleRecipeType out = null;
         for (RecipeHolder<?> recipe : recipeManager.recipeMap().byType(ModRecipeTypes.CRUCIBLE.get())) {
             if (recipe.value() instanceof CrucibleRecipeType crucibleRecipe) {
                 // Check if the recipe matches
                 if (crucibleRecipe.matchesCrucible(crucibleAspects, catalyst)) {
-                    // Check research requirement
+                    // Check research requirement (1.12: strict; empty key passes)
                     String research = crucibleRecipe.getResearch();
-                    if (research != null && !research.isEmpty() && player != null) {
-                        if (!ThaumcraftCapabilities.isResearchKnown(player, research)) {
-                            continue;
-                        }
+                    if (research != null && !research.isEmpty()
+                            && !thaumcraft.api.capabilities.ThaumcraftCapabilities.knowsResearchStrict(player, research)) {
+                        continue;
                     }
                     int result = crucibleRecipe.getAspects().visSize();
                     if (result > highest) {

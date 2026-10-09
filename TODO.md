@@ -4,6 +4,72 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-09 — Verification layer: audit gate + in-game smoke — GATE GREEN (commits 0bdb6ee…3df1987)
+
+"Find every problem" was unbounded; the done-signal is now machine-enforced:
+`tools/run_all_audits.sh` runs all 8 static 1.12-vs-port oracles **plus a
+headless in-game smoke** (real dedicated server, fresh world, `TC_SMOKE=1`,
+18-check assertion battery at `ServerStartedEvent` via `ThaumcraftSmoke`).
+Any red row → non-zero exit. **Current state: GATE GREEN** (8/8 oracles,
+SMOKE 18/18).
+
+The battery grew from 12 → 18 checks by adding six behavioral loops that
+deterministically simulate core 1.12 gameplay: research progression
+(FIRSTSTEPS 0→1→2), crucible crafting (strict HEDGEALCHEMY gate + water
+pool drain + result ejection), infusion-recipe assembly, REFINING mining
+loot (live global-modifier pipeline), golem spawn+tick, and phial filling.
+
+Two of the new checks initially failed — both were **test-harness bugs, not
+mod bugs**, found by instrumenting the live path:
+- **refining-loot**: the test rolled the iron-ore loot table 64× but passed
+  one fixed seed, so every "roll" was the same deterministic draw (and small
+  consecutive seeds are also no good — the loot random is an LCG,
+  `LegacyRandomSource`, whose first outputs are correlated for nearby seeds).
+  Fix: seed each roll with a splitmix64-spread index so the first draws are
+  uniform. The `RefiningMiningLootModifier` itself was correct (verified by
+  logging `doApply`: it saw `blockState=iron_ore`, `tool=REFINING-4`, and
+  converted when the draw allowed).
+- **golem-tick**: the test spawned the golem via `addFreshEntity` without
+  valid placement, so the construct safety guard (`EntityOwnedConstruct`
+discards when `!validSpawn`) removed it on tick 1 — correct 1.12 behavior,
+  since a construct only persists if placed by its owner. Fix: the test now
+  calls `setValidSpawn()` to simulate a player-placed golem.
+
+The first green run's predecessors found & fixed (all in this batch):
+1. **Dedicated-server boot crash** — `NoClassDefFoundError:
+   net/minecraft/client/particle/Particle`: common deferred init loaded
+   client particle classes through `FocusEffect#renderParticleFX`. 26.3 no
+   longer strips `@OnlyIn` at runtime. Fix: all 10 render bodies moved to
+   `@OnlyIn(CLIENT)` `thaumcraft.client.fx.FocusFX`; base method is a
+   common no-op; `PacketFXFocus*` route through it. Same class of leak in
+   `PacketSyncKnowledge` / `PacketAuraToClient` (common `CLIENT_HANDLER`
+   must be a no-op default; client lambdas live in client wiring).
+2. **5 recipe JSONs with invalid 26.3 ingredient formats** (fatal "Invalid
+   data pack" on server data load): `arcane_stone` (list-format ingredient)
+   + `cluster_{iron,gold,cinnabar,quartz}` smelting (string-list
+   ingredients).
+3. **Enchantments were never working** — the `DeferredRegister` collided
+   with 26.3's data-driven enchantment load. Now 9 files under
+   `data/thaumcraft/enchantment/` (1.12 params); `ModEnchantments` is
+   plain `ResourceKey` constants (`ResourceKey.identifier()`, not the
+   removed `getId()`).
+4. **Audit-gate findings (this session's final round):**
+   - K2: `UNLOCKALCHEMY@3` page recipe id `thaumcraft:nitorcolor` (1.12
+     research data) resolved to nothing → registered the display-only
+     "Nitor Colors" palette fake in `FakeRecipes`.
+   - resources: `_back.png` is at `textures/aspects/` (1.12 path), not
+     `textures/gui/aspects/`; DARTS golem arm model is
+     `golem_arms_darter.obj/.png`; dead `DIAL_TEXTURE` (`gui/dial.png` does
+     not exist in 1.12 either) removed from `ThaumcraftClient`.
+   - inv_loops: 3 read-while-write inventory loops (SealProvide, SealEmpty,
+     InventoryUtils) → two-pass extract (snapshot read-only, then extract).
+   - client_items: `items/cluster_quartz.json` definition added (all sibling
+     clusters had one).
+   - data: `focus_pouch` now uses `girdle_mundane` (1.12), not a gold ingot.
+
+DoD at handoff: `./gradlew build` rc 0, 0 TODOs in src, gate GREEN, 4
+commits (0bdb6ee…3df1987).
+
 ## 2026-10-08 — 1.12 parity round 5: inventories + behaviors audits — DONE (commit below)
 
 Two structural audits vs 1.12 BETA26, then fixes for everything they found.

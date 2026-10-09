@@ -157,20 +157,30 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
      * Returns remaining items, or null if fully consumed.
      */
     public ItemStack attemptSmelt(ItemStack item, String username) {
+        if (level == null || username == null) return item;
+
+        // 1.12: the thrower name comes from the item entity's NBT; resolve it to
+        // the live player (null if they logged off / the item came from a machine).
+        Player player = level.getPlayerByUUID(java.util.UUID.nameUUIDFromBytes(username.getBytes()));
+        if (player == null && !username.isEmpty()) {
+            player = level.players().stream().filter(p -> p.getName().getString().equals(username)).findFirst().orElse(null);
+        }
+        return attemptSmelt(item, player);
+    }
+
+    /**
+     * Attempt to smelt an item stack with the given (possibly null) thrower.
+     * 1.12 parity: a null player can only dissolve, never craft
+     * (ThaumcraftCraftingManager.findMatchingCrucibleRecipe requires player != null).
+     * Returns remaining items, or null if fully consumed.
+     */
+    public ItemStack attemptSmelt(ItemStack item, @Nullable Player player) {
         if (level == null) return item;
         
         boolean itemChanged = false;
         int remaining = item.getCount();
 
         // Check for crucible recipe
-        Player player = level.getPlayerByUUID(java.util.UUID.nameUUIDFromBytes(username.getBytes())); // Approximate player retrieval
-        // Better to pass Player entity if possible, but username is what we have from ItemEntity
-        // For now, let's just pass null for player if we can't easily get it, or try to get it properly
-        if (player == null && !username.isEmpty()) {
-             // Try to find player by name if UUID fails or simple name
-             player = level.players().stream().filter(p -> p.getName().getString().equals(username)).findFirst().orElse(null);
-        }
-
         CrucibleRecipeType recipe = ThaumcraftCraftingManager.findMatchingCrucibleRecipe(aspects, item, player, level);
         
         if (recipe != null) {
@@ -178,7 +188,11 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
             AspectList required = recipe.getAspects();
             if (aspects.contains(required)) {
                 aspects.remove(required);
-                
+
+                // 1.12 parity: each craft consumes 50 mb of water
+                // (TileCrucible: this.tank.drain(50, true))
+                FluidTanks.drain(tank, 50, false);
+
                 // Crafted successfully
                 ItemStack result = recipe.assemble(null);
                 
@@ -219,13 +233,13 @@ public class TileCrucible extends TileThaumcraft implements IAspectContainer {
             }
         }
 
-        // For now, just dissolve items into aspects
-        // Use crafting manager
-        thaumcraft.api.aspects.AspectList aspects = thaumcraft.common.lib.crafting.ThaumcraftCraftingManager.generateTags(item);
+        // 1.12 parity (TileCrucible.attemptSmelt): no recipe matched, so the
+        // item dissolves and its aspects go into THE CRUCIBLE'S pool
+        // (this.aspects) — not a throwaway list.
         AspectList itemAspects = getItemAspects(item);
         if (itemAspects != null && itemAspects.size() > 0) {
             for (Aspect aspect : itemAspects.getAspects()) {
-                aspects.add(aspect, itemAspects.getAmount(aspect));
+                this.aspects.add(aspect, itemAspects.getAmount(aspect));
             }
             remaining--;
             itemChanged = true;

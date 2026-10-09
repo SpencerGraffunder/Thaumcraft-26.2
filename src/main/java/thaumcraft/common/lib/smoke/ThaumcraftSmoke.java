@@ -1,25 +1,57 @@
 package thaumcraft.common.lib.smoke;
 
 import com.google.gson.JsonObject;
+import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import thaumcraft.api.FluidTanks;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.capabilities.IPlayerKnowledge;
+import thaumcraft.common.golems.EntityThaumcraftGolem;
+import thaumcraft.common.golems.GolemProperties;
+import thaumcraft.common.items.consumables.ItemPhial;
+import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
+import thaumcraft.common.lib.crafting.CrucibleRecipeType;
+import thaumcraft.common.lib.crafting.InfusionRecipeType;
+import thaumcraft.common.lib.enchantment.EnumInfusionEnchantment;
+import thaumcraft.common.lib.research.ResearchManager;
+import thaumcraft.common.tiles.crafting.TileCrucible;
+import thaumcraft.common.tiles.essentia.TileJar;
 import thaumcraft.init.ModRecipeTypes;
 import org.slf4j.Logger;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.AspectHelper;
 import thaumcraft.api.research.ResearchCategories;
-import thaumcraft.common.lib.crafting.CrucibleRecipeType;
-import thaumcraft.common.lib.crafting.InfusionRecipeType;
 import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModEntities;
 import thaumcraft.init.ModItems;
@@ -102,6 +134,12 @@ public final class ThaumcraftSmoke {
             checkEnchantments(server);
             checkAspects();
             checkLangCoverage();
+            checkResearchProgress(server);
+            checkCrucibleCraft(server);
+            checkInfusionRecipes(server);
+            checkRefiningLoot(server);
+            checkGolemTick(server);
+            checkPhialFill(server);
         } catch (Throwable t) {
             fail("smoke-harness", t.toString());
         }
@@ -425,6 +463,465 @@ public final class ThaumcraftSmoke {
             }
         } catch (Exception e) {
             fail("lang", e.toString());
+        }
+    }
+
+    // ============================================================ behavior
+    // The checks below do not assert "registered and loaded". They EXECUTE
+    // core 1.12 gameplay loops on the live server (crafting stations, mining,
+    // research progression, entity AI, item interactions) so a regression
+    // that breaks a loop is caught here, not in a player's world.
+
+    /** A real, throwaway ServerPlayer for capability/interaction checks. */
+    private static ServerPlayer testPlayer(MinecraftServer server) {
+        var profile = new GameProfile(java.util.UUID.randomUUID(), "smoketest");
+        return new ServerPlayer(server, server.overworld(), profile,
+                ClientInformation.createDefault());
+    }
+
+    /** An air BlockPos three above the motion-blocking surface at (x, z). */
+    private static BlockPos airPos(ServerLevel level, int x, int z) {
+        int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) + 3;
+        return new BlockPos(x, y, z);
+    }
+
+    // -- research: the progression mechanism behind the nomicon flow (the
+    //    path the 2026-09-30 FIRSTSTEPS deadlock broke) ------------------
+    private static void checkResearchProgress(MinecraftServer server) {
+        try {
+            var p1 = testPlayer(server);
+            IPlayerKnowledge k1 = ThaumcraftCapabilities.getKnowledge(p1).orElse(null);
+            if (k1 == null) {
+                fail("research-progress", "no knowledge attachment on fresh player");
+                return;
+            }
+            if (k1.isResearchKnown("FIRSTSTEPS@1")) {
+                fail("research-progress", "fresh player already knows FIRSTSTEPS@1");
+                return;
+            }
+            k1.addResearch("!gotthaumonomicon"); // 1.12: pickup-flag parent
+            if (!ResearchManager.progressResearch(p1, "FIRSTSTEPS", false)) {
+                fail("research-progress", "progressResearch(FIRSTSTEPS) rejected with parent flag set");
+                return;
+            }
+            if (k1.getResearchStage("FIRSTSTEPS") != 1 || !k1.isResearchKnown("FIRSTSTEPS@1")) {
+                fail("research-progress", "stage=" + k1.getResearchStage("FIRSTSTEPS") + " after first progress");
+                return;
+            }
+            if (!ResearchManager.progressResearch(p1, "FIRSTSTEPS", false)) {
+                fail("research-progress", "second progress rejected");
+                return;
+            }
+            if (k1.getResearchStage("FIRSTSTEPS") != 2 || !k1.isResearchKnown("FIRSTSTEPS@2")) {
+                fail("research-progress", "stage=" + k1.getResearchStage("FIRSTSTEPS") + " after second progress");
+                return;
+            }
+            // control: without the parent flag, progression must be blocked
+            var p2 = testPlayer(server);
+            IPlayerKnowledge k2 = ThaumcraftCapabilities.getKnowledge(p2).orElse(null);
+            if (k2 != null && ResearchManager.progressResearch(p2, "FIRSTSTEPS", false)) {
+                fail("research-progress", "progressed WITHOUT parent flag (gate bypass)");
+                return;
+            }
+            p1.discard();
+            p2.discard();
+            pass("research-progress (FIRSTSTEPS 0->1->2 with parent flag; blocked without)");
+        } catch (Throwable t) {
+            fail("research-progress", t.toString());
+        }
+    }
+
+    // -- crucible: the full 1.12 melt loop. The crucible can only gain
+    //    aspects by DISSOLVING items (setAspects is a deliberate no-op), so
+    //    this simulates real play: heat + water, dissolve funders, then
+    //    throw in the catalyst and demand the result.
+    //    hedge_clay: catalyst dirt, needs aqua 5 + terra 5 -> clay_ball.
+    //    water_bucket dissolves to WATER 20 (+VOID/METAL), dirt to EARTH 5.
+    private static void checkCrucibleCraft(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var pos = airPos(level, 128, 128);
+            // Clear any crucible left by a previous smoke run (the dev world is
+            // persistent): setBlock with the same state would keep the stale tile.
+            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            level.setBlock(pos, ModBlocks.CRUCIBLE.get().defaultBlockState(), 3);
+            var tile = (TileCrucible) level.getBlockEntity(pos);
+            if (tile == null) {
+                fail("crucible-craft", "no TileCrucible created at " + pos);
+                return;
+            }
+            tile.heat = 200;
+            FluidTanks.fill(tile.getTankHandler(), new FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1000), false);
+
+            // 1) 1.12: a machine-dropped item (no thrower player) never crafts,
+            //    it only dissolves. Water bucket must fund WATER 20, NOT craft.
+            var afterBucket = tile.attemptSmelt(new ItemStack(Items.WATER_BUCKET), (net.minecraft.world.entity.player.Player) null);
+            if (afterBucket != null) {
+                fail("crucible-craft", "water bucket survived dissolution: " + afterBucket);
+                return;
+            }
+            if (tile.aspects.getAmount(Aspect.WATER) != 20) {
+                fail("crucible-craft", "dissolved water bucket did not add WATER 20 (has "
+                        + tile.aspects.getAmount(Aspect.WATER) + ", pool=" + tile.aspects + ")");
+                return;
+            }
+            // 2) dissolve dirt (still no player) -> must fund EARTH 5
+            var afterDirt = tile.attemptSmelt(new ItemStack(Items.DIRT), (net.minecraft.world.entity.player.Player) null);
+            if (afterDirt != null) {
+                fail("crucible-craft", "funding dirt survived dissolution: " + afterDirt);
+                return;
+            }
+            if (tile.aspects.getAmount(Aspect.EARTH) != 5) {
+                fail("crucible-craft", "dissolved dirt did not add EARTH 5 (pool=" + tile.aspects + ")");
+                return;
+            }
+            // 3) 1.12 strict research gate: no player -> no recipe at all;
+            //    player lacking HEDGEALCHEMY -> no recipe; complete player -> hedge_clay.
+            var dirt = new ItemStack(Items.DIRT);
+            if (thaumcraft.common.lib.crafting.ThaumcraftCraftingManager
+                    .findMatchingCrucibleRecipe(tile.aspects, dirt, null, level) != null) {
+                fail("crucible-craft", "recipe matched with a null player (1.12 requires a live thrower)");
+                return;
+            }
+            var ignorant = testPlayer(server);
+            if (thaumcraft.common.lib.crafting.ThaumcraftCraftingManager
+                    .findMatchingCrucibleRecipe(tile.aspects, dirt, ignorant, level) != null) {
+                fail("crucible-craft", "hedge_clay matched a player who lacks HEDGEALCHEMY (strict gate bypassed)");
+                return;
+            }
+            var scholar = testPlayer(server);
+            var scholarKnowledge = ThaumcraftCapabilities.getKnowledge(scholar).orElse(null);
+            if (scholarKnowledge == null) {
+                fail("crucible-craft", "no knowledge attachment on test player");
+                return;
+            }
+            scholarKnowledge.addResearch("HEDGEALCHEMY");
+            scholarKnowledge.setResearchStage("HEDGEALCHEMY", 4); // 4 stages -> COMPLETE
+            var expected = thaumcraft.common.lib.crafting.ThaumcraftCraftingManager
+                    .findMatchingCrucibleRecipe(tile.aspects, dirt, scholar, level);
+            if (expected == null || !expected.getResultItem().is(Items.CLAY_BALL)) {
+                fail("crucible-craft", "HEDGEALCHEMY-complete player got no hedge_clay (got "
+                        + (expected == null ? "null"
+                        : net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(expected.getResultItem().getItem())) + ")");
+                return;
+            }
+
+            // 4) full craft through the player path: pool drained, 50 mb water
+            //    drained, clay_ball ejected above the crucible.
+            //    NOTE: the 1.12-mechanics side effects (pool/water drain,
+            //    result ejection) all run BEFORE the ItemCraftedEvent. The
+            //    unconnected smoke player has no network connection, so the
+            //    event's recipe-book packet listener NPEs — a real (connected)
+            //    player never hits that, and we verify the mechanics below
+            //    regardless of whether the event fired.
+            int waterBefore = FluidTanks.getAmount(tile.getTankHandler());
+            ItemStack out;
+            Throwable craftError = null;
+            try {
+                out = tile.attemptSmelt(dirt, scholar);
+            } catch (Throwable t) {
+                craftError = t;
+                out = null;
+            }
+            if (craftError == null && out != null) {
+                fail("crucible-craft", "catalyst survived (expected craft): " + out + " (pool=" + tile.aspects + ")");
+                return;
+            }
+            if (tile.aspects.getAmount(Aspect.WATER) != 15 || tile.aspects.getAmount(Aspect.EARTH) != 0) {
+                fail("crucible-craft", "pool not drained by the recipe (aqua 5, terra 5): " + tile.aspects);
+                return;
+            }
+            if (FluidTanks.getAmount(tile.getTankHandler()) != waterBefore - 50) {
+                fail("crucible-craft", "craft did not drain 50 mb water (" + waterBefore + " -> "
+                        + FluidTanks.getAmount(tile.getTankHandler()) + ")");
+                return;
+            }
+            boolean dropped = false;
+            for (var e : level.getEntities().getAll()) {
+                if (e instanceof ItemEntity ie && e.position().distanceTo(Vec3.atCenterOf(pos)) < 4
+                        && !ie.getItem().isEmpty() && ie.getItem().is(Items.CLAY_BALL)) {
+                    dropped = true;
+                    break;
+                }
+            }
+            if (!dropped) {
+                fail("crucible-craft", "clay_ball never left the crucible as an ItemEntity (pool=" + tile.aspects + ")");
+                return;
+            }
+            if (craftError != null && !(craftError instanceof NullPointerException
+                    && String.valueOf(craftError.getMessage()).contains("player.connection"))) {
+                fail("crucible-craft", "craft threw unexpectedly: " + craftError);
+                return;
+            }
+            pass("crucible-craft (no-player dissolve; strict HEDGEALCHEMY gate; player craft -> clay_ball, water " + waterBefore + "->" + (waterBefore - 50) + ")");
+        } catch (Throwable t) {
+            fail("crucible-craft", t.toString());
+        }
+    }
+
+    // -- infusion: every parsed recipe's ingredients resolve + assemble ---
+    private static void checkInfusionRecipes(MinecraftServer server) {
+        try {
+            List<String> problems = new ArrayList<>();
+            int total = 0, withResult = 0, assembled = 0;
+            for (RecipeHolder<?> h : server.getRecipeManager().recipeMap().byType(ModRecipeTypes.INFUSION.get())) {
+                if (!(h.value() instanceof InfusionRecipeType r)) {
+                    continue;
+                }
+                total++;
+                // IE* infusion-enchantment recipes have no central item (the tool
+                // in the player's matrix is the input at craft time) — null is valid there.
+                if (r.getCentralItem() != null && r.getCentralItem().isEmpty()) {
+                    problems.add(h.id().toString() + ": unresolvable central item");
+                }
+                for (Ingredient comp : r.getComponents()) {
+                    if (comp.isEmpty()) {
+                        problems.add(h.id().toString() + ": unresolvable component");
+                    }
+                }
+                var res = r.getResultItem();
+                if (!res.isEmpty()) {
+                    withResult++;
+                    if (assembled < 3) {
+                        var a = r.assemble(null);
+                        if (a.isEmpty() || !a.is(res.getItem())) {
+                            problems.add(h.id().toString() + ": assemble() != result");
+                        } else {
+                            assembled++;
+                        }
+                    }
+                }
+            }
+            if (total == 0) {
+                fail("infusion-recipes", "no infusion recipes parsed");
+                return;
+            }
+            if (problems.isEmpty()) {
+                pass("infusion-recipes (" + total + " parsed, " + withResult + " with result item, "
+                        + assembled + " assemble() spot-checks ok)");
+            } else {
+                fail("infusion-recipes", total + " parsed, problems: " + problems.subList(0, Math.min(5, problems.size())));
+            }
+        } catch (Throwable t) {
+            fail("infusion-recipes", t.toString());
+        }
+    }
+
+    // -- refining: real iron-ore loot table runs, REFINING pickaxe --------
+    //    converts raw iron to clusters through the live global-modifier
+    //    pipeline (LootTable -> CommonHooks.modifyLoot -> our modifier).
+    private static void checkRefiningLoot(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var tableKey = net.minecraft.resources.ResourceKey.create(
+                    Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("minecraft", "blocks/iron_ore"));
+            var table = server.reloadableRegistries().getLootTable(tableKey);
+            var pick = new ItemStack(Items.IRON_PICKAXE);
+            EnumInfusionEnchantment.addInfusionEnchantment(pick, EnumInfusionEnchantment.REFINING, 4);
+            if (EnumInfusionEnchantment.getInfusionEnchantmentLevel(pick, EnumInfusionEnchantment.REFINING) != 4) {
+                fail("refining-loot", "REFINING NBT write/read round-trip broken");
+                return;
+            }
+            int converted = 0;
+            for (int seed = 0; seed < 64; seed++) {
+                var drops = rollOreLoot(server, level, table, pick, spreadSeed(seed));
+                for (var s : drops) {
+                    if (s.is(ModItems.CLUSTER_IRON.get())) {
+                        converted++;
+                    }
+                }
+            }
+            // chance = (1+4)*0.125 = 0.625 per drop; 64 rolls expect ~40
+            // ([20,60] is a ~5-sigma band, so flakes are impossible)
+            if (converted < 20 || converted > 60) {
+                fail("refining-loot", converted + "/64 rolls converted (expected ~40); loaded global modifiers: "
+                        + loadedGlobalModifiers(server)
+                        + "; specialMiningResult keys: " + thaumcraft.common.lib.utils.Utils.specialMiningResult.keySet()
+                        + "; sample drops: " + describeDrops(rollOreLoot(server, level, table, pick, spreadSeed(1)))
+                        + "; direct findSpecialMiningResult(raw_iron, 0.625): " + directMiningResult());
+                return;
+            }
+            int plainConverted = 0;
+            var plain = new ItemStack(Items.IRON_PICKAXE);
+            for (int seed = 0; seed < 16; seed++) {
+                for (var s : rollOreLoot(server, level, table, plain, spreadSeed(seed + 1000))) {
+                    if (s.is(ModItems.CLUSTER_IRON.get())) {
+                        plainConverted++;
+                    }
+                }
+            }
+            if (plainConverted != 0) {
+                fail("refining-loot", plainConverted + " conversions with a PLAIN pickaxe (no REFINING); loaded global modifiers: "
+                        + loadedGlobalModifiers(server));
+                return;
+            }
+            pass("refining-loot (" + converted + "/64 REFINING-4 rolls -> cluster_iron; 0/16 plain rolls)");
+        } catch (Throwable t) {
+            fail("refining-loot", t.toString());
+        }
+    }
+
+    /** 20 direct (modifier-independent) findSpecialMiningResult rolls: cluster count. */
+    private static String directMiningResult() {
+        var rand = net.minecraft.util.RandomSource.create();
+        int clusters = 0;
+        for (int i = 0; i < 20; i++) {
+            if (thaumcraft.common.lib.utils.Utils.findSpecialMiningResult(
+                    new ItemStack(Items.RAW_IRON), 0.625f, rand).is(ModItems.CLUSTER_IRON.get())) {
+                clusters++;
+            }
+        }
+        return clusters + "/20";
+    }
+
+    private static String describeDrops(it.unimi.dsi.fastutil.objects.ObjectArrayList<ItemStack> drops) {
+        var sb = new StringBuilder("[");
+        int n = 0;
+        for (var s : drops) {
+            if (n++ > 0) sb.append(", ");
+            if (n > 6) { sb.append(", ..."); break; }
+            sb.append(s.isEmpty() ? "<empty>"
+                    : net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(s.getItem()) + "x" + s.getCount());
+        }
+        return sb.append("]").toString();
+    }
+
+    /** Which global loot modifiers did the datapack load (diagnostic for refining-loot)? */
+    private static String loadedGlobalModifiers(MinecraftServer server) {
+        try {
+            var mgr = (net.neoforged.neoforge.common.loot.LootModifierManager) server.getServerResources()
+                    .managers().getListener(net.neoforged.neoforge.resource.NeoForgeReloadListeners.LOOT_MODIFIERS_KEY);
+            var ids = new java.util.ArrayList<String>();
+            for (var m : mgr.getSortedModifiers()) ids.add(mgr.getId(m).toString());
+            return ids.toString();
+        } catch (Throwable t) {
+            return "(manager unavailable: " + t + ")";
+        }
+    }
+
+    private static ObjectArrayList<ItemStack> rollOreLoot(MinecraftServer server, ServerLevel level,
+                                                          net.minecraft.world.level.storage.loot.LootTable table,
+                                                          ItemStack tool, long seed) {
+        var orePos = new net.minecraft.core.BlockPos(0, 64, 0);
+        var params = new LootParams.Builder(level)
+                .withParameter(LootContextParams.BLOCK_STATE, Blocks.IRON_ORE.defaultBlockState())
+                .withParameter(LootContextParams.TOOL, tool)
+                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(orePos))
+                .withLuck(0.0f)
+                .create(table.getParamSet());
+        // A distinct, well-spread seed per roll. A fixed seed would make every
+        // "roll" the same deterministic draw; small consecutive seeds are also
+        // no good, because the loot random is an LCG (LegacyRandomSource) whose
+        // first outputs are correlated for nearby seeds. spreadSeed() mixes the
+        // index (splitmix64) so the first draws are uniformly distributed.
+        return table.getRandomItems(params, seed);
+    }
+
+    /** splitmix64 finalizer: spreads small consecutive inputs across the 64-bit space. */
+    private static long spreadSeed(int i) {
+        long z = i + 1L;
+        z = (z ^ (z >>> 30)) * 0xbf58476d1ce4e5b9L;
+        z = (z ^ (z >>> 27)) * 0x94d049bb133111ebL;
+        return z ^ (z >>> 31);
+    }
+
+    // -- golem: spawn a default (BASIC/BASIC/WALKER) golem and tick it ----
+    private static void checkGolemTick(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var props = GolemProperties.fromLong(0L);
+            var comps = ((GolemProperties) props).generateComponents();
+            if (comps.length == 0) {
+                fail("golem-tick", "default golem properties generated no components");
+                return;
+            }
+            // A headless smoke world has NO players, so nothing keeps chunks
+            // loaded. Force-load the spawn chunk synchronously (we are on the
+            // server thread, and no server tick — the only thing that could
+            // unload it — runs between here and the manual g.tick() calls).
+            var spawn = level.getRespawnData().pos();
+            var at = new net.minecraft.core.BlockPos(spawn.getX() + 3, spawn.getY(), spawn.getZ() + 3);
+            // getChunkAt does NOT force a load; an unloaded chunk would make
+            // addFreshEntity silently fail (isRemoved() == true). Force it.
+            level.getChunkSource().getChunk(at.getX() >> 4, at.getZ() >> 4, true);
+            var g = new EntityThaumcraftGolem(ModEntities.THAUMCRAFT_GOLEM.get(), level);
+            g.setProperties(props);
+            g.setPos(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+            level.addFreshEntity(g);
+            // A construct only persists if it was placed properly (the placer
+            // items call setValidSpawn). Simulate that, as a player-placed golem
+            // would — otherwise the safety guard discards it on the first tick.
+            g.setValidSpawn();
+            for (int i = 0; i < 20 && !g.isRemoved(); i++) {
+                g.tick();
+            }
+            if (g.isRemoved()) {
+                fail("golem-tick", "golem died/removed within 20 ticks of spawning at the world spawn (health="
+                        + g.getHealth() + ", pos=" + g.blockPosition() + ", deadOrDying=" + g.isDeadOrDying() + ")");
+                return;
+            }
+            if (!java.lang.Double.isFinite(g.getX()) || !java.lang.Double.isFinite(g.getY())) {
+                fail("golem-tick", "golem position NaN/Inf after ticking");
+                return;
+            }
+            g.discard();
+            pass("golem-tick (default golem spawned, 20 ticks alive, parts registry resolved " + comps.length + " components)");
+        } catch (Throwable t) {
+            fail("golem-tick", t.toString());
+        }
+    }
+
+    // -- phial: full right-click fill against a live jar block ------------
+    private static void checkPhialFill(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var jarPos = airPos(level, 130, 128);
+            level.setBlock(jarPos, ModBlocks.JAR_NORMAL.get().defaultBlockState(), 3);
+            var jar = (TileJar) level.getBlockEntity(jarPos);
+            if (jar == null) {
+                fail("phial-jar", "no TileJar created at " + jarPos);
+                return;
+            }
+            jar.setAspects(new AspectList().add(Aspect.AIR, 100));
+            if (!jar.doesContainerContainAmount(Aspect.AIR, 10)) {
+                fail("phial-jar", "jar with 100 aer claims it lacks 10");
+                return;
+            }
+            var p = testPlayer(server);
+            var empty = new ItemStack(ModItems.PHIAL_EMPTY.get());
+            p.getInventory().setSelectedItem(empty);
+            var hit = new BlockHitResult(Vec3.atCenterOf(jarPos), Direction.UP, jarPos, false);
+            var ctx = new UseOnContext(level, p, InteractionHand.MAIN_HAND, empty, hit) {
+            };
+            var res = ((ItemPhial) empty.getItem()).onItemUseFirst(empty, ctx);
+            if (res != net.minecraft.world.InteractionResult.CONSUME) {
+                fail("phial-jar", "right-click on a full jar returned " + res + " (expected CONSUME)");
+                return;
+            }
+            if (jar.containerContains(Aspect.AIR) != 90) {
+                fail("phial-jar", "jar holds " + jar.containerContains(Aspect.AIR) + " aer after a 10-aer fill (expected 90)");
+                return;
+            }
+            ItemStack filledInInv = ItemStack.EMPTY;
+            for (var s : p.getInventory().getNonEquipmentItems()) {
+                if (s.is(ModItems.PHIAL_FILLED.get())) {
+                    filledInInv = s;
+                    break;
+                }
+            }
+            if (filledInInv.isEmpty()) {
+                fail("phial-jar", "no filled phial in the player's inventory after filling");
+                return;
+            }
+            var got = ((ItemPhial) filledInInv.getItem()).getAspects(filledInInv);
+            if (got == null || got.getAmount(Aspect.AIR) != 10) {
+                fail("phial-jar", "filled phial has wrong contents: " + got);
+                return;
+            }
+            p.discard();
+            pass("phial-jar (right-click filled phial from live jar: CONSUME, jar 100->90 aer, phial = 10 aer)");
+        } catch (Throwable t) {
+            fail("phial-jar", t.toString());
         }
     }
 }
