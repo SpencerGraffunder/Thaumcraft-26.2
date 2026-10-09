@@ -1,4 +1,8 @@
-# Thaumcraft 6 — Minecraft 26.3 (NeoForge) Port
+# Thaumcraft26 — Minecraft 26.3 (NeoForge) Port
+
+> Project renamed **Thaumcraft-26.2 → Thaumcraft26** on 2026-10-08 (repo:
+> github.com/SpencerGraffunder/Thaumcraft26; working dir:
+> `~/Documents/Thaumcraft26`). All 26.2 references below are historical.
 
 Port of **Thaumcraft 6** from the 1.20.1 Forge source fork
 ([ShobieShy/Thaumcraft-6-Source-Code-1.20.1](https://github.com/ShobieShy/Thaumcraft-6-Source-Code-1.20.1))
