@@ -37,5 +37,22 @@
 - **None** — all 17 findings implemented
 - Optional (not in original audit): additional theorycraft aids/cards (AidBrainInAJar, CardCurio, etc.)
 
-## In-game testing needed
-- All sealed GUIs, thaumatorium queue, causality collapser, taint bottle, essentia reservoir fill/drain, seal replanting/stock, aura biome modifiers, research auto-unlock, smelter vents
+## In-game testing — done (2026-10-09, SMOKE 27/27)
+Every item below is now a deterministic check in the `ThaumcraftSmoke` battery
+(`tools/run_smoke.sh`, run by the audit gate):
+
+| Item | Smoke check | Result |
+|---|---|---|
+| Aura biome modifiers | `biome-aura` (specific/tag/default lookup + aspects) | PASS |
+| Thaumatorium queue | `thaumatorium-queue` (cap 5, remove, NBT roundtrip, clear) | PASS |
+| Essentia reservoir fill/drain | `reservoir-phial` (right-click fill + extract) | PASS — **found + fixed a real bug**: fill condition was inverted (`addToContainer` returns the unadded remainder; `> 0` → never filled) |
+| Seal stock matching | `seal-stock` (exact / `c:stones` tag / TC-mod matching) | PASS |
+| Seal config GUIs | `seal-gui` (guard/filtered/use return `SealMenuProvider`; stock intentionally none) | PASS |
+| Causality collapser | `collapser-rift` (thrown projectile hits, nearby flux rift set collapsing) | PASS |
+| Taint bottle | `taint-bottle` (landed, nearby mob got FLUX_TAINT, goo placement logged) | PASS |
+| Smelter vents | `smelter-vents` (3 vents cut pollution well under 60% of unvented) | PASS — **found + fixed a real bug**: shared smelter BE type was registered for the base block only, so placing any variant (vent/aux/thaumium/void) threw "Invalid block entity" |
+| Research auto-unlock | `research-autounlock` (NBT roundtrip + AUTOUNLOCK set == research data) | PASS |
+
+Remaining (genuinely manual, needs a client with a player): seal replanting
+against a live growing crop, and GUIs opened interactively (the providers are
+verified; pixel-level interaction is not).

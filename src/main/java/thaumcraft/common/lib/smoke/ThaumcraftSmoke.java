@@ -6,6 +6,8 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -15,6 +17,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -26,33 +30,54 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import thaumcraft.api.FluidTanks;
+import thaumcraft.api.aura.AuraHelper;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IEssentiaContainerItem;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
+import thaumcraft.common.blocks.essentia.BlockSmelter;
+import thaumcraft.common.entities.EntityFluxRift;
+import thaumcraft.common.entities.projectile.EntityBottleTaint;
+import thaumcraft.common.entities.projectile.EntityCausalityCollapser;
 import thaumcraft.common.golems.EntityThaumcraftGolem;
 import thaumcraft.common.golems.GolemProperties;
+import thaumcraft.common.golems.seals.SealEmpty;
+import thaumcraft.common.golems.seals.SealGuard;
+import thaumcraft.common.golems.seals.SealStock;
+import thaumcraft.common.golems.seals.SealUse;
 import thaumcraft.common.items.consumables.ItemPhial;
+import thaumcraft.common.lib.capabilities.PlayerKnowledge;
 import thaumcraft.common.lib.capabilities.ThaumcraftCapabilities;
 import thaumcraft.common.lib.crafting.CrucibleRecipeType;
 import thaumcraft.common.lib.crafting.InfusionRecipeType;
 import thaumcraft.common.lib.enchantment.EnumInfusionEnchantment;
 import thaumcraft.common.lib.research.ResearchManager;
+import thaumcraft.common.menu.SealMenuProvider;
 import thaumcraft.common.tiles.crafting.TileCrucible;
+import thaumcraft.common.tiles.crafting.TileThaumatorium;
+import thaumcraft.common.tiles.essentia.TileEssentiaReservoir;
 import thaumcraft.common.tiles.essentia.TileJar;
+import thaumcraft.common.tiles.essentia.TileSmelter;
 import thaumcraft.init.ModRecipeTypes;
 import org.slf4j.Logger;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.AspectHelper;
 import thaumcraft.api.research.ResearchCategories;
+import thaumcraft.common.world.biomes.BiomeHandler;
 import thaumcraft.init.ModBlocks;
+import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModEntities;
 import thaumcraft.init.ModItems;
 import thaumcraft.init.ModSounds;
@@ -63,8 +88,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Dev-only in-game assertion battery (the "smoke" layer of the audit pipeline).
@@ -140,6 +167,15 @@ public final class ThaumcraftSmoke {
             checkRefiningLoot(server);
             checkGolemTick(server);
             checkPhialFill(server);
+            checkBiomeAura(server);
+            checkThaumatoriumQueue(server);
+            checkReservoirPhial(server);
+            checkSealStockMatching();
+            checkSealGuiProviders(server);
+            checkCollapserRift(server);
+            checkTaintBottle(server);
+            checkSmelterVents(server);
+            checkResearchAutoUnlock(server);
         } catch (Throwable t) {
             fail("smoke-harness", t.toString());
         }
@@ -922,6 +958,378 @@ public final class ThaumcraftSmoke {
             pass("phial-jar (right-click filled phial from live jar: CONSUME, jar 100->90 aer, phial = 10 aer)");
         } catch (Throwable t) {
             fail("phial-jar", t.toString());
+        }
+    }
+
+    /** 26.3 Biomes constants are ResourceKeys; the handler wants Holders. */
+    private static Holder<net.minecraft.world.level.biome.Biome> biomeHolder(RegistryAccess access, net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> key) {
+        return access.lookupOrThrow(Registries.BIOME).get(key.identifier()).orElseThrow();
+    }
+
+    // -- biome aura modifiers (1.12 BiomeHandler parity) -------------------
+    private static void checkBiomeAura(MinecraftServer server) {
+        try {
+            var access = server.registryAccess();
+            float plains = BiomeHandler.getAuraModifier(biomeHolder(access, Biomes.PLAINS));
+            float mushroom = BiomeHandler.getAuraModifier(biomeHolder(access, Biomes.MUSHROOM_FIELDS));
+            float ocean = BiomeHandler.getAuraModifier(biomeHolder(access, Biomes.OCEAN));
+            float deepDark = BiomeHandler.getAuraModifier(biomeHolder(access, Biomes.DEEP_DARK));
+            if (plains != 0.3f || mushroom != 0.75f || ocean != 0.33f || deepDark != 0.5f) {
+                fail("biome-aura", "modifiers off: plains=" + plains + " (want 0.3 specific), mushroom="
+                        + mushroom + " (want 0.75 specific), ocean=" + ocean + " (want 0.33 IS_OCEAN tag),"
+                        + " deep_dark=" + deepDark + " (want 0.5 no-match default)");
+                return;
+            }
+            var aspectPlains = BiomeHandler.getBiomeAspect(biomeHolder(access, Biomes.PLAINS));
+            var aspectMushroom = BiomeHandler.getBiomeAspect(biomeHolder(access, Biomes.MUSHROOM_FIELDS));
+            if (aspectPlains != Aspect.AIR || aspectMushroom != Aspect.ORDER) {
+                fail("biome-aura", "aspects off: plains=" + aspectPlains + " (want AIR), mushroom="
+                        + aspectMushroom + " (want ORDER)");
+                return;
+            }
+            pass("biome-aura (plains 0.3, mushroom 0.75, ocean 0.33 via tag, deep_dark 0.5 default; aspects AIR/ORDER)");
+        } catch (Throwable t) {
+            fail("biome-aura", t.toString());
+        }
+    }
+
+    // -- thaumatorium recipe queue (cap, remove, NBT roundtrip) -----------
+    private static void checkThaumatoriumQueue(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var pos = airPos(level, 128, 140);
+            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            level.setBlock(pos, ModBlocks.THAUMATORIUM.get().defaultBlockState(), 3);
+            var tile = (TileThaumatorium) level.getBlockEntity(pos);
+            if (tile == null) {
+                fail("thaumatorium-queue", "no TileThaumatorium created at " + pos);
+                return;
+            }
+            for (int i = 1; i <= 5; i++) {
+                if (!tile.addRecipeToQueue(i * 1000, new AspectList().add(Aspect.AIR, i), "smoketest")) {
+                    fail("thaumatorium-queue", "add #" + i + " rejected although queue not full (maxRecipes=" + tile.maxRecipes + ")");
+                    return;
+                }
+            }
+            if (tile.addRecipeToQueue(9999, new AspectList(), "smoketest")) {
+                fail("thaumatorium-queue", "6th recipe accepted despite maxRecipes=5");
+                return;
+            }
+            if (tile.getRecipeCount() != 5 || tile.getRecipeHash(4) != 5000) {
+                fail("thaumatorium-queue", "queue wrong after 5 adds: count=" + tile.getRecipeCount() + ", hash[4]=" + tile.getRecipeHash(4));
+                return;
+            }
+            tile.removeRecipeFromQueue(0);
+            if (tile.getRecipeCount() != 4 || tile.getRecipeHash(0) != 2000) {
+                fail("thaumatorium-queue", "remove(0) wrong: count=" + tile.getRecipeCount() + ", hash[0]=" + tile.getRecipeHash(0) + " (want 4, 2000)");
+                return;
+            }
+            // NBT roundtrip must preserve the queue
+            // Full metadata (the chunk save format, incl. "id") is what loadStatic expects
+            CompoundTag tag = tile.saveWithFullMetadata(level.registryAccess());
+            var tile2 = (TileThaumatorium) BlockEntity.loadStatic(pos, tile.getBlockState(), tag, level.registryAccess());
+            if (tile2.getRecipeCount() != 4 || tile2.getRecipeHash(3) != 5000) {
+                fail("thaumatorium-queue", "NBT roundtrip lost the queue: count=" + tile2.getRecipeCount() + ", hash[3]=" + tile2.getRecipeHash(3));
+                return;
+            }
+            tile.clearRecipeQueue();
+            if (tile.getRecipeCount() != 0) {
+                fail("thaumatorium-queue", "clearRecipeQueue left " + tile.getRecipeCount() + " entries");
+                return;
+            }
+            pass("thaumatorium-queue (cap 5 enforced, remove shifts, NBT roundtrip 4/4, clear)");
+        } catch (Throwable t) {
+            fail("thaumatorium-queue", t.toString());
+        }
+    }
+
+    // -- essentia reservoir phial fill/extract (1.12 right-click I/O) ------
+    private static void checkReservoirPhial(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var pos = airPos(level, 128, 145);
+            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            level.setBlock(pos, ModBlocks.ESSENTIA_RESERVOIR.get().defaultBlockState(), 3);
+            var tile = (TileEssentiaReservoir) level.getBlockEntity(pos);
+            if (tile == null) {
+                fail("reservoir-phial", "no TileEssentiaReservoir created at " + pos);
+                return;
+            }
+            var p = testPlayer(server);
+            var hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+            var state = level.getBlockState(pos);
+            // fill: one phial right-click moves 1 essentia phial -> reservoir
+            var phial = new ItemStack(ModItems.PHIAL_EMPTY.get());
+            ((IEssentiaContainerItem) phial.getItem()).setAspects(phial, new AspectList().add(Aspect.WATER, 3));
+            p.getInventory().setSelectedItem(phial);
+            if (state.useWithoutItem(level, p, hit) != InteractionResult.CONSUME) {
+                fail("reservoir-phial", "fill right-click did not return CONSUME");
+                return;
+            }
+            var held = p.getMainHandItem();
+            var heldAspects = ((IEssentiaContainerItem) held.getItem()).getAspects(held);
+            if (tile.getEssentiaAmount(Direction.UP) != 1 || heldAspects == null || heldAspects.getAmount(Aspect.WATER) != 2) {
+                fail("reservoir-phial", "fill moved wrong amount: reservoir=" + tile.getEssentiaAmount(Direction.UP) + " (want 1), phial=" + heldAspects + " (want 2 aqua)");
+                return;
+            }
+            // extract: empty phial right-click takes 1 essentia reservoir -> phial
+            var empty = new ItemStack(ModItems.PHIAL_EMPTY.get());
+            p.getInventory().setSelectedItem(empty);
+            if (state.useWithoutItem(level, p, hit) != InteractionResult.CONSUME) {
+                fail("reservoir-phial", "extract right-click did not return CONSUME");
+                return;
+            }
+            var held2 = p.getMainHandItem();
+            var held2Aspects = ((IEssentiaContainerItem) held2.getItem()).getAspects(held2);
+            if (tile.getEssentiaAmount(Direction.UP) != 0 || held2Aspects == null || held2Aspects.getAmount(Aspect.WATER) != 1) {
+                fail("reservoir-phial", "extract wrong: reservoir=" + tile.getEssentiaAmount(Direction.UP) + " (want 0), phial=" + held2Aspects + " (want 1 aqua)");
+                return;
+            }
+            p.discard();
+            pass("reservoir-phial (fill moved 1 aqua phial->reservoir; extract moved 1 aqua reservoir->empty phial)");
+        } catch (Throwable t) {
+            fail("reservoir-phial", t.toString());
+        }
+    }
+
+    // -- seal stock matching toggles (exact / tag / mod) -------------------
+    private static void checkSealStockMatching() {
+        try {
+            var seal = new SealStock();
+            var m = SealStock.class.getDeclaredMethod("matchesItem", ItemStack.class, ItemStack.class);
+            m.setAccessible(true);
+            var cobble = new ItemStack(Blocks.COBBLESTONE);
+            var stone = new ItemStack(Blocks.STONE);
+            boolean same = (boolean) m.invoke(seal, cobble, cobble);
+            boolean diffDefault = (boolean) m.invoke(seal, cobble, stone);
+            seal.getToggles()[2].setValue(true); // pore (tag matching)
+            boolean tagMatch = (boolean) m.invoke(seal, cobble, stone);
+            seal.getToggles()[2].setValue(false);
+            seal.getToggles()[3].setValue(true); // pmod (mod matching)
+            boolean modMatch = (boolean) m.invoke(seal, new ItemStack(ModItems.PHIAL_EMPTY.get()), new ItemStack(ModItems.PHIAL_FILLED.get()));
+            boolean modMismatch = (boolean) m.invoke(seal, cobble, new ItemStack(ModItems.PHIAL_EMPTY.get()));
+            if (!same || diffDefault || !tagMatch || !modMatch || modMismatch) {
+                fail("seal-stock", "matchesItem: same=" + same + " (want true), diffDefault=" + diffDefault
+                        + " (want false), tagMatch=" + tagMatch + " (want true), modMatch=" + modMatch
+                        + " (want true), modMismatch=" + modMismatch + " (want false)");
+                return;
+            }
+            pass("seal-stock (exact match; c:stones tag match; TC-vs-TC mod match, TC-vs-vanilla rejected)");
+        } catch (Throwable t) {
+            fail("seal-stock", t.toString());
+        }
+    }
+
+    // -- seal config GUIs (guard/filtered/use all return a menu provider) --
+    private static void checkSealGuiProviders(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var p = testPlayer(server);
+            var pos = airPos(level, 128, 150);
+            Object guard = new SealGuard().returnContainer(level, p, pos, Direction.SOUTH, null);
+            // SealFiltered is abstract; SealEmpty is a concrete subclass that does NOT
+            // override returnContainer, so it exercises the base implementation.
+            Object filtered = new SealEmpty().returnContainer(level, p, pos, Direction.SOUTH, null);
+            Object use = new SealUse().returnContainer(level, p, pos, Direction.SOUTH, null);
+            if (!(guard instanceof SealMenuProvider) || !(filtered instanceof SealMenuProvider) || !(use instanceof SealMenuProvider)) {
+                fail("seal-gui", "returnContainer: guard=" + guard + ", filtered=" + filtered + ", use=" + use
+                        + " (all want a SealMenuProvider)");
+                return;
+            }
+            // SealStock deliberately has no config GUI of its own (1.12: stock is
+            // configured through the provide/golem GUIs)
+            if (new SealStock().returnContainer(level, p, pos, Direction.SOUTH, null) != null) {
+                fail("seal-gui", "SealStock unexpectedly returns a container (want null)");
+                return;
+            }
+            p.discard();
+            pass("seal-gui (guard/filtered/use return SealMenuProvider; stock intentionally has none)");
+        } catch (Throwable t) {
+            fail("seal-gui", t.toString());
+        }
+    }
+
+    // -- causality collapser collapses a nearby flux rift on impact --------
+    private static void checkCollapserRift(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var spawn = level.getRespawnData().pos();
+            var at = new BlockPos(spawn.getX() + 3, spawn.getY(), spawn.getZ() + 3);
+            level.getChunkSource().getChunk(at.getX() >> 4, at.getZ() >> 4, true);
+            int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ()) + 2;
+            var pos = new BlockPos(at.getX(), y, at.getZ());
+            for (int dy = -1; dy <= 1; dy++) {
+                level.setBlock(pos.offset(4, dy, 0), Blocks.STONE.defaultBlockState(), 3);
+            }
+            var player = testPlayer(server);
+            player.setPos(pos.getX() + 0.5, pos.getY() + 0.1, pos.getZ() + 0.5);
+            var rift = new EntityFluxRift(level);
+            rift.setPos(pos.getX() + 2.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+            level.addFreshEntity(rift);
+            var proj = new EntityCausalityCollapser(level, player);
+            proj.setPos(pos.getX() + 0.6, pos.getY() + 0.5, pos.getZ() + 0.5);
+            level.addFreshEntity(proj);
+            proj.shoot(1.0, 0.0, 0.0, 1.0f, 0.0f);
+            for (int i = 0; i < 40 && !proj.isRemoved(); i++) {
+                proj.tick();
+            }
+            if (!proj.isRemoved()) {
+                fail("collapser-rift", "projectile never hit the wall in 40 ticks (pos=" + proj.getX() + "," + proj.getY() + "," + proj.getZ() + ")");
+                return;
+            }
+            if (!rift.isCollapsing()) {
+                fail("collapser-rift", "flux rift ~1.4 blocks from impact was not set collapsing");
+                return;
+            }
+            proj.discard();
+            rift.discard();
+            player.discard();
+            pass("collapser-rift (thrown collapser hit the wall, nearby flux rift set collapsing)");
+        } catch (Throwable t) {
+            fail("collapser-rift", t.toString());
+        }
+    }
+
+    // -- taint bottle taints nearby living entities on impact --------------
+    private static void checkTaintBottle(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var spawn = level.getRespawnData().pos();
+            var at = new BlockPos(spawn.getX() + 10, spawn.getY(), spawn.getZ() + 3);
+            level.getChunkSource().getChunk(at.getX() >> 4, at.getZ() >> 4, true);
+            int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ()) + 2;
+            var pos = new BlockPos(at.getX(), y, at.getZ());
+            for (int dy = -1; dy <= 1; dy++) {
+                level.setBlock(pos.offset(4, dy, 0), Blocks.STONE.defaultBlockState(), 3);
+            }
+            var player = testPlayer(server);
+            player.setPos(pos.getX() + 0.5, pos.getY() + 0.1, pos.getZ() + 0.5);
+            var sheepType = (EntityType<Sheep>) BuiltInRegistries.ENTITY_TYPE
+                    .getValue(Identifier.fromNamespaceAndPath("minecraft", "sheep"));
+            var sheep = new Sheep(sheepType, level);
+            sheep.setPos(pos.getX() + 2.0, pos.getY() + 0.1, pos.getZ() + 0.5);
+            level.addFreshEntity(sheep);
+            var bottle = new EntityBottleTaint(level, player);
+            bottle.setPos(pos.getX() + 0.6, pos.getY() + 0.5, pos.getZ() + 0.5);
+            level.addFreshEntity(bottle);
+            bottle.shoot(1.0, 0.0, 0.0, 1.0f, 0.0f);
+            for (int i = 0; i < 40 && !bottle.isRemoved(); i++) {
+                bottle.tick();
+            }
+            if (!bottle.isRemoved()) {
+                fail("taint-bottle", "bottle never hit the wall in 40 ticks (pos=" + bottle.getX() + "," + bottle.getY() + "," + bottle.getZ() + ")");
+                return;
+            }
+            boolean tainted = sheep.getActiveEffects().stream()
+                    .anyMatch(e -> e.getEffect().is(ModEffects.FLUX_TAINT.getId()));
+            if (!tainted) {
+                fail("taint-bottle", "sheep ~2 blocks from impact has no FLUX_TAINT effect");
+                return;
+            }
+            int goo = 0;
+            for (int dx = -4; dx <= 4; dx++) {
+                for (int dz = -4; dz <= 4; dz++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if (level.getBlockState(pos.offset(dx, dy, dz)).getBlock() == ModBlocks.FLUX_GOO.get()) {
+                            goo++;
+                        }
+                    }
+                }
+            }
+            sheep.discard();
+            player.discard();
+            pass("taint-bottle (landed on the wall, nearby sheep got FLUX_TAINT; flux goo placed: " + goo + ")");
+        } catch (Throwable t) {
+            fail("taint-bottle", t.toString());
+        }
+    }
+
+    // -- smelter vents absorb flux pollution (statistical, wide margin) ----
+    private static void checkSmelterVents(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            var base = new BlockPos(220,
+                    level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, 220, 220) + 2, 220);
+            level.getChunkSource().getChunk(base.getX() >> 4, base.getZ() >> 4, true);
+            int unvented = smeltBatchWithVents(server, base, false);
+            int vented = smeltBatchWithVents(server, base.offset(20, 0, 0), true);
+            if (unvented <= 0) {
+                fail("smelter-vents", "unvented smelter produced no flux pollution (flux=" + unvented + ")");
+                return;
+            }
+            if (vented >= unvented * 0.6f) {
+                fail("smelter-vents", "vents did not reduce pollution: vented=" + vented
+                        + " vs unvented=" + unvented + " (want < 60%)");
+                return;
+            }
+            pass("smelter-vents (48 dirt smelts: pollution " + unvented + " unvented vs " + vented + " with 3 vents)");
+        } catch (Throwable t) {
+            fail("smelter-vents", t.toString());
+        }
+    }
+
+    /** Smelts 48 dirt through a smelter (with 3 vents when requested) and returns the flux pollution it added. */
+    private static int smeltBatchWithVents(MinecraftServer server, BlockPos pos, boolean vented) {
+        var level = server.overworld();
+        level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+        level.setBlock(pos, ModBlocks.SMELTER.get().defaultBlockState().setValue(BlockSmelter.LIT, true), 3);
+        var tile = (TileSmelter) level.getBlockEntity(pos);
+        if (tile == null) {
+            throw new IllegalStateException("no TileSmelter at " + pos);
+        }
+        if (vented) {
+            // default smelter facing is south; vents go on the other 3 horizontal faces, aimed at the smelter
+            for (Direction d : List.of(Direction.EAST, Direction.WEST, Direction.NORTH)) {
+                level.setBlock(pos.relative(d),
+                        ModBlocks.SMELTER_VENT.get().defaultBlockState().setValue(BlockSmelter.FACING, d.getOpposite()), 3);
+            }
+        }
+        tile.setItem(TileSmelter.SLOT_INPUT, new ItemStack(Items.DIRT, 48));
+        tile.furnaceBurnTime = 100000;
+        float fluxBefore = AuraHelper.getFlux(level, pos);
+        for (int i = 0; i < 5000 && tile.getItem(TileSmelter.SLOT_INPUT).getCount() > 0; i++) {
+            TileSmelter.serverTick(level, pos, level.getBlockState(pos), tile);
+        }
+        float fluxAfter = AuraHelper.getFlux(level, pos);
+        int left = tile.getItem(TileSmelter.SLOT_INPUT).getCount();
+        if (left > 0) {
+            throw new IllegalStateException("smelter stalled with " + left + " input left (vis=" + tile.vis + ")");
+        }
+        return (int) Math.round(fluxAfter - fluxBefore);
+    }
+
+    // -- research auto-unlock on knowledge load (1.12 PlayerKnowledge) ----- 
+    private static void checkResearchAutoUnlock(MinecraftServer server) {
+        try {
+            List<String> expected = new ArrayList<>();
+            for (var cat : ResearchCategories.researchCategories.values()) {
+                for (var ri : cat.research.values()) {
+                    if (ri.hasMeta(thaumcraft.api.research.ResearchEntry.EnumResearchMeta.AUTOUNLOCK)) {
+                        expected.add(ri.getKey());
+                    }
+                }
+            }
+            var k1 = new PlayerKnowledge.DefaultImpl();
+            if (!k1.addResearch("FIRSTSTEPS")) {
+                fail("research-autounlock", "addResearch(FIRSTSTEPS) failed");
+                return;
+            }
+            var k2 = new PlayerKnowledge.DefaultImpl();
+            k2.deserializeNBT(k1.serializeNBT());
+            if (!k2.isResearchKnown("FIRSTSTEPS")) {
+                fail("research-autounlock", "NBT roundtrip lost FIRSTSTEPS");
+                return;
+            }
+            Set<String> known = new HashSet<>(k2.getResearchList());
+            Set<String> want = new HashSet<>(expected);
+            want.add("FIRSTSTEPS");
+            if (!known.equals(want)) {
+                fail("research-autounlock", "known after load = " + known + ", expected FIRSTSTEPS + AUTOUNLOCK(" + expected + ")");
+                return;
+            }
+            pass("research-autounlock (NBT roundtrip preserved FIRSTSTEPS; auto-unlock set = " + expected.size() + " entries, matches research data)");
+        } catch (Throwable t) {
+            fail("research-autounlock", t.toString());
         }
     }
 }

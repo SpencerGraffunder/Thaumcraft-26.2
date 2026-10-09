@@ -4,6 +4,37 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-09 (pm) — Smoke battery 18 → 27 checks; two real port bugs found & fixed
+
+Closed the `PORT_FINDINGS_TRACKING` "In-game testing needed" list by turning
+all nine untested-but-implemented subsystems into deterministic smoke checks
+(`ThaumcraftSmoke`, gate-enforced):
+
+1. `biome-aura` — `BiomeHandler` specific/tag/default aura modifiers + aspects
+2. `thaumatorium-queue` — queue cap (5), remove-shift, NBT roundtrip, clear
+3. `reservoir-phial` — right-click fill + extract against a live reservoir
+4. `seal-stock` — exact / tag (`c:stones`) / mod matching toggles
+5. `seal-gui` — guard/filtered/use return `SealMenuProvider` (stock: none, by design)
+6. `collapser-rift` — thrown collapser hits a wall, nearby flux rift collapses
+7. `taint-bottle` — landed, nearby mob gets FLUX_TAINT, goo placement
+8. `smelter-vents` — 3 vents cut flux pollution well under 60% of unvented
+9. `research-autounlock` — NBT roundtrip + AUTOUNLOCK set matches research data
+
+**Two real bugs found by the new checks (both fixed):**
+- `BlockEssentiaReservoir`: phial fill required `addToContainer(...) > 0`, but
+  that method returns the **unadded remainder** (IEssentiaContainer convention) —
+  filling a reservoir with a phial never transferred essentia (and with a full
+  tank it drained the phial for nothing). Now `== 0`.
+- `ModBlockEntities.SMELTER`: the shared `TileSmelter` BE type was registered
+  for only the base `smelter` block, but `BlockSmelter.newBlockEntity` backs
+  all five variants — placing a vent/aux/thaumium/void smelter in-game threw
+  "Invalid block entity". Now registered for all five; the ticker only runs
+  the smelting logic for the base block (variants are passive).
+
+**State:** build rc 0, 0 TODOs, GATE GREEN (8/8 oracles + SMOKE 27/27).
+
+---
+
 ## 2026-10-09 — Verification layer: audit gate + in-game smoke — GATE GREEN (commits 0bdb6ee…3df1987)
 
 "Find every problem" was unbounded; the done-signal is now machine-enforced:

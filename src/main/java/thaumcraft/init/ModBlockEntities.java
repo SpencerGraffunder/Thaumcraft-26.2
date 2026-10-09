@@ -58,9 +58,16 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("alembic",
                     () -> new BlockEntityType<>(TileAlembic::new, Set.of(ModBlocks.ALEMBIC.get())));
 
+    // One tile class serves all five smelter blocks (base/aux/thaumium/void/vent),
+    // so the BE type must be registered for ALL of them — otherwise placing a
+    // variant (e.g. a vent) throws "Invalid block entity" because
+    // BlockSmelter.newBlockEntity always returns a TileSmelter of this type.
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileSmelter>> SMELTER =
             BLOCK_ENTITIES.register("smelter",
-                    () -> new BlockEntityType<>(TileSmelter::new, Set.of(ModBlocks.SMELTER.get())));
+                    () -> new BlockEntityType<>(TileSmelter::new, Set.of(
+                            ModBlocks.SMELTER.get(), ModBlocks.SMELTER_AUX.get(),
+                            ModBlocks.SMELTER_THAUMIUM.get(), ModBlocks.SMELTER_VOID.get(),
+                            ModBlocks.SMELTER_VENT.get())));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileTube>> TUBE =
             BLOCK_ENTITIES.register("tube",

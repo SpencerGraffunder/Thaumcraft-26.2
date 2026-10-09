@@ -153,7 +153,14 @@ public class BlockSmelter extends Block implements EntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (type == ModBlockEntities.SMELTER.get()) {
             if (!level.isClientSide()) {
-                return (lvl, pos, st, be) -> TileSmelter.serverTick(lvl, pos, st, (TileSmelter) be);
+                // Only the base smelter block smelts autonomously; the shared BE type
+                // also backs vent/aux/thaumium/void, which are passive (the base
+                // smelter drives them by scanning adjacent blocks).
+                return (lvl, pos, st, be) -> {
+                    if (st.getBlock() == thaumcraft.init.ModBlocks.SMELTER.get()) {
+                        TileSmelter.serverTick(lvl, pos, st, (TileSmelter) be);
+                    }
+                };
             }
         }
         return null;

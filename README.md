@@ -20,17 +20,25 @@ to **Minecraft 26.3** on **NeoForge 26.3.0.33-beta** (Java 25).
   recipe pairs 152/152, research refs, recipe<->research cross-refs,
   client item defs, models/textures, Java→resource refs, inventory
   read-while-write loops) **plus a headless in-game smoke** — a real
-  dedicated server boots in a fresh world with `TC_SMOKE=1` and runs a
-  12-check assertion battery at `ServerStartedEvent` (registrations,
-  recipe load, research gates, enchantments, loot modifiers, aspects,
-  lang coverage); exits non-zero on any red row. The gate caught and
+  dedicated server boots with `TC_SMOKE=1` and runs a **27-check**
+  assertion battery at `ServerStartedEvent`: static-state checks
+  (registrations, recipe load, research gates, enchantments, loot
+  modifiers, aspects, lang coverage) plus 14 deterministic behavioral
+  loops (research progression, crucible craft, infusion assembly,
+  REFINING mining loot, golem tick, phial fill, biome aura modifiers,
+  thaumatorium queue, reservoir phial I/O, seal matching + config GUIs,
+  causality-collapser→rift collapse, taint bottle, smelter vents, research
+  auto-unlock); exits non-zero on any red row. The battery caught and
   fixed: dedicated-server client-class leaks (focus FX moved to
   `@OnlyIn(CLIENT)` `FocusFX`), 5 recipe JSONs with invalid 26.3
   ingredient formats (fatal on data load), the DeferredRegister
   enchantment collision (now 9 data-driven `data/thaumcraft/enchantment/*`
   files), the 1.12 `nitorcolor` research-page display recipe, 3 stale
-  texture refs, 3 live-inventory read-while-write loops, and a missing
-  `cluster_quartz` client item definition.
+  texture refs, 3 live-inventory read-while-write loops, a missing
+  `cluster_quartz` client item definition, an inverted reservoir
+  phial-fill condition (`addToContainer` returns the unadded remainder),
+  and a smelter BE type registered for only the base block (placing a
+  vent/aux/thaumium/void smelter threw "Invalid block entity").
 - `./gradlew build` — **SUCCESS** → `build/libs/thaumcraft-6.2.0+26.3.jar`
   (86/86 tests green, 0 TODOs left in source).
 - Full neoForm decompile→patch→recompile pipeline runs inside the build

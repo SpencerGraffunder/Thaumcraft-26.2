@@ -92,7 +92,9 @@ public class BlockEssentiaReservoir extends Block implements EntityBlock {
                 BlockEntity be2 = level.getBlockEntity(pos);
                 if (be2 instanceof TileEssentiaReservoir tile2) {
                     Aspect aspect2 = heldAspects2.getAspects()[0];
-                    if (tile2.addToContainer(aspect2, 1) > 0) {
+                    // addToContainer returns the UNADDED remainder (IEssentiaContainer
+                    // convention, cf. TileAlembic): 0 means the tank accepted it.
+                    if (tile2.addToContainer(aspect2, 1) == 0) {
                         AspectList cur2 = container2.getAspects(held2);
                         cur2.add(aspect2, -1);
                         container2.setAspects(held2, cur2);
