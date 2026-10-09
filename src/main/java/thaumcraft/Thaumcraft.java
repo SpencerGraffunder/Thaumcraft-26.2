@@ -27,7 +27,6 @@ import thaumcraft.init.ModCreativeTabs;
 import thaumcraft.init.ModEntities;
 import thaumcraft.init.ModEffects;
 import thaumcraft.init.ModSounds;
-import thaumcraft.init.ModEnchantments;
 import thaumcraft.init.ModBlockEntities;
 import thaumcraft.init.ModMenuTypes;
 import thaumcraft.init.ModRecipeTypes;
@@ -92,7 +91,6 @@ public class Thaumcraft {
         ModEntities.ENTITY_TYPES.register(modEventBus);
         ModEffects.MOB_EFFECTS.register(modEventBus);
         ModSounds.SOUND_EVENTS.register(modEventBus);
-        ModEnchantments.ENCHANTMENTS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModMenuTypes.MENU_TYPES.register(modEventBus);
         ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
@@ -241,6 +239,10 @@ public class Thaumcraft {
         public static void onServerStarted(ServerStartedEvent event) {
             Thaumcraft.recipeManager = event.getServer().getRecipeManager();
             LOGGER.info("Thaumcraft cached recipe manager (null=" + (Thaumcraft.recipeManager == null) + ")");
+            // Dev-only in-game assertion battery (TC_SMOKE=1) — see ThaumcraftSmoke.
+            if (thaumcraft.common.lib.smoke.ThaumcraftSmoke.enabled()) {
+                thaumcraft.common.lib.smoke.ThaumcraftSmoke.run(event.getServer());
+            }
         }
 
         @SubscribeEvent

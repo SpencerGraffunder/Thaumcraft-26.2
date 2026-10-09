@@ -644,6 +644,25 @@ def norm_gate(g):
         return g[:-2]
     return g
 
+# ---------------------------------------------------------------- 1:1 aliases
+# Per-recipe, per-ingredient aliases for documented 1:1 mappings where the 1.12
+# dump loses information (item metas) or 26.3 has no equivalent oredict.
+# Keyed by (1.12 recipe id, 1.12 ingredient ref) -> canonical ref used on both sides.
+ING_ALIAS_112 = {
+    # 1.12 AdvancedCrossbow uses ItemsTC.mind meta 1 (Clockwork Mind) = port brain_curious
+    ("AdvancedCrossbow", "thaumcraft:mind"): "thaumcraft:brain_curious",
+    # 1.12 FocusPouch uses ItemsTC.baubles meta 2 = girdle_mundane (ItemBaubles meta map 0/1/2=amulet/ring/girdle mundane)
+    ("FocusPouch", "thaumcraft:baubles"): "thaumcraft:girdle_mundane",
+    # 1.12 cinnabar purification uses oreDict "oreCinnabar"; 26.3 has no c: tag for it,
+    # the port uses the dedicated cinnabar_ore block item (same single member)
+    ("metal_purification_cinnabar", "#c:ores/cinnabar"): "thaumcraft:cinnabar_ore",
+}
+
+
+def aliased_112(ing, rid):
+    return {ING_ALIAS_112.get((rid, k), k): v for k, v in ing.items()}
+
+
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else "diff"
     ref = json.load(open(REF))
@@ -669,6 +688,7 @@ def main():
                 ref_by_result.setdefault(pid, []).append((rid, e))
 
     matched = 0
+    diff_pairs = 0
     for res, plist in sorted(port.items()):
         refs = ref_by_result.get(res, [])
         if not refs:
@@ -681,6 +701,7 @@ def main():
             rid, e = cands[0]
             a = norm_112(e)
             b = norm_port(d)
+            a["ingredients"] = aliased_112(a["ingredients"], rid)
             matched += 1
             issues = []
             if rel in KNOWN_112_MATCHES:
@@ -706,6 +727,8 @@ def main():
                 issues.append("ingredients differ")
             if mode == "diff" and not issues:
                 continue
+            if mode == "diff":
+                diff_pairs += 1
             print(f"=== {res}  [{rel}]  (1.12 {rid} L{e['line']})")
             for i in issues:
                 print("   !", i)
@@ -725,6 +748,10 @@ def main():
                 if not pid:
                     print(f"  {rid:34s} {e['station']:9s} {res}")
     print(f"\nmatched pairs: {matched}")
+    if mode == "diff":
+        print(f"divergent pairs: {diff_pairs}")
+        return 1 if diff_pairs else 0
+    return 0
 
 
-main()
+sys.exit(main())

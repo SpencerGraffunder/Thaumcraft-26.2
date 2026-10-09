@@ -31,3 +31,6 @@ forge*changelog.txt
 
 # runtime logs
 logs/
+
+# local reference caches (volatile /tmp copies, regenerable — see tools/run_all_audits.sh bootstrap)
+.reference/

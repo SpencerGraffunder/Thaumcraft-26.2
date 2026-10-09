@@ -29,6 +29,16 @@ public class AspectHelper {
      * Key is the entity type Identifier string
      */
     private static Map<String, AspectList> entityTags = new HashMap<>();
+
+    /** Count of registered object aspect tags (smoke/audit hook). */
+    public static int objectTagCount() {
+        return objectTags.size();
+    }
+
+    /** Count of registered entity aspect tags (smoke/audit hook). */
+    public static int entityTagCount() {
+        return entityTags.size();
+    }
     
     /**
      * Get the aspects associated with an ItemStack

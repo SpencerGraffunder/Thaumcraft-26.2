@@ -205,6 +205,8 @@ def main():
 
     total = len(missing_tex) + len(java_missing) + len(missing_parent)
     print(f"\nTOTAL missing file references: {total}")
+    return 1 if total else 0
 
 if __name__ == "__main__":
-    main()
+    import sys
+    sys.exit(main())

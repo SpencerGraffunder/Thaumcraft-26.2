@@ -90,7 +90,7 @@ def main():
                     print(f"      L{line + ln + 1}: {text.strip()[:110]}")
             print()
     print(f"total read-while-write loops: {findings}")
-    return 0
+    return 1 if findings else 0
 
 
 if __name__ == "__main__":

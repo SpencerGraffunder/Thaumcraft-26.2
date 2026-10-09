@@ -25,7 +25,9 @@ from collections import Counter
 PROJ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = PROJ + "/src/main/resources"
 RESEARCH_DIR = SRC + "/assets/thaumcraft/research"
-VDATA = "/tmp/vdata"
+# vanilla/neoforge data cache: stable in-repo copy first (see tools/run_all_audits.sh bootstrap)
+_VDATA_CANDIDATES = (PROJ + "/.reference/vdata", "/tmp/vdata")
+VDATA = next((c for c in _VDATA_CANDIDATES if os.path.isdir(c + "/vanilla/data")), _VDATA_CANDIDATES[0])
 
 # ---------------------------------------------------------------- registries
 tags = {}

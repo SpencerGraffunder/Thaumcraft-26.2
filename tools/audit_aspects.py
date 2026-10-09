@@ -12,7 +12,17 @@ import re, sys, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-REF = '/private/tmp/tc112src/thaumcraft/common/config/ConfigAspects.java'
+# 1.12 reference: stable in-repo copy (.reference/, gitignored, see tools/run_all_audits.sh)
+_REF_CANDIDATES = (
+    os.environ.get('TC112_REF', ''),
+    os.path.join(ROOT, '.reference', 'thaumcraft-1.12', 'src'),
+    '/private/tmp/tc112src',
+)
+_REF = next((c for c in _REF_CANDIDATES if c and os.path.isfile(c + '/thaumcraft/common/config/ConfigAspects.java')), '')
+if not _REF:
+    print('ERROR: 1.12 reference not found (run tools/run_all_audits.sh bootstrap or set TC112_REF)')
+    sys.exit(2)
+REF = _REF + '/thaumcraft/common/config/ConfigAspects.java'
 PORT = os.path.join(ROOT, 'src/main/java/thaumcraft/common/config/ConfigAspects.py'.replace('.py', '.java'))
 
 # ---------------------------------------------------------------- mappings
