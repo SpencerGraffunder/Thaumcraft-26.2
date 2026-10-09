@@ -215,6 +215,7 @@ public class Thaumcraft {
             // Vanilla-item aspect + smelting-bonus data (identifier-based, safe here)
             CommonInternals.initAspects();
             CommonInternals.initSmeltingBonuses();
+            CommonInternals.initSpecialMiningResults();
             ConfigAspects.init();
             ConfigMultiblocks.init();
             ConfigRecipes.init();

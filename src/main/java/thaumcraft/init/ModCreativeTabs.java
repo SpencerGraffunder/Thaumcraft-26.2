@@ -257,6 +257,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.CLUSTER_GOLD.get());
                         output.accept(ModItems.CLUSTER_COPPER.get());
                         output.accept(ModItems.CLUSTER_CINNABAR.get());
+                        output.accept(ModItems.CLUSTER_QUARTZ.get());
 
                         // === Golem Materials ===
                         output.accept(ModItems.BRAIN_CURIOUS.get());

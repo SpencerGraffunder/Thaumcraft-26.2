@@ -32,6 +32,7 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModItems;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -242,17 +243,31 @@ public class EntityTurretCrossbowAdvanced extends EntityTurretCrossbow {
     
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
-        float bonus = 0 * 0.15f;
-        
-        // Drop items
-        // Advanced turret drops more/better items
-        // if (random.nextFloat() < 0.2f + bonus) spawnAtLocation(new ItemStack(ItemsTC.mind, 1, 1));
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), ItemsTC.mechanismSimple);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), BlocksTC.plankGreatwood);
-        // if (random.nextFloat() < 0.5f + bonus) spawnAtLocation((ServerLevel) this.level(), BlocksTC.plankGreatwood);
-        // if (random.nextFloat() < 0.3f + bonus) spawnAtLocation(new ItemStack(ItemsTC.plate, 1, 0));
-        // if (random.nextFloat() < 0.4f + bonus) spawnAtLocation(new ItemStack(ItemsTC.plate, 1, 1));
-        // if (random.nextFloat() < 0.4f + bonus) spawnAtLocation(new ItemStack(ItemsTC.plate, 1, 1));
+        // 1.12: bonus = killCount * 0.15F (26.3 has no kill count in this
+        // signature; turrets die early in a run so the bonus is ~0).
+        float bonus = 0.0f;
+
+        if (random.nextFloat() < 0.2f + bonus) {
+            spawnAtLocation(level, new ItemStack(ModItems.BRAIN_CURIOUS.get())); // mind meta 1 (Clockwork Mind)
+        }
+        if (random.nextFloat() < 0.5f + bonus) {
+            spawnAtLocation(level, new ItemStack(ModItems.MECHANISM_SIMPLE.get()));
+        }
+        if (random.nextFloat() < 0.5f + bonus) {
+            spawnAtLocation(level, new ItemStack(ModBlocks.GREATWOOD_PLANKS.get()));
+        }
+        if (random.nextFloat() < 0.5f + bonus) {
+            spawnAtLocation(level, new ItemStack(ModBlocks.GREATWOOD_PLANKS.get()));
+        }
+        if (random.nextFloat() < 0.3f + bonus) {
+            spawnAtLocation(level, new ItemStack(ModItems.PLATE_IRON.get()));
+        }
+        if (random.nextFloat() < 0.4f + bonus) {
+            spawnAtLocation(level, new ItemStack(ModItems.PLATE_BRASS.get()));
+        }
+        if (random.nextFloat() < 0.4f + bonus) {
+            spawnAtLocation(level, new ItemStack(ModItems.PLATE_BRASS.get()));
+        }
     }
     
     // ==================== NBT ====================

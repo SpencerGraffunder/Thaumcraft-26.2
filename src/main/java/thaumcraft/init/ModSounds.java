@@ -25,7 +25,7 @@ public class ModSounds {
     // ==================== Player Sounds ====================
     public static final DeferredHolder<SoundEvent, SoundEvent> HEARTBEAT = registerSound("heartbeat");
     public static final DeferredHolder<SoundEvent, SoundEvent> RUNIC_SHIELD_EFFECT = registerSound("runicshieldeffect");
-    public static final DeferredHolder<SoundEvent, SoundEvent> RUNIC_SHIELD_CHARGE = registerSound("runicshieldecharge");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RUNIC_SHIELD_CHARGE = registerSound("runicshieldcharge");
     
     // ==================== Block Sounds ====================
     public static final DeferredHolder<SoundEvent, SoundEvent> SPILL = registerSound("spill");

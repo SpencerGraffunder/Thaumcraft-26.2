@@ -56,11 +56,18 @@ public class ItemResonator extends Item {
 
         IEssentiaTransport transport = (IEssentiaTransport) tile;
 
-        // Display essentia type and amount
-        if (transport.getEssentiaType(side) != null) {
+        // Display essentia type and amount (1.12: normal containers show the
+        // single type; tube buffers list every aspect they hold, sorted by name)
+        if (!(tile instanceof thaumcraft.common.tiles.essentia.TileTubeBuffer) && transport.getEssentiaType(side) != null) {
             player.sendSystemMessage(Component.translatable("tc.resonator1",
                     String.valueOf(transport.getEssentiaAmount(side)),
                     transport.getEssentiaType(side).getName()));
+        } else if (tile instanceof thaumcraft.common.tiles.essentia.TileTubeBuffer && ((thaumcraft.api.aspects.IAspectContainer) tile).getAspects().size() > 0) {
+            for (thaumcraft.api.aspects.Aspect aspect : ((thaumcraft.api.aspects.IAspectContainer) tile).getAspects().getAspectsSortedByName()) {
+                player.sendSystemMessage(Component.translatable("tc.resonator1",
+                        String.valueOf(((thaumcraft.api.aspects.IAspectContainer) tile).getAspects().getAmount(aspect)),
+                        aspect.getName()));
+            }
         }
 
         // Display suction info
@@ -75,6 +82,13 @@ public class ItemResonator extends Item {
         // Play sound
         level.playSound(null, pos, SoundEvents.SHIELD_BLOCK.value(), SoundSource.BLOCKS,
                 0.5f, 1.9f + level.getRandom().nextFloat() * 0.1f);
+
+        // Condenser: show its cost and interval (1.12 tc.condenser1/2)
+        if (tile instanceof thaumcraft.common.tiles.devices.TileCondenser condenser) {
+            player.sendSystemMessage(Component.translatable("tc.condenser1", String.valueOf(condenser.cost)));
+            player.sendSystemMessage(Component.translatable("tc.condenser2",
+                    String.valueOf(condenser.interval), String.valueOf(condenser.interval / 20)));
+        }
 
         return InteractionResult.SUCCESS;
     }

@@ -4,6 +4,49 @@
 > notes below are historical milestones; 26.3-specific work is recorded in the
 > section at the top of this file.
 
+## 2026-10-08 — 1.12 parity round 5: inventories + behaviors audits — DONE (commit below)
+
+Two structural audits vs 1.12 BETA26, then fixes for everything they found.
+
+**Audit 2 (sounds/blocks/items/entities):** sounds 65/65 (one ID typo),
+blocks complete, entities all present. Gaps found:
+- **REFINING special mining was a complete no-op** — the port kept 1.12's
+  `Utils.addSpecialMiningResult`/`findSpecialMiningResult` machinery but
+  registered nothing and never called it (1.12: `ToolEvents.onBlockHarvest`
+  + the arcane bore). 26.3's `BreakBlockEvent` exposes no drop list, so it is
+  implemented as a global loot modifier (`RefiningMiningLootModifier`,
+  serializer in `ModLootModifiers` on `GLOBAL_LOOT_MODIFIER_SERIALIZERS`, data
+  file `data/thaumcraft/loot_modifiers/refining_mining.json`). Block drops
+  only (BLOCK_STATE context check); chance `(1+level)*0.125` per 1.12;
+  pickup sound on conversion. Mapped: raw_iron→cluster_iron, raw_gold→
+  cluster_gold, cinnabar_ore→cluster_cinnabar, quartz→**cluster_quartz**.
+  The arcane bore works automatically (its FakePlayer holds the tool).
+- **cluster_quartz item missing** — registered (item + model; the
+  `cluster_quartz.png` texture already existed), smelt 2× quartz,
+  smelting bonus quartz nugget (1.12 `clusterQuartz`), creative tab entry.
+- Sound ID typo `runicshieldecharge` → `runicshieldcharge` (1.12
+  `SoundsTC.runicShieldCharge`; the ogg file was already named correctly).
+- **Mind naming** (1.12 `ItemsTC.mind` meta 0/1): `item.thaumcraft.mind` =
+  "Mind", `item.thaumcraft.brain_curious` = "Clockwork Mind"; advanced-turret
+  recipe `M` → `brain_curious` (1.12 uses mind meta 1).
+- Advanced turret death drops were a commented-out stub — implemented 1.12's
+  7 drops (clockwork mind .2, simple mechanism .5, 2× greatwood planks .5,
+  iron plate .3, 2× brass plate .4).
+
+**Audit 3 (behaviors):** seals 20/20 with real extractors; all 6 1.12
+multiblocks registered (infernal furnace, 3 infusion altars, thaumatorium,
+golem press); foci 20/20; phial faithful (alembic+jar fill/empty); resonator
+now includes the two missing branches (tube-buffer per-aspect listing sorted
+by name, condenser cost/interval lines); golem AI fully wired. Resonator +
+golem verified line-by-line against 1.12.
+
+DoD: build green (86/86 tests), 0 TODOs, runClient mod-load clean (new
+subscriber registered; loot-modifier codec follows NeoForge's own
+`AddTableLootModifier` pattern), jar `3d2be09d…1362` installed in the
+Modrinth `NeoForge 26.3` profile. **In-game check for the user:** mine an
+iron/gold/cinnabar/quartz ore with a REFINING-infused pickaxe → cluster drop
+(+ pickup sound); right-click a tube buffer / condenser with the resonator.
+
 ## 2026-10-08 — 1.12 aspect-value parity audit — DONE (commit below)
 
 `tools/audit_aspects.py` compares every `ConfigAspects.java` registration in the

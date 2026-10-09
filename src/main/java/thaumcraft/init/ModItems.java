@@ -281,6 +281,9 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> CLUSTER_CINNABAR = registerItem("cluster_cinnabar",
             ItemMaterial::basic);
 
+    public static final DeferredHolder<Item, Item> CLUSTER_QUARTZ = registerItem("cluster_quartz",
+            ItemMaterial::basic);
+
     public static final DeferredHolder<Item, Item> CLUSTER_TIN = registerItem("cluster_tin",
             ItemMaterial::basic);
 
