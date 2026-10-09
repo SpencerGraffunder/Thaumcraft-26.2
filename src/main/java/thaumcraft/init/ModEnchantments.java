@@ -1,45 +1,31 @@
 package thaumcraft.init;
 
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import thaumcraft.Thaumcraft;
 
-import net.minecraft.resources.ResourceKey;
-
 /**
- * Registry for all Thaumcraft enchantments.
+ * Registry IDs for the Thaumcraft enchantments.
+ *
+ * MC 26.3 loads enchantments from the datapack registry
+ * (data/thaumcraft/enchantment/*.json), so this class only holds the
+ * ResourceKeys that runtime code (EntityArcaneBore's tool checks) needs.
+ * The 1.12 behavioural data (levels, tool classes, IE gating) lives in
+ * {@code EnumInfusionEnchantment}, which stores levels in the custom
+ * "infench" component rather than the vanilla enchantment stack.
  */
 public class ModEnchantments {
 
-    // 26.2: DeferredRegister.create(Registries.X) infers the registry value type, so the
-    // register is parameterized by Enchantment (not ResourceKey<Enchantment>).
-    public static final DeferredRegister<Enchantment> ENCHANTMENTS =
-            DeferredRegister.create(Registries.ENCHANTMENT, Thaumcraft.MODID);
+    // 1.12: infusion - bonus dig radius per level (checked by the arcane bore)
+    public static final ResourceKey<Enchantment> INFUSION = key("infusion");
 
-    // 1.12: infusion - bonus dig radius per level
-    // 26.2: DeferredHolder takes two type parameters (R, T extends R).
-    public static final DeferredHolder<Enchantment, Enchantment> INFUSION =
-            ENCHANTMENTS.register("infusion", () -> buildEnchantment("infusion"));
+    // 1.12: burrowing - bonus dig depth per level (checked by the arcane bore)
+    public static final ResourceKey<Enchantment> BURROWING = key("burrowing");
 
-    // 1.12: burrowing - bonus dig depth per level
-    public static final DeferredHolder<Enchantment, Enchantment> BURROWING =
-            ENCHANTMENTS.register("burrowing", () -> buildEnchantment("burrowing"));
-
-    private static Enchantment buildEnchantment(String name) {
-        return new Enchantment.Builder(
-                Enchantment.definition(
-                        HolderSet.empty(),
-                        1,
-                        3,
-                        new Enchantment.Cost(1, 0),
-                        new Enchantment.Cost(1, 0),
-                        20,
-                        EquipmentSlotGroup.ANY))
-                .build(Identifier.fromNamespaceAndPath(Thaumcraft.MODID, name));
+    private static ResourceKey<Enchantment> key(String name) {
+        return ResourceKey.create(Registries.ENCHANTMENT,
+                Identifier.fromNamespaceAndPath(Thaumcraft.MODID, name));
     }
 }

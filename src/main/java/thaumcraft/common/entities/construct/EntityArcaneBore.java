@@ -226,7 +226,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         // Infusion enchantment bonus
         int infusion = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
             level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
-                .get(thaumcraft.init.ModEnchantments.INFUSION.getId()).orElseThrow(), held);
+                .get(thaumcraft.init.ModEnchantments.INFUSION.identifier()).orElseThrow(), held);
         if (infusion > 0) {
             r += infusion;
         }
@@ -240,7 +240,7 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         if (!held.isEmpty()) {
             int burrowing = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
                 level().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
-                    .get(thaumcraft.init.ModEnchantments.BURROWING.getId()).orElseThrow(), held);
+                    .get(thaumcraft.init.ModEnchantments.BURROWING.identifier()).orElseThrow(), held);
             if (burrowing > 0) {
                 r += burrowing * 16;
             }
