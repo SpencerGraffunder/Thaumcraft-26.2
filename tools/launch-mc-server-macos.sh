@@ -1,4 +1,7 @@
 #!/bin/bash
+# LEGACY: pinned to the old NeoForge 26.2 profile + 26.2.0.76 build (the 26.3
+# launcher JSON has a different structure). For the current 26.3 dev server
+# use: CI=true ./gradlew runServer (world at run/, port 25565).
 # Launches a dedicated NeoForge server for the "NeoForge 26.2" Modrinth profile,
 # using the same 26.2.0.76 client/server jar the Modrinth App uses (version-matched client).
 # Usage: launch-mc-server.sh
