@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — migration pass 7.
+Thaumcraft26 port — migration pass 7.
 
   1) Remap moved vanilla imports (verified against decompiled 26.2 tree) —
      entities/models were re-packaged into sub-packages.

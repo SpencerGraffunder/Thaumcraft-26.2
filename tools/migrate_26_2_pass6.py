@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — migration pass 6.
+Thaumcraft26 port — migration pass 6.
 
   - Block.neighborChanged: BlockPos fromPos -> Orientation orientation
   - net.neoforged.neoforge.registries.NeoBuiltInRegistries.* -> net.minecraft.core.registries.BuiltInRegistries.*

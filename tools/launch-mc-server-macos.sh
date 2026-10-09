@@ -71,7 +71,7 @@ mkdir -p "$SERVER_DIR/mods"
 [ -f "$SERVER_DIR/eula.txt" ] || echo "eula=true" > "$SERVER_DIR/eula.txt"
 if [ ! -f "$SERVER_DIR/server.properties" ]; then
 cat > "$SERVER_DIR/server.properties" <<'EOF'
-motd=Thaumcraft 26.2 Dev
+motd=Thaumcraft26 Dev
 port=25565
 online-mode=false
 allow-list=false

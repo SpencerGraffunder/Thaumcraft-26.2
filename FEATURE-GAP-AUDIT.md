@@ -1,6 +1,6 @@
 # Feature-Gap Audit Report (2026-09-14)
 
-Audit of Thaumcraft 26.2 vs 1.12 reference. Prioritized by impact.
+Audit of Thaumcraft26 (26.3 port) vs 1.12 reference. Prioritized by impact.
 
 ## RE-AUDIT STATUS (2026-09-27)
 

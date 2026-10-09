@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-audit_resources.py — Static reference audit for the Thaumcraft 26.2 mod.
+audit_resources.py — Static reference audit for the Thaumcraft26 mod.
 
 Checks that every resource a model or Java class points at actually exists on disk:
 

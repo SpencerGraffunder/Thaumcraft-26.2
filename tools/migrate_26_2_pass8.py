@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — migration pass 8: worldgen context accessors.
+Thaumcraft26 port — migration pass 8: worldgen context accessors.
 
 26.2 worldgen contexts (FeaturePlaceContext, structure GenerationContext, etc.)
 expose randomness via record-style accessors, not getters:

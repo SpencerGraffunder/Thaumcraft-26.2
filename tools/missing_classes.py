@@ -31,7 +31,7 @@ while i < len(lines):
 
 # Now find import statements that reference these missing classes across source
 import pathlib
-SRC = pathlib.Path("/Users/spencer/Documents/Thaumcraft-26.2/src/main/java")
+SRC = pathlib.Path("/Users/spencer/Documents/Thaumcraft26/src/main/java")
 imp_map = defaultdict(Counter)  # class -> import FQN counter
 for p in SRC.rglob("*.java"):
     for ln in p.read_text(encoding="utf-8", errors="replace").splitlines():

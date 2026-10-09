@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 — fix unbalanced `}` in network files (net -1 brace each).
+Thaumcraft26 — fix unbalanced `}` in network files (net -1 brace each).
 
 The network migration added one extra top-level `}` per file, so the running
 brace level goes negative one line before the last `}`. This uses a stack to find

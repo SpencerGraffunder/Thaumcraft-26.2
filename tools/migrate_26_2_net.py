@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — pass 10: migrate network packets to NeoForge payloads.
+Thaumcraft26 port — pass 10: migrate network packets to NeoForge payloads.
 
 For each packet class under .../lib/network/{misc,fx,playerdata,tiles}/ :
   1. class X -> class X implements CustomPacketPayload

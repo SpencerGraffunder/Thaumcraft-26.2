@@ -14,7 +14,7 @@
 
 ## Decompiled vanilla source (THE API REFERENCE)
 ```
-T=/Users/spencer/Documents/Thaumcraft-26.2/build/neoForm/neoFormJoined26.3-1/steps/transformSource/transformed
+T=/Users/spencer/Documents/Thaumcraft26/build/neoForm/neoFormJoined26.3-1/steps/transformSource/transformed
 grep -rn "methodName" $T/net/minecraft/...   # find exact signatures
 ```
 

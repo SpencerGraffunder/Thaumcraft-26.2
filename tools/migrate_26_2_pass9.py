@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — migration pass 9: block state property generics.
+Thaumcraft26 port — migration pass 9: block state property generics.
 
 TC declared untyped `EnumProperty FACING = ...` but 26.2 properties are
 `EnumProperty<Direction>`, so `state.getValue(FACING)` returned raw Comparable.

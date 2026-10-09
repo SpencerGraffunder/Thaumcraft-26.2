@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — migration pass 2.
+Thaumcraft26 port — migration pass 2.
 
 A) Error-file-guided fixes (only touches lines javac flagged):
      - Level.random field            -> .getRandom()

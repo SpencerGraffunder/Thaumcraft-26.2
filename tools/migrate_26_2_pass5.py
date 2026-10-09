@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — migration pass 5.
+Thaumcraft26 port — migration pass 5.
 
   - ForgeRegistries.XXX -> BuiltInRegistries.YYY (field renames)
   - net.neoforged.neoforge.server.level.FakePlayer -> net.neoforged.neoforge.common.util.FakePlayer

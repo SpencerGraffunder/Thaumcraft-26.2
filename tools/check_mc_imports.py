@@ -7,8 +7,8 @@ and lists GONE vanilla imports separately.
 import pathlib, re
 from collections import defaultdict
 
-T = pathlib.Path("/Users/spencer/Documents/Thaumcraft-26.2/build/neoForm/neoFormJoined26.2-2/steps/transformSource/transformed")
-SRC = pathlib.Path("/Users/spencer/Documents/Thaumcraft-26.2/src/main/java")
+T = pathlib.Path("/Users/spencer/Documents/Thaumcraft26/build/neoForm/neoFormJoined26.2-2/steps/transformSource/transformed")
+SRC = pathlib.Path("/Users/spencer/Documents/Thaumcraft26/src/main/java")
 
 # index 26.2 classes
 name_to_fqns = defaultdict(set)

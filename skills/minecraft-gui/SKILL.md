@@ -1,13 +1,13 @@
 ---
 name: minecraft-gui
-description: Launch, verify, screenshot, and drive the Thaumcraft 26.2 Minecraft client/server on the GNOME Wayland box or the macOS box (Modrinth App + ./gradlew). ONLY when the user explicitly asks to test in-game — otherwise build, hand off, and stop. See Policy section.
+description: Launch, verify, screenshot, and drive the Thaumcraft26 Minecraft client/server on the GNOME Wayland box or the macOS box (Modrinth App + ./gradlew). ONLY when the user explicitly asks to test in-game — otherwise build, hand off, and stop. See Policy section.
 ---
 
-# Driving the Thaumcraft 26.2 Minecraft GUI
+# Driving the Thaumcraft26 Minecraft GUI
 
 Covers launching the client/server, verifying changes, taking screenshots, reading
 load errors, and injecting GUI input — on **this** box: GNOME **Wayland**, Modrinth App
-profile, and the `./gradlew` dev environment. Repo: `/home/graffunder/Documents/Thaumcraft-26.2`.
+profile, and the `./gradlew` dev environment. Repo: `/home/graffunder/Documents/Thaumcraft26`.
 
 ## POLICY — read this first (2026-09-09, user directive)
 
@@ -40,15 +40,15 @@ build + jar and stop (see Policy above).
 
 | What | Value |
 |------|-------|
-| Repo | `/home/graffunder/Documents/Thaumcraft-26.2` |
+| Repo | `/home/graffunder/Documents/Thaumcraft26` |
 | Display | **GNOME Wayland**, screen **2560x1440**, `DISPLAY=:0` (XWayland) |
 | Build/install | `CI=true ./gradlew build` → `build/libs/thaumcraft-*.jar` |
-| Modrinth profile | `~/.local/share/ModrinthApp/profiles/NeoForge 26.2/` |
-| — mods dir | `…/profiles/NeoForge 26.2/mods/` (drop the built jar here) |
-| — profile logs / crashes | `…/profiles/NeoForge 26.2/logs/`, `…/crash-reports/` |
-| — profile world | `…/profiles/NeoForge 26.2/saves/<world>/` |
+| Modrinth profile | `~/.local/share/ModrinthApp/profiles/NeoForge 26.3/` |
+| — mods dir | `…/profiles/NeoForge 26.3/mods/` (drop the built jar here) |
+| — profile logs / crashes | `…/profiles/NeoForge 26.3/logs/`, `…/crash-reports/` |
+| — profile world | `…/profiles/NeoForge 26.3/saves/<world>/` |
 | Bundled JRE | `~/.local/share/ModrinthApp/meta/java_versions/zulu25.36.205-ca-jre25.0.4.1-linux_x64/bin/java` |
-| Game version | `26.2` = build **26.2.0.75** (client & server must match) |
+| Game version | `26.3` = build **26.3.0.33-beta** (client & server must match) |
 | Dev env workdir | `run/` (gradle `workingDirectory project.file('run')`) |
 | — dev world | `run/world/` |
 | — dev logs / crashes | `run/logs/latest.log`, `run/crash-reports/` |
@@ -90,11 +90,11 @@ Different box, different failure modes. The repo here lives on an **SMB share**
 
 | What | Value |
 |------|-------|
-| Repo | `/Users/spencer/ai-workspace/Thaumcraft-26.2` (**SMB mount** — Gradle cannot hash files here) |
-| Local build dir | `~/mc-build/Thaumcraft-26.2` (repo copy on local disk) |
+| Repo | `/Users/spencer/ai-workspace/Thaumcraft26` (**SMB mount** — Gradle cannot hash files here) |
+| Local build dir | `~/mc-build/Thaumcraft26` (repo copy on local disk) |
 | JDK 25 | `brew install openjdk@25` → `JAVA_HOME=/opt/homebrew/opt/openjdk@25` (keg-only) |
 | Modrinth App | `/Applications/Modrinth App.app`; data at `~/Library/Application Support/ModrinthApp/` |
-| Profile | `…/ModrinthApp/profiles/NeoForge 26.2/` (mods/, logs/, saves/) |
+| Profile | `…/ModrinthApp/profiles/NeoForge 26.3/` (mods/, logs/, saves/) |
 | Bundled JRE | `…/ModrinthApp/meta/java_versions/zulu25…-macosx_aarch64/Contents/Home` (JRE only — no javac) |
 | Display | **1680x1050 logical**, Retina 2x → screenshots are **3360x2100** |
 | Input | `tools/mouse_mac.py` (CoreGraphics: click/drag/hold/type/key — preferred); `cliclick` for one-shot clicks only (no drag support) |
@@ -105,12 +105,12 @@ Different box, different failure modes. The repo here lives on an **SMB share**
 Gradle's `FileHasher` fails with `Operation not supported` on `smbfs`. Build from a local copy:
 
 ```bash
-rm -rf ~/mc-build/Thaumcraft-26.2
-cp -a /Users/spencer/ai-workspace/Thaumcraft-26.2 ~/mc-build/   # slow over SMB — don't let it time out
-cd ~/mc-build/Thaumcraft-26.2
+rm -rf ~/mc-build/Thaumcraft26
+cp -a /Users/spencer/ai-workspace/Thaumcraft26 ~/mc-build/   # slow over SMB — don't let it time out
+cd ~/mc-build/Thaumcraft26
 CI=true JAVA_HOME=/opt/homebrew/opt/openjdk@25 ./gradlew build
-# jar: build/libs/thaumcraft-6.2.0+26.2.jar (~11MB with resources)
-cp build/libs/thaumcraft-*.jar "$HOME/Library/Application Support/ModrinthApp/profiles/NeoForge 26.2/mods/"
+# jar: build/libs/thaumcraft-6.2.0+26.3.jar (~11MB with resources)
+cp build/libs/thaumcraft-*.jar "$HOME/Library/Application Support/ModrinthApp/profiles/NeoForge 26.3/mods/"
 ```
 
 If the local tree is missing files relative to git (partial copy), `git checkout -- .`
@@ -123,11 +123,11 @@ restores them from HEAD before rebuilding. A 3.7MB jar = no resources; FML dies 
 ```bash
 open -a "Modrinth App"
 # screenshot, then click the green Play button (top-right of the instance card)
-LOG="$HOME/Library/Application Support/ModrinthApp/profiles/NeoForge 26.2/logs/latest.log"
+LOG="$HOME/Library/Application Support/ModrinthApp/profiles/NeoForge 26.3/logs/latest.log"
 until grep -q "Setting user" "$LOG"; do sleep 3; done
 ```
 
-- Game window title: `Minecraft NeoForge* 26.2` (854x508); main menu in ~40s.
+- Game window title: `Minecraft NeoForge* 26.3` (854x508); main menu in ~40s.
 - Manual launch (reconstructed from `meta/versions/26.2-26.2.0.76/26.2-26.2.0.76.json`)
   gets past FML discovery but **dies in FML early display**: `Failed to find a primary
   monitor / glfwGetPrimaryMonitor failed` — even though a standalone GLFW test in the
@@ -206,26 +206,26 @@ patched server jar), no Gradle involved. Script: `tools/launch-mc-server-macos.s
 
 ### 1. Build + install into the Modrinth profile
 ```bash
-cd /home/graffunder/Documents/Thaumcraft-26.2
+cd /home/graffunder/Documents/Thaumcraft26
 CI=true ./gradlew build
-cp build/libs/thaumcraft-*.jar ~/.local/share/ModrinthApp/profiles/"NeoForge 26.2"/mods/
+cp build/libs/thaumcraft-*.jar ~/.local/share/ModrinthApp/profiles/"NeoForge 26.3"/mods/
 ```
 
 ### 2. Launch the dev client (preferred for verification)
 Loads the mod from **source** (no jar needed), JEI included.
 ```bash
-cd /home/graffunder/Documents/Thaumcraft-26.2
+cd /home/graffunder/Documents/Thaumcraft26
 CI=true ./gradlew runClient > /tmp/runclient.log 2>&1 &
 # reach main menu in ~60-90s:
 until grep -q "Setting user: Dev" /tmp/runclient.log 2>/dev/null; do sleep 2; done
 grep "Mods loaded" /tmp/runclient.log
 ```
-- Window title: `Minecraft NeoForge 26.2` (default size 854x517, not focused by default).
+- Window title: `Minecraft NeoForge 26.3` (default size 854x517, not focused by default).
 - Check the log for warnings (next section) **instead of** trying to read the screen.
 
 ### 3. Launch the dedicated server (for multiplayer testing)
 ```bash
-cd /home/graffunder/Documents/Thaumcraft-26.2
+cd /home/graffunder/Documents/Thaumcraft26
 CI=true ./gradlew runServer > /tmp/runserver.log 2>&1 &
 until grep -qE "Done \(" /tmp/runserver.log 2>/dev/null; do sleep 2; done
 ```
@@ -290,7 +290,7 @@ Some failures show in the **GUI before the main menu** (crash screen, mod-load f
 Capture them without fighting input:
 ```bash
 ls -t run/crash-reports/*.txt 2>/dev/null | head -1   # dev env
-ls -t ~/.local/share/ModrinthApp/profiles/"NeoForge 26.2"/crash-reports/*.txt | head -1
+ls -t ~/.local/share/ModrinthApp/profiles/"NeoForge 26.3"/crash-reports/*.txt | head -1
 tail -50 run/logs/latest.log
 python3 tools/screenshot.py --full   # grab the on-screen crash text as ASCII
 ```

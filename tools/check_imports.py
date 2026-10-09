@@ -7,8 +7,8 @@ This is independent of javac cascade errors, so it's a reliable signal.
 import pathlib, re
 from collections import defaultdict
 
-T = pathlib.Path("/Users/spencer/Documents/Thaumcraft-26.2/build/neoForm/neoFormJoined26.2-2/steps/transformSource/transformed")
-SRC = pathlib.Path("/Users/spencer/Documents/Thaumcraft-26.2/src/main/java")
+T = pathlib.Path("/Users/spencer/Documents/Thaumcraft26/build/neoForm/neoFormJoined26.2-2/steps/transformSource/transformed")
+SRC = pathlib.Path("/Users/spencer/Documents/Thaumcraft26/src/main/java")
 
 # index all 26.2 classes: simple -> set(fqn)
 name_to_fqns = defaultdict(set)

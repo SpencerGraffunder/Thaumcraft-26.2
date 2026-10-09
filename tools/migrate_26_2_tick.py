@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — tick event migration (4 files).
+Thaumcraft26 port — tick event migration (4 files).
 
 NeoForge split the Forge `TickEvent` into per-context Pre/Post events:
   ClientTickEvent.Pre / ClientTickEvent.Post

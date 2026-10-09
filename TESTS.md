@@ -1,4 +1,4 @@
-# Thaumcraft 26.2 — Unit Test Suite
+# Thaumcraft26 — Unit Test Suite
 
 Pure-logic unit tests that run in a **plain JVM** (no Minecraft/NeoForge client or
 server required). They are wired into Gradle's `test` task, so `./gradlew build`

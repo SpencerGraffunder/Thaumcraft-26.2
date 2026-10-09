@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — migration pass 1 (safe, mechanical, tree-wide).
+Thaumcraft26 port — migration pass 1 (safe, mechanical, tree-wide).
 
 Applies MC 26.2 API rewrites that preserve the original 1.20.1 semantics:
 

@@ -1,4 +1,4 @@
-# Thaumcraft 26.2 Port — Findings Tracking
+# Thaumcraft26 Port — Findings Tracking
 
 **Source**: `FEATURE-GAP-AUDIT.md` (2026-09-14). Goal: match 1.12 behavior on NeoForge 1.21.1.
 

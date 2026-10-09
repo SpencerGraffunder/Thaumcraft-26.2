@@ -8,8 +8,8 @@ and prints a summary. Also handles classes that are genuinely GONE (no match).
 import pathlib, re, sys
 from collections import defaultdict
 
-T = pathlib.Path("/Users/spencer/Documents/Thaumcraft-26.2/build/neoForm/neoFormJoined26.2-2/steps/transformSource/transformed")
-SRC = pathlib.Path("/Users/spencer/Documents/Thaumcraft-26.2/src/main/java")
+T = pathlib.Path("/Users/spencer/Documents/Thaumcraft26/build/neoForm/neoFormJoined26.2-2/steps/transformSource/transformed")
+SRC = pathlib.Path("/Users/spencer/Documents/Thaumcraft26/src/main/java")
 
 # 1) index all classes in 26.2
 name_to_fqns = defaultdict(set)

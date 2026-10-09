@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — REVERT: undo pass-8 over-apply in client FX classes.
+Thaumcraft26 port — REVERT: undo pass-8 over-apply in client FX classes.
 
 Pass 8 (error-guided) replaced .getRandom() -> .random() anywhere javac flagged
 "cannot find symbol getRandom()". That was correct for worldgen contexts but

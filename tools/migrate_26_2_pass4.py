@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — migration pass 4 (entity API signature changes).
+Thaumcraft26 port — migration pass 4 (entity API signature changes).
 
   - defineSynchedData() -> defineSynchedData(SynchedEntityData.Builder builder)
     (super(builder), this.entityData.define -> builder.define)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thaumcraft 26.2 port — migration pass 3.
+Thaumcraft26 port — migration pass 3.
 
   - @Mod.EventBusSubscriber bus enum: Bus.FORGE -> Bus.GAME
   - Forge event bus:          MinecraftForge.EVENT_BUS -> NeoForge.EVENT_BUS
