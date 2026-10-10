@@ -1042,6 +1042,21 @@ public final class ThaumcraftSmoke {
                 fail("thaumatorium-queue", "no TileThaumatorium created at " + pos);
                 return;
             }
+            // 1.12 parity: base capacity is 1 recipe; brain boxes raise it.
+            if (tile.maxRecipes != 1) {
+                fail("thaumatorium-queue", "default maxRecipes=" + tile.maxRecipes + " (want 1, 1.12 parity)");
+                return;
+            }
+            // One brain box on a side (facing the thaumatorium) adds +2 slots.
+            level.setBlock(pos.relative(Direction.EAST),
+                    ModBlocks.BRAIN_BOX.get().defaultBlockState()
+                            .setValue(thaumcraft.common.blocks.devices.BlockBrainBox.FACING, Direction.WEST), 3);
+            tile.recountBrainBoxes();
+            if (tile.maxRecipes != 3) {
+                fail("thaumatorium-queue", "brain box did not raise maxRecipes to 3 (got " + tile.maxRecipes + ")");
+                return;
+            }
+            tile.setMaxRecipes(5);
             for (int i = 1; i <= 5; i++) {
                 if (!tile.addRecipeToQueue(i * 1000, new AspectList().add(Aspect.AIR, i), "smoketest")) {
                     fail("thaumatorium-queue", "add #" + i + " rejected although queue not full (maxRecipes=" + tile.maxRecipes + ")");
@@ -1074,7 +1089,7 @@ public final class ThaumcraftSmoke {
                 fail("thaumatorium-queue", "clearRecipeQueue left " + tile.getRecipeCount() + " entries");
                 return;
             }
-            pass("thaumatorium-queue (cap 5 enforced, remove shifts, NBT roundtrip 4/4, clear)");
+            pass("thaumatorium-queue (default cap 1, brain box -> 3, cap 5 enforced, remove shifts, NBT roundtrip 4/4, clear)");
         } catch (Throwable t) {
             fail("thaumatorium-queue", t.toString());
         }
@@ -1309,13 +1324,15 @@ public final class ThaumcraftSmoke {
     private static int smeltBatchWithVents(MinecraftServer server, BlockPos pos, boolean vented) {
         var level = server.overworld();
         level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-        level.setBlock(pos, ModBlocks.SMELTER.get().defaultBlockState().setValue(BlockSmelter.LIT, true), 3);
+        // Face SOUTH explicitly so the vents below (E/W/N) are all on non-front faces
+        level.setBlock(pos, ModBlocks.SMELTER.get().defaultBlockState()
+                .setValue(BlockSmelter.FACING, Direction.SOUTH).setValue(BlockSmelter.LIT, true), 3);
         var tile = (TileSmelter) level.getBlockEntity(pos);
         if (tile == null) {
             throw new IllegalStateException("no TileSmelter at " + pos);
         }
         if (vented) {
-            // default smelter facing is south; vents go on the other 3 horizontal faces, aimed at the smelter
+            // smelter faces south; vents go on the other 3 horizontal faces, aimed at the smelter
             for (Direction d : List.of(Direction.EAST, Direction.WEST, Direction.NORTH)) {
                 level.setBlock(pos.relative(d),
                         ModBlocks.SMELTER_VENT.get().defaultBlockState().setValue(BlockSmelter.FACING, d.getOpposite()), 3);

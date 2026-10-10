@@ -20,22 +20,22 @@ Status legend: OPEN / FIXED / NOISE / DEFERRED (needs a bigger subsystem first)
 | F001 | 48 entity lang keys used PascalCase (`entity.thaumcraft.Golem`) but ids are snake_case → all mob names rendered as raw ids | lang/en_us.lang `entity.*.name` | Renamed to `entity.thaumcraft.<registered_id>` (tools/audit_lang.py) | **FIXED** (lang batch) |
 | F002 | 12 entities had no lang key at all (focus_projectile, alumentum, grapple, homing_shard, special_item, …) | lang | Added with 1.12 values | **FIXED** (lang batch) |
 | F003 | 10 effect + 4 plate + 3 fluid lang keys missing/mismatched (`warpward`→`warp_ward`, `plate.iron`→`plate_iron`, …) | lang | audit_lang.py --fix | **FIXED** (lang batch) |
-| F004 | Sound event `runicshieldecharge` missing (65/65 otherwise) | sounds.json | Add event + file | OPEN |
-| F005 | 5 infusion enchantments missing from data registry: visbattery, vischarge, swift, agile, infested (1.12 EnumInfusionEnchantment has 13, ours 8 + bore `infusion`) | lib/enchantment/EnumInfusionEnchantment.java | Add data/thaumcraft/enchantment/*.json + lang + behavior hooks | OPEN |
-| F006 | `tools/audit_lang.py` added to gate (registry-id ↔ lang-key oracle) | — | Wire into run_all_audits.sh | OPEN |
+| F004 | Sound event `runicshieldecharge` missing (65/65 otherwise) | sounds.json | — | **NOISE** (unused in 1.12 source too) |
+| F005 | 5 infusion enchantments missing from data registry: visbattery, vischarge, swift, agile, infested (1.12 EnumInfusionEnchantment has 13, ours 8 + bore `infusion`) | lib/enchantment/EnumInfusionEnchantment.java | — | **NOISE** (no 1.12 recipe/behavior for the 5; our 8 active match) |
+| F006 | `tools/audit_lang.py` added to gate (registry-id ↔ lang-key oracle) | — | Wired into run_all_audits.sh | **FIXED** (lang batch) |
 
 ## B1 — Block behaviors
 
 | # | Item | 1.12 source | Fix | Status |
 |---|------|-------------|-----|--------|
-| F010 | Breaking a mirror block must drop the **mirror item** preserving link coords (mirror_essentia: same + contents) | devices/BlockMirror.dropMirror | Implement onRemove→drop item w/ link tag; place item→block restores | OPEN |
-| F011 | Candles around an infusion matrix act as stabilizers: each candle reduces instability; symmetric placement penalty | blocks/crafting/BlockCandle (canStabaliseInfusion/getStabilizationAmount/getSymmetryPenalty) + TileInfusionMatrix | Add candle scan to instability calc | OPEN |
-| F012 | Brain jars (jar_brain) give enchanting-table power bonus to nearby ench. tables | essentia/BlockJar.getEnchantPowerBonus | Hook enchantment power query | OPEN |
-| F013 | Amber ore has 6.6% chance per drop to give a random **curio** instead | world/ore/BlockOreTC.getDrops | Add loot modifier / custom drops | OPEN |
-| F014 | TC leaves (greatwood/silverwood) flammability + fire spread + shearing drops | blocks/basic/BlockLeavesTC (getFlammability/getFireSpreadSpeed/onSheared) | Set fire properties + shear behavior | OPEN |
-| F015 | TC planks flammability | blocks/basic/BlockPlanksTC | Fire properties | OPEN |
-| F016 | TC metals are beacon bases (isBeaconBase) — arcane/eldritch/ancient stone too | blocks/basic/BlockMetalTC, BlockStoneTC | beacon_base property | OPEN |
-| F017 | Eldritch/ancient stone `canEntityDestroy` (tnt-immune?) | blocks/basic/BlockStoneTC | Check 1.12 impl, mirror | OPEN |
+| F010 | Breaking a mirror block must drop the **mirror item** preserving link coords (mirror_essentia: same + contents) | devices/BlockMirror.dropMirror | getDrops override w/ link CustomData + setPlacedBy restore | **FIXED** (d38b124) |
+| F011 | Candles around an infusion matrix act as stabilizers: each candle reduces instability; symmetric placement penalty | blocks/crafting/BlockCandle (canStabaliseInfusion/getStabilizationAmount/getSymmetryPenalty) + TileInfusionMatrix | Candle/stabilizer/pedestal implement IInfusionStabiliser(Ext) | **FIXED** (d38b124) |
+| F012 | Brain jars (jar_brain) give enchanting-table power bonus to nearby ench. tables | essentia/BlockJar.getEnchantPowerBonus | Added to `minecraft:enchantment_power_provider` tag (modern power system) | **FIXED** (d38b124) |
+| F013 | Amber ore has 6.6% chance per drop to give a **curio** instead + amber/quartz ore 1–4 XP | world/ore/BlockOreTC.getDrops | Loot tables: curio damage-1 alt (0.066) + XP pool (silk-touch inverted) | **FIXED** (d38b124) |
+| F014 | TC leaves (greatwood/silverwood) flammability + fire spread + shearing + **silverwood vis regen** + 1/75 sapling drops | blocks/basic/BlockLeavesTC | Fire odds 60/30, IShearable, vis regen in randomTick, loot-table drops (incl. quicksilver nugget) | **FIXED** (d38b124) |
+| F015 | TC planks flammability | blocks/basic/BlockPlanksTC | Fire odds 20/5 | **FIXED** (d38b124) |
+| F016 | TC metals are beacon bases (isBeaconBase) — arcane/eldritch/ancient stone too | blocks/basic/BlockMetalTC, BlockStoneTC | `minecraft:beacon_base_blocks` tag with all 16 TC metals/stones | **FIXED** (d38b124) |
+| F017 | Eldritch/ancient stone `canEntityDestroy` (tnt-immune?) | blocks/basic/BlockStoneTC | 1.12 check is always-true (no stone sets negative slipperiness) | **NOISE** |
 | F018 | Golem builder: rotate on wrench + break drops items inside | crafting/BlockGolemBuilder (destroy/rotateBlock) | Wrench rotate + break drops | OPEN |
 | F019 | Infernal furnace: breaking the multiblock breaks all 27 blocks + drops contents | devices/BlockInfernalFurnace.destroyFurnace | Multiblock break cascade | OPEN |
 | F020 | Hungry chest: rotate on wrench; harvest rules | devices/BlockHungryChest | Wrench rotate | OPEN |
@@ -55,14 +55,14 @@ Status legend: OPEN / FIXED / NOISE / DEFERRED (needs a bigger subsystem first)
 
 | # | Item | 1.12 source | Fix | Status |
 |---|------|-------------|-----|--------|
-| F040 | **Thaumatorium upgrades**: items in upgrade slots modify speed/quality (getUpgrades/updateRecipes) | crafting/TileThaumatorium | Port upgrade items + effects | OPEN |
-| F041 | Golem builder essentia **suction** (type/amount settings pulled from aura) | crafting/TileGolemBuilder | Port suction | OPEN |
-| F042 | Arcane workbench `getAura` (aura draw for enchanting?) | crafting/TileArcaneWorkbench | Verify | OPEN |
-| F043 | Pedestal: findInstabilityMitigator (candles/golems around reduce instability), seekSourceRecursive (essentia draw from aura/tanks) | crafting/TilePedestal | Verify/extend | OPEN |
-| F044 | Crucible `spillRemnants` on overfill | crafting/TileCrucible | Verify | OPEN |
-| F045 | Bellows cooktime persistence + rendering | devices/TileBellows | Verify | OPEN |
-| F046 | Thaumatorium recipe hash list + current output recipe (generateRecipeHashlist) | crafting/TileThaumatorium | Verify queue uses hashes (done in smoke) | OPEN (verify) |
-| F047 | TileThaumcraftInventory slot sync flags (isSyncedSlot/getSyncedStackInSlot) | tiles/TileThaumcraftInventory | Verify synced slots match 1.12 per-tile | OPEN |
+| F040 | **Thaumatorium upgrades**: brain boxes on sides add +2 queue slots each (getUpgrades) | crafting/TileThaumatorium | recountBrainBoxes() every 40 ticks, default 1 slot, queue trimmed | **FIXED** (d38b124) |
+| F041 | Golem builder essentia **suction** (MECHANISM, 128 suction while building, buffered push) | crafting/TileGolemBuilder | IEssentiaTransport impl + drawEssentia() per progress tick | **FIXED** (d38b124) |
+| F042 | Arcane workbench `getAura` (charger → 3×3 chunk aura drain) | crafting/TileArcaneWorkbench | Verified: auraVisServer + spendAura with charger 3×3 drain | **FIXED** (verified) |
+| F043 | Instability event system + stabilizer mitigation (findInstabilityMitigator) | TileInfusionMatrix + TileStabilizer | Verified: 24-case event switch + findNearestStabilizer + mitigate(5–10) ported (search simplified vs recursive) | **FIXED** (verified) |
+| F044 | Crucible `spillRemnants` on overfill | crafting/TileCrucible | Verified: spillRandom() on 150-tick cadence + overfill | **FIXED** (verified) |
+| F045 | Bellows cooktime persistence + rendering | devices/TileBellows | 1.12 has no cooktime field either | **NOISE** |
+| F046 | Thaumatorium recipe hash list + current output recipe (generateRecipeHashlist) | crafting/TileThaumatorium | Verified: recipeHash queue, smoke-covered | **FIXED** (verified) |
+| F047 | TileThaumcraftInventory slot sync flags (isSyncedSlot/getSyncedStackInSlot) | tiles/TileThaumcraftInventory | Modern BE sync architecture covers it (writeSyncNBT per tile) | **NOISE** |
 
 ## B3 — Item behaviors
 

@@ -257,7 +257,7 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
      * 1.12 getUpgrades: brain boxes attached to the sides (not the front) each add
      * +2 recipe slots. Scanned on the 1.12 cadence (every 40 ticks).
      */
-    private void recountBrainBoxes() {
+    public void recountBrainBoxes() {
         if (level == null) return;
         BlockState myState = level.getBlockState(worldPosition);
         Direction facing = myState.getValue(BlockThaumatorium.FACING);
