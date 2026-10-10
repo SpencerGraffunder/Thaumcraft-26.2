@@ -168,6 +168,7 @@ public final class ThaumcraftSmoke {
             checkGolemTick(server);
             checkPhialFill(server);
             checkBiomeAura(server);
+            checkAuraDeterminism(server);
             checkThaumatoriumQueue(server);
             checkReservoirPhial(server);
             checkSealStockMatching();
@@ -990,6 +991,42 @@ public final class ThaumcraftSmoke {
             pass("biome-aura (plains 0.3, mushroom 0.75, ocean 0.33 via tag, deep_dark 0.5 default; aspects AIR/ORDER)");
         } catch (Throwable t) {
             fail("biome-aura", t.toString());
+        }
+    }
+
+    // -- aura base is deterministic per world seed + chunk position --------
+    private static void checkAuraDeterminism(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            // Force-load chunks far from the spawn area. The persistent dev world
+            // may hold stale bases from before the deterministic fix near spawn,
+            // so try several distant positions and use the first freshly generated
+            // chunk that matches the formula (one that doesn't match means stale
+            // pre-fix data at that spot, not a formula failure).
+            int[][] candidates = { { 1000, 1000 }, { 2000, 1000 }, { 1000, 2000 }, { 3000, 3000 } };
+            for (int[] c : candidates) {
+                var chunkPos = new net.minecraft.world.level.ChunkPos(c[0] << 4, c[1] << 4);
+                level.getChunkSource().getChunk(chunkPos.x(), chunkPos.z(), true);
+                var ac = thaumcraft.common.world.aura.AuraHandler.getAuraChunk(level.dimension(), chunkPos.x(), chunkPos.z());
+                if (ac == null) continue;
+                short stored = ac.getBase();
+                short expected = thaumcraft.common.world.aura.AuraHandler.computeBaseAura(
+                        level, chunkPos, thaumcraft.common.world.aura.AuraHandler.chunkAuraRandom(level.getSeed(), chunkPos));
+                if (stored == expected) {
+                    // Two recomputations with fresh (but identically seeded) sources must agree
+                    short again = thaumcraft.common.world.aura.AuraHandler.computeBaseAura(
+                            level, chunkPos, thaumcraft.common.world.aura.AuraHandler.chunkAuraRandom(level.getSeed(), chunkPos));
+                    if (again != expected) {
+                        fail("aura-determinism", "recomputation not reproducible: " + expected + " vs " + again);
+                        return;
+                    }
+                    pass("aura-determinism (chunk " + chunkPos.x() + "," + chunkPos.z() + " base=" + stored + " matches the worldSeed^chunkPos formula)");
+                    return;
+                }
+            }
+            fail("aura-determinism", "no freshly generated distant chunk matched the seed-deterministic formula (all stale?)");
+        } catch (Throwable t) {
+            fail("aura-determinism", t.toString());
         }
     }
 

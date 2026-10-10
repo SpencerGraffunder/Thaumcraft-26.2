@@ -227,8 +227,11 @@ public class AuraChunkHandler {
      * Generate initial aura for a newly created chunk.
      */
     private static void generateChunkAura(ServerLevel level, LevelChunk chunk) {
-        RandomSource random = level.getRandom();
-        AuraHandler.generateAura(chunk, random);
+        // 1.12 generated the base aura from the CHUNK-GEN random, i.e. deterministic
+        // per world seed + chunk position. A shared level random made the base depend
+        // on chunk-generation order, so derive a per-chunk source instead
+        // (worldSeed ^ chunkPos key, as Thaumaturge does).
+        AuraHandler.generateAura(chunk, AuraHandler.chunkAuraRandom(level.getSeed(), chunk.getPos()));
         
         // Track as dirty so the periodic drain persists it
         ResourceKey<Level> dimension = level.dimension();

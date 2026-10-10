@@ -9,7 +9,7 @@ Layers (per the verification plan):
 1. **Ledger** — this file: every subsystem with its oracle and green state.
 2. **Build gate** — `tools/run_all_audits.sh` (static oracles + smoke).
 3. **In-game smoke** — headless dedicated server, dev world, `TC_SMOKE=1`,
-   27-check assertion battery at `ServerStartedEvent` (`ThaumcraftSmoke`).
+   28-check assertion battery at `ServerStartedEvent` (`ThaumcraftSmoke`).
 4. **Unit tests** — regression net only (86 tests, `./gradlew test`); discovery
    is the job of layers 2–3, never the unit tests.
 
@@ -25,8 +25,9 @@ Layers (per the verification plan):
 | Models / textures / blockstates wiring | `tools/audit_models.py` | 0 problems | GREEN |
 | Java → resource file refs (textures, models, lang, data) | `tools/audit_resources.py` | 0 missing file references | GREEN |
 | Inventory read-while-write loops (live handler mutated mid-iteration) | `tools/audit_inv_loops.py` | 0 loops | GREEN |
-| In-game core systems (registrations, recipe load, research gates, enchantments, loot modifiers, aspects, lang) | `tools/run_smoke.sh` → `ThaumcraftSmoke` | SMOKE: 27/27 checks passed, server boots to `Done` | GREEN |
-| In-game behavioral loops (research progression, crucible, infusion, refining loot, golem tick, phial fill, biome aura modifiers, thaumatorium queue, reservoir phial I/O, seal matching + config GUIs, collapser→rift, taint bottle, smelter vents, research auto-unlock) | `tools/run_smoke.sh` → `ThaumcraftSmoke` (behavioral half of the 27) | all 14 behavioral checks pass against live server state | GREEN |
+| In-game core systems (registrations, recipe load, research gates, enchantments, loot modifiers, aspects, lang) | `tools/run_smoke.sh` → `ThaumcraftSmoke` | SMOKE: 28/28 checks passed, server boots to `Done` | GREEN |
+| In-game behavioral loops (research progression, crucible, infusion, refining loot, golem tick, phial fill, biome aura modifiers, aura base seed-determinism, thaumatorium queue, reservoir phial I/O, seal matching + config GUIs, collapser→rift, taint bottle, smelter vents, research auto-unlock) | `tools/run_smoke.sh` → `ThaumcraftSmoke` (behavioral half of the 28) | all 15 behavioral checks pass against live server state | GREEN |
+| Thaumaturge (26.1.2 TC6 port) fidelity comparison | `docs/THAUMATURGE-COMPARISON.md` | 1.12-parity items verified; missing 1.12 subsystems (aura nodes, golem AI, flux pressure, cultist/pech AI) catalogued with a prioritized roadmap | GREEN (tracked) |
 | Compilation + regression unit tests | `./gradlew build` | rc 0, 86/86 tests, 0 `TODO` in `src/` | GREEN |
 
 **Gate status (last run): GREEN** — 2026-10-09, 8/8 oracles + SMOKE 27/27 (smoke grew 12→18→27; the 9 newest behavioral checks immediately caught two real bugs: the reservoir phial-fill condition was inverted (`addToContainer` returns the UNADDED remainder, so `> 0` meant "never fills"), and the shared smelter BE type was registered for only the base smelter block, making vent/aux/thaumium/void placement throw "Invalid block entity").

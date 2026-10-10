@@ -238,32 +238,37 @@ public class AuraHandler {
      */
     public static void generateAura(LevelChunk chunk, RandomSource rand) {
         Level level = chunk.getLevel();
-        BlockPos center = new BlockPos(chunk.getPos().x() * 16 + 8, 50, chunk.getPos().z() * 16 + 8);
-        
-        // Biome aura modifier (26.2 removed is_swamp/is_desert biome tags; use climate settings)
-        float biomeMod = 1.0f;
-        net.minecraft.world.level.biome.Biome biome = level.getBiome(center).value();
-        var climate = biome.getModifiedClimateSettings();
-        if (climate.temperature() >= 0.75f && climate.downfall() >= 0.8f) {
-            biomeMod = 1.5f; // swamp-like
-        } else if (climate.temperature() >= 1.5f && climate.downfall() <= 0.05f) {
-            biomeMod = 0.5f; // desert-like
-        }
+        short base = computeBaseAura(level, chunk.getPos(), rand);
+        addAuraChunk(level.dimension(), chunk, base, base, 0.0f);
+    }
+
+    /**
+     * Deterministic per-chunk random source for aura generation: the same world
+     * seed + chunk position always yields the same base aura (1.12 used the
+     * chunk-gen random, which was seed-deterministic).
+     */
+    public static RandomSource chunkAuraRandom(long worldSeed, ChunkPos chunkPos) {
+        long key = (chunkPos.x() & 0xFFFFFFFFL) | ((chunkPos.z() & 0xFFFFFFFFL) << 32);
+        return RandomSource.create(worldSeed ^ key);
+    }
+
+    /** Pure base-aura computation (1.12: mean of 5 biome modifiers * 500 * gaussian noise). */
+    public static short computeBaseAura(Level level, ChunkPos chunkPos, RandomSource rand) {
+        BlockPos center = new BlockPos(chunkPos.x() * 16 + 8, 50, chunkPos.z() * 16 + 8);
+
         float life = getBiomeAuraModifier(level, center);
-        
+
         // Average with neighboring chunks
         for (Direction dir : Direction.Plane.HORIZONTAL) {
             BlockPos neighborPos = center.relative(dir, 16);
             life += getBiomeAuraModifier(level, neighborPos);
         }
         life /= 5.0f;
-        
+
         // Add some random variation
         float noise = (float)(1.0 + rand.nextGaussian() * 0.1);
         short base = (short)(life * AURA_CEILING * noise);
-        base = (short) Mth.clamp(base, 0, AURA_CEILING);
-        
-        addAuraChunk(level.dimension(), chunk, base, base, 0.0f);
+        return (short) Mth.clamp(base, 0, AURA_CEILING);
     }
 
     /**
