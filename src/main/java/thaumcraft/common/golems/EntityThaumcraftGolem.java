@@ -30,6 +30,7 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.RangedAttackMob;
@@ -933,6 +934,7 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         private final float stopDistance;
         private final float startDistance;
         private int timeToRecalcPath;
+        private float savedWaterMalus = 8.0f;
 
         public FollowOwnerGoal(EntityThaumcraftGolem golem, double speed, float startDist, float stopDist) {
             this.golem = golem;
@@ -959,12 +961,16 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
         @Override
         public void start() {
             timeToRecalcPath = 0;
+            // 1.12 AIFollowOwner: wade through water while following, restore after
+            savedWaterMalus = golem.getPathfindingMalus(PathType.WATER);
+            golem.setPathfindingMalus(PathType.WATER, 0.0f);
         }
 
         @Override
         public void stop() {
             owner = null;
             golem.getNavigation().stop();
+            golem.setPathfindingMalus(PathType.WATER, savedWaterMalus);
         }
 
         @Override
@@ -972,8 +978,38 @@ public class EntityThaumcraftGolem extends EntityOwnedConstruct implements IGole
             golem.getLookControl().setLookAt(owner, 10.0f, golem.getMaxHeadXRot());
             if (--timeToRecalcPath <= 0) {
                 timeToRecalcPath = 10;
-                golem.getNavigation().moveTo(owner, speedModifier);
+                boolean pathed = golem.getNavigation().moveTo(owner, speedModifier);
+                // 1.12 AIFollowOwner fallback: no path, not swimming, and >= 12 blocks
+                // away -> teleport into the 5x5 ring of walkable spots around the owner.
+                if (!pathed && !golem.isInWater() && golem.distanceToSqr(owner) >= 144.0) {
+                    teleportNextToOwner(owner);
+                }
             }
+        }
+
+        private void teleportNextToOwner(LivingEntity owner) {
+            BlockPos o = owner.blockPosition();
+            for (int l = 0; l <= 4; l++) {
+                for (int i1 = 0; i1 <= 4; i1++) {
+                    if ((l < 1 || i1 < 1 || l > 3 || i1 > 3)) {
+                        BlockPos below = o.west(2 - l).north(-2 + i1).below();
+                        BlockPos mid = below.above();
+                        Level lvl = golem.level();
+                        // 1.12: below solid; mid + above non-solid (or air)
+                        if (lvl.getBlockState(below).isSolid()
+                                && walkable(lvl, mid) && walkable(lvl, mid.above())) {
+                            golem.teleportTo(mid.getX() + 0.5, mid.getY(), mid.getZ() + 0.5);
+                            golem.getNavigation().stop();
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private boolean walkable(Level lvl, BlockPos p) {
+            net.minecraft.world.level.block.state.BlockState s = lvl.getBlockState(p);
+            return s.isAir() || !s.isSolid();
         }
     }
 }

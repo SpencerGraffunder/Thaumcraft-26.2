@@ -25,12 +25,12 @@ Layers (per the verification plan):
 | Models / textures / blockstates wiring | `tools/audit_models.py` | 0 problems | GREEN |
 | Java → resource file refs (textures, models, lang, data) | `tools/audit_resources.py` | 0 missing file references | GREEN |
 | Inventory read-while-write loops (live handler mutated mid-iteration) | `tools/audit_inv_loops.py` | 0 loops | GREEN |
-| In-game core systems (registrations, recipe load, research gates, enchantments, loot modifiers, aspects, lang) | `tools/run_smoke.sh` → `ThaumcraftSmoke` | SMOKE: 28/28 checks passed, server boots to `Done` | GREEN |
-| In-game behavioral loops (research progression, crucible, infusion, refining loot, golem tick, phial fill, biome aura modifiers, aura base seed-determinism, thaumatorium queue, reservoir phial I/O, seal matching + config GUIs, collapser→rift, taint bottle, smelter vents, research auto-unlock) | `tools/run_smoke.sh` → `ThaumcraftSmoke` (behavioral half of the 28) | all 15 behavioral checks pass against live server state | GREEN |
+| In-game core systems (registrations, recipe load, research gates, enchantments, loot modifiers, aspects, lang) | `tools/run_smoke.sh` → `ThaumcraftSmoke` | SMOKE: 30/30 checks passed, server boots to `Done` | GREEN |
+| In-game behavioral loops (research progression, crucible, infusion, refining loot, golem tick, **golem follow-owner movement**, phial fill, biome aura modifiers, aura base seed-determinism, thaumatorium queue, reservoir phial I/O, seal matching + config GUIs, collapser→rift, taint bottle, smelter vents, research auto-unlock, flux pressure events) | `tools/run_smoke.sh` → `ThaumcraftSmoke` (behavioral half of the 30) | all behavioral checks pass against live server state | GREEN |
 | Thaumaturge (26.1.2 TC6 port) fidelity comparison | `docs/THAUMATURGE-COMPARISON.md` | 1.12-parity items verified; missing 1.12 subsystems (aura nodes, golem AI, flux pressure, cultist/pech AI) catalogued with a prioritized roadmap | GREEN (tracked) |
 | Compilation + regression unit tests | `./gradlew build` | rc 0, 86/86 tests, 0 `TODO` in `src/` | GREEN |
 
-**Gate status (last run): GREEN** — 2026-10-09, 8/8 oracles + SMOKE 27/27 (smoke grew 12→18→27; the 9 newest behavioral checks immediately caught two real bugs: the reservoir phial-fill condition was inverted (`addToContainer` returns the UNADDED remainder, so `> 0` meant "never fills"), and the shared smelter BE type was registered for only the base smelter block, making vent/aux/thaumium/void placement throw "Invalid block entity").
+**Gate status (last run): GREEN** — 2026-10-10, 8/8 oracles + SMOKE 30/30 (smoke grew 12→18→27→29→30; the newest checks kept catching real bugs: the `golem-follow` check exposed `EntityOwnedConstruct.getOwner()` using `getPlayerByUUID`, which made non-player owners invisible to the follow/target AI — 1.12 `getOwnerEntity()` resolves ANY living entity). 1.12-parity batch: golem follow-owner teleport fallback + water wading ported (F124/F125); cult AI, crab riding, barrier, effect blocks, flux goo/death fluid, brain box verified (F021/F029–F031/F072/F130–F134).
 
 ## Conventions
 

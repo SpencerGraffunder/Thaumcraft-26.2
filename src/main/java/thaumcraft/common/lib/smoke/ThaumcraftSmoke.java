@@ -166,6 +166,7 @@ public final class ThaumcraftSmoke {
             checkInfusionRecipes(server);
             checkRefiningLoot(server);
             checkGolemTick(server);
+            checkGolemFollow(server);
             checkPhialFill(server);
             checkBiomeAura(server);
             checkAuraDeterminism(server);
@@ -906,6 +907,109 @@ public final class ThaumcraftSmoke {
             pass("golem-tick (default golem spawned, 20 ticks alive, parts registry resolved " + comps.length + " components)");
         } catch (Throwable t) {
             fail("golem-tick", t.toString());
+        }
+    }
+
+    // -- golem follow-owner: deterministic movement toward a distant owner --
+    //    (F125: proves the follow AI actually closes the gap, via navigation
+    //    or the 1.12 no-path teleport fallback — either way the distance
+    //    must shrink.)
+    private static void checkGolemFollow(MinecraftServer server) {
+            net.minecraft.world.entity.Mob owner = null;
+        EntityThaumcraftGolem g = null;
+        try {
+            var level = server.overworld();
+            var spawn = level.getRespawnData().pos();
+
+            // Build a flat stone platform in chunk-aligned coordinates so the
+            // follow AI has guaranteed-walkable terrain to act on (a raw
+            // headless world has uneven terrain + unloaded chunks, which makes
+            // both pathfinding and the 1.12 teleport-ring fallback
+            // non-deterministic).
+            int bx = spawn.getX() & ~15;
+            int bz = spawn.getZ() & ~15;
+            int floorY = 100;
+            for (int dx = 0; dx < 32; dx++) {
+                for (int dz = 0; dz < 32; dz++) {
+                    level.setBlock(new net.minecraft.core.BlockPos(bx + dx, floorY, bz + dz),
+                            net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 3);
+                    for (int dy = 1; dy <= 6; dy++) {
+                        level.setBlock(new net.minecraft.core.BlockPos(bx + dx, floorY + dy, bz + dz),
+                                net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+                    }
+                }
+            }
+            // Force-load the whole 2x2 chunk block under the platform.
+            for (int cx = 0; cx < 2; cx++) {
+                for (int cz = 0; cz < 2; cz++) {
+                    level.getChunkSource().getChunk((bx >> 4) + cx, (bz >> 4) + cz, true);
+                }
+            }
+
+            // Golem and a stationary no-AI owner, 14 blocks apart on the floor.
+            var golemAt = new net.minecraft.core.BlockPos(bx + 4, floorY + 1, bz + 4);
+            var ownerAt = new net.minecraft.core.BlockPos(bx + 18, floorY + 1, bz + 4);
+
+            var ironType = (net.minecraft.world.entity.EntityType<net.minecraft.world.entity.animal.golem.IronGolem>)
+                    BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.fromNamespaceAndPath("minecraft", "iron_golem"));
+            owner = new net.minecraft.world.entity.animal.golem.IronGolem(ironType, level);
+            owner.setNoAi(true);
+            owner.setPos(ownerAt.getX() + 0.5, ownerAt.getY(), ownerAt.getZ() + 0.5);
+            level.addFreshEntity(owner);
+
+            g = new EntityThaumcraftGolem(ModEntities.THAUMCRAFT_GOLEM.get(), level);
+            g.setProperties(GolemProperties.fromLong(0L));
+            g.setPos(golemAt.getX() + 0.5, golemAt.getY(), golemAt.getZ() + 0.5);
+            level.addFreshEntity(g);
+            g.setValidSpawn();
+            // The firstRun guard teleports a golem to its home when the two
+            // differ; pin the home to the spawn point so it stays put.
+            g.setHomeTo(golemAt, 32);
+            g.setOwnerUUID(owner.getUUID());
+            g.setFollowingOwner(true);
+
+            double startDist = g.distanceToSqr(owner);
+            if (startDist < 100.0) {
+                fail("golem-follow", "setup: owner too close (" + startDist + ")");
+                g.discard(); owner.discard();
+                return;
+            }
+            // Ticking an entity is what inserts it into its chunk's entity
+            // list; LevelEntityGetter.get(UUID) (the golem's owner-resolution
+            // path) only sees entities ticked at least once. Tick both.
+            for (int i = 0; i < 200 && !g.isRemoved(); i++) {
+                g.tick();
+                owner.tick();
+            }
+            if (g.isRemoved()) {
+                fail("golem-follow", "golem removed during follow (health=" + g.getHealth() + ")");
+                owner.discard();
+                return;
+            }
+            double endDist = g.distanceToSqr(owner);
+            if (endDist >= startDist) {
+                java.util.List<String> goals = new java.util.ArrayList<>();
+                try {
+                    var gf = net.minecraft.world.entity.Mob.class.getDeclaredField("goalSelector");
+                    gf.setAccessible(true);
+                    var gs = (net.minecraft.world.entity.ai.goal.GoalSelector) gf.get(g);
+                    for (var w : gs.getAvailableGoals()) goals.add(w.getGoal().getClass().getSimpleName() + (w.isRunning() ? "*" : ""));
+                } catch (Throwable rt) { goals.add("reflect-fail:" + rt); }
+                fail("golem-follow", "golem did not move toward owner (start=" + startDist
+                        + ", end=" + endDist + ", pos=" + g.blockPosition()
+                        + ", ownerResolved=" + (g.getOwner() != null)
+                        + ", onGround=" + g.onGround()
+                        + ", goals=" + goals + ")");
+                g.discard(); owner.discard();
+                return;
+            }
+            pass("golem-follow (follow-owner closed gap " + startDist + " -> " + endDist + " in 200 ticks)");
+            g.discard();
+            owner.discard();
+        } catch (Throwable t) {
+            fail("golem-follow", t.toString());
+            if (g != null) g.discard();
+            if (owner != null) owner.discard();
         }
     }
 

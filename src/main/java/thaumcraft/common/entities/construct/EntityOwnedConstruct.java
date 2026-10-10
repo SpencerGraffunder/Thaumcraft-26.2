@@ -107,7 +107,11 @@ public abstract class EntityOwnedConstruct extends PathfinderMob implements Owna
     public LivingEntity getOwner() {
         try {
             UUID uuid = getOwnerUUID();
-            return uuid == null ? null : level().getPlayerByUUID(uuid);
+            // 1.12 getOwnerEntity() resolves ANY living entity; a player-only
+            // lookup would make non-player owners (e.g. smoke-test stands-in)
+            // invisible to the follow/target AI.
+            Entity e = uuid == null ? null : level().getEntity(uuid);
+            return e instanceof LivingEntity le ? le : null;
         } catch (IllegalArgumentException e) {
             return null;
         }
