@@ -177,6 +177,7 @@ public final class ThaumcraftSmoke {
             checkTaintBottle(server);
             checkSmelterVents(server);
             checkResearchAutoUnlock(server);
+            checkFluxPressure(server);
         } catch (Throwable t) {
             fail("smoke-harness", t.toString());
         }
@@ -1027,6 +1028,86 @@ public final class ThaumcraftSmoke {
             fail("aura-determinism", "no freshly generated distant chunk matched the seed-deterministic formula (all stale?)");
         } catch (Throwable t) {
             fail("aura-determinism", t.toString());
+        }
+    }
+
+    // -- flux pressure events (saturated-chunk trigger, exact cost, pick) --
+    private static void checkFluxPressure(MinecraftServer server) {
+        try {
+            var level = server.overworld();
+            // Force-load a distant chunk and saturate its flux (well above the
+            // 0.75*base event threshold and the test cost).
+            thaumcraft.common.world.aura.AuraChunk ac = null;
+            net.minecraft.world.level.ChunkPos used = null;
+            for (int[] c : new int[][]{ { 1500, 1500 }, { 2500, 1500 }, { 1500, 2500 } }) {
+                var chunkPos = new net.minecraft.world.level.ChunkPos(c[0] << 4, c[1] << 4);
+                level.getChunkSource().getChunk(chunkPos.x(), chunkPos.z(), true);
+                var candidate = thaumcraft.common.world.aura.AuraHandler.getAuraChunk(
+                        level.dimension(), chunkPos.x(), chunkPos.z());
+                if (candidate == null) continue;
+                float b = Math.max(1.0f, candidate.getBase());
+                candidate.setFlux(b * 2.0f + 50.0f);
+                ac = candidate;
+                used = chunkPos;
+                break;
+            }
+            if (ac == null) {
+                fail("flux-pressure", "no distant chunk had aura data to saturate");
+                return;
+            }
+
+            // A no-op event with a known cost: trigger() must fire and drain
+            // exactly the cost from the chunk flux.
+            thaumcraft.common.world.aura.pressure.FluxPressureEvent test =
+                    new thaumcraft.common.world.aura.pressure.FluxPressureEvent() {
+                        public String name() { return "smoke"; }
+                        public int weight() { return 1; }
+                        public float cost() { return 10.0f; }
+                        public boolean allowedNearTaint() { return true; }
+                        public boolean fire(net.minecraft.server.level.ServerLevel l,
+                                net.minecraft.core.BlockPos p,
+                                thaumcraft.common.world.aura.pressure.FluxPressureState s) {
+                            return true;
+                        }
+                    };
+            net.minecraft.core.BlockPos pos = new net.minecraft.core.BlockPos(
+                    used.x() << 4, 0, used.z() << 4);
+            float before = ac.getFlux();
+            boolean fired = thaumcraft.common.world.aura.pressure.FluxPressureEvents.trigger(
+                    (net.minecraft.server.level.ServerLevel) level, pos, test);
+            float drained = before - ac.getFlux();
+            if (!fired) {
+                fail("flux-pressure", "trigger returned false on a saturated chunk");
+                return;
+            }
+            if (Math.abs(drained - 10.0f) > 0.01f) {
+                fail("flux-pressure", "cost not drained exactly: " + drained);
+                return;
+            }
+
+            // The weighted pick must draw from the catalog and vary.
+            java.util.Set<String> names = new java.util.HashSet<>();
+            for (int i = 0; i < 300; i++) {
+                names.add(thaumcraft.common.world.aura.pressure.FluxPressureEventTypes
+                        .choose(level.getRandom()).name());
+            }
+            if (names.size() < 2) {
+                fail("flux-pressure", "weighted pick never varied: " + names);
+                return;
+            }
+
+            // State queue/poll round-trip.
+            var state = new thaumcraft.common.world.aura.pressure.FluxPressureState();
+            state.queue(net.minecraft.core.BlockPos.ZERO);
+            if (!net.minecraft.core.BlockPos.ZERO.equals(state.pollPending())
+                    || state.pollPending() != null) {
+                fail("flux-pressure", "queue/poll round-trip broken");
+                return;
+            }
+            pass("flux-pressure (saturated trigger drains exact cost, weighted pick over "
+                    + names.size() + " event types, queue round-trip)");
+        } catch (Throwable t) {
+            fail("flux-pressure", t.toString());
         }
     }
 

@@ -173,9 +173,15 @@ public class AuraScheduler {
             markChunkAsDirty(auraChunk, auraWorld.getDimension());
         }
         
-        // Rift trigger
-        if (currentFlux > base * 0.75 && rand.nextFloat() < currentFlux / 500.0f / 10.0f) {
-            AuraHandler.riftTrigger.put(auraWorld.getDimension(), new BlockPos(x * 16 + 8, 0, z * 16 + 8));
+        // Saturated-flux events (Thaumaturge AuraTickHandler.raiseEvents parity):
+        // over the 0.75*base threshold a chunk can trigger a rift (flux/5000)
+        // or, failing that, a flux pressure event (flux/(100*max(1, base))).
+        if (currentFlux > base * 0.75f) {
+            if (rand.nextFloat() < currentFlux / 500.0f / 10.0f) {
+                AuraHandler.riftTrigger.put(auraWorld.getDimension(), new BlockPos(x * 16 + 8, 0, z * 16 + 8));
+            } else if (rand.nextFloat() < currentFlux / (100.0f * Math.max(1.0f, base))) {
+                thaumcraft.common.world.aura.pressure.FluxPressureEvents.queue(level, auraChunk.getLoc());
+            }
         }
     }
     

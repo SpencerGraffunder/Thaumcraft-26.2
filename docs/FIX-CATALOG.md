@@ -100,12 +100,12 @@ Status legend: OPEN / FIXED / NOISE / DEFERRED (needs a bigger subsystem first)
 
 | # | Item | 1.12 source | Fix | Status |
 |---|------|-------------|-----|--------|
-| F090 | Chunk flux saturation → **lightning** strike at random pos in chunk | Thaumaturge content/aura/pressure/FluxLightning (1.12 ref partial) | Implement in AuraScheduler | OPEN |
-| F091 | Saturated flux → **flux rain** (falling taint / goo particles + damage) | RainPressureEvent | Implement | OPEN |
-| F092 | Saturated flux → **wisps** spawn with random aspect types | WispPressureEvent | Implement (uses F071) | OPEN |
-| F093 | Saturated flux → **warp** nearby players (warp points scale with flux) | WarpPressureEvent | Implement | OPEN |
-| F094 | Saturated flux → **rifts** spawn (EntityFluxRift already exists) | 1.12 aura logic | Implement | OPEN |
-| F095 | Deterministic smoke: force chunk flux to saturation → assert event fires | — | New smoke check | OPEN |
+| F090 | Chunk flux saturation → **lightning** strike at random pos in chunk | Thaumaturge content/aura/pressure/FluxLightning (1.12 ref partial) | Ported: pressure/FluxLightning (thunder+impact, sparks, scattered goo, 3.0 magic + flux taint in r3, 1-3 re-flashes on 4-8 tick delay) | **FIXED** |
+| F091 | Saturated flux → **flux rain** (falling taint / goo particles + damage) | RainPressureEvent | Ported: pressure/FluxRain (witch particles, 16² pool radius, 1.0 flux per goo blob every 20 ticks, starved-penalty, 30-40 s life) | **FIXED** |
+| F092 | Saturated flux → **wisps** spawn with random aspect types | WispPressureEvent | Ported: pressure/WispPressureEvent (wisp 5 above heightmap, 1/3 vitium, noCollision guard) | **FIXED** |
+| F093 | Saturated flux → **warp** nearby players (warp points scale with flux) | WarpPressureEvent | Ported: pressure/WarpPressureEvent + ExhaustPressureEvent (players r16: 25% 1 normal else 2-5 temporary; exhaust = infectious vis exhaust) | **FIXED** |
+| F094 | Saturated flux → **rifts** spawn (EntityFluxRift already exists) | 1.12 aura logic | Verified: AuraScheduler already sets riftTrigger at flux>0.75*base (flux/5000 per s) → ServerEvents spawns EntityFluxRift; now gated as the rift branch of the raiseEvents parity (rift else pressure) | **FIXED** (verified) |
+| F095 | Deterministic smoke: force chunk flux to saturation → assert event fires | — | New smoke check `flux-pressure`: saturate distant chunk, trigger no-op event → exact cost drain; weighted pick varies; queue/poll round-trip. Hub: pressure/FluxPressureEvents (+State, EventTypes, GooUtil) wired into AuraScheduler raiseEvents parity | **FIXED** |
 
 ## B6 — Aura node system (was todo #11)
 
