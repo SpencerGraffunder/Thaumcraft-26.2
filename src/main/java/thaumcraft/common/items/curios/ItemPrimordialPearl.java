@@ -32,7 +32,7 @@ public class ItemPrimordialPearl extends ItemTCBase {
     public ItemPrimordialPearl() {
         super(new Properties()
                 .stacksTo(1)
-                .rarity(Rarity.EPIC)
+                .rarity(Rarity.UNCOMMON)
                 .durability(MAX_DAMAGE));
     }
 
@@ -113,18 +113,6 @@ public class ItemPrimordialPearl extends ItemTCBase {
     }
 
     public Rarity getRarity(ItemStack stack) {
-        // Color based on remaining uses
-        return switch (getVariant(stack)) {
-            case 0 -> Rarity.EPIC;
-            case 1 -> Rarity.RARE;
-            case 2 -> Rarity.UNCOMMON;
-            default -> Rarity.EPIC;
-        };
-    }
-
-    @Override
-    public boolean isFoil(ItemStack stack) {
-        // Only show enchantment glow for fresh pearls
-        return stack.getDamageValue() < 3;
+        return Rarity.UNCOMMON; // 1.12 parity
     }
 }

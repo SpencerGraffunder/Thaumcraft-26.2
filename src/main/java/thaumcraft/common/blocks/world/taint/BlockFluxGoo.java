@@ -109,7 +109,7 @@ public class BlockFluxGoo extends Block implements ITaintBlock {
         // Slow down other entities
         float slowFactor = 1.0f - (gooLevel / 8.0f);
         Vec3 motion = entity.getDeltaMovement();
-        entity.setDeltaMovement(motion.x * slowFactor, motion.y, motion.z * slowFactor);
+        entity.setDeltaMovement(motion.x * slowFactor, motion.y * slowFactor, motion.z * slowFactor); // 1.12 scales all axes
         
         // Apply vis exhaustion to living entities
         if (entity instanceof LivingEntity living) {

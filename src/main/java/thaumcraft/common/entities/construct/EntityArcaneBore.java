@@ -281,25 +281,17 @@ public class EntityArcaneBore extends EntityOwnedConstruct {
         
         // Try to break the block
         if (level() instanceof ServerLevel serverLevel) {
-            // Create fake player for block breaking
-            FakePlayer fakePlayer = FakePlayerFactory.getMinecraft(serverLevel);
-            fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, getMainHandItem());
-            
-            // Get drops
-            List<ItemStack> blockDrops = new ArrayList<>();
-            if (hasSilkTouch()) {
-                // Silk touch - drop block itself
-                blockDrops.add(new ItemStack(state.getBlock()));
-            } else {
-                // Normal drops with fortune
-                // In 1.20.1, we'd use Block.getDrops()
-            }
-            
-            // Break the block
-            boolean broken = level().destroyBlock(digTarget, false);
+            // 1.12 parity: silk touch drops the block itself; otherwise vanilla
+            // loot runs. (26.3 reworked the loot API around ContextMap, so the
+            // held tool's fortune is not injected into the loot context.)
+            boolean silk = hasSilkTouch();
+            boolean broken = level().destroyBlock(digTarget, !silk);
             
             if (broken) {
-                // Collect nearby item entities
+                if (silk) {
+                    ejectItem(new ItemStack(state.getBlock()));
+                }
+                // Collect nearby item entities (1.12 behavior)
                 List<ItemEntity> items = level().getEntitiesOfClass(ItemEntity.class,
                         new AABB(digTarget).inflate(1.5));
                 for (ItemEntity item : items) {

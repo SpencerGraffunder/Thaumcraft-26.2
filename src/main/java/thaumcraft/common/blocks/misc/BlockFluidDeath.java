@@ -87,7 +87,7 @@ public class BlockFluidDeath extends Block {
         // Slow down entities based on liquid depth
         float slowFactor = 1.0f - quantaPercentage / 2.0f;
         Vec3 motion = entity.getDeltaMovement();
-        entity.setDeltaMovement(motion.x * slowFactor, motion.y, motion.z * slowFactor);
+        entity.setDeltaMovement(motion.x * slowFactor, motion.y * slowFactor, motion.z * slowFactor); // 1.12 scales all axes
         
         // Deal dissolve damage to living entities
         if (!level.isClientSide() && entity instanceof LivingEntity living) {

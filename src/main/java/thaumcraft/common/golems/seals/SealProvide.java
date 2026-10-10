@@ -344,11 +344,43 @@ public class SealProvide extends SealFiltered implements ISealConfigToggles {
         
         if (task.getData() == 0) {
             // Pickup phase: need to be able to carry and not already carrying
-            return pr.getStack() != null && !golem.isCarrying(pr.getStack()) && golem.canCarry(pr.getStack(), true);
+            return areGolemTagsValidForTask(pr.getSeal(), golem)
+                    && pr.getStack() != null && !golem.isCarrying(pr.getStack()) && golem.canCarry(pr.getStack(), true);
         } else {
             // Delivery phase: need to be carrying the item
-            return pr.getStack() != null && golem.isCarrying(pr.getStack());
+            return areGolemTagsValidForTask(pr.getSeal(), golem)
+                    && pr.getStack() != null && golem.isCarrying(pr.getStack());
         }
+    }
+
+    /**
+     * 1.12 parity (SealProvide.areGolemTagsValidForTask): the golem must not be
+     * locked out of the seal (owner check) and must satisfy required/forbidden traits.
+     */
+    private boolean areGolemTagsValidForTask(ISealEntity se, IGolemAPI golem) {
+        if (se == null) return true;
+        if (se.isLocked()) {
+            if (golem instanceof EntityThaumcraftGolem tcGolem
+                    && tcGolem.getOwnerUUID() != null
+                    && tcGolem.getOwnerUUID().toString().equals(se.getOwner())) {
+                // owner match -> allowed
+            } else {
+                return false;
+            }
+        }
+        EnumGolemTrait[] required = se.getSeal().getRequiredTags();
+        if (required != null && !golem.getProperties().getTraits().containsAll(java.util.Arrays.asList(required))) {
+            return false;
+        }
+        EnumGolemTrait[] forbidden = se.getSeal().getForbiddenTags();
+        if (forbidden != null) {
+            for (EnumGolemTrait tag : forbidden) {
+                if (golem.getProperties().getTraits().contains(tag)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     
     @Override

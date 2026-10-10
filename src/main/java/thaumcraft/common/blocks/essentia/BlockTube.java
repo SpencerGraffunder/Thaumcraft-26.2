@@ -122,6 +122,20 @@ public class BlockTube extends Block implements EntityBlock {
         return state.setValue(getPropertyForDirection(direction), connected);
     }
 
+    @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean moved) {
+        if (!level.isClientSide()) {
+            BlockState s = state;
+            for (Direction dir : Direction.values()) {
+                s = s.setValue(getPropertyForDirection(dir),
+                        canConnectTo(level, pos.relative(dir), dir.getOpposite()));
+            }
+            if (!s.equals(state)) {
+                level.setBlock(pos, s, 3);
+            }
+        }
+    }
+
     private BooleanProperty getPropertyForDirection(Direction dir) {
         return switch (dir) {
             case NORTH -> NORTH;

@@ -37,15 +37,15 @@ Status legend: OPEN / FIXED / NOISE / DEFERRED (needs a bigger subsystem first)
 | F016 | TC metals are beacon bases (isBeaconBase) — arcane/eldritch/ancient stone too | blocks/basic/BlockMetalTC, BlockStoneTC | `minecraft:beacon_base_blocks` tag with all 16 TC metals/stones | **FIXED** (d38b124) |
 | F017 | Eldritch/ancient stone `canEntityDestroy` (tnt-immune?) | blocks/basic/BlockStoneTC | 1.12 check is always-true (no stone sets negative slipperiness) | **NOISE** |
 | F018 | Golem builder: rotate on wrench + break drops items inside | crafting/BlockGolemBuilder (destroy/rotateBlock) | Wrench rotate + break drops | OPEN |
-| F019 | Infernal furnace: breaking the multiblock breaks all 27 blocks + drops contents | devices/BlockInfernalFurnace.destroyFurnace | Multiblock break cascade | OPEN |
+| F019 | Infernal furnace: breaking the multiblock breaks all 27 blocks + drops contents | devices/BlockInfernalFurnace.destroyFurnace | 1.12 cascade reverts PLACEHOLDER blocks; port's multiblock uses real blocks (no placeholder system) so nothing to revert — breaking the furnace block is the full 1.12-observable behavior for the port design | **DEVIATION** (design) |
 | F020 | Hungry chest: rotate on wrench; harvest rules | devices/BlockHungryChest | Wrench rotate | OPEN |
 | F021 | Brain box harvest rule (drops itself unharvested?) | devices/BlockBrainBox.canHarvestBlock | Check + mirror | OPEN |
-| F022 | Arcane ear: instrument property (getInstrument) — which note it plays | devices/BlockArcaneEar + TileArcaneEar.updateTone | Verify note selection logic vs 1.12 | OPEN |
-| F023 | Dioptra `updateState` — redstone state update on target change | devices/BlockDioptra | Check our dioptra emits redstone correctly | OPEN |
-| F024 | Condenser `fill` + lattice connection propagation (makeConnections/processUpdate) | devices/BlockCondenser*, TileCondenser | Verify condenser lattice I/O | OPEN |
-| F025 | Water jug / vis generator tick parity | devices/BlockWaterJug, TileVisGenerator | Diff tick logic vs 1.12 | OPEN |
-| F026 | Research table consumes paper from its own inventory (consumepaperFromTable) | crafting/TileResearchTable | Verify paper consumption path | OPEN |
-| F027 | Tube: connection recompute on neighbor change (makeConnections) | essentia/BlockTube | Verify tube network rebuild | OPEN |
+| F022 | Arcane ear: instrument property (getInstrument) — which note it plays | devices/BlockArcaneEar + TileArcaneEar.updateTone | FIXED: was DEAD — TileArcaneEar read its own static map that nothing wrote; now consumes WorldEvents' shared per-dim list (filled by NoteBlockEvent.Play), cleared once per server tick (LevelTickEvent.Post, 1.12 ServerEvents parity). Instrument map HARP..XYLOPHONE=0..9 matches 1.12 material→tone table | **FIXED** |
+| F023 | Dioptra `updateState` — redstone state update on target change | devices/BlockDioptra | 1.12 updateState is EMPTY (decorative beam; no redstone); port has the same ENABLED vis/flux mode toggle — parity | **FIXED** (verified) |
+| F024 | Condenser `fill` + lattice connection propagation (makeConnections/processUpdate) | devices/BlockCondenser*, TileCondenser | Verified: recursive lattice search, interval=600−15×count (min 5, cap 40), cost=4+√size, flux drain ≥1.0, 2% lattice-dirty chance — all match 1.12 | **FIXED** (verified) |
+| F025 | Water jug / vis generator tick parity | devices/BlockWaterJug, TileVisGenerator | Verified: 5×3×5 zone scan, 25mB fills, cauldron 333, 1000 cap, ≤10% vis drain per 5 ticks — matches 1.12 | **FIXED** (verified) |
+| F026 | Research table consumes paper from its own inventory (consumepaperFromTable) | crafting/TileResearchTable | Verified: consumePaperFromTable() (slot 1) called from ResearchTableMenu on completion — matches 1.12 ContainerResearchTable path | **FIXED** (verified) |
+| F027 | Tube: connection recompute on neighbor change (makeConnections) | essentia/BlockTube | FIXED: neighbor changes already recomputed via updateShape; added missing onPlace() initial 6-face connection compute (single setBlock) | **FIXED** |
 | F028 | Smelter vent/aux are plain (non-BE) blocks in 1.12 — ours share a BE type (works; deviation) | blocks/essentia/BlockSmelterVent | Low-pri cleanup | DEFERRED |
 | F029 | `barrier` block (1.12 misc) — invisible barrier block | misc/BlockBarrier | Port block + behavior | OPEN |
 | F030 | Effect blocks (effect_glimmer/sap/shock) light level + `run` tick | world/BlockEffect | Verify light + tick | OPEN |
@@ -68,33 +68,33 @@ Status legend: OPEN / FIXED / NOISE / DEFERRED (needs a bigger subsystem first)
 
 | # | Item | 1.12 source | Fix | Status |
 |---|------|-------------|-----|--------|
-| F050 | Cultist boots: vis discount + warp protection while worn | items/armor/ItemCultistBoots (getVisDiscount/getWarp) | Add tick/hook | OPEN |
-| F051 | Goggles (ItemGoggles): see node/aura info — client; check what server-side they do | items/armor/ItemGoggles | Mostly client; verify | OPEN |
-| F052 | Golem bell selection raycast bounds | golems/ItemGolemBell | Verify bounds logic | OPEN |
-| F053 | SealProvide `areGolemTagsValidForTask` (tag validation for provided tasks) | golems/seals/SealProvide | Verify | OPEN |
-| F054 | SealUse `mayPlace/dropSomeItems` (placement rules, dropping excess) | golems/seals/SealUse | Verify | OPEN |
+| F050 | Cultist boots: vis discount + warp protection while worn | items/armor/ItemCultistBoots (getVisDiscount/getWarp) | FIXED: implemented IVisDiscountGear + IWarpingGear (both return 1, 1.12 values); PlayerEvents already consumes both | **FIXED** |
+| F051 | Goggles (ItemGoggles): see node/aura info — client; check what server-side they do | items/armor/ItemGoggles | Verified: vis discount 5 matches 1.12; IRevealer/IGoggles present (client overlay) | **FIXED** (verified) |
+| F052 | Golem bell selection raycast bounds | golems/ItemGolemBell | Verified: 1.12 bell only targets seals (block hit); port's 16-block follow toggle is a deliberate extension with consistent bounds | **FIXED** (verified) |
+| F053 | SealProvide `areGolemTagsValidForTask` (tag validation for provided tasks) | golems/seals/SealProvide | FIXED: was missing entirely — added 1.12 tag validation (lock/owner UUID, required traits containsAll, forbidden traits) to canGolemPerformTask | **FIXED** |
+| F054 | SealUse `mayPlace/dropSomeItems` (placement rules, dropping excess) | golems/seals/SealUse | FIXED: canPlaceAt was hardcoded true; now 1.12 mayPlace semantics (block collision AABB must not contain a living entity); SealHandler re-checks every 20 ticks | **FIXED** |
 | F055 | ItemThaumometer / wand: node reading (depends on nodes) | items/ItemThaumometer | DEFERRED → nodes | DEFERRED |
-| F056 | Thaumostatic harness: vis storage + charging | items/ItemThaumostaticHarness | Verify vs 1.12 | OPEN |
-| F057 | Phial fill/empty vs reservoirs (smoke-covered) + phial→water jug? | items/ItemPhial | Verify | OPEN |
-| F058 | Grapple gun: spool/tip items + grapple entity behavior | items/ItemGrappleGun | Verify | OPEN |
-| F059 | Primordial pearl: mote/nodule/pearl + pearl behavior | items/ItemPrimordialPearl | Verify | OPEN |
+| F056 | Thaumostatic harness: vis storage + charging | items/ItemThaumostaticHarness | Not in 1.12 BETA26 (pre-1.12 item) | **NOISE** |
+| F057 | Phial fill/empty vs reservoirs (smoke-covered) + phial→water jug? | items/ItemPhial | Smoke-covered (reservoir-phial check); 1.12 has no phial→jug path | **FIXED** (verified) |
+| F058 | Grapple gun: spool/tip items + grapple entity behavior | items/ItemGrappleGun | Not in 1.12 BETA26 (port-specific utility item, self-consistent) | **NOISE** |
+| F059 | Primordial pearl: mote/nodule/pearl + pearl behavior | items/ItemPrimordialPearl | FIXED: variant thresholds (<3 pearl, <6 nodule, ≥6 mote), crafting remainder +1 damage to 7, no repair/enchant all match; fixed rarity UNCOMMON always + removed foil (1.12 values) | **FIXED** |
 | F060 | Causality collapser item (smoke-covered) + item tooltip | items/ItemCausalityCollapser | Done | **NOISE** |
 
 ## B4 — Entity behaviors
 
 | # | Item | 1.12 source | Fix | Status |
 |---|------|-------------|-----|--------|
-| F070 | Fire bat: attacks nearest player (attackEntity/findPlayerToAttack) | monster/EntityFireBat | Add target AI | OPEN |
-| F071 | Wisp carries an **aspect type** (affects particle color, drop on death?) | monster/EntityWisp (getType/setType) | Port type + effects | OPEN |
+| F070 | Fire bat: attacks nearest player (attackEntity/findPlayerToAttack) | monster/EntityFireBat | Verified: 12-block target search, bat-style flight steering, fire/explosion immunity, hanging — all match 1.12 | **FIXED** (verified) |
+| F071 | Wisp carries an **aspect type** (affects particle color, drop on death?) | monster/EntityWisp (getType/setType) | Verified: type string + getAspect(), crystal drop of its aspect, particle color from aspect | **FIXED** (verified) |
 | F072 | Eldritch crab: rides on warden/golem shoulders (getRiding/setRiding) | monster/EntityEldritchCrab | Port riding behavior | OPEN |
-| F073 | Spell bat: friendly flag (setIsFriendly) — tamed spell bats don't attack | monster/EntitySpellBat | Port flag | OPEN |
-| F074 | **Pech taming**: picks up valuable items, chance=value/10 to tame, then fights player's enemies | monster/EntityPech (canPickup/pickupItem/isValued/getValue) | Port taming + value table | OPEN |
-| F075 | Arcane bore: silk touch, refining (getRefining), proper block harvest drops | construct/EntityArcaneBore | Port bore mining parity | OPEN |
-| F076 | Turret crossbow: target distance + selection | construct/EntityTurretCrossbow* | Verify targeting | OPEN |
-| F077 | Eldritch golem boss: name generation (generateName) | monster/boss/EntityEldritchGolem | Port naming | OPEN |
+| F073 | Spell bat: friendly flag (setIsFriendly) — tamed spell bats don't attack | monster/EntitySpellBat | Verified: friendly flag present, set at construction | **FIXED** (verified) |
+| F074 | **Pech taming**: picks up valuable items, chance=value/10 to tame, then fights player's enemies | monster/EntityPech (canPickup/pickupItem/isValued/getValue) | Ported: tamed flag (synched), PechItemPickupGoal, valued-item table; taming value check wired in pickup | **FIXED** (verified) |
+| F075 | Arcane bore: silk touch, refining (getRefining), proper block harvest drops | construct/EntityArcaneBore | FIXED: bore broke blocks with destroyBlock(pos,false) and an EMPTY drops branch — it dropped nothing. Now silk touch ejects the block item, otherwise vanilla loot runs and all item entities are swept into the bore (26.3 reworked the loot API to ContextMap, so held-tool fortune is not injected — noted) | **FIXED** |
+| F076 | Turret crossbow: target distance + selection | construct/EntityTurretCrossbow* | Verified: RangedAttackGoal(0.0, 20, 60, 24.0) matches 1.12 EntityAIAttackRanged exactly | **FIXED** (verified) |
+| F077 | Eldritch golem boss: name generation (generateName) | monster/boss/EntityEldritchGolem | Covered by ChampionManager.makeChampion (localized mod-name prefix on spawn) | **FIXED** (verified) |
 | F078 | Cultist cleric: ritualist flag + rotation update | monster/cult/EntityCultistCleric | Part of cultist AI | DEFERRED → B6 |
-| F079 | Thaumic slime `createInstance` (spawns variants?) | monster/EntityThaumicSlime | Verify | OPEN |
-| F080 | Falling taint: block lookup on landing | EntityFallingTaint | Verify | OPEN |
+| F079 | Thaumic slime `createInstance` (spawns variants?) | monster/EntityThaumicSlime | Verified: extends vanilla Slime — split-on-death inherited (1.12 createInstance == vanilla split) | **FIXED** (verified) |
+| F080 | Falling taint: block lookup on landing | EntityFallingTaint | Verified: carried BlockState placed on landing with canPlace guard + gore sound | **FIXED** (verified) |
 
 ## B5 — Flux pressure events (was todo #12)
 

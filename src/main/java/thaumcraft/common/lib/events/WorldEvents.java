@@ -133,12 +133,17 @@ public class WorldEvents {
     }
     
     /**
-     * Get and clear note block events for a dimension.
-     * Used by TileArcaneEar.
+     * Clear note block events at the end of every server tick (1.12 parity:
+     * ServerEvents cleared TileArcaneEar.noteBlockEvents once per tick so an
+     * event triggers ears exactly once).
      */
-    public static ArrayList<NoteBlockData> getAndClearNoteBlockEvents(String dimKey) {
-        ArrayList<NoteBlockData> events = noteBlockEvents.remove(dimKey);
-        return events != null ? events : new ArrayList<>();
+    @SubscribeEvent
+    public static void onEndTick(net.neoforged.neoforge.event.tick.LevelTickEvent.Post event) {
+        if (event.getLevel() instanceof ServerLevel) {
+            for (ArrayList<NoteBlockData> list : noteBlockEvents.values()) {
+                list.clear();
+            }
+        }
     }
     
     /**

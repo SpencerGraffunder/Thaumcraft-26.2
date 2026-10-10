@@ -27,9 +27,6 @@ import java.util.WeakHashMap;
  */
 public class TileArcaneEar extends TileThaumcraft {
 
-    // Note block event tracking (dimension -> list of [x, y, z, instrument, note])
-    public static WeakHashMap<Level, ArrayList<int[]>> noteBlockEvents = new WeakHashMap<>();
-
     public static final int MAX_NOTE = 24;
     public static final int MAX_RANGE_SQ = 4096; // 64 blocks
 
@@ -82,16 +79,21 @@ public class TileArcaneEar extends TileThaumcraft {
             }
         }
 
-        // Check for matching note block events
-        ArrayList<int[]> events = noteBlockEvents.get(level);
-        if (events != null && !events.isEmpty()) {
-            for (int[] data : events) {
-                // data = [x, y, z, instrument, note]
-                if (data[3] == tile.instrument && data[4] == tile.note) {
-                    double distSq = pos.distSqr(new BlockPos(data[0], data[1], data[2]));
-                    if (distSq <= MAX_RANGE_SQ) {
-                        tile.onNoteDetected(state);
-                        break;
+        // Check for matching note block events (1.12 parity: TileArcaneEar
+        // reads the shared per-dimension event list filled by WorldEvents
+        // on NoteBlockEvent.Play; it is cleared once at the end of tick).
+        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            java.util.List<thaumcraft.common.lib.events.WorldEvents.NoteBlockData> events =
+                    thaumcraft.common.lib.events.WorldEvents.noteBlockEvents.get(
+                            serverLevel.dimension().identifier().toString());
+            if (events != null) {
+                for (thaumcraft.common.lib.events.WorldEvents.NoteBlockData data : events) {
+                    if (data.instrument == tile.instrument && data.note == tile.note) {
+                        double distSq = pos.distSqr(new BlockPos(data.x, data.y, data.z));
+                        if (distSq <= MAX_RANGE_SQ) {
+                            tile.onNoteDetected(state);
+                            break;
+                        }
                     }
                 }
             }
@@ -221,26 +223,6 @@ public class TileArcaneEar extends TileThaumcraft {
             return state.getValue(BlockStateProperties.FACING);
         }
         return Direction.NORTH;
-    }
-
-    // ==================== Static Event Handling ====================
-
-    /**
-     * Called when a note block plays. Register the event for arcane ears to detect.
-     */
-    public static void registerNoteBlockEvent(Level level, BlockPos pos, int instrument, int note) {
-        ArrayList<int[]> events = noteBlockEvents.computeIfAbsent(level, k -> new ArrayList<>());
-        events.add(new int[] { pos.getX(), pos.getY(), pos.getZ(), instrument, note });
-    }
-
-    /**
-     * Clear note block events at end of tick.
-     */
-    public static void clearNoteBlockEvents(Level level) {
-        ArrayList<int[]> events = noteBlockEvents.get(level);
-        if (events != null) {
-            events.clear();
-        }
     }
 
     // ==================== Getters ====================

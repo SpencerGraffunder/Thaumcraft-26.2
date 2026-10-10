@@ -2,6 +2,9 @@ package thaumcraft.common.golems.seals;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -214,7 +217,19 @@ public class SealUse extends SealFiltered implements ISealConfigToggles {
     
     @Override
     public boolean canPlaceAt(Level level, BlockPos pos, Direction side) {
-        return true; // Can be placed anywhere
+        // 1.12 parity (SealUse.mayPlace): the item being placed must fit its
+        // collision space without intersecting any entity.
+        BlockState state = level.getBlockState(pos);
+        VoxelShape shape = state.getCollisionShape(level, pos);
+        if (shape == null) return true;
+        if (shape.isEmpty()) return true;
+        AABB box = shape.bounds().move(pos);
+        for (net.minecraft.world.entity.Entity e : level.getEntities((net.minecraft.world.entity.Entity) null, box)) {
+            if (e instanceof net.minecraft.world.entity.LivingEntity le && !le.isRemoved()) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override

@@ -44,7 +44,7 @@ public class BlockEffect extends Block {
                 .instabreak()
                 .noLootTable()
                 .air()
-                .lightLevel(state -> type == EffectType.GLIMMER ? 15 : 7)
+                .lightLevel(state -> type == EffectType.GLIMMER ? 15 : 0)
                 .randomTicks()
                 .pushReaction(PushReaction.POPPED)));
         this.effectType = type;
@@ -81,9 +81,9 @@ public class BlockEffect extends Block {
                 // Apply slowness
                 living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 20, 0, true, true));
             }
-            // Small chance to disappear
+            // 1.12: 1/100 on entity collision -> re-evaluate neighbors (blocks persist)
             if (level.getRandom().nextInt(100) == 0) {
-                level.removeBlock(pos, false);
+                level.updateNeighborsAt(pos, state.getBlock());
             }
         } else if (effectType == EffectType.SAP) {
             // Eldritch mobs are immune to sap
@@ -103,9 +103,10 @@ public class BlockEffect extends Block {
     public void tick(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
         
-        // Glimmer blocks persist, others decay
+        // 1.12 randomTick: non-glimmer effect blocks re-evaluate their neighbors
+        // (they persist; only structure teardown removes them).
         if (effectType != EffectType.GLIMMER) {
-            level.removeBlock(pos, false);
+            level.updateNeighborsAt(pos, state.getBlock());
         }
     }
     
