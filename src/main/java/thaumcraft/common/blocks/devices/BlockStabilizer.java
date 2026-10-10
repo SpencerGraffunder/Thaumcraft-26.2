@@ -14,6 +14,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import thaumcraft.api.crafting.IInfusionStabiliserExt;
 import thaumcraft.init.BlockRegistration;
 import thaumcraft.common.tiles.devices.TileStabilizer;
 import thaumcraft.init.ModBlockEntities;
@@ -23,7 +24,7 @@ import thaumcraft.init.ModBlockEntities;
  * Provides significant stabilization bonus to nearby infusion altar.
  * More effective than candles but requires essentia to operate.
  */
-public class BlockStabilizer extends Block implements EntityBlock {
+public class BlockStabilizer extends Block implements EntityBlock, IInfusionStabiliserExt {
 
     private static final VoxelShape SHAPE = Block.box(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
 
@@ -43,20 +44,16 @@ public class BlockStabilizer extends Block implements EntityBlock {
         return SHAPE;
     }
 
-    /**
-     * Returns the stabilization bonus for infusion crafting.
-     */
-    public float getStabilizationBonus() {
-        return STABILIZATION_BONUS;
+    // ==================== IInfusionStabiliserExt (1.12: BlockStabilizer) ====================
+
+    @Override
+    public boolean canStabaliseInfusion(Level level, BlockPos pos) {
+        return true;
     }
 
-    /**
-     * Check if this stabilizer can currently stabilize infusion.
-     * Requires essentia to function.
-     */
-    public boolean canStabilizeInfusion(Level level, BlockPos pos) {
-        // Stabilizers provide stability unconditionally (matches 1.12.2)
-        return true;
+    @Override
+    public float getStabilizationAmount(Level level, BlockPos pos) {
+        return STABILIZATION_BONUS; // 0.25f, 1.12 BlockStabilizer
     }
 
     @Nullable

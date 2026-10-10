@@ -20,6 +20,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.api.crafting.IInfusionStabiliserExt;
 import thaumcraft.common.blocks.BlockTC;
 import thaumcraft.common.tiles.crafting.TilePedestal;
 
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
  * Pedestal block for displaying items and use in infusion crafting.
  * Different variants (arcane, ancient, eldritch) provide different stability bonuses.
  */
-public class BlockPedestal extends BlockTC implements EntityBlock {
+public class BlockPedestal extends BlockTC implements EntityBlock, IInfusionStabiliserExt {
 
     public enum PedestalType {
         ARCANE(0.0f),
@@ -54,6 +55,31 @@ public class BlockPedestal extends BlockTC implements EntityBlock {
     );
 
     private final PedestalType pedestalType;
+
+    // ==================== IInfusionStabiliserExt (1.12: BlockPedestal) ====================
+
+    @Override
+    public boolean canStabaliseInfusion(Level level, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public float getStabilizationAmount(Level level, BlockPos pos) {
+        return pedestalType.getStabilityBonus(); // eldritch 0.1f, others 0.0f (1.12)
+    }
+
+    @Override
+    public boolean hasSymmetryPenalty(Level level, BlockPos pos1, BlockPos pos2) {
+        if (level.getBlockEntity(pos1) instanceof TilePedestal t1 && level.getBlockEntity(pos2) instanceof TilePedestal t2) {
+            return !ItemStack.isSameItem(t1.getDisplayedItem(), t2.getDisplayedItem());
+        }
+        return false;
+    }
+
+    @Override
+    public float getSymmetryPenalty(Level level, BlockPos pos) {
+        return 0.1f; // 1.12 BlockPedestal
+    }
 
     public BlockPedestal(PedestalType type) {
         super(BlockBehaviour.Properties.of()

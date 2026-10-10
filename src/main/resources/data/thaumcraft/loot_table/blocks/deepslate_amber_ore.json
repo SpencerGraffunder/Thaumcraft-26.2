@@ -50,6 +50,23 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:experience",
+          "count": {
+            "type": "minecraft:uniform",
+            "min": 1.0,
+            "max": 4.0
+          }
+        }
+      ],
+      "condition": {
+        "type": "minecraft:inverted",
+        "term": "minecraft:tool/can_silk_touch"
+      }
     }
   ],
   "random_sequence": "thaumcraft:blocks/deepslate_amber_ore"

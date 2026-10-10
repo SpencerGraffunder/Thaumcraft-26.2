@@ -24,7 +24,10 @@ import thaumcraft.api.aspects.IAspectSource;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.common.menu.ThaumatoriumMenu;
 import thaumcraft.common.tiles.TileThaumcraftInventory;
+import thaumcraft.common.blocks.crafting.BlockThaumatorium;
+import thaumcraft.common.blocks.devices.BlockBrainBox;
 import thaumcraft.common.tiles.devices.TileBellows;
+import thaumcraft.init.ModBlocks;
 import thaumcraft.init.ModBlockEntities;
 
 import javax.annotation.Nullable;
@@ -71,7 +74,7 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
     private final java.util.ArrayList<Integer> recipeHash = new java.util.ArrayList<>();
     private final java.util.ArrayList<AspectList> recipeEssentia = new java.util.ArrayList<>();
     private final java.util.ArrayList<String> recipePlayer = new java.util.ArrayList<>();
-    public int maxRecipes = 5;
+    public int maxRecipes = 1;
     public int currentCraft = 0;
 
     // Animation (client-side)
@@ -144,7 +147,7 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
         }
         
         // Recipe queue
-        maxRecipes = input.getIntOr("MaxRecipes", 5);
+        maxRecipes = input.getIntOr("MaxRecipes", 1);
         currentCraft = input.getIntOr("CurrentCraft", 0);
         int recipeCount = input.getIntOr("RecipeCount", 0);
         recipeHash.clear();
@@ -171,6 +174,11 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
         // Pull essentia from connected sources periodically
         if (tile.tickCount % 10 == 0) {
             tile.pullEssentia();
+        }
+
+        // 1.12 getUpgrades: brain boxes attached to the sides allow +2 queue slots each.
+        if (tile.tickCount % 40 == 0) {
+            tile.recountBrainBoxes();
         }
 
         // Process crafting
@@ -242,6 +250,36 @@ public class TileThaumatorium extends TileThaumcraftInventory implements IAspect
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 1.12 getUpgrades: brain boxes attached to the sides (not the front) each add
+     * +2 recipe slots. Scanned on the 1.12 cadence (every 40 ticks).
+     */
+    private void recountBrainBoxes() {
+        if (level == null) return;
+        BlockState myState = level.getBlockState(worldPosition);
+        Direction facing = myState.getValue(BlockThaumatorium.FACING);
+        int mr = 1;
+        for (int yy = 0; yy <= 1; yy++) {
+            for (Direction dir : Direction.Plane.HORIZONTAL) {
+                if (dir == facing) continue;
+                BlockPos bp = worldPosition.relative(dir).relative(Direction.UP, yy);
+                BlockState bs = level.getBlockState(bp);
+                if (bs.is(ModBlocks.BRAIN_BOX.get())
+                        && bs.getValue(BlockBrainBox.FACING) == dir.getOpposite()) {
+                    mr += 2;
+                }
+            }
+        }
+        if (mr != maxRecipes) {
+            maxRecipes = mr;
+            while (recipeHash.size() > maxRecipes) {
+                recipeHash.remove(recipeHash.size() - 1);
+            }
+            markDirtyAndSync();
+            setChanged();
         }
     }
 

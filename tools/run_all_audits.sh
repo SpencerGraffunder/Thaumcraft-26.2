@@ -43,6 +43,7 @@ ORACLES=(
   audit_models         # model/texture/blockstate wiring
   audit_resources      # model->texture + Java->resource file refs
   audit_inv_loops      # inventory read-while-write loops
+  audit_lang           # every registry id has a modern-convention lang key
 )
 
 if [ "$#" -ge 1 ]; then
@@ -56,7 +57,7 @@ for n in "${ORACLES[@]}"; do
   log="/tmp/audit_gate_$n.log"
   if python3 "tools/$n.py" > "$log" 2>&1; then
     # pull the headline number from the log when the script prints one
-    detail=$(grep -oE "(242 pairs|matched pairs: [0-9]+|TOTAL missing file references: [0-9]+|total read-while-write loops: [0-9]+)" "$log" | tail -1)
+    detail=$(grep -oE "(242 pairs|matched pairs: [0-9]+|TOTAL missing file references: [0-9]+|total read-while-write loops: [0-9]+|all registry ids have lang keys)" "$log" | tail -1)
     printf "%-20s %-6s %s\n" "$n" "PASS" "${detail:-}"
   else
     detail=$(grep -cE "MISSING|unresolved|divergent|FAIL" "$log" 2>/dev/null)

@@ -1,6 +1,7 @@
 package thaumcraft.common.tiles.crafting;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -13,8 +14,11 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.api.golems.IGolemProperties;
 import thaumcraft.api.golems.parts.*;
 import thaumcraft.common.golems.GolemProperties;
@@ -39,7 +43,7 @@ import net.minecraft.world.level.storage.ValueInput;
  * Inventory slots:
  * - Slot 0: Output (golem placer)
  */
-public class TileGolemBuilder extends TileThaumcraftInventory implements MenuProvider {
+public class TileGolemBuilder extends TileThaumcraftInventory implements MenuProvider, IEssentiaTransport {
     
     // Current golem being built (as packed long)
     private long golemProps = -1L;
@@ -47,6 +51,9 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
     // Crafting progress (public for menu sync)
     public int cost = 0;
     public int maxCost = 0;
+    
+    // 1.12: one drawn/pushed MECHANISM essentia is held pending the next progress tick
+    private boolean bufferedEssentia = false;
     
     // Animation
     public int pressAnimation = 0;
@@ -84,17 +91,105 @@ public class TileGolemBuilder extends TileThaumcraftInventory implements MenuPro
         tile.tickCounter++;
         
         if (tile.cost > 0 && tile.golemProps >= 0) {
-            // Progress crafting
+            // 1.12: each progress tick costs 1 MECHANISM essentia drawn from
+            // connected sources (or buffered from pushed input).
             if (tile.tickCounter % 5 == 0) {
-                tile.cost--;
-                tile.setChanged();
-                
-                // Complete crafting
-                if (tile.cost <= 0) {
-                    tile.completeCraft();
+                if (tile.bufferedEssentia || tile.drawEssentia()) {
+                    tile.bufferedEssentia = false;
+                    tile.cost--;
+                    tile.setChanged();
+
+                    // Complete crafting
+                    if (tile.cost <= 0) {
+                        tile.completeCraft();
+                    }
                 }
             }
         }
+    }
+    
+    // ==================== 1.12 parity: MECHANISM essentia suction ====================
+    
+    /**
+     * 1.12 drawEssentia: pull 1 MECHANISM from the first connected source that
+     * can output and has weaker suction than ours (128 while building).
+     */
+    private boolean drawEssentia() {
+        if (level == null) return false;
+        for (Direction face : Direction.Plane.HORIZONTAL) {
+            BlockEntity te = level.getBlockEntity(worldPosition.relative(face));
+            if (te instanceof IEssentiaTransport ic) {
+                if (!ic.canOutputTo(face.getOpposite())) {
+                    return false;
+                }
+                if (ic.getSuctionAmount(face.getOpposite()) < getSuctionAmount(face)
+                        && ic.takeEssentia(Aspect.MECHANISM, 1, face.getOpposite()) == 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean isConnectable(Direction direction) {
+        return direction == Direction.NORTH || direction == Direction.SOUTH
+                || direction == Direction.EAST || direction == Direction.WEST
+                || direction == Direction.DOWN;
+    }
+    
+    @Override
+    public boolean canInputFrom(Direction direction) {
+        return isConnectable(direction);
+    }
+    
+    @Override
+    public boolean canOutputTo(Direction direction) {
+        return false;
+    }
+    
+    @Override
+    public void setSuction(Aspect aspect, int amount) {
+        // 1.12: no-op
+    }
+    
+    @Override
+    public int getMinimumSuction() {
+        return 0;
+    }
+    
+    @Override
+    public Aspect getSuctionType(Direction direction) {
+        return Aspect.MECHANISM;
+    }
+    
+    @Override
+    public int getSuctionAmount(Direction direction) {
+        return cost > 0 && golemProps >= 0 ? 128 : 0;
+    }
+    
+    @Override
+    public int takeEssentia(Aspect aspect, int amount, Direction direction) {
+        return 0;
+    }
+    
+    @Override
+    public int addEssentia(Aspect aspect, int amount, Direction direction) {
+        if (!bufferedEssentia && cost > 0 && golemProps >= 0 && aspect == Aspect.MECHANISM) {
+            bufferedEssentia = true;
+            return 1;
+        }
+        return 0;
+    }
+    
+    @Override
+    public Aspect getEssentiaType(Direction direction) {
+        return null;
+    }
+    
+    @Override
+    public int getEssentiaAmount(Direction direction) {
+        return 0;
     }
     
     public static void clientTick(Level level, BlockPos pos, BlockState state, TileGolemBuilder tile) {

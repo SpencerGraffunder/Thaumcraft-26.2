@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "thaumcraft:brass_block",
+    "thaumcraft:thaumium_block",
+    "thaumcraft:void_metal_block",
+    "thaumcraft:alchemical_brass_block",
+    "thaumcraft:alchemical_brass_advanced_block",
+    "thaumcraft:arcane_stone",
+    "thaumcraft:arcane_stone_brick",
+    "thaumcraft:eldritch_stone_tile",
+    "thaumcraft:ancient_stone",
+    "thaumcraft:ancient_stone_glyphed",
+    "thaumcraft:ancient_stone_tile",
+    "thaumcraft:ancient_rock",
+    "thaumcraft:ancient_pedestal_doorway",
+    "thaumcraft:porous_stone",
+    "thaumcraft:matrix_cost",
+    "thaumcraft:matrix_speed"
+  ]
+}

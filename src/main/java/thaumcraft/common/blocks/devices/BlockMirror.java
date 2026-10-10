@@ -2,8 +2,18 @@ package thaumcraft.common.blocks.devices;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -114,6 +124,51 @@ public class BlockMirror extends Block implements EntityBlock {
             case PLAYER -> new TileMirrorEssentia(ModBlockEntities.MIRROR_ESSENTIA.get(), pos, state);
             case HAND -> null;
         };
+    }
+
+    // ==================== 1.12 parity: drops carry the link (dropMirror) ====================
+
+    @Override
+    public java.util.List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+        java.util.List<ItemStack> drops = super.getDrops(state, builder);
+        BlockEntity be = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (be instanceof TileMirror tm && tm.linked) {
+            drops = drops.stream().map(stack -> {
+                if (stack.is(this.asItem())) {
+                    CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+                    tag.putBoolean("Linked", true);
+                    tag.putInt("LinkX", tm.linkX);
+                    tag.putInt("LinkY", tm.linkY);
+                    tag.putInt("LinkZ", tm.linkZ);
+                    tag.putString("LinkDim", tm.linkDimension.identifier().toString());
+                    CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
+                }
+                return stack;
+            }).toList();
+        }
+        return drops;
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack used) {
+        super.setPlacedBy(level, pos, state, placer, used);
+        if (level.isClientSide()) return;
+        CompoundTag tag = used.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (tag.contains("Linked") && tag.getBoolean("Linked").orElse(false)) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof TileMirror tm) {
+                tm.linkX = tag.getIntOr("LinkX", 0);
+                tm.linkY = tag.getIntOr("LinkY", 0);
+                tm.linkZ = tag.getIntOr("LinkZ", 0);
+                if (tag.contains("LinkDim")) {
+                    tm.linkDimension = ResourceKey.create(Registries.DIMENSION,
+                            Identifier.parse(tag.getString("LinkDim").orElse("")));
+                }
+                tm.linked = true;
+                tm.setChanged();
+                level.setBlock(pos, state.setValue(LINKED, true), 3);
+            }
+        }
     }
 
     @Nullable

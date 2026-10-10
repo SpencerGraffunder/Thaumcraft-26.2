@@ -17,13 +17,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import thaumcraft.api.crafting.IInfusionStabiliserExt;
 import thaumcraft.init.BlockRegistration;
 
 /**
  * Candle blocks that provide light and infusion stabilization.
  * 16 color variants available.
  */
-public class BlockCandle extends Block {
+public class BlockCandle extends Block implements IInfusionStabiliserExt {
 
     private static final VoxelShape SHAPE = Block.box(6.0, 0.0, 6.0, 10.0, 8.0, 10.0);
     
@@ -67,22 +68,16 @@ public class BlockCandle extends Block {
         return color;
     }
 
-    /**
-     * Returns the stabilization bonus for infusion crafting.
-     */
-    public float getStabilizationBonus() {
-        return stabilizationBonus;
-    }
+    // ==================== IInfusionStabiliserExt (1.12: BlockCandle) ====================
 
-    /**
-     * Candles can stabilize infusion without symmetry penalty.
-     */
-    public boolean canStabilizeInfusion(Level level, BlockPos pos) {
+    @Override
+    public boolean canStabaliseInfusion(Level level, BlockPos pos) {
         return true;
     }
 
-    public boolean hasSymmetryPenalty() {
-        return false;
+    @Override
+    public float getStabilizationAmount(Level level, BlockPos pos) {
+        return stabilizationBonus; // 0.1f, 1.12 BlockCandle
     }
 
     @Override
